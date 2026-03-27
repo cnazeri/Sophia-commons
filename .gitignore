@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# API keys
+API_Keys*.txt
+
+# Next.js
+.next/
+out/
+
+# Build
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Temp/lock files
+*.swp
+~$*
+.~lock.*
+tmp/

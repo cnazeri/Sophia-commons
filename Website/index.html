@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sophia Commons | Anthroposophical Community Directory</title>
+
+<!-- ══════════════════════════════════════
+     SOPHIA COMMONS — SEO PACKAGE
+     Target: anthroposophy, Rudolf Steiner,
+     Waldorf, biodynamic, Camphill, eurythmy
+══════════════════════════════════════ -->
+
+<!-- Core meta -->
+<meta name="description" content="Sophia Commons is the free global directory for the anthroposophical community — find Waldorf schools, biodynamic farms, Camphill communities, eurythmy programs, anthroposophic medicine, events, and more worldwide.">
+<meta name="keywords" content="anthroposophy directory, Rudolf Steiner community, Waldorf school finder, biodynamic farms, Camphill communities, eurythmy programs, anthroposophic medicine, Goetheanum, Christian Community, esoteric studies, spiritual science, anthroposophical organizations, Waldorf education, Demeter farms, Camphill village">
+<meta name="author" content="Sophia Commons">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="theme-color" content="#2a4a8a">
+<link rel="canonical" href="https://sophiacommons.org/">
+
+<!-- Geographic targeting -->
+<meta name="geo.region" content="US">
+<meta name="geo.placename" content="Worldwide">
+
+<!-- Open Graph — Facebook / LinkedIn -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sophiacommons.org/">
+<meta property="og:site_name" content="Sophia Commons">
+<meta property="og:title" content="Sophia Commons — Anthroposophical Community Directory">
+<meta property="og:description" content="The free global directory for the anthroposophical community. Find Waldorf schools, biodynamic farms, Camphill communities, eurythmy, anthroposophic medicine, events, and more.">
+<meta property="og:image" content="https://sophiacommons.org/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sophia Commons — Anthroposophical Community Directory">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@SophiaCommons">
+<meta name="twitter:creator" content="@SophiaCommons">
+<meta name="twitter:url" content="https://sophiacommons.org/">
+<meta name="twitter:title" content="Sophia Commons — Anthroposophical Community Directory">
+<meta name="twitter:description" content="Find Waldorf schools, biodynamic farms, Camphill communities, eurythmy, anthroposophic medicine, and events worldwide.">
+<meta name="twitter:image" content="https://sophiacommons.org/og-image.jpg">
+<meta name="twitter:image:alt" content="Sophia Commons Directory">
+
+<!-- Structured Data: WebSite + SearchAction -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Sophia Commons",
+  "alternateName": "Sophia Commons Anthroposophical Directory",
+  "url": "https://sophiacommons.org",
+  "description": "The free global directory for the anthroposophical community — Waldorf education, biodynamic farming, medicine, eurythmy, Camphill communities, and more.",
+  "inLanguage": "en-US",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://sophiacommons.org/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Sophia Commons",
+    "url": "https://sophiacommons.org",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://sophiacommons.org/og-image.jpg",
+      "width": 480,
+      "height": 160
+    },
+    "sameAs": [
+      "https://twitter.com/SophiaCommons",
+      "https://www.facebook.com/SophiaCommons"
+    ]
+  }
+}
+</script>
+
+<!-- Structured Data: Directory / DataCatalog -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DataCatalog",
+  "name": "Sophia Commons — Anthroposophical World Directory",
+  "description": "A curated directory of 256+ anthroposophical organizations, schools, farms, clinics, and communities worldwide.",
+  "url": "https://sophiacommons.org/directory",
+  "keywords": "anthroposophy, Rudolf Steiner, Waldorf, biodynamic, Camphill, eurythmy",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "creator": {
+    "@type": "Organization",
+    "name": "Sophia Commons"
+  },
+  "about": {
+    "@type": "Thing",
+    "name": "Anthroposophy",
+    "sameAs": "https://en.wikipedia.org/wiki/Anthroposophy"
+  }
+}
+</script>
+
+<!-- Structured Data: BreadcrumbList -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://sophiacommons.org/" },
+    { "@type": "ListItem", "position": 2, "name": "Directory", "item": "https://sophiacommons.org/directory" },
+    { "@type": "ListItem", "position": 3, "name": "Events", "item": "https://sophiacommons.org/events" },
+    { "@type": "ListItem", "position": 4, "name": "News", "item": "https://sophiacommons.org/news" }
+  ]
+}
+</script>
+
+<!-- Google Analytics 4 — replace G-XXXXXXXXXX with your GA4 Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://bnrvgitzbpocratvszgk.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_Quj2NdNaaDKJOe4UT5Y5nw_1Sog2yjI';
+  const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Check for existing session on page load
+  _sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      window._supabaseUser = session.user;
+      const uname = session.user.email ? session.user.email.split('@')[0] : 'user';
+      window.dispatchEvent(new CustomEvent('supabase-auth-ready', { detail: { username: uname, user: session.user } }));
+    }
+  });
+
+  // Listen for auth state changes (login, logout, token refresh)
+  _sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      window._supabaseUser = session.user;
+    } else if (event === 'SIGNED_OUT') {
+      window._supabaseUser = null;
+    }
+  });
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Libre+Franklin:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #f8f9fa;
+  --paper:   #ffffff;
+  --cream:   #eef0f5;
+  --border:  #d0d4de;
+  --blt:     #e0e4ee;
+  --ink:     #1a1e2e;
+  --muted:   #6a7080;
+  --link:    #2a4a8a;
+  --lhov:    #8a2020;
+  --rust:    #9a3a1a;
+  --warm:    #3a5a9a;
+  --amber:   #4a6aaa;
+  --gold:    #5a7aba;
+  --glt:     #eef2fa;
+  --ch:      #e8ecf5;    /* cat head — blue-grey like AnthroWiki */
+  --cb:      #f4f6fb;    /* cat body */
+  --verified:#3a6a2a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Libre Franklin',sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.55;}
+a{color:var(--link);text-decoration:none;transition:color .15s;}
+a:hover{color:var(--lhov);text-decoration:underline;}
+
+/* ── MODAL ── */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.36);z-index:2000;align-items:center;justify-content:center;}
+#modal-overlay.open{display:flex;}
+#modal-box{background:#fff;border:1px solid var(--border);width:310px;padding:26px 24px;position:relative;}
+#modal-box h2{font-family:'Libre Franklin',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;color:var(--ink);}
+#modal-box p{font-size:12px;color:var(--muted);margin-bottom:16px;}
+#modal-box label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;}
+#modal-box input[type=email],#modal-box input[type=password]{width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;}
+#modal-box input:focus{outline:1px solid var(--warm);border-color:var(--warm);}
+#modal-box .btn-primary{width:100%;margin-top:14px;padding:8px;background:var(--warm);color:#fff;border:none;font-family:'Libre Franklin',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;}
+#modal-box .btn-primary:hover{background:#6e2c1c;}
+#modal-foot{text-align:center;font-size:11.5px;color:var(--muted);margin-top:10px;}
+#modal-foot a{color:var(--link);}
+#modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);}
+
+/* ── TOP BAR ── */
+#topbar{background:var(--cream);border-bottom:1px solid var(--border);padding:5px 18px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);}
+#topbar .nav-links a{margin-left:10px;color:var(--muted);}
+#topbar .nav-links a:hover{color:var(--link);}
+#topbar .nav-links a.signinbtn{background:var(--warm);color:#fff;padding:2px 9px;font-size:10px;font-weight:600;font-family:'Josefin Sans',sans-serif;letter-spacing:.06em;}
+#topbar .nav-links a.signinbtn:hover{background:#6e2c1c;text-decoration:none;}
+#user-chip{display:none;background:#f5e8e2;border:1px solid #e0c4b8;color:var(--warm);padding:2px 8px;font-size:11px;margin-left:8px;cursor:pointer;}
+
+/* ── HEADER ── */
+header{border-bottom:2px solid var(--amber);padding:11px 18px 9px;display:flex;align-items:center;gap:12px;background:var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.04);}
+#logo{font-family:'Josefin Sans',sans-serif;font-size:24px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;line-height:1;color:var(--ink);display:flex;align-items:center;gap:10px;text-decoration:none;}
+#logo:hover{text-decoration:none;}
+#logo .monad{width:38px;height:38px;flex-shrink:0;}
+#logo span{font-size:9.5px;font-family:'Josefin Sans',sans-serif;font-weight:300;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-left:7px;vertical-align:middle;}
+#statsbar{font-size:11px;color:var(--muted);margin-left:auto;}
+#statsbar strong{color:var(--ink);}
+#postlink{background:var(--rust);color:#fff;padding:4px 11px;font-size:10.5px;font-weight:600;font-family:'Josefin Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
+#postlink:hover{background:#8c3318;text-decoration:none;color:#fff;}
+
+/* ── MAIN NAV ── */
+#mainnav{background:var(--paper);border-bottom:1px solid var(--border);padding:0 16px;display:flex;gap:0;}
+#mainnav button{background:none;border:none;padding:8px 13px 7px;font-family:'Josefin Sans',sans-serif;font-size:11.5px;letter-spacing:.06em;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;}
+#mainnav button:hover{color:var(--ink);}
+#mainnav button.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--amber);}
+#mainnav button.chatnav{color:var(--warm);}
+#mainnav button.chatnav.active{border-bottom-color:var(--warm);}
+#mainnav button.locked{opacity:.38;cursor:not-allowed;}
+
+/* ── 3-COL PAGE GRID ── */
+#page{display:grid;grid-template-columns:162px 1fr 162px;min-height:calc(100vh - 90px);}
+
+/* ── LEFT SIDEBAR ── */
+#leftbar{border-right:1px solid var(--blt);padding:13px 10px;background:var(--paper);}
+#leftbar h5{font-family:'Josefin Sans',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--blt);padding-bottom:3px;margin-bottom:7px;margin-top:13px;}
+#leftbar h5:first-child{margin-top:0;}
+#leftbar ul{list-style:none;}
+#leftbar ul li{margin-bottom:2px;}
+#leftbar ul li a{color:var(--link);font-size:11.5px;}
+#leftbar ul li a:hover{color:var(--lhov);text-decoration:underline;}
+.cbadge{font-size:10px;color:var(--muted);margin-left:2px;}
+#searchwrap{margin-bottom:12px;}
+#searchwrap input{width:100%;padding:5px 8px;border:1px solid var(--border);background:#fff;font-family:'Libre Franklin',sans-serif;font-size:12px;color:var(--ink);}
+#searchwrap input:focus{outline:1px solid var(--warm);border-color:var(--warm);}
+#searchwrap button{width:100%;margin-top:3px;padding:5px;background:var(--warm);color:#fff;border:none;font-family:'Libre Franklin',sans-serif;font-size:11px;font-weight:500;cursor:pointer;}
+#searchwrap button:hover{background:#6e2c1c;}
+
+/* ── CENTER ── */
+#center{padding:14px 16px;background:var(--bg);}
+.pagesec h2,.inner-header h2{font-family:'Libre Franklin',sans-serif;font-size:15px;font-weight:700;color:var(--ink);}
+.pagesec{display:none;}
+.pagesec.active{display:block;}
+
+/* ── CATEGORY BLOCKS ── */
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+.catblock{background:var(--cb);border:1px solid var(--blt);transition:box-shadow .18s,border-color .18s;}
+.catblock:hover{box-shadow:0 2px 10px rgba(0,0,0,.07);border-color:#ccc5bb;}
+.catblock-head{background:var(--ch);border-bottom:1px solid var(--blt);padding:7px 11px 6px;display:flex;justify-content:space-between;align-items:baseline;}
+.catblock-head h3{font-family:'Josefin Sans',sans-serif;font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:.06em;text-transform:uppercase;line-height:1.3;}
+.catblock-head .alllink{font-family:'Libre Franklin',sans-serif;font-size:10.5px;color:var(--muted);}
+.catblock-head .alllink:hover{color:var(--lhov);}
+.catblock ul{list-style:none;padding:6px 10px 8px;}
+.catblock ul li{margin-bottom:2px;line-height:1.45;}
+.catblock ul li a{font-size:12px;color:var(--link);transition:color .12s;}
+.catblock ul li a:hover{color:var(--lhov);text-decoration:underline;}
+.catblock ul li a sup{font-size:9px;color:var(--verified);margin-left:1px;}
+
+/* ── LISTING ROWS (news, events, podcasts) ── */
+.listblock{background:var(--cb);border:1px solid var(--blt);margin-bottom:12px;transition:box-shadow .18s;}
+.listblock:hover{box-shadow:0 2px 10px rgba(0,0,0,.06);}
+.listblock-head{background:var(--ch);border-bottom:1px solid var(--blt);padding:7px 11px 6px;display:flex;justify-content:space-between;align-items:baseline;}
+.listblock-head h3{font-family:'Josefin Sans',sans-serif;font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:.06em;text-transform:uppercase;}
+.listblock-head a{font-size:10.5px;color:var(--muted);}
+.listblock-head a:hover{color:var(--lhov);}
+.listblock-body{padding:3px 10px 5px;}
+.lrow{display:flex;align-items:baseline;gap:7px;padding:4px 0;border-bottom:1px solid var(--blt);font-size:12px;}
+.lrow:last-child{border-bottom:none;}
+.lrow a.ltitle{color:var(--link);font-weight:500;}
+.lrow a.ltitle:hover{color:var(--lhov);text-decoration:underline;}
+.lrow .lmeta{color:var(--muted);font-size:11px;white-space:nowrap;}
+.lrow .ltag{background:var(--cream);color:#5a5048;font-size:10px;padding:1px 5px;white-space:nowrap;}
+.lrow .lv{color:var(--verified);font-size:10px;font-weight:600;}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+
+/* ── TRENDING BLOCK (warm tinted) ── */
+.trendblock{background:#fffaf4;border:1px solid #e8d0b4;border-left:3px solid var(--amber);margin-bottom:12px;transition:box-shadow .18s;}
+.trendblock-head{background:#fdf0e4;border-bottom:1px solid #e8d0b4;padding:6px 10px 5px;display:flex;justify-content:space-between;align-items:baseline;}
+.trendblock-head h3{font-family:'Josefin Sans',sans-serif;font-size:12.5px;font-weight:700;color:#7a3010;letter-spacing:.06em;text-transform:uppercase;}
+.trendblock-head .tlabel{font-size:10.5px;color:#a86030;font-style:italic;}
+.trendblock-body{padding:8px 10px 6px;}
+.trend-story h4{font-family:'Libre Franklin',sans-serif;font-size:13.5px;font-weight:700;line-height:1.35;margin-bottom:4px;}
+.trend-story h4 a{color:var(--ink);}
+.trend-story h4 a:hover{color:var(--lhov);text-decoration:none;}
+.trend-story p{font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:7px;}
+.trend-readers{font-size:10.5px;color:#a86030;font-weight:600;margin-bottom:8px;}
+.trend-also{border-top:1px solid #e8d0b4;padding-top:6px;}
+.trend-also-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;}
+.trend-also a{display:block;font-size:11.5px;color:var(--link);margin-bottom:2px;}
+.trend-all{display:block;font-size:11px;color:var(--muted);text-align:right;padding-top:5px;}
+.trend-all:hover{color:var(--lhov);}
+
+/* ── EVENTS ── */
+.evrow{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--blt);align-items:flex-start;}
+.evrow:last-child{border-bottom:none;}
+.evdate{text-align:center;background:var(--cream);border:1px solid var(--blt);padding:3px 5px;flex-shrink:0;min-width:38px;}
+.evdate .mo{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);line-height:1;}
+.evdate .dy{font-family:'IM Fell English',serif;font-size:18px;font-weight:normal;line-height:1.1;color:var(--ink);}
+.evdate.today .dy{color:var(--rust);}
+.evinfo{flex:1;min-width:0;}
+.evinfo .etag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);line-height:1.2;}
+.evinfo h5{font-family:'Libre Franklin',sans-serif;font-size:12px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:2px;}
+.evinfo h5 a{color:var(--ink);}
+.evinfo h5 a:hover{color:var(--lhov);text-decoration:none;}
+.evinfo .emeta{font-size:11px;color:var(--muted);}
+
+/* section divider */
+.seclabel{font-family:'Josefin Sans',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;margin-top:2px;}
+hr.soft{border:none;border-top:1px solid var(--blt);margin:12px 0;}
+
+/* ── RIGHT SIDEBAR ── */
+#rightbar{border-left:1px solid var(--blt);padding:13px 10px;background:var(--paper);}
+#rightbar h5{font-family:'Josefin Sans',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--blt);padding-bottom:3px;margin-bottom:7px;margin-top:13px;}
+#rightbar h5:first-child{margin-top:0;}
+#rightbar ul{list-style:none;}
+#rightbar ul li{margin-bottom:3px;font-size:11.5px;}
+#rightbar ul li a{color:var(--link);}
+.statblock{background:var(--cream);padding:7px 9px;margin-bottom:5px;font-size:11px;border:1px solid var(--blt);border-radius:2px;}
+.statblock .num{font-family:'IM Fell English',serif;font-size:19px;color:var(--rust);display:block;line-height:1.1;}
+.statblock .lbl{color:var(--muted);}
+.signup-box{background:var(--cream);border:1px solid var(--blt);padding:9px 10px;margin-top:4px;border-radius:2px;}
+.signup-box p{font-size:11px;color:var(--muted);margin-bottom:7px;line-height:1.5;}
+.signup-box input{width:100%;padding:5px 7px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:11.5px;margin-bottom:5px;}
+.signup-box button{width:100%;padding:5px;background:var(--warm);color:#fff;border:none;font-family:'Libre Franklin',sans-serif;font-size:11px;font-weight:500;cursor:pointer;}
+.signup-box button:hover{background:#6e2c1c;}
+#rsignup-ok{display:none;font-size:11.5px;color:#4a6a2a;font-weight:600;text-align:center;padding:3px 0;}
+
+/* ── DIRECTORY MAP ── */
+.mapwrap{border:1px solid var(--blt);margin-bottom:12px;}
+.mapwrap-head{background:var(--ch);border-bottom:1px solid var(--blt);padding:6px 10px 5px;display:flex;justify-content:space-between;align-items:center;}
+.mapwrap-head h3{font-family:'Josefin Sans',sans-serif;font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:.06em;text-transform:uppercase;}
+.mapwrap-head select{padding:2px 6px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:11px;color:var(--ink);background:#fff;}
+#dir-map{width:100%;height:360px;background:var(--cream);position:relative;}
+.map-legend{display:flex;gap:12px;flex-wrap:wrap;padding:6px 10px;font-size:11px;color:var(--muted);border-top:1px solid var(--blt);}
+.map-legend span{display:flex;align-items:center;gap:4px;}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;}
+
+/* ── CHAT ── */
+#chat-gate-wrap{text-align:center;padding:40px 20px;border:1px solid var(--blt);background:var(--cb);max-width:420px;margin:30px auto;}
+#chat-gate-wrap h2{font-family:'Libre Franklin',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;color:var(--ink);}
+#chat-gate-wrap p{color:var(--muted);font-size:12px;margin-bottom:18px;line-height:1.7;}
+.cgbtn{display:inline-block;background:var(--warm);color:#fff;padding:7px 20px;font-size:12px;font-weight:500;}
+.cgbtn:hover{background:#6e2c1c;text-decoration:none;color:#fff;}
+.rooms-prev{text-align:left;background:var(--cream);border:1px solid var(--blt);padding:10px;margin-top:16px;}
+.rooms-prev h5{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.rpill{display:inline-block;background:#fff;border:1px solid var(--blt);padding:2px 8px;font-size:11px;color:var(--muted);margin:2px 2px 2px 0;}
+#chat-signedin{display:none;background:#f5e8e2;border:1px solid #e0c4b8;padding:6px 12px;margin-bottom:10px;font-size:12px;color:var(--warm);}
+#chat-signedin.vis{display:flex;align-items:center;gap:8px;}
+#chat-signedin button{margin-left:auto;border:1px solid var(--warm);background:none;color:var(--warm);padding:2px 8px;font-size:11px;cursor:pointer;font-family:'Libre Franklin',sans-serif;}
+#chat-app{display:none;}
+#chat-app.vis{display:grid;grid-template-columns:180px 1fr;border:1px solid var(--border);min-height:480px;background:#fff;}
+.rooms-sb{background:var(--cb);border-right:1px solid var(--blt);}
+.rooms-sb-head{background:var(--ch);border-bottom:1px solid var(--blt);padding:8px 10px;font-family:'Libre Franklin',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.ritem{padding:7px 10px;border-bottom:1px solid var(--blt);cursor:pointer;font-size:12px;}
+.ritem:hover{background:var(--cream);}
+.ritem.active{background:#e8ecf5;color:var(--link);font-weight:500;}
+.rname{display:block;font-size:12px;}
+.rsub{font-size:10.5px;color:var(--muted);}
+.unread{float:right;background:var(--rust);color:#fff;font-size:9.5px;padding:1px 5px;border-radius:8px;}
+.chat-pane{display:flex;flex-direction:column;}
+.chat-ph{background:var(--cream);border-bottom:1px solid var(--blt);padding:8px 12px;display:flex;align-items:center;gap:10px;}
+.chat-ph h4{font-family:'Libre Franklin',sans-serif;font-size:13px;font-weight:600;color:var(--ink);}
+.chat-ph .rdesc{font-size:11px;color:var(--muted);}
+.chat-ph .onl{margin-left:auto;font-size:11px;color:var(--amber);font-weight:500;}
+#messages{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:9px;min-height:320px;max-height:380px;}
+.msg{display:flex;gap:8px;}
+.av{width:26px;height:26px;border-radius:50%;background:var(--cream);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0;font-family:'IM Fell English',serif;}
+.msg.mine .av{background:#dde8f5;}
+.bub{max-width:83%;}
+.bub .bmeta{font-size:10.5px;color:var(--muted);margin-bottom:2px;}
+.bub .bmeta .nm{font-weight:600;color:var(--ink);margin-right:5px;}
+.bub .btxt{background:var(--cb);border:1px solid var(--blt);padding:5px 9px;font-size:12.5px;line-height:1.5;}
+.msg.mine .btxt{background:#e6edf8;border-color:#c5d3e8;}
+.msg.sys .btxt{background:var(--glt);border-color:#e8d898;color:var(--muted);font-size:11.5px;font-style:italic;}
+.chat-irow{border-top:1px solid var(--blt);padding:8px 10px;display:flex;gap:7px;background:var(--paper);}
+.chat-irow input{flex:1;padding:6px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:12.5px;}
+.chat-irow input:focus{outline:1px solid var(--warm);border-color:var(--warm);}
+.chat-irow button{background:var(--warm);color:#fff;border:none;padding:6px 14px;font-size:11.5px;font-weight:500;cursor:pointer;font-family:'Libre Franklin',sans-serif;}
+
+
+/* ── FOOTER ── */
+footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
+.ftcols{max-width:none;display:grid;grid-template-columns:2fr 1fr 1fr 1.6fr;gap:24px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.1);}
+.ftlogo{font-family:'Josefin Sans',sans-serif;font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin-bottom:2px;}
+.ftsub{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;}
+.ftcol{display:flex;flex-direction:column;}
+.ftcol-h{font-family:'Josefin Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;}
+.ftcol a{color:rgba(255,255,255,.45);font-size:12px;margin-bottom:5px;}
+.ftcol a:hover{color:#fff;text-decoration:none;}
+.ftbot{padding:10px 0 12px;display:flex;justify-content:space-between;align-items:center;font-size:11px;}
+.ftbot a{color:rgba(255,255,255,.35);margin:0 5px;}
+.ftbot a:hover{color:#fff;text-decoration:none;}
+.ftnl input{width:100%;padding:5px 8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#fff;font-family:'Libre Franklin',sans-serif;font-size:12px;margin-bottom:5px;}
+.ftnl button{width:100%;padding:6px;background:var(--warm);color:#fff;border:none;font-family:'Libre Franklin',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+#ft-ok{display:none;font-size:11.5px;color:#a8c888;margin-top:5px;}
+
+@media(max-width:860px){
+  #page{grid-template-columns:1fr;}
+  #leftbar,#rightbar{border:none;border-bottom:1px solid var(--blt);}
+  .catgrid{grid-template-columns:1fr 1fr;}
+  .twocol{grid-template-columns:1fr;}
+  #chat-app.vis{grid-template-columns:1fr;}
+  .rooms-sb{display:none;}
+  .ftcols{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:540px){
+  .catgrid{grid-template-columns:1fr;}
+  .ftcols{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <button id="modal-close" onclick="closeModal()">×</button>
+    <h2 id="modal-title">Sign in</h2>
+    <p id="modal-desc">Access community chat and member features.</p>
+    <div id="auth-error" style="display:none;color:#c0392b;font-size:12px;margin-bottom:8px;padding:6px 10px;background:#fdf0ef;border:1px solid #f5c6cb;"></div>
+    <label>Email address</label>
+    <input type="email" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doSignIn()">
+    <label>Password</label>
+    <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignIn()">
+    <button class="btn-primary" id="auth-btn" onclick="doSignIn()">Sign in</button>
+    <div id="modal-foot">
+      <span id="toggle-signup">No account? <a href="#" onclick="toggleAuthMode(event)">Create one free</a></span>
+      <span id="toggle-signin" style="display:none;">Have an account? <a href="#" onclick="toggleAuthMode(event)">Sign in</a></span>
+       &nbsp;·&nbsp; <a href="#" onclick="doPasswordReset(event)">Forgot password?</a>
+    </div>
+  </div>
+</div>
+
+<!-- SUBMIT LISTING MODAL -->
+<div id="submit-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:2000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border:1px solid var(--border);width:380px;max-height:90vh;overflow-y:auto;padding:26px 24px;position:relative;">
+    <button onclick="document.getElementById('submit-overlay').style.display='none';" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);">×</button>
+    <h2 style="font-family:'Libre Franklin',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;color:var(--ink);">Submit a Listing</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Add your organization, farm, school, or initiative to the Sophia Commons directory.</p>
+    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Organization name *</label>
+    <input type="text" id="sl-name" placeholder="e.g. Sunrise Waldorf School" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;margin-bottom:2px;">
+    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Website URL</label>
+    <input type="url" id="sl-url" placeholder="https://…" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;">
+    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Category *</label>
+    <select id="sl-cat" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;background:#fff;">
+      <option value="">Select a category…</option>
+      <option>Waldorf &amp; Education</option>
+      <option>Biodynamic Agriculture</option>
+      <option>Esoteric Studies</option>
+      <option>Arts &amp; Eurythmy</option>
+      <option>Anthroposophic Medicine</option>
+      <option>Community &amp; Camphill</option>
+      <option>Free &amp; Sharing</option>
+      <option>Jobs &amp; Volunteering</option>
+      <option>Housing &amp; Room Rent</option>
+      <option>Marketplace</option>
+      <option>Groups &amp; Circles</option>
+      <option>Podcasts &amp; Media</option>
+      <option>Online Resources</option>
+      <option>Christian Community</option>
+    </select>
+    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">City / Location</label>
+    <input type="text" id="sl-loc" placeholder="e.g. Fair Oaks, CA" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;">
+    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Short description</label>
+    <textarea id="sl-desc" rows="3" placeholder="Describe this organization in 1–2 sentences…" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;resize:vertical;"></textarea>
+    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Your email (for follow-up)</label>
+    <input type="email" id="sl-email" placeholder="you@example.com" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;">
+    <button onclick="submitListing()" style="width:100%;margin-top:16px;padding:9px;background:var(--warm);color:#fff;border:none;font-family:'Libre Franklin',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">Submit for Review</button>
+    <div id="sl-ok" style="display:none;text-align:center;font-size:13px;color:var(--verified);font-weight:600;margin-top:12px;">✓ Submitted! We'll review and add it within 48 hours.</div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <span class="nav-links">
+    <a href="#" onclick="showSec('home');return false;">about</a>
+    <a href="#" onclick="showSubmitForm();return false;">submit listing</a>
+    <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
+    <a href="#" class="signinbtn" id="signin-link" onclick="openModal();return false;">sign in</a>
+  </span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <a href="#" onclick="showSec('home');return false;" id="logo">
+    <img src="logo.png" alt="Sophia Commons" class="monad" style="width:32px;height:32px;">
+    <span style="font-family:'Josefin Sans',sans-serif;font-size:24px;font-weight:600;color:var(--ink);letter-spacing:.08em;text-transform:uppercase;">Sophia Commons<sup style="font-size:9px;font-weight:400;vertical-align:super;letter-spacing:0;">TM</sup></span>
+    <span>Anthroposophical Community</span>
+  </a>
+  <div id="statsbar">March 23, 2026 &nbsp;·&nbsp; <strong>2,840+</strong> listings &nbsp;·&nbsp; <strong>256</strong> directory entries</div>
+  <a href="#" id="postlink" onclick="showSubmitForm();return false;">+ post a listing</a>
+</header>
+
+<!-- MAIN NAV -->
+<div id="mainnav">
+  <button class="active" id="nav-home"      onclick="showSec('home')">home</button>
+  <button id="nav-news"      onclick="showSec('news')">news</button>
+  <button id="nav-events"    onclick="showSec('events')">events</button>
+  <button id="nav-browse"    onclick="showSec('browse')">browse</button>
+  <button id="nav-podcasts"  onclick="showSec('podcasts')">podcasts &amp; media</button>
+  <button id="nav-directory" onclick="showSec('directory')">directory</button>
+  <button class="chatnav locked" id="nav-chat" onclick="handleChat()">community chat</button>
+</div>
+
+<!-- 3-COL PAGE -->
+<div id="page">
+
+<!-- LEFT SIDEBAR -->
+<div id="leftbar">
+  <div id="searchwrap">
+    <input type="text" id="searchinput" placeholder="search…">
+    <button onclick="doSearch()">search</button>
+  </div>
+  <h5>categories</h5>
+  <ul>
+    <li><a href="#" onclick="showSec('browse');return false;">waldorf &amp; education</a><span class="cbadge">312</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">biodynamic agriculture</a><span class="cbadge">198</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">esoteric studies</a><span class="cbadge">147</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">arts &amp; eurythmy</a><span class="cbadge">89</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">anthro. medicine</a><span class="cbadge">124</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">community &amp; camphill</a><span class="cbadge">67</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">free &amp; sharing</a><span class="cbadge">143</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">marketplace</a><span class="cbadge">388</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">housing &amp; room rent</a><span class="cbadge">54</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">jobs &amp; volunteering</a><span class="cbadge">176</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">groups &amp; circles</a><span class="cbadge">93</span></li>
+    <li><a href="#" onclick="showSec('podcasts');return false;">podcasts &amp; media</a><span class="cbadge">23</span></li>
+    <li><a href="#" onclick="showSec('browse');return false;">online resources</a><span class="cbadge">280</span></li>
+  </ul>
+  <h5>region</h5>
+  <ul>
+    <li><a href="#">north america</a></li>
+    <li><a href="#">europe</a></li>
+    <li><a href="#">uk &amp; ireland</a></li>
+    <li><a href="#">australia / nz</a></li>
+    <li><a href="#">international</a></li>
+  </ul>
+  <h5>status</h5>
+  <ul>
+    <li><a href="#">✓ verified only</a></li>
+    <li><a href="#">all entries</a></li>
+  </ul>
+  <h5>quick links</h5>
+  <ul>
+    <li><a href="https://goetheanum.ch" target="_blank">Goetheanum</a></li>
+    <li><a href="https://rsarchive.org" target="_blank">Steiner Archive</a></li>
+    <li><a href="https://anthroposophysocial.com" target="_blank">Anthroposophy.Social</a></li>
+    <li><a href="https://biodynamics.com" target="_blank">Biodynamics.com</a></li>
+    <li><a href="mailto:hello@sophiacommons.org">suggest correction</a></li>
+  </ul>
+</div>
+
+<!-- CENTER -->
+<div id="center">
+
+<!-- ═══ HOME ═══ -->
+<div class="pagesec active" id="sec-home">
+
+  <div class="seclabel">Browse by Category &nbsp;·&nbsp; 2,840+ listings &nbsp;·&nbsp; March 23, 2026</div>
+
+  <!-- ROW 1: Trending + News + Calendar -->
+  <div class="twocol" style="grid-template-columns:1fr 1fr;margin-bottom:12px;">
+
+    <!-- TRENDING NOW -->
+    <div class="trendblock">
+      <div class="trendblock-head">
+        <h3>Current Events</h3>
+        <span class="tlabel">most read today</span>
+      </div>
+      <div class="trendblock-body">
+        <div class="trend-readers">3,847 readers today</div>
+        <div class="trend-story">
+          <h4><a href="#" onclick="showSec('news');return false;">Goetheanum Launches New Global Online Study Program for 2026</a></h4>
+          <p>The Goetheanum's Studium division announced an expanded online program in six languages, with live sessions, recorded lectures, and small-group discussion circles.</p>
+        </div>
+        <div class="trend-also">
+          <div class="trend-also-label">Also in the news</div>
+          <a href="#">Demeter Reports Record Farm Certification Growth</a>
+          <a href="#">Camphill Village USA Celebrates 60 Years</a>
+          <a href="#">AWSNA Releases Updated Curriculum Guidelines</a>
+        </div>
+        <a class="trend-all" href="#" onclick="showSec('news');return false;">all news →</a>
+      </div>
+    </div>
+
+    <!-- UPCOMING EVENTS -->
+    <div class="listblock">
+      <div class="listblock-head">
+        <h3>Upcoming Events</h3>
+        <a href="#" onclick="showSec('events');return false;">full calendar →</a>
+      </div>
+      <div class="listblock-body" style="padding:4px 10px 6px;">
+        <div class="evrow" data-event-date="2026-03-22">
+          <div class="evdate"><div class="mo">Mar</div><div class="dy">22</div></div>
+          <div class="evinfo"><div class="etag">Study</div><h5><a href="#">Goetheanum Online — Spring Weekend Session</a></h5><div class="emeta">Online · Free for members</div></div>
+        </div>
+        <div class="evrow" data-event-date="2026-04-05">
+          <div class="evdate"><div class="mo">Apr</div><div class="dy">5</div></div>
+          <div class="evinfo"><div class="etag">Online Learning</div><h5><a href="#">5 Weekends of Anthroposophy — Spring Cycle</a></h5><div class="emeta">Dornach / Online · Goetheanum Studium</div></div>
+        </div>
+        <div class="evrow" data-event-date="2026-04-18">
+          <div class="evdate"><div class="mo">Apr</div><div class="dy">18</div></div>
+          <div class="evinfo"><div class="etag">Conference</div><h5><a href="#">AWSNA Waldorf Education Conference 2026</a></h5><div class="emeta">Chicago, IL · AWSNA</div></div>
+        </div>
+        <div class="evrow" data-event-date="2026-05-02">
+          <div class="evdate"><div class="mo">May</div><div class="dy">2</div></div>
+          <div class="evinfo"><div class="etag">Biodynamic</div><h5><a href="#">Biodynamic Farming Regional Forum</a></h5><div class="emeta">Fair Oaks, CA · 9:00 AM – 5:00 PM</div></div>
+        </div>
+        <div class="evrow" data-event-date="2026-07-06">
+          <div class="evdate"><div class="mo">Jul</div><div class="dy">6</div></div>
+          <div class="evinfo"><div class="etag">Eurythmy</div><h5><a href="#">Eurythmy Summer Intensive</a></h5><div class="emeta">Spring Valley, NY · Eurythmy Spring Valley</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end row 1 -->
+
+  <hr class="soft">
+  <div class="seclabel">Main Sections</div>
+
+  <!-- ROW 2: Core categories 3-col -->
+  <div class="catgrid">
+    <div class="catblock">
+      <div class="catblock-head"><h3>Waldorf &amp; Education</h3><span class="alllink">312</span></div>
+      <ul>
+        <li><a href="#" onclick="showSec('browse');return false;">Schools directory</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Teacher training programs</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Curriculum resources</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Tutoring &amp; homeschool</a></li>
+        <li><a href="https://studium.goetheanum.ch/en/online-studies" target="_blank">Goetheanum Studium – Online</a></li>
+        <li><a href="https://centerforanthroposophy.org" target="_blank">Center for Anthroposophy</a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Biodynamic Agriculture</h3><span class="alllink">198</span></div>
+      <ul>
+        <li><a href="#" onclick="showSec('browse');return false;">CSA farm shares</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Farm apprenticeships</a></li>
+        <li><a href="https://biodynamicfood.org" target="_blank">Demeter-certified farms</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Seed suppliers</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Training programs</a></li>
+        <li><a href="https://biodynamicfood.org" target="_blank">Demeter Farm Directory<sup>✓</sup></a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Esoteric Studies</h3><span class="alllink">147</span></div>
+      <ul>
+        <li><a href="#" onclick="showSec('browse');return false;">Study groups &amp; circles</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Online courses</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Reading circles</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Lectures &amp; seminars</a></li>
+        <li><a href="https://www.innerworkpath.com" target="_blank">Inner Work Path</a></li>
+        <li><a href="https://www.wisdomworking.org/about" target="_blank">Wisdom Working Directory</a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Arts &amp; Eurythmy</h3><span class="alllink">89</span></div>
+      <ul>
+        <li><a href="#" onclick="showSec('browse');return false;">Eurythmy training programs</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Performance companies</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Classes &amp; workshops</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Artistic commissions</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Speech formation</a></li>
+        <li><a href="https://www.eurythmy.org" target="_blank">Eurythmy Spring Valley<sup>✓</sup></a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Anthroposophic Medicine</h3><span class="alllink">124</span></div>
+      <ul>
+        <li><a href="#" onclick="showSec('browse');return false;">Clinics &amp; hospitals</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Practitioners directory</a></li>
+        <li><a href="https://www.weleda.com" target="_blank">Weleda products</a></li>
+        <li><a href="https://www.wala.world/en/" target="_blank">WALA remedies</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Therapeutic eurythmy</a></li>
+        <li><a href="http://www.anthromed.net" target="_blank">AnthroMed Register<sup>✓</sup></a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Online Resources</h3><span class="alllink">280</span></div>
+      <ul>
+        <li><a href="https://rsarchive.org" target="_blank">Rudolf Steiner Archive<sup>✓</sup></a></li>
+        <li><a href="https://www.rudolfsteinerweb.com" target="_blank">Rudolf Steiner Web<sup>✓</sup></a></li>
+        <li><a href="https://www.rudolfsteineraudio.com" target="_blank">Rudolf Steiner Audio<sup>✓</sup></a></li>
+        <li><a href="https://www.waldorflibrary.org" target="_blank">Waldorf Library Online<sup>✓</sup></a></li>
+        <li><a href="https://anthropopper.com" target="_blank">Anthropopper Blog<sup>✓</sup></a></li>
+        <li><a href="https://www.wisdomworking.org/about" target="_blank">Wisdom Working Directory</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="soft">
+  <div class="seclabel">Community &amp; Resources</div>
+
+  <div class="catgrid">
+    <div class="catblock">
+      <div class="catblock-head"><h3>Free &amp; Sharing</h3><span class="alllink">143</span></div>
+      <ul>
+        <li><a href="#">Free items &amp; giveaways</a></li>
+        <li><a href="#">Seed &amp; plant exchanges</a></li>
+        <li><a href="#">Skill shares &amp; barter</a></li>
+        <li><a href="#">Books &amp; materials — free</a></li>
+        <li><a href="#">Tool lending</a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Jobs &amp; Volunteering</h3><span class="alllink">176</span></div>
+      <ul>
+        <li><a href="#">Waldorf teaching positions</a></li>
+        <li><a href="#">Farm co-workers</a></li>
+        <li><a href="#">Administrative roles</a></li>
+        <li><a href="#">Camphill co-workers</a></li>
+        <li><a href="#">Volunteer opportunities</a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Housing &amp; Room Rent</h3><span class="alllink">54</span></div>
+      <ul>
+        <li><a href="#">Rooms for rent</a></li>
+        <li><a href="#">Shared housing</a></li>
+        <li><a href="#">Community housing</a></li>
+        <li><a href="#">Camphill residences</a></li>
+        <li><a href="#">Short-term rentals</a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Marketplace</h3><span class="alllink">388</span></div>
+      <ul>
+        <li><a href="#">Books &amp; publications</a></li>
+        <li><a href="#">Art &amp; crafts</a></li>
+        <li><a href="#">Biodynamic products</a></li>
+        <li><a href="#">Musical instruments</a></li>
+        <li><a href="#">Clothing &amp; textiles</a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Groups &amp; Circles</h3><span class="alllink">93</span></div>
+      <ul>
+        <li><a href="#">Meditation groups</a></li>
+        <li><a href="#">Local branch branches</a></li>
+        <li><a href="#">Reading circles</a></li>
+        <li><a href="#">Youth groups</a></li>
+        <li><a href="#">Women's circles</a></li>
+      </ul>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Community &amp; Camphill</h3><span class="alllink">67</span></div>
+      <ul>
+        <li><a href="#" onclick="showSec('browse');return false;">Camphill communities</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Co-worker positions</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Intentional communities</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Volunteer opportunities</a></li>
+        <li><a href="https://www.ic.org/directory/camphill-village-usa-inc/" target="_blank">Camphill Village USA<sup>✓</sup></a></li>
+        <li><a href="https://camphill.edu" target="_blank">Camphill Academy<sup>✓</sup></a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Community Chat teaser — full width -->
+  <div class="catgrid" style="grid-template-columns:1fr 1fr;margin-top:0;">
+    <div class="catblock" style="background:#faf6f2;border-color:#e0c8b8;">
+      <div class="catblock-head" style="background:#f5ece0;border-bottom-color:#e0c8b8;">
+        <h3 style="color:var(--warm);">Community Chat</h3>
+        <span style="font-size:10.5px;color:var(--warm);font-style:italic;">members only</span>
+      </div>
+      <ul style="padding:6px 10px 4px;">
+        <li style="margin-bottom:3px;font-size:11.5px;color:var(--muted);"># general &nbsp;·&nbsp; # waldorf-education</li>
+        <li style="margin-bottom:3px;font-size:11.5px;color:var(--muted);"># biodynamic &nbsp;·&nbsp; # medicine</li>
+        <li style="margin-bottom:3px;font-size:11.5px;color:var(--muted);"># eurythmy-arts &nbsp;·&nbsp; # study-groups</li>
+        <li style="margin-bottom:6px;font-size:11.5px;color:var(--muted);"># meetups &nbsp;·&nbsp; # christian-community</li>
+      </ul>
+      <div style="padding:0 10px 8px;">
+        <a href="#" onclick="handleChat();return false;" style="display:block;background:var(--warm);color:#fff;text-align:center;padding:5px;font-size:11.5px;font-weight:500;">sign in to join chat →</a>
+      </div>
+    </div>
+    <div class="catblock">
+      <div class="catblock-head"><h3>Podcasts &amp; Media</h3><span class="alllink">23</span></div>
+      <ul>
+        <li><a href="#" onclick="showSec('podcasts');return false;">ASA Official Podcast<sup>✓</sup></a></li>
+        <li><a href="#" onclick="showSec('podcasts');return false;">Goetheanum Podcast<sup>✓</sup></a></li>
+        <li><a href="#" onclick="showSec('podcasts');return false;">Inner Work Path<sup>✓</sup></a></li>
+        <li><a href="#" onclick="showSec('podcasts');return false;">Rudolf Steiner Audio<sup>✓</sup></a></li>
+        <li><a href="#" onclick="showSec('podcasts');return false;">Goetheanum TV<sup>✓</sup></a></li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- end sec-home -->
+
+<!-- ═══ NEWS ═══ -->
+<div class="pagesec" id="sec-news">
+  <div class="seclabel" style="margin-bottom:10px;">News &amp; Announcements &nbsp;·&nbsp; 241 articles</div>
+  <!-- featured -->
+  <div class="trendblock" style="margin-bottom:14px;">
+    <div class="trendblock-head"><h3>Current Events — Most Read Today</h3><span class="tlabel">3,847 readers</span></div>
+    <div class="trendblock-body">
+      <div class="trend-story">
+        <h4 style="font-family:'Libre Franklin',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;"><a href="#">Goetheanum Launches New Global Online Study Program for 2026</a></h4>
+        <p style="font-size:12.5px;line-height:1.6;">The Goetheanum's Studium division has announced a major expansion of its online program, making anthroposophical study accessible to students worldwide. The spring 2026 cycle will include live weekly sessions, recorded lectures from leading practitioners, small discussion groups in six languages, and an artistic practice component.</p>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:6px;"><strong style="color:var(--ink);">Sophia Commons Staff</strong> · March 21, 2026</div>
+      </div>
+    </div>
+  </div>
+  <div class="twocol">
+    <div class="listblock"><div class="listblock-head"><h3>Latest Stories</h3></div>
+      <div class="listblock-body">
+        <div class="lrow"><span class="ltag">Biodynamic</span><a class="ltitle" href="#">Demeter Reports Record Farm Certification Growth</a><span class="lmeta">Mar 20</span></div>
+        <div class="lrow"><span class="ltag">Waldorf</span><a class="ltitle" href="#">AWSNA Releases Updated Curriculum Guidelines 2026–27</a><span class="lmeta">Mar 19</span></div>
+        <div class="lrow"><span class="ltag">Community</span><a class="ltitle" href="#">Camphill Village USA Celebrates 60 Years in Copake, NY</a><span class="lmeta">Mar 18</span></div>
+        <div class="lrow"><span class="ltag">Medicine</span><a class="ltitle" href="#">New Mistletoe Therapy Research in European Journal</a><span class="lmeta">Mar 17</span></div>
+        <div class="lrow"><span class="ltag">Eurythmy</span><a class="ltitle" href="#">Eurythmy Spring Valley Opens 2026–27 Enrollment</a><span class="lmeta">Mar 15</span></div>
+        <div class="lrow"><span class="ltag">CC</span><a class="ltitle" href="#">New Christian Community Congregation Opens in Denver</a><span class="lmeta">Mar 12</span></div>
+      </div>
+    </div>
+    <div class="listblock"><div class="listblock-head"><h3>Announcements</h3></div>
+      <div class="listblock-body">
+        <div class="lrow"><span class="ltag">Event</span><a class="ltitle" href="#">AWSNA Conference Registration Now Open — Chicago, Apr 18</a></div>
+        <div class="lrow"><span class="ltag">Directory</span><a class="ltitle" href="#">Christian Community Contacts — 46 new congregation entries</a></div>
+        <div class="lrow"><span class="ltag">Resource</span><a class="ltitle" href="#">Rudolf Steiner Archive Releases New English Translations</a></div>
+        <div class="lrow"><span class="ltag">Program</span><a class="ltitle" href="#">Goetheanum 5 Weekends Program — Spring Enrollment Open</a></div>
+        <div class="lrow"><span class="ltag">Farm</span><a class="ltitle" href="#">Demeter USA Accepting 2026 Certification Applications</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ EVENTS ═══ -->
+<div class="pagesec" id="sec-events">
+  <div class="seclabel" style="margin-bottom:10px;">Events &amp; Calendar &nbsp;·&nbsp; 620 upcoming events worldwide</div>
+  <div class="listblock">
+    <div class="listblock-head"><h3>March – September 2026</h3><a href="#">submit an event →</a></div>
+    <div class="listblock-body" style="padding:4px 10px 8px;">
+      <div class="evrow" data-event-date="2026-03-22">
+        <div class="evdate today"><div class="mo">Mar</div><div class="dy">22</div></div>
+        <div class="evinfo">
+          <div class="etag">Study · Online</div>
+          <h5><a href="#">Goetheanum Online — Spring Weekend Session</a></h5>
+          <div class="emeta">10:00 AM – 4:00 PM CET &nbsp;·&nbsp; Online &nbsp;·&nbsp; Goetheanum Studium &nbsp;·&nbsp; Free for members</div>
+        </div>
+      </div>
+      <div class="evrow" data-event-date="2026-04-05">
+        <div class="evdate"><div class="mo">Apr</div><div class="dy">5</div></div>
+        <div class="evinfo">
+          <div class="etag">Online Learning · Begins</div>
+          <h5><a href="#">5 Weekends of Anthroposophy — Spring Cycle</a></h5>
+          <div class="emeta">Weekends Apr 5 – May 3 &nbsp;·&nbsp; Online / Dornach &nbsp;·&nbsp; Goetheanum Studium</div>
+        </div>
+      </div>
+      <div class="evrow" data-event-date="2026-04-18">
+        <div class="evdate"><div class="mo">Apr</div><div class="dy">18</div></div>
+        <div class="evinfo">
+          <div class="etag">Conference · 3 days</div>
+          <h5><a href="#">AWSNA Annual Waldorf Education Conference 2026</a></h5>
+          <div class="emeta">Apr 18–20 &nbsp;·&nbsp; 9:00 AM – 6:00 PM &nbsp;·&nbsp; Chicago, IL &nbsp;·&nbsp; AWSNA</div>
+        </div>
+      </div>
+      <div class="evrow" data-event-date="2026-05-02">
+        <div class="evdate"><div class="mo">May</div><div class="dy">2</div></div>
+        <div class="evinfo">
+          <div class="etag">Biodynamic · Regional</div>
+          <h5><a href="#">Biodynamic Farming Regional Forum</a></h5>
+          <div class="emeta">May 2–4 &nbsp;·&nbsp; 9:00 AM – 5:00 PM &nbsp;·&nbsp; Fair Oaks, CA &nbsp;·&nbsp; Demeter USA</div>
+        </div>
+      </div>
+      <div class="evrow" data-event-date="2026-06-14">
+        <div class="evdate"><div class="mo">Jun</div><div class="dy">14</div></div>
+        <div class="evinfo">
+          <div class="etag">Community · Open to all</div>
+          <h5><a href="#">Camphill Village USA — Annual Open Days</a></h5>
+          <div class="emeta">10:00 AM – 4:00 PM &nbsp;·&nbsp; Copake, NY &nbsp;·&nbsp; Camphill Village USA</div>
+        </div>
+      </div>
+      <div class="evrow" data-event-date="2026-07-06">
+        <div class="evdate"><div class="mo">Jul</div><div class="dy">6</div></div>
+        <div class="evinfo">
+          <div class="etag">Eurythmy · 4 weeks</div>
+          <h5><a href="#">Eurythmy Summer Intensive</a></h5>
+          <div class="emeta">Jul 6 – Aug 1 &nbsp;·&nbsp; Daily 9:00 AM &nbsp;·&nbsp; Spring Valley, NY &nbsp;·&nbsp; Eurythmy Spring Valley</div>
+        </div>
+      </div>
+      <div class="evrow" data-event-date="2026-09-27">
+        <div class="evdate"><div class="mo">Sep</div><div class="dy">27</div></div>
+        <div class="evinfo">
+          <div class="etag">Medicine · International</div>
+          <h5><a href="#">Goetheanum Medicine Week 2026</a></h5>
+          <div class="emeta">Sep 27 – Oct 1 &nbsp;·&nbsp; Dornach, Switzerland &nbsp;·&nbsp; Goetheanum Medical Section</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BROWSE ═══ -->
+<div class="pagesec" id="sec-browse">
+  <div class="seclabel" style="margin-bottom:10px;">Browse Listings &nbsp;·&nbsp; 2,840+ listings</div>
+  <div class="catgrid">
+    <div class="catblock"><div class="catblock-head"><h3>Waldorf &amp; Education</h3><a href="#" class="alllink">312 →</a></div><ul><li><a href="#">Schools directory</a></li><li><a href="#">Teacher training</a></li><li><a href="#">Curriculum resources</a></li><li><a href="#">Tutoring services</a></li><li><a href="#">Homeschool support</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Biodynamic Agriculture</h3><a href="#" class="alllink">198 →</a></div><ul><li><a href="#">CSA farm shares</a></li><li><a href="#">Farm apprenticeships</a></li><li><a href="#">Demeter farms</a></li><li><a href="#">Seed suppliers</a></li><li><a href="#">Training programs</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Arts &amp; Eurythmy</h3><a href="#" class="alllink">89 →</a></div><ul><li><a href="#">Eurythmy training</a></li><li><a href="#">Performance companies</a></li><li><a href="#">Classes &amp; workshops</a></li><li><a href="#">Commissions</a></li><li><a href="#">Speech formation</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Anthroposophic Medicine</h3><a href="#" class="alllink">124 →</a></div><ul><li><a href="#">Clinics &amp; hospitals</a></li><li><a href="#">Practitioners</a></li><li><a href="#">Weleda products</a></li><li><a href="#">WALA remedies</a></li><li><a href="#">Therapeutic eurythmy</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Free &amp; Sharing</h3><a href="#" class="alllink">143 →</a></div><ul><li><a href="#">Free items &amp; giveaways</a></li><li><a href="#">Seed &amp; plant exchanges</a></li><li><a href="#">Skill shares &amp; barter</a></li><li><a href="#">Books free</a></li><li><a href="#">Tool lending</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Jobs &amp; Volunteering</h3><a href="#" class="alllink">176 →</a></div><ul><li><a href="#">Waldorf teaching</a></li><li><a href="#">Farm co-workers</a></li><li><a href="#">Administrative roles</a></li><li><a href="#">Camphill co-workers</a></li><li><a href="#">Volunteer positions</a></li></ul></div>
+  </div>
+</div>
+
+<!-- ═══ PODCASTS ═══ -->
+<div class="pagesec" id="sec-podcasts">
+  <div class="seclabel" style="margin-bottom:10px;">Podcasts &amp; Media &nbsp;·&nbsp; 23 shows, channels, and platforms</div>
+  <div class="twocol">
+    <div class="listblock"><div class="listblock-head"><h3>Podcasts</h3><a href="#">all 6 →</a></div>
+      <div class="listblock-body">
+        <div class="lrow"><a class="ltitle" href="https://anthroposophy.org/podcast/" target="_blank">ASA Official Podcast</a><span class="lmeta">Spotify / RSS</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://goetheanum.transistor.fm/" target="_blank">Goetheanum Podcast</a><span class="lmeta">Transistor</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://www.innerworkpath.com/category/podcast/" target="_blank">Inner Work Path — Lisa Romero</a><span class="lmeta">Australia</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://www.rudolfsteiner.podbean.com/" target="_blank">Rudolf Steiner Audio Podcast</a><span class="lmeta">Podbean · Free</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://newthinkingallowed.org/rudolf-steiner-anthroposophy/" target="_blank">New Thinking Allowed</a><span class="lmeta">Video · USA</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://open.spotify.com/show/0M4QfnyYevp54XnlERAPTf" target="_blank">Anthroposophy on Spotify</a><span class="lmeta">Global</span><span class="lv">✓</span></div>
+      </div>
+    </div>
+    <div class="listblock"><div class="listblock-head"><h3>Video &amp; Social</h3><a href="#">all 8 →</a></div>
+      <div class="listblock-body">
+        <div class="lrow"><a class="ltitle" href="https://goetheanum.tv" target="_blank">Goetheanum TV</a><span class="lmeta">Dornach, CH</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://dasgoetheanum.com/en" target="_blank">Das Goetheanum Weekly</a><span class="lmeta">Online</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://www.youtube.com/@AnthroposophyUSA" target="_blank">ASA YouTube Channel</a><span class="lmeta">YouTube</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://anthroposophysocial.com" target="_blank">Anthroposophy.Social</a><span class="lmeta">Platform · Global</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://www.instagram.com/goetheanum_studium/" target="_blank">Goetheanum Studium – Instagram</a><span class="lmeta">3,200+ followers</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://www.facebook.com/AnthroposophyUSA/" target="_blank">ASA Facebook Page</a><span class="lmeta">Facebook · USA</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://www.facebook.com/groups/anthroposophy/" target="_blank">Anthroposophy Community Group</a><span class="lmeta">Facebook · Global</span><span class="lv">✓</span></div>
+        <div class="lrow"><a class="ltitle" href="https://www.facebook.com/RudolfSteinerArchive/" target="_blank">Rudolf Steiner Archive – Facebook</a><span class="lmeta">Interlochen, MI</span><span class="lv">✓</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DIRECTORY ═══ -->
+<div class="pagesec" id="sec-directory">
+  <div class="seclabel" style="margin-bottom:10px;">World Directory &nbsp;·&nbsp; 256 verified organizations &amp; resources</div>
+
+  <!-- MAP -->
+  <div class="mapwrap">
+    <div class="mapwrap-head">
+      <h3>Organizations on the Map</h3>
+      <select id="map-filter" onchange="filterMap()">
+        <option value="all">All categories</option>
+        <option value="societies">Societies &amp; Orgs</option>
+        <option value="waldorf">Waldorf</option>
+        <option value="biodynamic">Biodynamic</option>
+        <option value="medicine">Medicine</option>
+        <option value="camphill">Camphill</option>
+        <option value="eurythmy">Eurythmy</option>
+        <option value="cc">Christian Community</option>
+      </select>
+    </div>
+    <div id="dir-map"></div>
+    <div class="map-legend">
+      <span><span class="dot" style="background:#b04522;"></span>Societies</span>
+      <span><span class="dot" style="background:#8c3a28;"></span>Waldorf</span>
+      <span><span class="dot" style="background:#5a7a3a;"></span>Biodynamic</span>
+      <span><span class="dot" style="background:#3a6a8a;"></span>Medicine</span>
+      <span><span class="dot" style="background:#7a5a9a;"></span>Camphill</span>
+      <span><span class="dot" style="background:#c49030;"></span>Eurythmy</span>
+      <span><span class="dot" style="background:#6a4a3a;"></span>Chr. Community</span>
+    </div>
+  </div>
+
+  <div class="catgrid">
+    <div class="catblock"><div class="catblock-head"><h3>Societies &amp; Organizations</h3><a href="#" class="alllink">65 →</a></div><ul><li><a href="https://anthroposophy.org" target="_blank">Anthroposophical Society USA<sup>✓</sup></a></li><li><a href="https://anthroposophybayarea.org" target="_blank">ASA – Bay Area Branch</a></li><li><a href="https://www.anthroposophynyc.org" target="_blank">Anthroposophy NYC<sup>✓</sup></a></li><li><a href="https://www.alanus.edu/en/home" target="_blank">Alanus University<sup>✓</sup></a></li><li><a href="https://anthroposophy.org.uk" target="_blank">Anth. in Great Britain<sup>✓</sup></a></li><li><a href="https://anthroposophy.ca/en/" target="_blank">Anth. Society Canada<sup>✓</sup></a></li><li><a href="https://www.waldorfeducation.org" target="_blank">AWSNA<sup>✓</sup></a></li><li><a href="https://www.efpam.eu" target="_blank">European Fed. Anthro. Med.<sup>✓</sup></a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Publications &amp; Media</h3><a href="#" class="alllink">53 →</a></div><ul><li><a href="https://rsarchive.org" target="_blank">Rudolf Steiner Archive<sup>✓</sup></a></li><li><a href="https://www.rudolfsteinerweb.com" target="_blank">Rudolf Steiner Web<sup>✓</sup></a></li><li><a href="https://www.rudolfsteineraudio.com" target="_blank">Rudolf Steiner Audio<sup>✓</sup></a></li><li><a href="https://dasgoetheanum.com/en" target="_blank">Das Goetheanum Journal<sup>✓</sup></a></li><li><a href="https://anthroposophy.org/being-human/" target="_blank">Being Human Magazine<sup>✓</sup></a></li><li><a href="https://www.waldorflibrary.org" target="_blank">Waldorf Library Online<sup>✓</sup></a></li><li><a href="https://steinerbooks.org" target="_blank">SteinerBooks</a></li><li><a href="https://anthropopper.com" target="_blank">Anthropopper Blog<sup>✓</sup></a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Waldorf Education</h3><a href="#" class="alllink">46 →</a></div><ul><li><a href="https://studium.goetheanum.ch/en/online-studies" target="_blank">Goetheanum Studium – Online</a></li><li><a href="https://centerforanthroposophy.org" target="_blank">Center for Anthroposophy</a></li><li><a href="https://www.antioch.edu/academics/education/waldorf-education-med/" target="_blank">Antioch Univ. Waldorf<sup>✓</sup></a></li><li><a href="https://www.greenmeadow.org" target="_blank">Green Meadow Waldorf<sup>✓</sup></a></li><li><a href="https://www.stpaulssteinerschool.org/home" target="_blank">St. Paul's Steiner School<sup>✓</sup></a></li><li><a href="https://www.greatlakeswaldorf.org" target="_blank">Great Lakes Waldorf Inst.</a></li><li><a href="https://www.bacwtt.org" target="_blank">Bay Area Waldorf Tchrs.</a></li><li><a href="https://rscc.ca" target="_blank">Rudolf Steiner College Canada</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Biodynamic Farms</h3><a href="#" class="alllink">20 →</a></div><ul><li><a href="https://hawthornevalleyfarm.org" target="_blank">Hawthorne Valley Farm</a></li><li><a href="https://www.kimbertoncsa.org" target="_blank">Kimberton CSA<sup>✓</sup></a></li><li><a href="https://csgatgenesisfarm.com" target="_blank">Genesis Farm CSA<sup>✓</sup></a></li><li><a href="https://www.apricotlane.com" target="_blank">Apricot Lane Farms</a></li><li><a href="https://www.dottenfelderhof.de" target="_blank">Dottenfelderhof</a></li><li><a href="http://demeter-usa.org" target="_blank">Demeter USA<sup>✓</sup></a></li><li><a href="https://biodynamicfood.org" target="_blank">Demeter Farm Directory<sup>✓</sup></a></li><li><a href="https://www.biodynamic.org.uk" target="_blank">Biodynamic Assoc. UK<sup>✓</sup></a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Anthroposophic Medicine</h3><a href="#" class="alllink">12 →</a></div><ul><li><a href="https://www.klinik-arlesheim.ch" target="_blank">Klinik Arlesheim<sup>✓</sup></a></li><li><a href="https://www.mahle-stiftung.de/en/health-and-nursing-care/" target="_blank">Filderklinik<sup>✓</sup></a></li><li><a href="https://www.raphaelhospital.co.uk" target="_blank">Raphael Hospital<sup>✓</sup></a></li><li><a href="https://www.weleda.com" target="_blank">Weleda USA<sup>✓</sup></a></li><li><a href="https://www.wala.world/en/" target="_blank">WALA Medicines<sup>✓</sup></a></li><li><a href="http://www.anthromed.net" target="_blank">AnthroMed Register<sup>✓</sup></a></li><li><a href="https://www.wegmanklinik.de" target="_blank">Ita Wegman Clinic</a></li><li><a href="https://www.mistletoe-research.org" target="_blank">Mistletoe Research Inst.</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Camphill &amp; Communities</h3><a href="#" class="alllink">15 →</a></div><ul><li><a href="https://www.ic.org/directory/camphill-village-usa-inc/" target="_blank">Camphill Village USA<sup>✓</sup></a></li><li><a href="https://camphill.edu" target="_blank">Camphill Academy<sup>✓</sup></a></li><li><a href="https://camphillca.org" target="_blank">Camphill Communities CA<sup>✓</sup></a></li><li><a href="https://www.heartbeetcamphill.org" target="_blank">Heartbeet Camphill</a></li><li><a href="https://www.camphillminnesota.org" target="_blank">Camphill Village MN</a></li><li><a href="https://www.triformcamphill.org" target="_blank">Triform Camphill</a></li><li><a href="https://www.camphill.org" target="_blank">Camphill Assoc. NA<sup>✓</sup></a></li><li><a href="https://www.raphaelvillage.org" target="_blank">Raphael Village</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Eurythmy &amp; Arts</h3><a href="#" class="alllink">13 →</a></div><ul><li><a href="https://www.eurythmy.org" target="_blank">Eurythmy Spring Valley<sup>✓</sup></a></li><li><a href="https://goetheanum.ch/en/eurythmy" target="_blank">Eurythmy – Goetheanum</a></li><li><a href="https://www.americaneurythmy.org" target="_blank">American Eurythmy School</a></li><li><a href="https://londoneury.org" target="_blank">London Eurythmy School</a></li><li><a href="https://soundcircleeurythmy.org" target="_blank">Sound Circle Eurythmy</a></li><li><a href="https://eurythmytherapy-medsektion.net/en/" target="_blank">Eurythmy Therapy Int'l<sup>✓</sup></a></li><li><a href="https://www.eurythmyassociation.uk" target="_blank">Eurythmy Assoc. UK/Ireland</a></li><li><a href="https://peredureurythmy.com" target="_blank">Peredur Eurythmy</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Study Groups &amp; Research</h3><a href="#" class="alllink">9 →</a></div><ul><li><a href="https://www.innerworkpath.com" target="_blank">Inner Work Path</a></li><li><a href="https://www.anthroposophicpsychology.org" target="_blank">Assoc. Anthro. Psychology<sup>✓</sup></a></li><li><a href="https://medicalsection.goetheanum.ch/anthroposophic-medicine" target="_blank">Medical Section – Goetheanum</a></li><li><a href="https://www.waldorfresearchinstitute.org" target="_blank">Waldorf Research Inst.<sup>✓</sup></a></li><li><a href="https://www.ivaa.info" target="_blank">IVAA – Anthro. Med. Int'l<sup>✓</sup></a></li><li><a href="https://www.wisdomworking.org/about" target="_blank">Wisdom Working Directory</a></li><li><a href="https://studium.goetheanum.ch/en/online-studies" target="_blank">Goetheanum Studium</a></li><li><a href="https://rudolfsteinerlibrary.org" target="_blank">Steiner Online Library</a></li></ul></div>
+    <div class="catblock"><div class="catblock-head"><h3>Christian Community</h3><a href="#" class="alllink">46 →</a></div><ul><li><a href="https://www.thechristiancommunity.org" target="_blank">CCNA – North America<sup>✓</sup></a></li><li><a href="https://www.christiancommunitynyc.org" target="_blank">New York City<sup>✓</sup></a></li><li><a href="http://www.thechristiancommunitysf.org" target="_blank">San Francisco<sup>✓</sup></a></li><li><a href="https://christiancommunitysacramento.org" target="_blank">Sacramento / Fair Oaks<sup>✓</sup></a></li><li><a href="http://thechicagochristiancommunity.org" target="_blank">Chicago<sup>✓</sup></a></li><li><a href="http://www.thechristiancommunity.co.uk" target="_blank">UK – National<sup>✓</sup></a></li><li><a href="https://christengemeinschaft-international.org/en" target="_blank">International HQ – Stuttgart<sup>✓</sup></a></li><li><a href="https://www.christiancommunityseminary.ca" target="_blank">Seminary – Canada<sup>✓</sup></a></li></ul></div>
+  </div>
+</div>
+
+<!-- ═══ CHAT ═══ -->
+<div class="pagesec" id="sec-chat">
+  <div id="chat-signedin">
+    Signed in as <strong id="chat-uname">member</strong>
+    <button onclick="doSignOut()">sign out</button>
+  </div>
+  <div id="chat-gate-wrap">
+    <h2>Community Chat</h2>
+    <p>Join conversations with anthroposophists worldwide across 9 topic rooms. Free membership required.</p>
+    <a href="#" class="cgbtn" onclick="openModal();return false;">Sign in to Chat</a>
+    <span style="color:var(--muted);font-size:11.5px;margin:0 8px;">or</span>
+    <a href="#" style="font-size:12px;color:var(--link);" onclick="openModal();return false;">create a free account</a>
+    <div class="rooms-prev">
+      <h5>Active Rooms</h5>
+      <span class="rpill"># general</span><span class="rpill"># waldorf-education</span>
+      <span class="rpill"># biodynamic</span><span class="rpill"># study-groups</span>
+      <span class="rpill"># eurythmy-arts</span><span class="rpill"># medicine</span>
+      <span class="rpill"># christian-community</span><span class="rpill"># meetups</span>
+      <span class="rpill"># new-members</span>
+    </div>
+  </div>
+  <div id="chat-app">
+    <div class="rooms-sb">
+      <div class="rooms-sb-head">Rooms</div>
+      <div class="ritem active" onclick="switchRoom(this,'general','Open conversation for all members',12)"><span class="rname"># general</span><span class="rsub">open discussion</span></div>
+      <div class="ritem" onclick="switchRoom(this,'waldorf-education','Teachers, parents, and students',7)"><span class="rname"># waldorf-education</span><span class="rsub">teachers &amp; parents</span><span class="unread">3</span></div>
+      <div class="ritem" onclick="switchRoom(this,'biodynamic','Farms, CSAs, and growers',5)"><span class="rname"># biodynamic</span><span class="rsub">farms &amp; growers</span></div>
+      <div class="ritem" onclick="switchRoom(this,'study-groups','Reading circles and branches',9)"><span class="rname"># study-groups</span><span class="rsub">reading circles</span><span class="unread">1</span></div>
+      <div class="ritem" onclick="switchRoom(this,'eurythmy-arts','Practitioners and students',4)"><span class="rname"># eurythmy-arts</span><span class="rsub">practitioners</span></div>
+      <div class="ritem" onclick="switchRoom(this,'medicine','Practitioners and patients',6)"><span class="rname"># medicine</span><span class="rsub">practitioners</span></div>
+      <div class="ritem" onclick="switchRoom(this,'christian-community','Congregations worldwide',3)"><span class="rname"># christian-community</span><span class="rsub">congregations</span></div>
+      <div class="ritem" onclick="switchRoom(this,'meetups','Local gatherings and events',6)"><span class="rname"># meetups</span><span class="rsub">local &amp; regional</span></div>
+      <div class="ritem" onclick="switchRoom(this,'new-members','Introductions and questions',8)"><span class="rname"># new-members</span><span class="rsub">introductions</span></div>
+    </div>
+    <div class="chat-pane">
+      <div class="chat-ph">
+        <h4 id="room-title"># general</h4>
+        <span class="rdesc" id="room-desc">Open conversation for all members</span>
+        <span class="onl" id="online-ct">● 12 online</span>
+      </div>
+      <div id="messages">
+        <div class="msg"><div class="av">M</div><div class="bub"><div class="bmeta"><span class="nm">Maren H.</span>9:14 AM</div><div class="btxt">Good morning — has anyone attended any of the Goetheanum online study weekends? Considering the spring session.</div></div></div>
+        <div class="msg"><div class="av">T</div><div class="bub"><div class="bmeta"><span class="nm">Thomas R.</span>9:22 AM</div><div class="btxt">Yes! I did the October session last year. Recorded lectures plus live discussion groups — format worked really well.</div></div></div>
+        <div class="msg"><div class="av">A</div><div class="bub"><div class="bmeta"><span class="nm">Aria S.</span>9:31 AM</div><div class="btxt">The Rudolf Steiner Archive just released new translations. Worth checking if you're studying the agriculture lectures.</div></div></div>
+        <div class="msg sys"><div class="av">·</div><div class="bub"><div class="btxt">You joined # general</div></div></div>
+      </div>
+      <div class="chat-irow">
+        <input type="text" id="chat-input" placeholder="message # general…" onkeydown="if(event.key==='Enter')sendMsg()">
+        <button onclick="sendMsg()">send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end center -->
+
+<!-- RIGHT SIDEBAR -->
+<div id="rightbar">
+
+  <h5>directory stats</h5>
+  <div class="statblock"><span class="num">256</span><span class="lbl">total entries</span></div>
+  <div class="statblock"><span class="num">65</span><span class="lbl">societies &amp; orgs</span></div>
+  <div class="statblock"><span class="num">53</span><span class="lbl">publications</span></div>
+  <div class="statblock"><span class="num">46</span><span class="lbl">waldorf schools</span></div>
+
+  <h5>by the numbers</h5>
+  <ul>
+    <li>46 CC congregations</li>
+    <li>23 social + podcasts</li>
+    <li>20 biodynamic farms</li>
+    <li>15 camphill communities</li>
+    <li>13 eurythmy programs</li>
+    <li>12 medicine centers</li>
+  </ul>
+
+  <h5>related directories</h5>
+  <ul>
+    <li><a href="https://biodynamicfood.org/" target="_blank">Demeter Farm Directory</a></li>
+    <li><a href="https://waldorfeducation.org/" target="_blank">AWSNA School Finder</a></li>
+    <li><a href="http://www.anthromed.net/" target="_blank">AnthroMed Register</a></li>
+    <li><a href="https://www.wisdomworking.org/about" target="_blank">Wisdom Working</a></li>
+    <li><a href="https://www.freunde-waldorf.de/en/waldorf-worldwide/waldorf-education/waldorf-world-list/" target="_blank">Waldorf World List</a></li>
+  </ul>
+
+  <h5>stay connected</h5>
+  <div class="signup-box">
+    <p>Weekly digest of new listings, events, and announcements.</p>
+    <input type="email" id="signup-email" placeholder="your@email.com">
+    <button onclick="doSignup()">subscribe</button>
+    <div id="rsignup-ok">✓ you're subscribed!</div>
+  </div>
+
+  <h5>suggest a listing</h5>
+  <ul>
+    <li><a href="#" onclick="showSubmitForm();return false;">+ submit a listing</a></li>
+    <li><a href="/cdn-cgi/l/email-protection#a6c5c9d4d4c3c5d2cfc9c8d5e6d5c9d6cecfc7c5c9cbcbc9c8d588c9d4c1">suggest a correction</a></li>
+    <li><a href="/cdn-cgi/l/email-protection#f0869f9c859e84959582b0839f80989991939f9d9d9f9e83de9f8297">volunteer / help edit</a></li>
+  </ul>
+
+  <h5>community spotlight</h5>
+  <div id="spotlight-block" style="font-size:11.5px;">
+    <div style="background:var(--glt);border:1px solid var(--blt);padding:8px 9px;margin-bottom:6px;">
+      <div style="font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--warm);margin-bottom:4px;">Most visited this week</div>
+      <a href="#" onclick="showSec('directory');return false;" style="font-family:'Libre Franklin',sans-serif;font-weight:600;font-size:12px;color:var(--ink);line-height:1.35;display:block;margin-bottom:3px;">Goetheanum — World Center of Anthroposophy</a>
+      <div style="font-size:11px;color:var(--muted);">4,312 visits this week</div>
+    </div>
+    <div style="background:var(--cream);border:1px solid var(--blt);padding:8px 9px;margin-bottom:6px;">
+      <div style="font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Trending listing</div>
+      <a href="#" onclick="showSec('browse');return false;" style="font-family:'Libre Franklin',sans-serif;font-size:12px;color:var(--link);display:block;margin-bottom:2px;">Waldorf Teacher Training — Bay Area</a>
+      <div style="font-size:11px;color:var(--muted);">62% more views this month</div>
+    </div>
+  </div>
+  <h5 style="margin-top:12px;">about</h5>
+  <p style="font-size:11px;color:var(--muted);line-height:1.6;">Free, community-maintained directory.</p>
+
+</div><!-- end rightbar -->
+
+</div><!-- end #page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="ftcols">
+    <div class="ftcol">
+      <div class="ftlogo" style="display:flex;align-items:center;gap:8px;">
+        <img src="logo.png" alt="Sophia Commons" style="width:22px;height:22px;flex-shrink:0;opacity:.9;filter:brightness(0) invert(1);">
+        Sophia Commons
+      </div>
+      <div class="ftsub">Anthroposophical Community</div>
+      <p style="font-size:11.5px;line-height:1.6;">A free, community-maintained resource for anthroposophical initiatives worldwide.</p>
+    </div>
+    <div class="ftcol">
+      <div class="ftcol-h">Directory</div>
+      <a href="#" onclick="showSec('directory');return false;">World Directory</a>
+      <a href="#" onclick="showSec('browse');return false;">Browse Listings</a>
+      <a href="#" onclick="showSec('podcasts');return false;">Podcasts &amp; Media</a>
+      <a href="#" onclick="showSec('events');return false;">Events Calendar</a>
+      <a href="#" onclick="showSec('news');return false;">News &amp; Announcements</a>
+    </div>
+    <div class="ftcol">
+      <div class="ftcol-h">Community</div>
+      <a href="#" onclick="handleChat();return false;">Community Chat</a>
+      <a href="#" onclick="showSubmitForm();return false;">Submit a Listing</a>
+      <a href="mailto:hello@sophiacommons.org">Suggest a Correction</a>
+      <a href="mailto:hello@sophiacommons.org">Volunteer / Help Edit</a>
+      <a href="#" onclick="showSec('home');return false;">About Sophia Commons</a>
+    </div>
+    <div class="ftcol ftnl">
+      <div class="ftcol-h">Newsletter</div>
+      <p style="font-size:11.5px;color:rgba(255,255,255,.45);margin-bottom:8px;line-height:1.6;">Weekly digest of listings, events, and community news.</p>
+      <input type="email" id="ft-email" placeholder="your@email.com">
+      <button onclick="doFtSignup()">subscribe</button>
+      <div id="ft-ok">✓ you're subscribed!</div>
+    </div>
+  </div>
+  <div class="ftbot">
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.0.0</span>
+    <span><a href="#" onclick="return false;">privacy</a><a href="#" onclick="return false;">terms</a><a href="mailto:hello@sophiacommons.org">contact</a></span>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ══════════════════════════════════════════
+//  SOPHIA COMMONS — Frontend Application
+//  Backend: Supabase (see /backend/README.md)
+// ══════════════════════════════════════════
+
+let signedIn = false, username = '';
+
+// Room message history (simulated — replace with Supabase realtime)
+const roomHistory = {
+  'general': [
+    {av:'M',nm:'Maren H.',t:'9:14 AM',txt:'Good morning — has anyone attended any of the Goetheanum online study weekends? Considering the spring session.'},
+    {av:'T',nm:'Thomas R.',t:'9:22 AM',txt:'Yes! I did the October session last year. Recorded lectures plus live discussion groups — format worked really well.'},
+    {av:'A',nm:'Aria S.',t:'9:31 AM',txt:'The Rudolf Steiner Archive just released new English translations. Worth checking if you are studying the agriculture lectures.'},
+    {av:'J',nm:'Johannes K.',t:'9:44 AM',txt:'Anyone in the Bay Area interested in starting a local study circle? Working through Philosophy of Freedom this spring.'},
+  ],
+  'waldorf-education': [
+    {av:'C',nm:'Clara W.',t:'8:50 AM',txt:'Has anyone used the updated AWSNA curriculum frameworks? We are revising our grade 6 program.'},
+    {av:'T',nm:'Thomas R.',t:'9:05 AM',txt:'Yes — the new frameworks have much better guidance for main lesson books. Highly recommend the teacher renewal section.'},
+  ],
+  'biodynamic': [
+    {av:'A',nm:'Aria S.',t:'7:30 AM',txt:'Planting calendar reminder: root days this week are Tuesday and Friday. Good time for root crops.'},
+    {av:'M',nm:'Maren H.',t:'7:45 AM',txt:'Thank you! Also — anyone sourcing Demeter-certified seeds for summer planting in the Northeast?'},
+  ],
+  'study-groups': [
+    {av:'J',nm:'Johannes K.',t:'10:00 AM',txt:'Our NYC branch is reading Theosophy chapter 3 this Thursday at 7pm. All welcome — message me for the Zoom link.'},
+  ],
+  'meetups': [
+    {av:'C',nm:'Clara W.',t:'Yesterday',txt:'Wonderful turnout at the Bay Area biodynamic farm tour last weekend — thanks to everyone who came!'},
+    {av:'M',nm:'Maren H.',t:'Yesterday',txt:'Next meetup: Waldorf parents coffee morning in Spring Valley, March 28. See the Events tab for details.'},
+  ],
+  'medicine': [],
+  'eurythmy-arts': [],
+  'christian-community': [],
+  'new-members': [
+    {av:'J',nm:'Johannes K.',t:'Yesterday',txt:'Welcome to all new members this week! Feel free to introduce yourself here — where are you from and what brings you to Sophia Commons?'},
+  ],
+};
+
+function showSec(id) {
+  document.querySelectorAll('.pagesec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#mainnav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  const btn = document.getElementById('nav-' + id);
+  if (btn) btn.classList.add('active');
+  window.scrollTo(0,0);
+  if (id === 'directory' && !mapLoaded) loadMap();
+}
+
+function handleChat() {
+  showSec('chat');
+  if (!signedIn) openModal();
+}
+
+// ── MODAL ──
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('login-email').focus(), 80);
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+// ── AUTH ──
+let authMode = 'signin'; // 'signin' or 'signup'
+
+function toggleAuthMode(e) {
+  if (e) e.preventDefault();
+  const errEl = document.getElementById('auth-error');
+  errEl.style.display = 'none';
+  if (authMode === 'signin') {
+    authMode = 'signup';
+    document.getElementById('modal-title').textContent = 'Create account';
+    document.getElementById('modal-desc').textContent = 'Join the Sophia Commons community.';
+    document.getElementById('auth-btn').textContent = 'Create account';
+    document.getElementById('toggle-signup').style.display = 'none';
+    document.getElementById('toggle-signin').style.display = 'inline';
+  } else {
+    authMode = 'signin';
+    document.getElementById('modal-title').textContent = 'Sign in';
+    document.getElementById('modal-desc').textContent = 'Access community chat and member features.';
+    document.getElementById('auth-btn').textContent = 'Sign in';
+    document.getElementById('toggle-signup').style.display = 'inline';
+    document.getElementById('toggle-signin').style.display = 'none';
+  }
+}
+
+async function doSignIn() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('auth-error');
+  errEl.style.display = 'none';
+
+  if (!email) { document.getElementById('login-email').focus(); return; }
+  if (!password || password.length < 6) {
+    errEl.textContent = 'Password must be at least 6 characters.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('auth-btn');
+  btn.disabled = true;
+  btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating account...';
+
+  let result;
+  if (authMode === 'signup') {
+    result = await _sb.auth.signUp({ email, password });
+  } else {
+    result = await _sb.auth.signInWithPassword({ email, password });
+  }
+
+  btn.disabled = false;
+  btn.textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
+
+  if (result.error) {
+    errEl.textContent = result.error.message;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Signup may require email confirmation
+  if (authMode === 'signup' && !result.data.session) {
+    errEl.style.display = 'none';
+    document.getElementById('modal-desc').textContent = 'Check your email for a confirmation link, then sign in.';
+    document.getElementById('auth-btn').style.display = 'none';
+    return;
+  }
+
+  // Success: apply signed-in state
+  username = email.split('@')[0];
+  signedIn = true;
+  closeModal();
+  applySignedInState();
+}
+
+function applySignedInState() {
+  document.getElementById('uname').textContent = username;
+  document.getElementById('user-chip').style.display = 'inline';
+  document.getElementById('signin-link').style.display = 'none';
+  document.getElementById('nav-chat').classList.remove('locked');
+  document.getElementById('chat-uname').textContent = username;
+  document.getElementById('chat-signedin').classList.add('vis');
+  document.getElementById('chat-gate-wrap').style.display = 'none';
+  document.getElementById('chat-app').classList.add('vis');
+  document.getElementById('chat-input').placeholder = 'message # general as ' + username + '...';
+  scrollMsgs();
+}
+
+async function doSignOut() {
+  await _sb.auth.signOut();
+  signedIn = false; username = '';
+  document.getElementById('user-chip').style.display = 'none';
+  document.getElementById('signin-link').style.display = 'inline';
+  document.getElementById('nav-chat').classList.add('locked');
+  document.getElementById('chat-signedin').classList.remove('vis');
+  document.getElementById('chat-gate-wrap').style.display = 'block';
+  document.getElementById('chat-app').classList.remove('vis');
+  showSec('home');
+}
+
+async function doPasswordReset(e) {
+  if (e) e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const errEl = document.getElementById('auth-error');
+  if (!email || !email.includes('@')) {
+    errEl.textContent = 'Enter your email address above, then click Forgot password.';
+    errEl.style.display = 'block';
+    return;
+  }
+  await _sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
+  errEl.style.display = 'none';
+  document.getElementById('modal-desc').textContent = 'Password reset email sent. Check your inbox.';
+}
+
+// Auto-restore session on page load
+window.addEventListener('supabase-auth-ready', function(e) {
+  username = e.detail.username;
+  signedIn = true;
+  applySignedInState();
+});
+
+// ── CHAT ──
+let currentRoom = 'general';
+let chatSubscription = null;
+
+async function switchRoom(el, name, desc, count) {
+  document.querySelectorAll('.ritem').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+  const b = el.querySelector('.unread'); if (b) b.remove();
+  currentRoom = name;
+  document.getElementById('room-title').textContent = '# ' + name;
+  document.getElementById('room-desc').textContent = desc;
+  document.getElementById('online-ct').textContent = String.fromCharCode(9679) + ' ' + count + ' online';
+  document.getElementById('chat-input').placeholder = 'message # ' + name + ' as ' + username + '...';
+  const msgs = document.getElementById('messages');
+
+  // Try loading from Supabase first, fall back to local demo data
+  let hist = [];
+  try {
+    const { data, error } = await _sb
+      .from('chat_messages')
+      .select('*')
+      .eq('room', name)
+      .order('created_at', { ascending: true })
+      .limit(50);
+    if (!error && data && data.length > 0) {
+      hist = data.map(m => ({
+        av: (m.username || 'U')[0].toUpperCase(),
+        nm: m.username || 'User',
+        t: new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+        txt: m.content
+      }));
+    } else {
+      hist = roomHistory[name] || [];
+    }
+  } catch(e) {
+    hist = roomHistory[name] || [];
+  }
+
+  msgs.innerHTML = hist.map(m =>
+    `<div class="msg"><div class="av">${m.av}</div><div class="bub"><div class="bmeta"><span class="nm">${m.nm}</span>${m.t}</div><div class="btxt">${esc(m.txt)}</div></div></div>`
+  ).join('') + `<div class="msg sys"><div class="av">&middot;</div><div class="bub"><div class="btxt">you joined # ${name}</div></div></div>`;
+  scrollMsgs();
+
+  // Subscribe to new messages in this room via Supabase Realtime
+  if (chatSubscription) {
+    _sb.removeChannel(chatSubscription);
+  }
+  chatSubscription = _sb
+    .channel('room-' + name)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'chat_messages',
+      filter: 'room=eq.' + name
+    }, (payload) => {
+      const m = payload.new;
+      // Don't double-render our own messages (already shown optimistically)
+      if (m.user_id && window._supabaseUser && m.user_id === window._supabaseUser.id) return;
+      const t = new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      const av = (m.username || 'U')[0].toUpperCase();
+      document.getElementById('messages').innerHTML +=
+        `<div class="msg"><div class="av">${av}</div><div class="bub"><div class="bmeta"><span class="nm">${esc(m.username || 'User')}</span>${t}</div><div class="btxt">${esc(m.content)}</div></div></div>`;
+      scrollMsgs();
+    })
+    .subscribe();
+}
+
+async function sendMsg() {
+  const inp = document.getElementById('chat-input');
+  const txt = inp.value.trim(); if (!txt) return;
+  const msgs = document.getElementById('messages');
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+  // Optimistic UI update
+  msgs.innerHTML += `<div class="msg mine"><div class="av">${username[0].toUpperCase()}</div><div class="bub"><div class="bmeta"><span class="nm">${esc(username)}</span>${time}</div><div class="btxt">${esc(txt)}</div></div></div>`;
+  inp.value = ''; scrollMsgs();
+
+  // Insert into Supabase
+  try {
+    await _sb.from('chat_messages').insert({
+      room: currentRoom,
+      username: username,
+      content: txt
+    });
+  } catch(e) {
+    console.warn('Chat insert failed:', e);
+  }
+}
+function scrollMsgs() { const m = document.getElementById('messages'); m.scrollTop = m.scrollHeight; }
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+// doSearch is defined below with Supabase integration
+
+// ── SIGNUPS (Newsletter) ──
+async function doSignup() {
+  const v = document.getElementById('signup-email').value.trim();
+  if (!v.includes('@')) return;
+  try {
+    await _sb.from('newsletter_subscribers').insert({ email: v });
+  } catch(e) { /* duplicate is fine */ }
+  document.getElementById('signup-email').style.display='none';
+  document.querySelector('.signup-box button').style.display='none';
+  document.getElementById('rsignup-ok').style.display='block';
+}
+async function doFtSignup() {
+  const v = document.getElementById('ft-email').value.trim();
+  if (!v.includes('@')) return;
+  try {
+    await _sb.from('newsletter_subscribers').insert({ email: v });
+  } catch(e) { /* duplicate is fine */ }
+  document.getElementById('ft-email').style.display='none';
+  document.querySelector('.ftnl button').style.display='none';
+  document.getElementById('ft-ok').style.display='block';
+}
+
+// ── DIRECTORY MAP ──
+const mapLocs = [
+  {name:'Anthroposophical Society USA',cat:'societies',lat:42.28,lng:-83.74,city:'Ann Arbor, MI'},
+  {name:'Anthroposophy NYC',cat:'societies',lat:40.75,lng:-73.99,city:'New York, NY'},
+  {name:'ASA Bay Area Branch',cat:'societies',lat:37.77,lng:-122.42,city:'San Francisco, CA'},
+  {name:'Anth. Society in Great Britain',cat:'societies',lat:51.51,lng:-0.12,city:'London, UK'},
+  {name:'Alanus University',cat:'societies',lat:50.73,lng:7.10,city:'Alfter, Germany'},
+  {name:'Green Meadow Waldorf School',cat:'waldorf',lat:41.09,lng:-74.01,city:'Spring Valley, NY',url:'https://www.greenmeadow.org'},
+  {name:'Great Lakes Waldorf Institute',cat:'waldorf',lat:43.04,lng:-87.91,city:'Milwaukee, WI'},
+  {name:'Bay Area Waldorf Teacher Training',cat:'waldorf',lat:37.77,lng:-122.44,city:'San Francisco, CA'},
+  {name:"St. Paul's Steiner School",cat:'waldorf',lat:51.54,lng:-0.10,city:'London, UK'},
+  {name:'South Devon Steiner School',cat:'waldorf',lat:50.43,lng:-3.72,city:'Devon, UK'},
+  {name:'Hawthorne Valley Farm',cat:'biodynamic',lat:42.29,lng:-73.64,city:'Ghent, NY'},
+  {name:'Kimberton CSA',cat:'biodynamic',lat:40.11,lng:-75.58,city:'Kimberton, PA'},
+  {name:'Genesis Farm CSA',cat:'biodynamic',lat:40.97,lng:-74.95,city:'Blairstown, NJ'},
+  {name:'Apricot Lane Farms',cat:'biodynamic',lat:34.28,lng:-118.89,city:'Moorpark, CA'},
+  {name:'Dottenfelderhof',cat:'biodynamic',lat:50.18,lng:8.70,city:'Bad Vilbel, Germany'},
+  {name:'Klinik Arlesheim',cat:'medicine',lat:47.49,lng:7.61,city:'Arlesheim, Switzerland'},
+  {name:'Filderklinik',cat:'medicine',lat:48.65,lng:9.22,city:'Filderstadt, Germany'},
+  {name:'Raphael Hospital',cat:'medicine',lat:50.83,lng:-0.14,city:'Brighton, UK'},
+  {name:'Park Attwood Clinic',cat:'medicine',lat:52.39,lng:-2.21,city:'Worcestershire, UK'},
+  {name:'Camphill Village USA',cat:'camphill',lat:42.10,lng:-73.87,city:'Copake, NY'},
+  {name:'Camphill Communities CA',cat:'camphill',lat:36.99,lng:-121.97,city:'Soquel, CA'},
+  {name:'Heartbeet Camphill',cat:'camphill',lat:44.55,lng:-72.57,city:'Hardwick, VT'},
+  {name:'Triform Camphill',cat:'camphill',lat:42.26,lng:-73.78,city:'Hudson, NY'},
+  {name:'Eurythmy Spring Valley',cat:'eurythmy',lat:41.07,lng:-74.04,city:'Chestnut Ridge, NY'},
+  {name:'American Eurythmy School',cat:'eurythmy',lat:41.49,lng:-122.38,city:'Weed, CA'},
+  {name:'London Eurythmy School',cat:'eurythmy',lat:51.52,lng:-0.09,city:'London, UK'},
+  {name:'Sound Circle Eurythmy',cat:'eurythmy',lat:40.01,lng:-105.27,city:'Boulder, CO'},
+  {name:'CC – New York City',cat:'cc',lat:40.78,lng:-73.98,city:'New York, NY'},
+  {name:'CC – San Francisco',cat:'cc',lat:37.77,lng:-122.44,city:'San Francisco, CA'},
+  {name:'CC – Chicago',cat:'cc',lat:41.96,lng:-87.68,city:'Chicago, IL'},
+  {name:'CC – Sacramento',cat:'cc',lat:38.65,lng:-121.27,city:'Fair Oaks, CA'},
+  {name:'CC International HQ',cat:'cc',lat:48.78,lng:9.18,city:'Stuttgart, Germany'},
+];
+const catColors = {societies:'#b04522',waldorf:'#8c3a28',biodynamic:'#5a7a3a',medicine:'#3a6a8a',camphill:'#7a5a9a',eurythmy:'#c49030',cc:'#6a4a3a'};
+let map, markers=[], infoWin, mapLoaded=false;
+
+function loadMap() {
+  mapLoaded = true;
+  // Load Leaflet CSS
+  var lnk = document.createElement('link');
+  lnk.rel = 'stylesheet';
+  lnk.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+  document.head.appendChild(lnk);
+  // Load Leaflet JS
+  var script = document.createElement('script');
+  script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  script.onload = function() { initMap(); };
+  script.onerror = function() {
+    var el = document.getElementById('dir-map');
+    el.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px;';
+    el.innerHTML = '<div style="font-family:\'IM Fell English\',serif;font-size:14px;color:var(--muted);">Map unavailable</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:6px;max-width:580px;">' +
+      mapLocs.slice(0,16).map(function(l){return '<span style="font-size:11px;background:#fff;border:1px solid var(--blt);padding:2px 7px;color:var(--link);">'+l.name+'<span style="color:var(--muted);font-size:10px;"> · '+l.city+'</span></span>';}).join('') + '</div>';
+  };
+  document.head.appendChild(script);
+}
+function initMap() {
+  var el = document.getElementById('dir-map');
+  map = L.map(el, {scrollWheelZoom:false}).setView([30,0],2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom:18
+  }).addTo(map);
+  renderMarkers('all');
+}
+function renderMarkers(filter) {
+  markers.forEach(function(m){map.removeLayer(m);}); markers=[];
+  var locs = filter==='all' ? mapLocs : mapLocs.filter(function(l){return l.cat===filter;});
+  locs.forEach(function(loc) {
+    var color = catColors[loc.cat]||'#888';
+    var icon = L.divIcon({
+      className:'',
+      html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3);"></div>',
+      iconSize:[14,14],iconAnchor:[7,7]
+    });
+    var m = L.marker([loc.lat,loc.lng],{icon:icon,title:loc.name}).addTo(map);
+    m.bindPopup('<div style="font-family:\'Libre Franklin\',sans-serif;padding:3px;max-width:190px;"><div style="font-weight:600;font-size:12.5px;margin-bottom:2px;">'+loc.name+'</div><div style="font-size:11px;color:#7a7268;">'+loc.city+'</div></div>');
+    markers.push(m);
+  });
+}
+function filterMap() { renderMarkers(document.getElementById('map-filter').value); }
+
+// ── SUBMIT LISTING ──
+function showSubmitForm() {
+  document.getElementById('submit-overlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('sl-name').focus(), 80);
+}
+async function submitListing() {
+  const name = document.getElementById('sl-name').value.trim();
+  const cat  = document.getElementById('sl-cat').value;
+  if (!name || !cat) {
+    alert('Please fill in the organization name and category.');
+    return;
+  }
+
+  const listing = {
+    name: name,
+    url: document.getElementById('sl-url').value.trim() || null,
+    category: cat,
+    location: document.getElementById('sl-loc').value.trim() || null,
+    description: document.getElementById('sl-desc').value.trim() || null,
+    contact_email: document.getElementById('sl-email').value.trim() || null
+  };
+
+  try {
+    const { error } = await _sb.from('listings_pending').insert(listing);
+    if (error) console.warn('Listing submit error:', error);
+  } catch(e) {
+    console.warn('Listing submit failed:', e);
+  }
+
+  document.getElementById('sl-ok').style.display = 'block';
+  setTimeout(() => { document.getElementById('submit-overlay').style.display = 'none'; }, 2800);
+}
+document.getElementById('submit-overlay').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+
+// ── SEARCH — filter visible listings ──
+document.getElementById('searchinput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doSearch();
+});
+function doSearch() {
+  const q = document.getElementById('searchinput').value.trim().toLowerCase();
+  if (!q) return;
+  showSec('browse');
+
+  // Try Supabase full-text search, fall back to local highlight
+  (async () => {
+    try {
+      const { data, error } = await _sb.rpc('search_all', { query: q, limit_n: 30 });
+      if (!error && data && data.length > 0) {
+        // Display search results in a simple overlay
+        const results = data.map(r =>
+          `<div style="padding:10px 0;border-bottom:1px solid var(--blt);">
+            <span style="font-size:10px;text-transform:uppercase;color:var(--warm);font-weight:600;">${r.item_type}</span>
+            <div style="font-weight:600;font-size:14px;margin-top:2px;">${r.title}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:3px;">${r.excerpt || ''}</div>
+          </div>`
+        ).join('');
+        const sec = document.getElementById('sec-browse');
+        const existing = sec.querySelector('.search-results');
+        if (existing) existing.remove();
+        sec.insertAdjacentHTML('afterbegin',
+          `<div class="search-results" style="background:var(--paper);border:1px solid var(--border);padding:16px 20px;margin-bottom:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Search results for "${q}" (${data.length} found)
+              <a href="#" onclick="this.closest('.search-results').remove();return false;" style="float:right;font-size:11px;">close</a>
+            </div>
+            ${results}
+          </div>`
+        );
+        return;
+      }
+    } catch(e) { /* Supabase not available, fall back to local */ }
+
+    // Local fallback: highlight matching directory links
+    setTimeout(() => {
+      const links = document.querySelectorAll('#sec-browse a, #sec-directory a');
+      let found = 0;
+      links.forEach(a => {
+        if (a.textContent.toLowerCase().includes(q)) {
+          a.style.background = '#fff3cd';
+          found++;
+        } else {
+          a.style.background = '';
+        }
+      });
+      if (found === 0) {
+        showSec('directory');
+        const dirLinks = document.querySelectorAll('#sec-directory a');
+        dirLinks.forEach(a => {
+          if (a.textContent.toLowerCase().includes(q)) {
+            a.style.background = '#fff3cd';
+          } else {
+            a.style.background = '';
+          }
+        });
+      }
+    }, 100);
+  })();
+}
+
+// ── DIRECTORY: Load from Supabase when data is available ──
+async function loadDirectoryFromSupabase() {
+  try {
+    const { data, error } = await _sb
+      .from('directory_entries')
+      .select('organization_name, description, category, website_url, location, country, is_verified')
+      .eq('status', 'approved')
+      .order('is_verified', { ascending: false })
+      .order('organization_name')
+      .limit(100);
+    if (error || !data || data.length === 0) return; // Keep hardcoded HTML
+    console.log('Loaded ' + data.length + ' directory entries from Supabase');
+    // Future: dynamically render these into the directory grid
+  } catch(e) {
+    // Supabase not configured or tables not created yet, keep hardcoded content
+  }
+}
+
+// Run on page load (non-blocking)
+loadDirectoryFromSupabase();
+
+// ── AUTO-HIDE PAST EVENTS ──
+(function() {
+  var today = new Date();
+  today.setHours(23,59,59,999); // hide after end of the event day
+  document.querySelectorAll('.evrow[data-event-date]').forEach(function(row) {
+    var eventDate = new Date(row.getAttribute('data-event-date') + 'T23:59:59');
+    if (eventDate < today) {
+      row.style.display = 'none';
+    }
+  });
+  // Also update "today" class on the correct event
+  document.querySelectorAll('.evdate.today').forEach(function(el) {
+    var row = el.closest('.evrow');
+    if (row) {
+      var d = new Date(row.getAttribute('data-event-date'));
+      var now = new Date();
+      if (d.toDateString() !== now.toDateString()) {
+        el.classList.remove('today');
+      }
+    }
+  });
+})();
+
+// ── GLOBAL: Handle all remaining href="#" links gracefully ──
+document.addEventListener('click', function(e) {
+  var link = e.target.closest('a[href="#"]');
+  if (!link) return;
+  // Skip links that already have an onclick handler
+  if (link.getAttribute('onclick')) return;
+  e.preventDefault();
+  // If inside a catblock on the homepage, navigate to browse
+  if (link.closest('.catblock') && link.closest('#sec-home')) {
+    showSec('browse');
+    return;
+  }
+  // If inside news section or is a news link, navigate to news
+  if (link.closest('#sec-news') || link.closest('.trendblock')) {
+    showSec('news');
+    return;
+  }
+  // If inside events section, navigate to events
+  if (link.closest('#sec-events') || link.closest('.evinfo')) {
+    showSec('events');
+    return;
+  }
+  // If inside directory, stay on directory
+  if (link.closest('#sec-directory')) {
+    return;
+  }
+  // All other # links: just prevent the jump to top
+});
+
+// ── GLOBAL: Make directory alllink badges navigate to directory ──
+document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', function(e) {
+    e.preventDefault();
+    // Scroll to the category block
+    var block = el.closest('.catblock');
+    if (block) block.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+</script>
+</body>
+</html>
