@@ -611,3 +611,29 @@ $$;
 CREATE TRIGGER trg_on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
+-- =============================================================================
+-- TABLE: steiner_books
+-- Catalog of Rudolf Steiner's written works and lecture cycles (GA numbers).
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS public.steiner_books (
+  id                uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  ga_number         text,
+  title             text        NOT NULL,
+  category          text,
+  archive_url       text,
+  steinerbooks_url  text,
+  price             text,
+  created_at        timestamptz NOT NULL DEFAULT now(),
+  updated_at        timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TRIGGER trg_steiner_books_updated_at
+  BEFORE UPDATE ON public.steiner_books
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_steiner_books_ga_number ON public.steiner_books (ga_number);
+CREATE INDEX IF NOT EXISTS idx_steiner_books_category  ON public.steiner_books (category);
+CREATE INDEX IF NOT EXISTS idx_steiner_books_title     ON public.steiner_books (title);

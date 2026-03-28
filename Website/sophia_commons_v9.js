@@ -482,6 +482,7 @@ function showSec(id) {
   if (btn) btn.classList.add('active');
   window.scrollTo(0,0);
   if (id === 'directory' && !mapLoaded) loadMap();
+  if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   // Close mobile menu if open
   const leftbar = document.getElementById('leftbar');
   const hamburger = document.getElementById('hamburger-btn');
@@ -623,6 +624,7 @@ function applySignedInState() {
   document.getElementById('chat-app').classList.add('vis');
   document.getElementById('chat-input').placeholder = 'message # general as ' + username + '...';
   scrollMsgs();
+  updateAdminVisibility();
 }
 
 async function doSignOut() {
@@ -634,6 +636,7 @@ async function doSignOut() {
   document.getElementById('chat-signedin').classList.remove('vis');
   document.getElementById('chat-gate-wrap').style.display = 'block';
   document.getElementById('chat-app').classList.remove('vis');
+  updateAdminVisibility();
   showSec('home');
 }
 
@@ -1766,6 +1769,205 @@ document.addEventListener('click', function(e) {
     return;
   }
 });
+
+// ══════════════════════════════════════════
+//  ADMIN PANEL
+// ══════════════════════════════════════════
+
+var ADMIN_EMAILS = ['cameron@sophiacommons.org', 'admin@sophiacommons.org'];
+
+function isAdmin() {
+  return signedIn && window._supabaseUser && window._supabaseUser.email &&
+    ADMIN_EMAILS.indexOf(window._supabaseUser.email.toLowerCase()) !== -1;
+}
+
+function updateAdminVisibility() {
+  var btn = document.getElementById('nav-admin');
+  if (btn) btn.style.display = isAdmin() ? 'inline-block' : 'none';
+}
+
+function adminSwitchTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.classList.remove('active'); });
+  document.querySelector('.admin-tab[onclick*="' + tab + '"]').classList.add('active');
+  document.getElementById('admin-' + tab).classList.add('active');
+  if (tab === 'listings') loadAdminListings();
+  else if (tab === 'events') loadAdminEvents();
+  else if (tab === 'memorials') loadAdminMemorials();
+}
+
+function adminEsc(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+async function loadAdminListings() {
+  var el = document.getElementById('admin-listings-list');
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+  try {
+    var { data, error } = await _sb.from('listings_pending').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    if (error) { el.innerHTML = '<div class="admin-empty">Error loading listings.</div>'; return; }
+    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">No pending listings.</div>'; return; }
+    el.innerHTML = data.map(function(d) {
+      return '<div class="admin-card" id="admin-listing-' + d.id + '">'
+        + '<h4>' + adminEsc(d.name) + '</h4>'
+        + '<div class="admin-meta">'
+        + (d.category ? '<span><strong>Category:</strong> ' + adminEsc(d.category) + '</span>' : '')
+        + (d.location ? '<span><strong>Location:</strong> ' + adminEsc(d.location) + '</span>' : '')
+        + (d.url ? '<span><strong>URL:</strong> ' + adminEsc(d.url) + '</span>' : '')
+        + (d.contact_email ? '<span><strong>Email:</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
+        + '</div>'
+        + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.description) + '</p>' : '')
+        + '<div class="admin-actions">'
+        + '<button class="admin-btn-approve" onclick="adminApproveListing(\'' + d.id + '\')">Approve</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectListing(\'' + d.id + '\')">Reject</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
+}
+
+async function adminApproveListing(id) {
+  if (!sbReady()) return;
+  try {
+    // Fetch the pending listing
+    var { data, error } = await _sb.from('listings_pending').select('*').eq('id', id).single();
+    if (error || !data) { alert('Could not find listing.'); return; }
+    // Insert into directory_entries
+    var entry = {
+      name: data.name,
+      category: data.category || 'Other',
+      location: data.location || null,
+      url: data.url || null,
+      description: data.description || null,
+      contact_email: data.contact_email || null
+    };
+    var { error: insertErr } = await _sb.from('directory_entries').insert(entry);
+    if (insertErr) { alert('Error adding to directory: ' + insertErr.message); return; }
+    // Update status
+    await _sb.from('listings_pending').update({ status: 'approved' }).eq('id', id);
+    var card = document.getElementById('admin-listing-' + id);
+    if (card) card.remove();
+    // Check if empty
+    if (!document.querySelector('#admin-listings-list .admin-card')) {
+      document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">No pending listings.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function adminRejectListing(id) {
+  if (!sbReady()) return;
+  if (!confirm('Reject this listing?')) return;
+  try {
+    await _sb.from('listings_pending').update({ status: 'rejected' }).eq('id', id);
+    var card = document.getElementById('admin-listing-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-listings-list .admin-card')) {
+      document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">No pending listings.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function loadAdminEvents() {
+  var el = document.getElementById('admin-events-list');
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+  try {
+    var { data, error } = await _sb.from('events').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    if (error) { el.innerHTML = '<div class="admin-empty">Error loading events.</div>'; return; }
+    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">No pending events.</div>'; return; }
+    el.innerHTML = data.map(function(d) {
+      return '<div class="admin-card" id="admin-event-' + d.id + '">'
+        + '<h4>' + adminEsc(d.title) + '</h4>'
+        + '<div class="admin-meta">'
+        + (d.event_type ? '<span><strong>Type:</strong> ' + adminEsc(d.event_type) + '</span>' : '')
+        + (d.start_date ? '<span><strong>Date:</strong> ' + adminEsc(d.start_date.substring(0,10)) + '</span>' : '')
+        + (d.location_name ? '<span><strong>Location:</strong> ' + adminEsc(d.location_name) + '</span>' : '')
+        + (d.organizer_name ? '<span><strong>Organizer:</strong> ' + adminEsc(d.organizer_name) + '</span>' : '')
+        + '</div>'
+        + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.description) + '</p>' : '')
+        + '<div class="admin-actions">'
+        + '<button class="admin-btn-approve" onclick="adminApproveEvent(\'' + d.id + '\')">Approve</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectEvent(\'' + d.id + '\')">Reject</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
+}
+
+async function adminApproveEvent(id) {
+  if (!sbReady()) return;
+  try {
+    await _sb.from('events').update({ status: 'upcoming' }).eq('id', id);
+    var card = document.getElementById('admin-event-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-events-list .admin-card')) {
+      document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">No pending events.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function adminRejectEvent(id) {
+  if (!sbReady()) return;
+  if (!confirm('Reject this event?')) return;
+  try {
+    await _sb.from('events').update({ status: 'rejected' }).eq('id', id);
+    var card = document.getElementById('admin-event-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-events-list .admin-card')) {
+      document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">No pending events.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function loadAdminMemorials() {
+  var el = document.getElementById('admin-memorials-list');
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+  try {
+    var { data, error } = await _sb.from('memorials_pending').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    if (error) { el.innerHTML = '<div class="admin-empty">Error loading memorials.</div>'; return; }
+    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">No pending memorials.</div>'; return; }
+    el.innerHTML = data.map(function(d) {
+      return '<div class="admin-card" id="admin-memorial-' + d.id + '">'
+        + '<h4>' + adminEsc(d.name) + '</h4>'
+        + '<div class="admin-meta">'
+        + (d.years ? '<span><strong>Years:</strong> ' + adminEsc(d.years) + '</span>' : '')
+        + (d.location ? '<span><strong>Location:</strong> ' + adminEsc(d.location) + '</span>' : '')
+        + (d.contact_email ? '<span><strong>Email:</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
+        + '</div>'
+        + (d.bio ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.bio) + '</p>' : '')
+        + '<div class="admin-actions">'
+        + '<button class="admin-btn-approve" onclick="adminApproveMemorial(\'' + d.id + '\')">Approve</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectMemorial(\'' + d.id + '\')">Reject</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
+}
+
+async function adminApproveMemorial(id) {
+  if (!sbReady()) return;
+  try {
+    await _sb.from('memorials_pending').update({ status: 'approved' }).eq('id', id);
+    var card = document.getElementById('admin-memorial-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-memorials-list .admin-card')) {
+      document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">No pending memorials.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function adminRejectMemorial(id) {
+  if (!sbReady()) return;
+  if (!confirm('Reject this memorial?')) return;
+  try {
+    await _sb.from('memorials_pending').update({ status: 'rejected' }).eq('id', id);
+    var card = document.getElementById('admin-memorial-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-memorials-list .admin-card')) {
+      document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">No pending memorials.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+// Load admin data when admin section is shown
+function initAdminPanel() {
+  if (!isAdmin()) return;
+  loadAdminListings();
+}
 
 // ── Directory alllink scroll ──
 document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {

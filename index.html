@@ -267,6 +267,7 @@
   <button id="nav-books"     onclick="showSec('books')">books &amp; library</button>
   <button id="nav-memorial" onclick="showSec('memorial')">in memoriam</button>
   <button class="chatnav locked" id="nav-chat" onclick="handleChat()">community chat</button>
+  <button class="chatnav locked" id="nav-admin" onclick="showSec('admin')" style="display:none;">admin</button>
 </div>
 </nav>
 
@@ -1354,6 +1355,31 @@
   </div>
   <div id="detail-content">
     <!-- Dynamically populated by showDetail() -->
+  </div>
+</div>
+
+<!-- ═══ ADMIN PANEL ═══ -->
+<div class="pagesec" id="sec-admin">
+  <div class="seclabel" style="margin-bottom:10px;">Admin Panel</div>
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="adminSwitchTab('listings')">Pending Listings</button>
+    <button class="admin-tab" onclick="adminSwitchTab('events')">Pending Events</button>
+    <button class="admin-tab" onclick="adminSwitchTab('memorials')">Pending Memorials</button>
+  </div>
+  <div id="admin-listings" class="admin-tab-content active">
+    <div id="admin-listings-list" style="margin-top:16px;">
+      <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">Loading pending listings...</div>
+    </div>
+  </div>
+  <div id="admin-events" class="admin-tab-content">
+    <div id="admin-events-list" style="margin-top:16px;">
+      <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">Loading pending events...</div>
+    </div>
+  </div>
+  <div id="admin-memorials" class="admin-tab-content">
+    <div id="admin-memorials-list" style="margin-top:16px;">
+      <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">Loading pending memorials...</div>
+    </div>
   </div>
 </div>
 
