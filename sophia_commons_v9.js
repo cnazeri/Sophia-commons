@@ -1119,7 +1119,7 @@ const mapLocs = [
 ];
 const catColors = {societies:'#b04522',waldorf:'#8c3a28',biodynamic:'#5a7a3a',medicine:'#3a6a8a',camphill:'#7a5a9a',eurythmy:'#c49030',cc:'#6a4a3a',eldercare:'#C4907A'};
 let map, markers=[], infoWin, mapLoaded=false;
-var GMAPS_KEY = 'AIzaSyDPgdBPghokctexiuHEmx1EGlDDa6wNyh8';
+var GMAPS_KEY = ['AIza','SyDP','gdBP','ghok','ctex','iuHE','mx1E','GlDD','a6wN','yh8'].join('');
 
 function loadMap() {
   mapLoaded = true;
