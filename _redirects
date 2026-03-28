@@ -1,10 +1,1 @@
-# Let static files through (Netlify checks file existence first with 200 rewrites)
-# But we need explicit rules for files that might conflict
-/googleae2ea1fc1aac5bc6.html  /googleae2ea1fc1aac5bc6.html  200
-/manifest.json                /manifest.json                200
-/sw.js                        /sw.js                        200
-/robots.txt                   /robots.txt                   200
-/sitemap.xml                  /sitemap.xml                  200
-
-# SPA catch-all (must be last)
-/*    /index.html   200
+/*    /index.html   200!
