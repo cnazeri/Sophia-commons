@@ -1619,15 +1619,20 @@ function submitEvent() {
   var date = document.getElementById('esm-date').value;
   if (!title || !date) { alert('Please fill in at least the title and start date.'); return; }
 
-  var ev = {
-    date: date,
-    title: title,
-    cat: document.getElementById('esm-cat').value,
-    loc: document.getElementById('esm-loc').value || 'TBD',
-    org: document.getElementById('esm-org').value || '',
-    time: document.getElementById('esm-time').value || ''
+  var description = document.getElementById('esm-desc').value.trim();
+  var endDate = document.getElementById('esm-end').value;
+  var time = document.getElementById('esm-time').value || '';
+  var cat = document.getElementById('esm-cat').value;
+  var loc = document.getElementById('esm-loc').value || 'TBD';
+  var org = document.getElementById('esm-org').value || '';
+  var url = document.getElementById('esm-url').value.trim();
+
+  var catToEventType = {
+    'study': 'study_group', 'conference': 'conference', 'community': 'other',
+    'eurythmy': 'workshop', 'biodynamic': 'workshop', 'medicine': 'workshop'
   };
 
+  var ev = { date: date, title: title, cat: cat, loc: loc, org: org, time: time };
   calEvents.push(ev);
   renderCalendar();
   renderEventList();
@@ -1636,26 +1641,31 @@ function submitEvent() {
   updateHeaderCalendar();
   closeEventForm();
 
-  // Clear form
-  document.getElementById('esm-title').value = '';
-  document.getElementById('esm-date').value = '';
-  document.getElementById('esm-end').value = '';
-  document.getElementById('esm-time').value = '';
-  document.getElementById('esm-loc').value = '';
-  document.getElementById('esm-org').value = '';
-  document.getElementById('esm-desc').value = '';
-  document.getElementById('esm-url').value = '';
+  ['esm-title','esm-date','esm-end','esm-time','esm-loc','esm-org','esm-desc','esm-url'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
 
-  // If Supabase is available, also persist
   if (sbReady()) {
-    _sb.from('events').insert([{
-      title: ev.title,
-      event_date: ev.date,
-      category: ev.cat,
-      location: ev.loc,
-      organizer: ev.org,
-      description: document.getElementById('esm-desc').value
-    }]).then(function() { console.log('Event submitted to Supabase'); });
+    var userId = window._supabaseUser ? window._supabaseUser.id : null;
+    var startDate = time ? date + 'T' + time + ':00' : date + 'T00:00:00';
+    var row = {
+      title: title,
+      description: description || 'No description provided.',
+      event_type: catToEventType[cat] || 'other',
+      start_date: startDate,
+      location_name: loc,
+      organizer_name: org,
+      status: 'upcoming',
+      is_free: true
+    };
+    if (userId) row.user_id = userId;
+    if (endDate) row.end_date = endDate + 'T23:59:59';
+    if (url) row.organizer_url = url;
+
+    _sb.from('events').insert([row]).then(function(res) {
+      if (res.error) console.warn('Event submit error:', res.error.message);
+      else console.log('Event saved to Supabase');
+    });
   }
 }
 

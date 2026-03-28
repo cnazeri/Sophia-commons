@@ -288,6 +288,7 @@ CREATE TABLE IF NOT EXISTS public.directory_entries (
   website_url       text,
   email             text,
   phone             text,
+  address           text,
   location          text,
   country           text,
   tags              text[]      DEFAULT '{}',
