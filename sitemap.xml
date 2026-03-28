@@ -1,43 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://sophiacommons.org/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://sophiacommons.org/news</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sophiacommons.org/events</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sophiacommons.org/browse</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://sophiacommons.org/directory</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://sophiacommons.org/books</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sophiacommons.org/podcasts</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sophiacommons.org/memorial</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
+  <!-- Main sections -->
+  <url><loc>https://sophiacommons.org/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://sophiacommons.org/news</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://sophiacommons.org/events</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://sophiacommons.org/browse</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sophiacommons.org/directory</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://sophiacommons.org/books</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sophiacommons.org/podcasts</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sophiacommons.org/memorial</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <!-- Category pages -->
+  <url><loc>https://sophiacommons.org/category/Waldorf%20%26%20Education</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sophiacommons.org/category/Biodynamic%20Agriculture</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sophiacommons.org/category/Esoteric%20Studies</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sophiacommons.org/category/Arts%20%26%20Eurythmy</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sophiacommons.org/category/Anthroposophic%20Medicine</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sophiacommons.org/category/Community%20%26%20Camphill</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sophiacommons.org/category/Free%20%26%20Sharing</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://sophiacommons.org/category/Marketplace</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sophiacommons.org/category/Housing%20%26%20Room%20Rent</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sophiacommons.org/category/Jobs%20%26%20Volunteering</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sophiacommons.org/category/Groups%20%26%20Circles</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://sophiacommons.org/category/Online%20Resources</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://sophiacommons.org/category/Societies%20%26%20Organizations</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>

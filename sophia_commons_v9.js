@@ -57,18 +57,21 @@ async function showDetail(type, id, skipPush) {
         .select('*').eq('id', id).single();
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderDirectoryDetail(data);
+      updateSEOMeta(data.organization_name + ' | Sophia Commons', (data.description || '').substring(0, 160), '/listing/' + id);
       loadRelatedDirectory(data.category, data.id);
     } else if (type === 'event') {
       var { data, error } = await _sb.from('events')
         .select('*').eq('id', id).single();
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderEventDetail(data);
+      updateSEOMeta(data.title + ' | Sophia Commons Events', (data.description || '').substring(0, 160), '/event/' + id);
       loadRelatedEvents(data.category_id, data.id);
     } else if (type === 'news') {
       var { data, error } = await _sb.from('news')
         .select('*').eq('id', id).single();
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderNewsDetail(data);
+      updateSEOMeta(data.title + ' | Sophia Commons News', (data.excerpt || data.body || '').substring(0, 160), '/article/' + id);
     } else {
       container.innerHTML = renderNotFound();
     }
@@ -322,6 +325,7 @@ function showCategory(name, skipPush) {
   document.getElementById('cat-page-desc').textContent = meta.desc || 'Browse listings, organizations, and events in this category.';
   document.getElementById('cat-page-content').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
   showSec('category', true);
+  updateSEOMeta(displayName + ' | Sophia Commons Directory', meta.desc || 'Browse anthroposophical organizations and events in this category.', '/category/' + encodeURIComponent(name));
 
   // Push SEO-friendly category URL
   if (!skipPush) {
@@ -504,6 +508,33 @@ const SEC_PATHS = {
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
 
+var SEC_META = {
+  home:      { title: 'Sophia Commons | Anthroposophical Community Directory', desc: 'The free global directory for the anthroposophical community. Find Waldorf schools, biodynamic farms, Camphill communities, eurythmy, anthroposophic medicine, events, and more.' },
+  news:      { title: 'News | Sophia Commons', desc: 'Latest news from the anthroposophical world - Waldorf education, biodynamic agriculture, eurythmy, Camphill communities, and spiritual science.' },
+  events:    { title: 'Events & Calendar | Sophia Commons', desc: 'Upcoming anthroposophical events, conferences, workshops, study groups, and retreats worldwide.' },
+  browse:    { title: 'Browse Categories | Sophia Commons', desc: 'Browse Waldorf schools, biodynamic farms, Camphill communities, eurythmy programs, anthroposophic medicine, and more by category.' },
+  directory: { title: 'Global Directory | Sophia Commons', desc: 'Interactive map and directory of 430+ anthroposophical organizations across 30+ countries worldwide.' },
+  books:     { title: 'Books & Library | Sophia Commons', desc: 'Rudolf Steiner books, lecture cycles, and anthroposophical literature. Browse the complete GA catalog.' },
+  podcasts:  { title: 'Podcasts & Media | Sophia Commons', desc: 'Anthroposophy podcasts, videos, and media resources for spiritual science, Waldorf education, and biodynamics.' },
+  memorial:  { title: 'In Memoriam | Sophia Commons', desc: 'Honoring members of the anthroposophical community who have crossed the threshold.' }
+};
+
+function updateSEOMeta(title, desc, path) {
+  document.title = title;
+  var metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) metaDesc.setAttribute('content', desc);
+  var ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) ogTitle.setAttribute('content', title);
+  var ogDesc = document.querySelector('meta[property="og:description"]');
+  if (ogDesc) ogDesc.setAttribute('content', desc);
+  var twTitle = document.querySelector('meta[name="twitter:title"]');
+  if (twTitle) twTitle.setAttribute('content', title);
+  var twDesc = document.querySelector('meta[name="twitter:description"]');
+  if (twDesc) twDesc.setAttribute('content', desc);
+  var canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.setAttribute('href', 'https://sophiacommons.org' + (path || '/'));
+}
+
 function showSec(id, skipPush) {
   document.querySelectorAll('.pagesec').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('#mainnav button').forEach(b => b.classList.remove('active'));
@@ -513,12 +544,14 @@ function showSec(id, skipPush) {
   window.scrollTo(0,0);
   if (id === 'directory' && !mapLoaded) loadMap();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
-  // Close mobile menu if open
   const leftbar = document.getElementById('leftbar');
   const hamburger = document.getElementById('hamburger-btn');
   if (leftbar) leftbar.classList.remove('mobile-open');
   if (hamburger) hamburger.classList.remove('active');
-  // Push SEO-friendly URL (skip on popstate or initial load)
+  // Update SEO meta
+  var meta = SEC_META[id];
+  if (meta) updateSEOMeta(meta.title, meta.desc, SEC_PATHS[id] || '/');
+  // Push SEO-friendly URL
   if (!skipPush && SEC_PATHS.hasOwnProperty(id)) {
     var path = SEC_PATHS[id];
     if (window.location.pathname !== path) {
@@ -1086,16 +1119,15 @@ const mapLocs = [
 ];
 const catColors = {societies:'#b04522',waldorf:'#8c3a28',biodynamic:'#5a7a3a',medicine:'#3a6a8a',camphill:'#7a5a9a',eurythmy:'#c49030',cc:'#6a4a3a',eldercare:'#C4907A'};
 let map, markers=[], infoWin, mapLoaded=false;
+var GMAPS_KEY = 'AIzaSyDPgdBPghokctexiuHEmx1EGlDDa6wNyh8';
 
 function loadMap() {
   mapLoaded = true;
-  var lnk = document.createElement('link');
-  lnk.rel = 'stylesheet';
-  lnk.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-  document.head.appendChild(lnk);
+  if (window.google && window.google.maps) { initMap(); return; }
   var script = document.createElement('script');
-  script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-  script.onload = function() { initMap(); };
+  script.src = 'https://maps.googleapis.com/maps/api/js?key=' + GMAPS_KEY + '&callback=initMap';
+  script.async = true;
+  script.defer = true;
   script.onerror = function() {
     var el = document.getElementById('dir-map');
     el.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px;';
@@ -1107,25 +1139,55 @@ function loadMap() {
 }
 function initMap() {
   var el = document.getElementById('dir-map');
-  map = L.map(el, {scrollWheelZoom:false}).setView([30,0],2);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom:18
-  }).addTo(map);
+  map = new google.maps.Map(el, {
+    center: { lat: 30, lng: 0 },
+    zoom: 2,
+    scrollwheel: false,
+    gestureHandling: 'cooperative',
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: true,
+    styles: [
+      { featureType: 'water', elementType: 'geometry.fill', stylers: [{ color: '#d4e4f7' }] },
+      { featureType: 'landscape', elementType: 'geometry.fill', stylers: [{ color: '#f5f0e8' }] },
+      { featureType: 'road', stylers: [{ visibility: 'simplified' }, { color: '#e8e0d4' }] },
+      { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+      { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+      { elementType: 'labels.text.fill', stylers: [{ color: '#6B5E50' }] },
+      { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }, { weight: 2 }] }
+    ]
+  });
+  infoWin = new google.maps.InfoWindow();
   renderMarkers('all');
 }
 function renderMarkers(filter) {
-  markers.forEach(function(m){map.removeLayer(m);}); markers=[];
-  var locs = filter==='all' ? mapLocs : mapLocs.filter(function(l){return l.cat===filter;});
+  markers.forEach(function(m) { m.setMap(null); });
+  markers = [];
+  var locs = filter === 'all' ? mapLocs : mapLocs.filter(function(l) { return l.cat === filter; });
   locs.forEach(function(loc) {
-    var color = catColors[loc.cat]||'#888';
-    var icon = L.divIcon({
-      className:'',
-      html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3);"></div>',
-      iconSize:[14,14],iconAnchor:[7,7]
+    var color = catColors[loc.cat] || '#888';
+    var m = new google.maps.Marker({
+      position: { lat: loc.lat, lng: loc.lng },
+      map: map,
+      title: loc.name,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: color,
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+        scale: 7
+      }
     });
-    var m = L.marker([loc.lat,loc.lng],{icon:icon,title:loc.name}).addTo(map);
-    m.bindPopup('<div style="font-family:Nunito Sans,sans-serif;padding:4px;max-width:200px;"><div style="font-weight:700;font-size:13px;margin-bottom:3px;">'+loc.name+'</div><div style="font-size:12px;color:#6B5E50;">'+loc.city+'</div></div>');
+    m.addListener('click', function() {
+      infoWin.setContent(
+        '<div style="font-family:Nunito Sans,sans-serif;padding:6px;max-width:220px;">' +
+        '<div style="font-weight:700;font-size:13px;margin-bottom:3px;color:#2C2418;">' + loc.name + '</div>' +
+        '<div style="font-size:12px;color:#6B5E50;">' + loc.city + '</div>' +
+        '</div>'
+      );
+      infoWin.open(map, m);
+    });
     markers.push(m);
   });
 }
