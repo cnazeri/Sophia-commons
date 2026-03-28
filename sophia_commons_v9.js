@@ -2009,6 +2009,74 @@ document.addEventListener('DOMContentLoaded', function() {
   updateHeaderCalendar();
 });
 
+// ── BOOKS: Load from Supabase ──
+async function loadBooksFromSupabase() {
+  if (!sbReady()) return;
+  try {
+    var { data, error } = await _sb.from('steiner_books')
+      .select('ga_number, title, category, author, archive_url, steinerbooks_url, amazon_url, price')
+      .order('title')
+      .limit(400);
+    if (error || !data || data.length === 0) return;
+
+    var container = document.getElementById('sec-books');
+    if (!container) return;
+
+    var catLabels = {
+      foundational: 'Foundational Works', philosophy: 'Philosophy', christology: 'Christology & Gospels',
+      cosmology: 'Cosmology & Spiritual Hierarchies', esoteric: 'Esoteric & Inner Development',
+      karma: 'Karma & Reincarnation', education: 'Education (Steiner)', waldorf_education: 'Waldorf Education',
+      medicine: 'Medicine & Health', agriculture: 'Agriculture & Biodynamics', biodynamic: 'Biodynamic Farming',
+      arts: 'Arts, Eurythmy & Architecture', social: 'Social & Economic Life', science: 'Natural Science',
+      spiritual: 'Spiritual & Esoteric Authors', children: 'Children\'s Books', biography: 'Biography'
+    };
+
+    var groups = {};
+    data.forEach(function(b) {
+      var cat = b.category || 'other';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(b);
+    });
+
+    var sbBooksList = document.getElementById('sb-books-list');
+    if (!sbBooksList) {
+      sbBooksList = document.createElement('div');
+      sbBooksList.id = 'sb-books-list';
+      var label = container.querySelector('.seclabel');
+      if (label) label.insertAdjacentElement('afterend', sbBooksList);
+      else container.prepend(sbBooksList);
+    }
+
+    var html = '';
+    var catOrder = ['foundational','philosophy','education','waldorf_education','christology','cosmology','esoteric','spiritual','karma','medicine','biodynamic','agriculture','arts','social','science','children','biography'];
+    catOrder.forEach(function(cat) {
+      var books = groups[cat];
+      if (!books || books.length === 0) return;
+      var label = catLabels[cat] || cat;
+      html += '<div class="listblock" style="margin-bottom:14px;">';
+      html += '<div class="listblock-head"><h3>' + esc(label) + '</h3><span style="font-size:10.5px;color:var(--text-muted);">' + books.length + ' titles</span></div>';
+      html += '<div class="listblock-body">';
+      books.forEach(function(b) {
+        var ga = b.ga_number ? '<span class="ltag">' + esc(b.ga_number) + '</span>' : '';
+        var authorTag = (b.author && b.author !== 'Rudolf Steiner') ? '<span style="font-size:11px;color:var(--text-muted);"> - ' + esc(b.author) + '</span>' : '';
+        var links = '';
+        if (b.amazon_url) links += '<a href="' + esc(b.amazon_url) + '" target="_blank" rel="noopener">Amazon</a>';
+        if (b.steinerbooks_url) links += (links ? ' &middot; ' : '') + '<a href="' + esc(b.steinerbooks_url) + '" target="_blank" rel="noopener">' + (b.price ? esc(b.price) + ' SteinerBooks' : 'SteinerBooks') + '</a>';
+        if (b.archive_url) links += (links ? ' &middot; ' : '') + '<span class="lv"><a href="' + esc(b.archive_url) + '" target="_blank" rel="noopener">free online</a></span>';
+        html += '<div class="lrow">' + ga + '<a class="ltitle" href="' + esc(b.amazon_url || b.archive_url || '#') + '" target="_blank">' + esc(b.title) + '</a>' + authorTag + '<span class="lmeta">' + links + '</span></div>';
+      });
+      html += '</div></div>';
+    });
+
+    var secLabel = container.querySelector('.seclabel');
+    if (secLabel) secLabel.innerHTML = 'Books &amp; Library &nbsp;&middot;&nbsp; ' + data.length + ' titles';
+    sbBooksList.innerHTML = html;
+    console.log('Loaded ' + data.length + ' books from Supabase');
+  } catch(e) {
+    console.warn('Books load failed:', e);
+  }
+}
+
 // ── INIT: Load all data once Supabase is ready ──
 (function initSupabaseData() {
   function loadAll() {
@@ -2016,7 +2084,8 @@ document.addEventListener('DOMContentLoaded', function() {
       Promise.all([
         loadEventsFromSupabase(),
         loadNewsFromSupabase(),
-        loadDirectoryFromSupabase()
+        loadDirectoryFromSupabase(),
+        loadBooksFromSupabase()
       ]).catch(function(e) { console.warn('Data load error:', e); });
     }
   }
