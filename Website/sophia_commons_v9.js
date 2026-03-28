@@ -82,8 +82,10 @@ function renderDirectoryDetail(d) {
   if (d.category) badges += '<span class="detail-badge category">' + esc(d.category) + '</span>';
 
   var meta = '';
-  if (d.location) meta += '<span>&#128205; ' + esc(d.location) + '</span>';
+  if (d.address) meta += '<span>&#128205; ' + esc(d.address) + ', ' + esc(d.location || '') + '</span>';
+  else if (d.location) meta += '<span>&#128205; ' + esc(d.location) + '</span>';
   if (d.country) meta += '<span>&#127758; ' + esc(d.country) + '</span>';
+  if (d.phone) meta += '<span>&#9742; ' + esc(d.phone) + '</span>';
 
   var tags = '';
   if (d.tags && d.tags.length) {
@@ -107,8 +109,11 @@ function renderDirectoryDetail(d) {
     + '</div>'
     + '<div class="detail-sidebar"><h4>Quick Facts</h4>'
     + '<p><strong>Category:</strong> ' + esc(d.category || 'General') + '</p>'
+    + (d.address ? '<p><strong>Address:</strong> ' + esc(d.address) + '</p>' : '')
     + (d.location ? '<p><strong>Location:</strong> ' + esc(d.location) + '</p>' : '')
     + (d.country ? '<p><strong>Country:</strong> ' + esc(d.country) + '</p>' : '')
+    + (d.phone ? '<p><strong>Phone:</strong> <a href="tel:' + esc(d.phone) + '">' + esc(d.phone) + '</a></p>' : '')
+    + (d.email ? '<p><strong>Email:</strong> <a href="mailto:' + esc(d.email) + '">' + esc(d.email) + '</a></p>' : '')
     + (d.website_url ? '<p><strong>Website:</strong> <a href="' + esc(d.website_url) + '" target="_blank">' + esc(d.website_url.replace('https://','').replace('http://','')) + '</a></p>' : '')
     + '<p><strong>Status:</strong> ' + (d.is_verified ? '<span style="color:var(--sage);font-weight:700;">&#10003; Verified</span>' : 'Listed') + '</p>'
     + '</div>'
@@ -322,7 +327,7 @@ async function loadCategoryPage(catKey, dirCat) {
   if (sbReady() && dirCat) {
     try {
       var { data } = await _sb.from('directory_entries')
-        .select('id, organization_name, description, website_url, location, country, is_verified')
+        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email')
         .eq('status', 'approved').eq('category', dirCat)
         .order('is_verified', { ascending: false }).order('organization_name')
         .limit(50);
@@ -337,13 +342,17 @@ async function loadCategoryPage(catKey, dirCat) {
     dirEntries.forEach(function(d) {
       var v = d.is_verified ? '<span style="color:var(--verified);font-weight:700;margin-right:4px;">&#10003;</span>' : '';
       var loc = [d.location, d.country].filter(Boolean).join(', ');
+      var addr = d.address ? esc(d.address) + ', ' + esc(loc) : esc(loc);
       html += '<div class="lrow" style="cursor:pointer;padding:8px 0;" onclick="showDetail(\'directory\',\'' + d.id + '\')">'
         + v
         + '<a class="ltitle" href="#" onclick="return false;" style="font-size:14px;">' + esc(d.organization_name) + '</a>'
-        + '<span class="lmeta">' + esc(loc) + '</span>'
+        + '<span class="lmeta">' + addr + '</span>'
         + '</div>';
       if (d.description) {
         html += '<div style="font-size:12px;color:var(--text-muted);padding:0 0 6px 20px;margin-top:-4px;line-height:1.5;">' + esc(d.description.substring(0, 160)) + (d.description.length > 160 ? '...' : '') + '</div>';
+      }
+      if (d.phone || d.email) {
+        html += '<div style="font-size:11px;color:var(--text-muted);padding:0 0 8px 20px;">' + (d.phone ? '&#9742; ' + esc(d.phone) + ' ' : '') + (d.email ? '&#9993; ' + esc(d.email) : '') + '</div>';
       }
     });
     html += '</div></div>';
