@@ -4,10 +4,17 @@
 // ══════════════════════════════════════════
 
 let signedIn = false, username = '';
-let previousSection = 'home'; // Track where user came from for back button
+let previousSection = 'home';
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-// Supabase guard - all _sb calls should check this first
 function sbReady() { return typeof _sb !== 'undefined' && _sb !== null; }
+
+function captureCurrentSection(excludeId) {
+  var activeSec = document.querySelector('.pagesec.active');
+  if (activeSec && activeSec.id !== 'sec-' + excludeId) {
+    previousSection = activeSec.id.replace('sec-', '');
+  }
+}
 
 // ══════════════════════════════════════════
 //  DETAIL VIEW SYSTEM
@@ -21,11 +28,7 @@ function goBack() {
 
 // Show a detail page by type and Supabase ID
 async function showDetail(type, id) {
-  // Track where we came from
-  var activeSec = document.querySelector('.pagesec.active');
-  if (activeSec && activeSec.id !== 'sec-detail') {
-    previousSection = activeSec.id.replace('sec-', '');
-  }
+  captureCurrentSection('detail');
 
   var container = document.getElementById('detail-content');
   container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
@@ -65,10 +68,7 @@ async function showDetail(type, id) {
 
 // Show a detail page from static data (no Supabase ID needed)
 function showStaticDetail(data) {
-  var activeSec = document.querySelector('.pagesec.active');
-  if (activeSec && activeSec.id !== 'sec-detail') {
-    previousSection = activeSec.id.replace('sec-', '');
-  }
+  captureCurrentSection('detail');
   var container = document.getElementById('detail-content');
   container.innerHTML = renderStaticDetail(data);
   showSec('detail');
@@ -300,11 +300,7 @@ const catMeta = {
 };
 
 function showCategory(name) {
-  // Track where we came from for back button
-  var activeSec = document.querySelector('.pagesec.active');
-  if (activeSec && activeSec.id !== 'sec-category') {
-    previousSection = activeSec.id.replace('sec-', '');
-  }
+  captureCurrentSection('category');
 
   var displayName = name.charAt(0).toUpperCase() + name.slice(1);
   var key = name.toLowerCase();
@@ -378,7 +374,6 @@ async function loadCategoryPage(catKey, dirCat) {
   }
 
   if (events.length > 0) {
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     html += '<div class="listblock" style="margin-bottom:16px;">';
     html += '<div class="listblock-head"><h3>Upcoming Events</h3><span style="font-size:10.5px;color:var(--text-muted);">' + events.length + ' events</span></div>';
     html += '<div class="listblock-body">';
@@ -386,7 +381,7 @@ async function loadCategoryPage(catKey, dirCat) {
       var d = new Date(ev.start_date);
       var loc = [ev.city, ev.country].filter(Boolean).join(', ');
       html += '<div class="evrow" style="cursor:pointer;" onclick="showDetail(\'event\',\'' + ev.id + '\')">'
-        + '<div class="evdate"><div class="mo">' + months[d.getMonth()] + '</div><div class="dy">' + d.getDate() + '</div></div>'
+        + '<div class="evdate"><div class="mo">' + MONTHS_SHORT[d.getMonth()] + '</div><div class="dy">' + d.getDate() + '</div></div>'
         + '<div class="evinfo">'
         + '<div class="etag">' + esc(ev.event_type || '') + (ev.is_free ? ' &middot; Free' : '') + '</div>'
         + '<h5>' + esc(ev.title) + '</h5>'
@@ -506,9 +501,16 @@ function toggleMobileMenu() {
 }
 
 // ── STICKY NAV SCROLL ──
+var _scrollTicking = false;
 window.addEventListener('scroll', () => {
-  const header = document.getElementById('site-header');
-  if (header) header.classList.toggle('scrolled', window.scrollY > 50);
+  if (!_scrollTicking) {
+    _scrollTicking = true;
+    requestAnimationFrame(() => {
+      const header = document.getElementById('site-header');
+      if (header) header.classList.toggle('scrolled', window.scrollY > 50);
+      _scrollTicking = false;
+    });
+  }
 });
 
 // ── SCROLL ANIMATIONS ──
@@ -701,9 +703,10 @@ async function switchRoom(el, name, desc, count) {
   ).join('') + `<div class="msg sys"><div class="av">&middot;</div><div class="bub"><div class="btxt">you joined # ${name}</div></div></div>`;
   scrollMsgs();
 
-  if (chatSubscription) {
+  if (chatSubscription && sbReady()) {
     _sb.removeChannel(chatSubscription);
   }
+  if (!sbReady()) return;
   chatSubscription = _sb
     .channel('room-' + name)
     .on('postgres_changes', {
@@ -836,26 +839,18 @@ async function submitMemorial() {
 }
 
 // ── SIGNUPS (Newsletter) ──
-async function doSignup() {
-  const v = document.getElementById('signup-email').value.trim();
+async function handleNewsletterSignup(emailId, btnSelector, confirmId) {
+  const v = document.getElementById(emailId).value.trim();
   if (!v.includes('@')) return;
   try {
     await _sb.from('newsletter_subscribers').insert({ email: v });
   } catch(e) { /* duplicate is fine */ }
-  document.getElementById('signup-email').style.display='none';
-  document.querySelector('.signup-box button').style.display='none';
-  document.getElementById('rsignup-ok').style.display='block';
+  document.getElementById(emailId).style.display='none';
+  document.querySelector(btnSelector).style.display='none';
+  document.getElementById(confirmId).style.display='block';
 }
-async function doFtSignup() {
-  const v = document.getElementById('ft-email').value.trim();
-  if (!v.includes('@')) return;
-  try {
-    await _sb.from('newsletter_subscribers').insert({ email: v });
-  } catch(e) { /* duplicate is fine */ }
-  document.getElementById('ft-email').style.display='none';
-  document.querySelector('.ftnl button').style.display='none';
-  document.getElementById('ft-ok').style.display='block';
-}
+function doSignup() { handleNewsletterSignup('signup-email', '.signup-box button', 'rsignup-ok'); }
+function doFtSignup() { handleNewsletterSignup('ft-email', '.ftnl button', 'ft-ok'); }
 
 // ── DIRECTORY MAP ──
 const mapLocs = [
@@ -1169,7 +1164,6 @@ async function loadEventsFromSupabase() {
       else container.prepend(evList);
     }
 
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const today = new Date().toDateString();
 
     evList.innerHTML = data.map(ev => {
@@ -1180,7 +1174,7 @@ async function loadEventsFromSupabase() {
       const org = ev.organizer_name || '';
       return `<div class="evrow reveal visible">
         <div class="evdate${isToday ? ' today' : ''}">
-          <div class="mo">${months[d.getMonth()]}</div>
+          <div class="mo">${MONTHS_SHORT[d.getMonth()]}</div>
           <div class="dy">${d.getDate()}</div>
         </div>
         <div class="evinfo">
@@ -1383,10 +1377,11 @@ var seminarData = [
   { title:'Inner Development Path Seminar', dates:'Sep 12-14, 2026', loc:'Ann Arbor, MI', tag:'seminar' }
 ];
 
-var calMonth = new Date().getMonth();
-var calYear = new Date().getFullYear();
-var mcMonth = new Date().getMonth();
-var mcYear = new Date().getFullYear();
+var _calNow = new Date();
+var calMonth = _calNow.getMonth();
+var calYear = _calNow.getFullYear();
+var mcMonth = _calNow.getMonth();
+var mcYear = _calNow.getFullYear();
 
 var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 var DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -1483,11 +1478,12 @@ function renderEventList() {
   }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
 
   var html = '';
+  var todayStr = new Date().toDateString();
   upcoming.forEach(function(ev) {
     var d = new Date(ev.date + 'T12:00:00');
     var mo = d.toLocaleString('en-US', { month: 'short' });
     var dy = d.getDate();
-    var isToday = (d.toDateString() === new Date().toDateString());
+    var isToday = (d.toDateString() === todayStr);
     html += '<div class="evrow reveal">';
     html += '<div class="evdate' + (isToday ? ' today' : '') + '"><div class="mo">' + mo + '</div><div class="dy">' + dy + '</div></div>';
     html += '<div class="evinfo"><div class="etag">' + ev.cat.charAt(0).toUpperCase() + ev.cat.slice(1) + '</div>';
@@ -1678,16 +1674,19 @@ document.addEventListener('DOMContentLoaded', function() {
   updateHeaderCalendar();
 });
 
-// ── INIT: Load all data on page ready ──
+// ── INIT: Load all data once Supabase is ready ──
 (function initSupabaseData() {
-  // Wait a tick to ensure _sb is initialized
-  setTimeout(function() {
+  function loadAll() {
     if (sbReady()) {
-      loadEventsFromSupabase();
-      loadNewsFromSupabase();
-      loadDirectoryFromSupabase();
+      Promise.all([
+        loadEventsFromSupabase(),
+        loadNewsFromSupabase(),
+        loadDirectoryFromSupabase()
+      ]).catch(function(e) { console.warn('Data load error:', e); });
     }
-  }, 100);
+  }
+  if (sbReady()) { loadAll(); }
+  else { setTimeout(loadAll, 150); }
 })();
 
 // ── AUTO-HIDE PAST EVENTS ──
