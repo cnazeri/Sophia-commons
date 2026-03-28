@@ -252,7 +252,7 @@
     <span style="font-family:'Lora',serif;font-size:24px;font-weight:600;color:var(--ink);letter-spacing:.08em;text-transform:uppercase;">Sophia Commons<sup style="font-size:9px;font-weight:400;vertical-align:super;letter-spacing:0;">TM</sup></span>
     <span>Anthroposophical Community</span>
   </a>
-  <div id="statsbar">March 23, 2026 &nbsp;·&nbsp; <strong>2,840+</strong> listings &nbsp;·&nbsp; <strong>380+</strong> directory entries &nbsp;·&nbsp; <strong>11</strong> countries</div>
+  <div id="statsbar" class="cal-widget"><span class="cw-date" id="cw-day"></span><span id="cw-date-str"></span><span class="cw-dot"></span><span id="cw-upcoming"></span></div>
   <a href="#" id="postlink" onclick="showSubmitForm();return false;">+ post a listing</a>
 </header>
 
@@ -295,7 +295,7 @@
     <li><a href="#" onclick="showCategory('Marketplace');return false;">marketplace</a><span class="cbadge">388</span></li>
     <li><a href="#" onclick="showCategory('Housing & Room Rent');return false;">housing &amp; room rent</a><span class="cbadge">54</span></li>
     <li><a href="#" onclick="showCategory('Jobs & Volunteering');return false;">jobs &amp; volunteering</a><span class="cbadge">176</span></li>
-    <li><a href="#" onclick="showCategory('Groups & Circles');return false;">groups &amp; circles</a><span class="cbadge">93</span></li>
+    <li><a href="#" onclick="showCategory('Groups & Circles');return false;">groups, seminars &amp; retreats</a><span class="cbadge">111</span></li>
     <li><a href="#" onclick="showSec('podcasts');return false;">podcasts &amp; media</a><span class="cbadge">23</span></li>
     <li><a href="#" onclick="showSec('books');return false;">books &amp; library</a><span class="cbadge">350+</span></li>
     <li><a href="#" onclick="showSec('eldercare');return false;">eldercare</a><span class="cbadge">42</span></li>
@@ -339,20 +339,14 @@
     <div class="trendblock reveal">
       <div class="trendblock-head">
         <h3>Current Events</h3>
-        <span class="tlabel">most read today</span>
+        <span class="tlabel">today</span>
       </div>
       <div class="trendblock-body">
-        <div class="trend-readers">3,847 readers today</div>
         <div class="trend-story">
           <h4><a href="#" onclick="showSec('news');return false;">Goetheanum Launches New Global Online Study Program for 2026</a></h4>
-          <p>The Goetheanum's Studium division announced an expanded online program in six languages, with live sessions, recorded lectures, and small-group discussion circles.</p>
         </div>
-        <div class="trend-also">
-          <div class="trend-also-label">Also in the news</div>
-          <a href="#" onclick="document.getElementById('searchinput').value='Demeter Reports Record Farm Certification Growth';doSearch();return false;">Demeter Reports Record Farm Certification Growth</a>
-          <a href="#" onclick="document.getElementById('searchinput').value='Camphill Village USA Celebrates 60 Years';doSearch();return false;">Camphill Village USA Celebrates 60 Years</a>
-          <a href="#" onclick="document.getElementById('searchinput').value='AWSNA Releases Updated Curriculum Guidelines';doSearch();return false;">AWSNA Releases Updated Curriculum Guidelines</a>
-        </div>
+        <a href="#" onclick="document.getElementById('searchinput').value='Demeter Reports Record Farm Certification Growth';doSearch();return false;" style="display:block;font-size:12px;color:var(--text-secondary);padding:3px 0;">Demeter Reports Record Farm Certification Growth</a>
+        <a href="#" onclick="document.getElementById('searchinput').value='Camphill Village USA Celebrates 60 Years';doSearch();return false;" style="display:block;font-size:12px;color:var(--text-secondary);padding:3px 0;">Camphill Village USA Celebrates 60 Years</a>
         <a class="trend-all" href="#" onclick="showSec('news');return false;">all news →</a>
       </div>
     </div>
@@ -375,14 +369,6 @@
         <div class="evrow reveal" data-event-date="2026-04-18">
           <div class="evdate"><div class="mo">Apr</div><div class="dy">18</div></div>
           <div class="evinfo"><div class="etag">Conference</div><h5><a href="#" onclick="document.getElementById('searchinput').value='AWSNA Waldorf Education Conference 2026';doSearch();return false;">AWSNA Waldorf Education Conference 2026</a></h5><div class="emeta">Chicago, IL · AWSNA</div></div>
-        </div>
-        <div class="evrow reveal" data-event-date="2026-05-02">
-          <div class="evdate"><div class="mo">May</div><div class="dy">2</div></div>
-          <div class="evinfo"><div class="etag">Biodynamic</div><h5><a href="#" onclick="document.getElementById('searchinput').value='Biodynamic Farming Regional Forum';doSearch();return false;">Biodynamic Farming Regional Forum</a></h5><div class="emeta">Fair Oaks, CA · 9:00 AM - 5:00 PM</div></div>
-        </div>
-        <div class="evrow reveal" data-event-date="2026-07-06">
-          <div class="evdate"><div class="mo">Jul</div><div class="dy">6</div></div>
-          <div class="evinfo"><div class="etag">Eurythmy</div><h5><a href="#" onclick="document.getElementById('searchinput').value='Eurythmy Summer Intensive';doSearch();return false;">Eurythmy Summer Intensive</a></h5><div class="emeta">Spring Valley, NY · Eurythmy Spring Valley</div></div>
         </div>
       </div>
     </div>
@@ -507,13 +493,13 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Groups & Circles');event.stopPropagation();" style="cursor:pointer;">Groups &amp; Circles</h3><span class="alllink">93</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Groups & Circles');event.stopPropagation();" style="cursor:pointer;">Groups, Seminars &amp; Retreats</h3><span class="alllink">111</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Meditation groups';doSearch();return false;">Meditation groups</a></li>
-        <li><a href="#" onclick="document.getElementById('searchinput').value='Local branch branches';doSearch();return false;">Local branch branches</a></li>
+        <li><a href="#" onclick="document.getElementById('searchinput').value='Local branch branches';doSearch();return false;">Local branches</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Reading circles';doSearch();return false;">Reading circles</a></li>
+        <li><a href="#" onclick="document.getElementById('searchinput').value='Seminars retreats';doSearch();return false;">Seminars &amp; retreats</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Youth groups';doSearch();return false;">Youth groups</a></li>
-        <li><a href="#" onclick="document.getElementById('searchinput').value='Women\'s circles';doSearch();return false;">Women's circles</a></li>
       </ul>
     </div>
     <div class="catblock reveal">
@@ -600,66 +586,69 @@
 <!-- ═══ EVENTS ═══ -->
 <div class="pagesec" id="sec-events">
   <div class="seclabel" style="margin-bottom:10px;">Events &amp; Calendar &nbsp;·&nbsp; 620 upcoming events worldwide</div>
+
+  <!-- Visual Calendar -->
+  <div class="calendar-full reveal">
+    <div class="cal-header">
+      <button onclick="calNavMonth(-1)">&larr;</button>
+      <h3 id="cal-month-label"></h3>
+      <button onclick="calNavMonth(1)">&rarr;</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <!-- Upcoming Events List -->
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>March - September 2026</h3><a href="#" onclick="document.getElementById('searchinput').value='submit an event';doSearch();return false;">submit an event →</a></div>
-    <div class="listblock-body" style="padding:4px 10px 8px;">
-      <div class="evrow reveal" data-event-date="2026-03-22">
-        <div class="evdate today"><div class="mo">Mar</div><div class="dy">22</div></div>
-        <div class="evinfo">
-          <div class="etag">Study · Online</div>
-          <h5><a href="#" onclick="document.getElementById('searchinput').value='Goetheanum Online - Spring Weekend Session';doSearch();return false;">Goetheanum Online - Spring Weekend Session</a></h5>
-          <div class="emeta">10:00 AM - 4:00 PM CET &nbsp;·&nbsp; Online &nbsp;·&nbsp; Goetheanum Studium &nbsp;·&nbsp; Free for members</div>
-        </div>
-      </div>
-      <div class="evrow reveal" data-event-date="2026-04-05">
-        <div class="evdate"><div class="mo">Apr</div><div class="dy">5</div></div>
-        <div class="evinfo">
-          <div class="etag">Online Learning · Begins</div>
-          <h5><a href="#" onclick="document.getElementById('searchinput').value='5 Weekends of Anthroposophy - Spring Cycle';doSearch();return false;">5 Weekends of Anthroposophy - Spring Cycle</a></h5>
-          <div class="emeta">Weekends Apr 5 - May 3 &nbsp;·&nbsp; Online / Dornach &nbsp;·&nbsp; Goetheanum Studium</div>
-        </div>
-      </div>
-      <div class="evrow reveal" data-event-date="2026-04-18">
-        <div class="evdate"><div class="mo">Apr</div><div class="dy">18</div></div>
-        <div class="evinfo">
-          <div class="etag">Conference · 3 days</div>
-          <h5><a href="#" onclick="document.getElementById('searchinput').value='AWSNA Annual Waldorf Education Conference 2026';doSearch();return false;">AWSNA Annual Waldorf Education Conference 2026</a></h5>
-          <div class="emeta">Apr 18-20 &nbsp;·&nbsp; 9:00 AM - 6:00 PM &nbsp;·&nbsp; Chicago, IL &nbsp;·&nbsp; AWSNA</div>
-        </div>
-      </div>
-      <div class="evrow reveal" data-event-date="2026-05-02">
-        <div class="evdate"><div class="mo">May</div><div class="dy">2</div></div>
-        <div class="evinfo">
-          <div class="etag">Biodynamic · Regional</div>
-          <h5><a href="#" onclick="document.getElementById('searchinput').value='Biodynamic Farming Regional Forum';doSearch();return false;">Biodynamic Farming Regional Forum</a></h5>
-          <div class="emeta">May 2-4 &nbsp;·&nbsp; 9:00 AM - 5:00 PM &nbsp;·&nbsp; Fair Oaks, CA &nbsp;·&nbsp; Demeter USA</div>
-        </div>
-      </div>
-      <div class="evrow reveal" data-event-date="2026-06-14">
-        <div class="evdate"><div class="mo">Jun</div><div class="dy">14</div></div>
-        <div class="evinfo">
-          <div class="etag">Community · Open to all</div>
-          <h5><a href="#" onclick="document.getElementById('searchinput').value='Camphill Village USA - Annual Open Days';doSearch();return false;">Camphill Village USA - Annual Open Days</a></h5>
-          <div class="emeta">10:00 AM - 4:00 PM &nbsp;·&nbsp; Copake, NY &nbsp;·&nbsp; Camphill Village USA</div>
-        </div>
-      </div>
-      <div class="evrow reveal" data-event-date="2026-07-06">
-        <div class="evdate"><div class="mo">Jul</div><div class="dy">6</div></div>
-        <div class="evinfo">
-          <div class="etag">Eurythmy · 4 weeks</div>
-          <h5><a href="#" onclick="document.getElementById('searchinput').value='Eurythmy Summer Intensive';doSearch();return false;">Eurythmy Summer Intensive</a></h5>
-          <div class="emeta">Jul 6 - Aug 1 &nbsp;·&nbsp; Daily 9:00 AM &nbsp;·&nbsp; Spring Valley, NY &nbsp;·&nbsp; Eurythmy Spring Valley</div>
-        </div>
-      </div>
-      <div class="evrow reveal" data-event-date="2026-09-27">
-        <div class="evdate"><div class="mo">Sep</div><div class="dy">27</div></div>
-        <div class="evinfo">
-          <div class="etag">Medicine · International</div>
-          <h5><a href="#" onclick="document.getElementById('searchinput').value='Goetheanum Medicine Week 2026';doSearch();return false;">Goetheanum Medicine Week 2026</a></h5>
-          <div class="emeta">Sep 27 - Oct 1 &nbsp;·&nbsp; Dornach, Switzerland &nbsp;·&nbsp; Goetheanum Medical Section</div>
-        </div>
+    <div class="listblock-head">
+      <h3>Upcoming Events</h3>
+      <a href="#" onclick="showEventForm();return false;">submit an event →</a>
+    </div>
+    <div class="listblock-body" id="event-list" style="padding:4px 10px 8px;"></div>
+  </div>
+
+  <!-- Seminars & Retreats -->
+  <div class="listblock reveal" style="margin-top:16px;">
+    <div class="listblock-head">
+      <h3>Seminars &amp; Retreats</h3>
+    </div>
+    <div id="seminars-area" class="seminars-grid" style="padding:0 10px 10px;"></div>
+  </div>
+</div>
+
+<!-- Event Submission Modal -->
+<div id="event-submit-overlay" onclick="if(event.target===this)closeEventForm();">
+  <div id="event-submit-box">
+    <button class="esm-close" onclick="closeEventForm();">&times;</button>
+    <h2>Submit an Event</h2>
+    <p class="esub">Share an anthroposophical event with the community.</p>
+    <label>Event Title *</label>
+    <input type="text" id="esm-title" placeholder="e.g. Spring Eurythmy Workshop">
+    <div class="esm-row">
+      <div><label>Start Date *</label><input type="date" id="esm-date"></div>
+      <div><label>End Date</label><input type="date" id="esm-end"></div>
+    </div>
+    <div class="esm-row">
+      <div><label>Time</label><input type="text" id="esm-time" placeholder="e.g. 9:00 AM - 5:00 PM"></div>
+      <div><label>Category</label>
+        <select id="esm-cat">
+          <option value="study">Study</option>
+          <option value="conference">Conference</option>
+          <option value="community">Community</option>
+          <option value="eurythmy">Eurythmy</option>
+          <option value="biodynamic">Biodynamic</option>
+          <option value="medicine">Medicine</option>
+        </select>
       </div>
     </div>
+    <label>Location</label>
+    <input type="text" id="esm-loc" placeholder="City, Country or 'Online'">
+    <label>Organizer</label>
+    <input type="text" id="esm-org" placeholder="Organization name">
+    <label>Description</label>
+    <textarea id="esm-desc" rows="3" placeholder="Brief description..."></textarea>
+    <label>Website / Link</label>
+    <input type="text" id="esm-url" placeholder="https://...">
+    <button class="esm-btn" onclick="submitEvent();">Submit Event</button>
   </div>
 </div>
 
@@ -1374,24 +1363,11 @@
 <!-- RIGHT SIDEBAR -->
 <div id="rightbar">
 
-  <h5>directory stats</h5>
-  <div class="statblock reveal"><span class="num">380+</span><span class="lbl">total entries</span></div>
-  <div class="statblock reveal"><span class="num">14</span><span class="lbl">societies &amp; orgs</span></div>
-  <div class="statblock reveal"><span class="num">36</span><span class="lbl">waldorf schools</span></div>
-  <div class="statblock reveal"><span class="num">24</span><span class="lbl">camphill communities</span></div>
+  <h5>calendar</h5>
+  <div id="sidebar-mini-cal" class="mini-cal"></div>
 
-  <h5>by the numbers</h5>
-  <ul>
-    <li>36 waldorf schools</li>
-    <li>24 camphill communities</li>
-    <li>14 societies + branches</li>
-    <li>14 medicine orgs</li>
-    <li>12 biodynamic farms</li>
-    <li>11 publishers + media</li>
-    <li>10 teacher training</li>
-    <li>7 eurythmy programs</li>
-    <li>11 countries covered</li>
-  </ul>
+  <h5>upcoming events</h5>
+  <div id="sidebar-upcoming" class="sb-upcoming"></div>
 
   <h5>related directories</h5>
   <ul>

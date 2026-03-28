@@ -1355,6 +1355,329 @@ function timeAgo(dateStr) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+// ══════════════════════════════════════════
+//  CALENDAR SYSTEM
+//  Visual month calendar, event data, mini
+//  sidebar calendar, event submission form.
+// ══════════════════════════════════════════
+
+var calEvents = [
+  { date:'2026-03-22', title:'Goetheanum Online - Spring Weekend Session', cat:'study', loc:'Online', org:'Goetheanum Studium', time:'10:00 AM - 4:00 PM CET' },
+  { date:'2026-04-05', title:'5 Weekends of Anthroposophy - Spring Cycle', cat:'study', loc:'Dornach / Online', org:'Goetheanum Studium', time:'Weekends Apr 5 - May 3' },
+  { date:'2026-04-18', title:'AWSNA Waldorf Education Conference 2026', cat:'conference', loc:'Chicago, IL', org:'AWSNA', time:'Apr 18-20, 9 AM - 6 PM' },
+  { date:'2026-05-02', title:'Biodynamic Farming Regional Forum', cat:'biodynamic', loc:'Fair Oaks, CA', org:'Demeter USA', time:'May 2-4, 9 AM - 5 PM' },
+  { date:'2026-05-17', title:'Anthroposophic Medicine Spring Symposium', cat:'medicine', loc:'Ann Arbor, MI', org:'PAAM', time:'9:00 AM - 4:00 PM' },
+  { date:'2026-06-14', title:'Camphill Village USA - Annual Open Days', cat:'community', loc:'Copake, NY', org:'Camphill Village USA', time:'10:00 AM - 4:00 PM' },
+  { date:'2026-06-21', title:'Summer Solstice Celebration', cat:'community', loc:'Multiple locations', org:'Various branches', time:'All day' },
+  { date:'2026-07-06', title:'Eurythmy Summer Intensive', cat:'eurythmy', loc:'Spring Valley, NY', org:'Eurythmy Spring Valley', time:'Jul 6 - Aug 1, daily 9 AM' },
+  { date:'2026-08-15', title:'Biodynamic Harvest Festival', cat:'biodynamic', loc:'Kimberton, PA', org:'Kimberton CSA', time:'10:00 AM - 4:00 PM' },
+  { date:'2026-09-27', title:'Goetheanum Medicine Week 2026', cat:'medicine', loc:'Dornach, Switzerland', org:'Medical Section', time:'Sep 27 - Oct 1' }
+];
+
+var seminarData = [
+  { title:'Goethean Science Retreat', dates:'Apr 11-13, 2026', loc:'Spring Valley, NY', tag:'retreat' },
+  { title:'Foundations of Anthroposophy', dates:'May 9-10, 2026', loc:'Sacramento, CA', tag:'seminar' },
+  { title:'Waldorf Teacher Summer Training', dates:'Jun 16-27, 2026', loc:'Fair Oaks, CA', tag:'training' },
+  { title:'Contemplative Agriculture Weekend', dates:'Jul 18-20, 2026', loc:'Kimberton, PA', tag:'retreat' },
+  { title:'Eurythmy for Educators', dates:'Aug 4-8, 2026', loc:'Dornach, Switzerland', tag:'training' },
+  { title:'Inner Development Path Seminar', dates:'Sep 12-14, 2026', loc:'Ann Arbor, MI', tag:'seminar' }
+];
+
+var calMonth = new Date().getMonth();
+var calYear = new Date().getFullYear();
+var mcMonth = new Date().getMonth();
+var mcYear = new Date().getFullYear();
+
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+var DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function renderCalendar() {
+  var grid = document.getElementById('cal-grid');
+  var label = document.getElementById('cal-month-label');
+  if (!grid || !label) return;
+
+  label.textContent = MONTHS[calMonth] + ' ' + calYear;
+
+  var first = new Date(calYear, calMonth, 1);
+  var startDay = first.getDay();
+  var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  var prevDays = new Date(calYear, calMonth, 0).getDate();
+  var today = new Date();
+
+  var html = '';
+  DAYS.forEach(function(d) { html += '<div class="day-label">' + d + '</div>'; });
+
+  // Previous month fill
+  for (var i = startDay - 1; i >= 0; i--) {
+    html += '<div class="cal-day other-month"><div class="d-num">' + (prevDays - i) + '</div></div>';
+  }
+
+  // Current month days
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = calYear + '-' + String(calMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    var isToday = (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear());
+    var dayEvents = calEvents.filter(function(e) { return e.date === dateStr; });
+
+    html += '<div class="cal-day' + (isToday ? ' today' : '') + '" onclick="showDayEvents(\'' + dateStr + '\')">';
+    html += '<div class="d-num">' + d + '</div>';
+    dayEvents.forEach(function(ev) {
+      html += '<div class="cal-ev ' + ev.cat + '" title="' + ev.title + '">' + ev.title + '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Next month fill
+  var totalCells = startDay + daysInMonth;
+  var remaining = (totalCells % 7 === 0) ? 0 : 7 - (totalCells % 7);
+  for (var n = 1; n <= remaining; n++) {
+    html += '<div class="cal-day other-month"><div class="d-num">' + n + '</div></div>';
+  }
+
+  grid.innerHTML = html;
+}
+
+function calNavMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function showDayEvents(dateStr) {
+  var dayEvs = calEvents.filter(function(e) { return e.date === dateStr; });
+  var d = new Date(dateStr + 'T12:00:00');
+  var label = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Remove existing popup
+  var old = document.querySelector('.day-popup-overlay');
+  if (old) old.remove();
+  var oldP = document.querySelector('.day-popup');
+  if (oldP) oldP.remove();
+
+  if (dayEvs.length === 0) return;
+
+  var overlay = document.createElement('div');
+  overlay.className = 'day-popup-overlay';
+  overlay.onclick = function() { overlay.remove(); popup.remove(); };
+  document.body.appendChild(overlay);
+
+  var popup = document.createElement('div');
+  popup.className = 'day-popup';
+  var html = '<button class="dp-close" onclick="this.parentElement.remove();document.querySelector(\'.day-popup-overlay\').remove();">&times;</button>';
+  html += '<h4>' + label + '</h4>';
+  dayEvs.forEach(function(ev) {
+    html += '<div class="dp-event"><h5>' + ev.title + '</h5><div class="dp-meta">' + ev.time + ' &middot; ' + ev.loc + ' &middot; ' + ev.org + '</div></div>';
+  });
+  popup.innerHTML = html;
+  document.body.appendChild(popup);
+}
+
+function renderEventList() {
+  var container = document.getElementById('event-list');
+  if (!container) return;
+  var today = new Date();
+  today.setHours(0,0,0,0);
+
+  var upcoming = calEvents.filter(function(e) {
+    return new Date(e.date + 'T23:59:59') >= today;
+  }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+
+  var html = '';
+  upcoming.forEach(function(ev) {
+    var d = new Date(ev.date + 'T12:00:00');
+    var mo = d.toLocaleString('en-US', { month: 'short' });
+    var dy = d.getDate();
+    var isToday = (d.toDateString() === new Date().toDateString());
+    html += '<div class="evrow reveal">';
+    html += '<div class="evdate' + (isToday ? ' today' : '') + '"><div class="mo">' + mo + '</div><div class="dy">' + dy + '</div></div>';
+    html += '<div class="evinfo"><div class="etag">' + ev.cat.charAt(0).toUpperCase() + ev.cat.slice(1) + '</div>';
+    html += '<h5>' + ev.title + '</h5>';
+    html += '<div class="emeta">' + ev.time + ' &middot; ' + ev.loc + ' &middot; ' + ev.org + '</div></div></div>';
+  });
+  container.innerHTML = html;
+
+  // Re-observe for scroll animations
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  container.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+}
+
+function renderSeminars() {
+  var container = document.getElementById('seminars-area');
+  if (!container) return;
+  var html = '';
+  seminarData.forEach(function(s) {
+    html += '<div class="seminar-card">';
+    html += '<h5>' + s.title + '</h5>';
+    html += '<div class="sem-meta">' + s.dates + '<br>' + s.loc + '</div>';
+    html += '<span class="sem-tag ' + s.tag + '">' + s.tag + '</span>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+// ── MINI CALENDAR (Sidebar) ──
+function renderMiniCal() {
+  var container = document.getElementById('sidebar-mini-cal');
+  if (!container) return;
+
+  var first = new Date(mcYear, mcMonth, 1);
+  var startDay = first.getDay();
+  var daysInMonth = new Date(mcYear, mcMonth + 1, 0).getDate();
+  var today = new Date();
+
+  var eventDates = {};
+  calEvents.forEach(function(e) { eventDates[e.date] = true; });
+
+  var html = '<div class="mc-head">';
+  html += '<button onclick="mcNav(-1)">&lsaquo;</button>';
+  html += '<span>' + MONTHS[mcMonth].substring(0, 3) + ' ' + mcYear + '</span>';
+  html += '<button onclick="mcNav(1)">&rsaquo;</button>';
+  html += '</div><div class="mc-grid">';
+
+  ['S','M','T','W','T','F','S'].forEach(function(l) {
+    html += '<div class="mc-lbl">' + l + '</div>';
+  });
+
+  for (var i = 0; i < startDay; i++) {
+    html += '<div class="mc-d other"></div>';
+  }
+
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = mcYear + '-' + String(mcMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    var isToday = (d === today.getDate() && mcMonth === today.getMonth() && mcYear === today.getFullYear());
+    var hasEvent = eventDates[dateStr];
+    var cls = 'mc-d';
+    if (isToday) cls += ' today';
+    if (hasEvent) cls += ' has-event';
+    html += '<div class="' + cls + '" onclick="showDayEvents(\'' + dateStr + '\')">' + d + '</div>';
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function mcNav(dir) {
+  mcMonth += dir;
+  if (mcMonth > 11) { mcMonth = 0; mcYear++; }
+  if (mcMonth < 0) { mcMonth = 11; mcYear--; }
+  renderMiniCal();
+}
+
+// ── SIDEBAR UPCOMING EVENTS ──
+function renderSidebarUpcoming() {
+  var container = document.getElementById('sidebar-upcoming');
+  if (!container) return;
+  var today = new Date();
+  today.setHours(0,0,0,0);
+
+  var upcoming = calEvents.filter(function(e) {
+    return new Date(e.date + 'T23:59:59') >= today;
+  }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); }).slice(0, 4);
+
+  var html = '';
+  upcoming.forEach(function(ev) {
+    var d = new Date(ev.date + 'T12:00:00');
+    var mo = d.toLocaleString('en-US', { month: 'short' });
+    var dy = d.getDate();
+    html += '<div class="sb-ev">';
+    html += '<div class="sb-ev-date">' + mo + '<br>' + dy + '</div>';
+    html += '<div class="sb-ev-info"><h6>' + ev.title + '</h6><span>' + ev.loc + '</span></div>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+// ── HEADER CALENDAR WIDGET ──
+function updateHeaderCalendar() {
+  var now = new Date();
+  var dayEl = document.getElementById('cw-day');
+  var dateEl = document.getElementById('cw-date-str');
+  var upEl = document.getElementById('cw-upcoming');
+  if (!dayEl) return;
+
+  dayEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
+  dateEl.textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  var todayStr = now.toISOString().split('T')[0];
+  var futureCount = calEvents.filter(function(e) { return e.date >= todayStr; }).length;
+  upEl.textContent = futureCount + ' upcoming events';
+}
+
+// ── EVENT FORM ──
+function showEventForm() {
+  document.getElementById('event-submit-overlay').classList.add('open');
+}
+function closeEventForm() {
+  document.getElementById('event-submit-overlay').classList.remove('open');
+}
+
+function submitEvent() {
+  var title = document.getElementById('esm-title').value.trim();
+  var date = document.getElementById('esm-date').value;
+  if (!title || !date) { alert('Please fill in at least the title and start date.'); return; }
+
+  var ev = {
+    date: date,
+    title: title,
+    cat: document.getElementById('esm-cat').value,
+    loc: document.getElementById('esm-loc').value || 'TBD',
+    org: document.getElementById('esm-org').value || '',
+    time: document.getElementById('esm-time').value || ''
+  };
+
+  calEvents.push(ev);
+  renderCalendar();
+  renderEventList();
+  renderMiniCal();
+  renderSidebarUpcoming();
+  updateHeaderCalendar();
+  closeEventForm();
+
+  // Clear form
+  document.getElementById('esm-title').value = '';
+  document.getElementById('esm-date').value = '';
+  document.getElementById('esm-end').value = '';
+  document.getElementById('esm-time').value = '';
+  document.getElementById('esm-loc').value = '';
+  document.getElementById('esm-org').value = '';
+  document.getElementById('esm-desc').value = '';
+  document.getElementById('esm-url').value = '';
+
+  // If Supabase is available, also persist
+  if (sbReady()) {
+    _sb.from('events').insert([{
+      title: ev.title,
+      event_date: ev.date,
+      category: ev.cat,
+      location: ev.loc,
+      organizer: ev.org,
+      description: document.getElementById('esm-desc').value
+    }]).then(function() { console.log('Event submitted to Supabase'); });
+  }
+}
+
+// Google Calendar sync (placeholder)
+function syncGoogleCalendar() {
+  console.log('Google Calendar sync: connect via Settings to enable.');
+}
+
+// ── INIT CALENDAR ON PAGE LOAD ──
+document.addEventListener('DOMContentLoaded', function() {
+  renderCalendar();
+  renderEventList();
+  renderSeminars();
+  renderMiniCal();
+  renderSidebarUpcoming();
+  updateHeaderCalendar();
+});
+
 // ── INIT: Load all data on page ready ──
 (function initSupabaseData() {
   // Wait a tick to ensure _sb is initialized
