@@ -444,8 +444,148 @@ VALUES
   ('housing-land',           'Housing and Land',            'Rentals, land, farm stays, community living spaces', '🌍', 10, true),
   ('jobs-volunteering',      'Jobs and Volunteering',       'Employment, apprenticeships, volunteer opportunities', '💼', 11, true),
   ('groups-circles',         'Groups and Circles',          'Reading circles, study groups, working groups, societies', '⭕', 12, true),
-  ('directory',              'Directory',                   'Listings of schools, farms, clinics, and organizations', '🗂️', 13, true)
+  ('eldercare',              'Eldercare',                   'Senior living, home care, biography work, threshold care', '🏡', 13, true),
+  ('directory',              'Directory',                   'Listings of schools, farms, clinics, and organizations', '🗂️', 14, true)
 ON CONFLICT (slug) DO NOTHING;
+
+
+-- =============================================================================
+-- TABLE: chat_messages
+-- Realtime community chat messages, organized by room.
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS public.chat_messages (
+  id         uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  room       text        NOT NULL,
+  user_id    uuid        REFERENCES auth.users (id) ON DELETE SET NULL,
+  username   text        NOT NULL,
+  content    text        NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_room       ON public.chat_messages (room);
+CREATE INDEX IF NOT EXISTS idx_chat_created_at  ON public.chat_messages (created_at DESC);
+
+ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
+
+-- Authenticated users can read all messages
+CREATE POLICY "chat: authenticated read"
+  ON public.chat_messages FOR SELECT
+  TO authenticated
+  USING (true);
+
+-- Authenticated users can insert messages
+CREATE POLICY "chat: authenticated insert"
+  ON public.chat_messages FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+
+-- =============================================================================
+-- TABLE: memorials
+-- Approved memorial tributes for community members who have crossed the threshold.
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS public.memorials (
+  id         uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name       text        NOT NULL,
+  years      text,
+  location   text,
+  bio        text        NOT NULL,
+  photo_url  text,
+  status     text        NOT NULL DEFAULT 'approved'
+                         CHECK (status IN ('approved', 'pending', 'rejected')),
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_memorials_status ON public.memorials (status);
+
+ALTER TABLE public.memorials ENABLE ROW LEVEL SECURITY;
+
+-- Public can read approved memorials
+CREATE POLICY "memorials: public read approved"
+  ON public.memorials FOR SELECT
+  USING (status = 'approved');
+
+-- Admins can manage all memorials
+CREATE POLICY "memorials: admin all"
+  ON public.memorials FOR ALL
+  TO authenticated
+  USING (public.is_admin());
+
+
+-- =============================================================================
+-- TABLE: memorials_pending
+-- User-submitted memorial tributes awaiting review.
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS public.memorials_pending (
+  id            uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name          text        NOT NULL,
+  years         text,
+  location      text,
+  bio           text        NOT NULL,
+  photo_url     text,
+  contact_email text,
+  status        text        NOT NULL DEFAULT 'pending'
+                            CHECK (status IN ('pending', 'approved', 'rejected')),
+  created_at    timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.memorials_pending ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can submit a memorial
+CREATE POLICY "memorials_pending: public insert"
+  ON public.memorials_pending FOR INSERT
+  WITH CHECK (true);
+
+-- Admins can read/update pending memorials
+CREATE POLICY "memorials_pending: admin read"
+  ON public.memorials_pending FOR SELECT
+  TO authenticated
+  USING (public.is_admin());
+
+CREATE POLICY "memorials_pending: admin update"
+  ON public.memorials_pending FOR UPDATE
+  TO authenticated
+  USING (public.is_admin());
+
+
+-- =============================================================================
+-- TABLE: listings_pending
+-- Anonymous listing submissions awaiting moderation.
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS public.listings_pending (
+  id            uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name          text        NOT NULL,
+  url           text,
+  category      text        NOT NULL,
+  location      text,
+  description   text,
+  contact_email text,
+  submitted_at  timestamptz NOT NULL DEFAULT now(),
+  status        text        NOT NULL DEFAULT 'pending'
+                            CHECK (status IN ('pending', 'approved', 'rejected'))
+);
+
+ALTER TABLE public.listings_pending ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can submit a listing
+CREATE POLICY "listings_pending: public insert"
+  ON public.listings_pending FOR INSERT
+  WITH CHECK (true);
+
+-- Admins can manage pending listings
+CREATE POLICY "listings_pending: admin read"
+  ON public.listings_pending FOR SELECT
+  TO authenticated
+  USING (public.is_admin());
+
+CREATE POLICY "listings_pending: admin update"
+  ON public.listings_pending FOR UPDATE
+  TO authenticated
+  USING (public.is_admin());
 
 
 -- =============================================================================

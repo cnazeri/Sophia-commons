@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.tile.openstreetmap.org;">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sophia Commons | Anthroposophical Community Directory</title>
 
@@ -127,14 +128,14 @@
 </script>
 
 <!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://bnrvgitzbpocratvszgk.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_Quj2NdNaaDKJOe4UT5Y5nw_1Sog2yjI';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // Check for existing session on page load
-  supabase.auth.getSession().then(({ data: { session } }) => {
+  _sb.auth.getSession().then(({ data: { session } }) => {
     if (session) {
       window._supabaseUser = session.user;
       const uname = session.user.email ? session.user.email.split('@')[0] : 'user';
@@ -143,7 +144,7 @@
   });
 
   // Listen for auth state changes (login, logout, token refresh)
-  supabase.auth.onAuthStateChange((event, session) => {
+  _sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN' && session) {
       window._supabaseUser = session.user;
     } else if (event === 'SIGNED_OUT') {
@@ -162,7 +163,7 @@
   --border:  #d0d4de;
   --blt:     #e0e4ee;
   --ink:     #1a1e2e;
-  --muted:   #6a7080;
+  --muted:   #555b68;
   --link:    #2a4a8a;
   --lhov:    #8a2020;
   --rust:    #9a3a1a;
@@ -174,6 +175,7 @@
   --cb:      #f4f6fb;    /* cat body */
   --verified:#3a6a2a;
 }
+.skip-link:focus{position:fixed;top:10px;left:10px;width:auto;height:auto;padding:8px 16px;background:#fff;color:#1a1a2e;z-index:9999;border:2px solid #1a1a2e;border-radius:4px;font-size:16px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Libre Franklin',sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.55;}
 a{color:var(--link);text-decoration:none;transition:color .15s;}
@@ -414,17 +416,18 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
 </style>
 </head>
 <body>
+<a href="#maincontent" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;">Skip to main content</a>
 
 <!-- MODAL -->
-<div id="modal-overlay">
+<div id="modal-overlay" role="dialog" aria-modal="true">
   <div id="modal-box">
-    <button id="modal-close" onclick="closeModal()">×</button>
+    <button id="modal-close" aria-label="Close" onclick="closeModal()">×</button>
     <h2 id="modal-title">Sign in</h2>
     <p id="modal-desc">Access community chat and member features.</p>
     <div id="auth-error" style="display:none;color:#c0392b;font-size:12px;margin-bottom:8px;padding:6px 10px;background:#fdf0ef;border:1px solid #f5c6cb;"></div>
-    <label>Email address</label>
+    <label for="login-email">Email address</label>
     <input type="email" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doSignIn()">
-    <label>Password</label>
+    <label for="login-pass">Password</label>
     <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignIn()">
     <button class="btn-primary" id="auth-btn" onclick="doSignIn()">Sign in</button>
     <div id="modal-foot">
@@ -441,11 +444,11 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
     <button onclick="document.getElementById('submit-overlay').style.display='none';" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);">×</button>
     <h2 style="font-family:'Libre Franklin',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;color:var(--ink);">Submit a Listing</h2>
     <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Add your organization, farm, school, or initiative to the Sophia Commons directory.</p>
-    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Organization name *</label>
+    <label for="sl-name" style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Organization name *</label>
     <input type="text" id="sl-name" placeholder="e.g. Sunrise Waldorf School" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;margin-bottom:2px;">
-    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Website URL</label>
+    <label for="sl-url" style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Website URL</label>
     <input type="url" id="sl-url" placeholder="https://…" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;">
-    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Category *</label>
+    <label for="sl-cat" style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Category *</label>
     <select id="sl-cat" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;background:#fff;">
       <option value="">Select a category…</option>
       <option>Waldorf &amp; Education</option>
@@ -463,11 +466,11 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
       <option>Online Resources</option>
       <option>Christian Community</option>
     </select>
-    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">City / Location</label>
+    <label for="sl-loc" style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">City / Location</label>
     <input type="text" id="sl-loc" placeholder="e.g. Fair Oaks, CA" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;">
-    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Short description</label>
+    <label for="sl-desc" style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Short description</label>
     <textarea id="sl-desc" rows="3" placeholder="Describe this organization in 1–2 sentences…" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;resize:vertical;"></textarea>
-    <label style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Your email (for follow-up)</label>
+    <label for="sl-email" style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px;margin-top:10px;">Your email (for follow-up)</label>
     <input type="email" id="sl-email" placeholder="you@example.com" style="width:100%;padding:7px 9px;border:1px solid var(--border);font-family:'Libre Franklin',sans-serif;font-size:13px;">
     <button onclick="submitListing()" style="width:100%;margin-top:16px;padding:9px;background:var(--warm);color:#fff;border:none;font-family:'Libre Franklin',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">Submit for Review</button>
     <div id="sl-ok" style="display:none;text-align:center;font-size:13px;color:var(--verified);font-weight:600;margin-top:12px;">✓ Submitted! We'll review and add it within 48 hours.</div>
@@ -477,7 +480,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
 <!-- TOP BAR -->
 <div id="topbar">
   <span class="nav-links">
-    <a href="#">about</a>
+    <a href="#" onclick="showSec('home');return false;">about</a>
     <a href="#" onclick="showSubmitForm();return false;">submit listing</a>
     <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
     <a href="#" class="signinbtn" id="signin-link" onclick="openModal();return false;">sign in</a>
@@ -487,19 +490,16 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
 <!-- HEADER -->
 <header>
   <a href="#" onclick="showSec('home');return false;" id="logo">
-    <!-- Monad symbol — circle with centre dot -->
-    <svg class="monad" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Monad symbol">
-      <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="9"/>
-      <circle cx="50" cy="50" r="10" fill="currentColor"/>
-    </svg>
-    <span style="font-family:'Josefin Sans',sans-serif;font-size:24px;font-weight:600;color:var(--ink);letter-spacing:.08em;text-transform:uppercase;">Sophia Commons</span>
+    <img src="logo.svg" alt="Sophia Commons" class="monad" style="width:32px;height:32px;">
+    <span style="font-family:'Josefin Sans',sans-serif;font-size:24px;font-weight:600;color:var(--ink);letter-spacing:.08em;text-transform:uppercase;">Sophia Commons<sup style="font-size:9px;font-weight:400;vertical-align:super;letter-spacing:0;">TM</sup></span>
     <span>Anthroposophical Community</span>
   </a>
-  <div id="statsbar">March 22, 2026 &nbsp;·&nbsp; <strong>2,840+</strong> listings &nbsp;·&nbsp; <strong>256</strong> directory entries</div>
+  <div id="statsbar">March 23, 2026 &nbsp;·&nbsp; <strong>2,840+</strong> listings &nbsp;·&nbsp; <strong>256</strong> directory entries</div>
   <a href="#" id="postlink" onclick="showSubmitForm();return false;">+ post a listing</a>
 </header>
 
 <!-- MAIN NAV -->
+<nav aria-label="Main navigation">
 <div id="mainnav">
   <button class="active" id="nav-home"      onclick="showSec('home')">home</button>
   <button id="nav-news"      onclick="showSec('news')">news</button>
@@ -509,8 +509,10 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
   <button id="nav-directory" onclick="showSec('directory')">directory</button>
   <button class="chatnav locked" id="nav-chat" onclick="handleChat()">community chat</button>
 </div>
+</nav>
 
 <!-- 3-COL PAGE -->
+<div id="maincontent"></div>
 <div id="page">
 
 <!-- LEFT SIDEBAR -->
@@ -554,7 +556,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
     <li><a href="https://rsarchive.org" target="_blank">Steiner Archive</a></li>
     <li><a href="https://anthroposophysocial.com" target="_blank">Anthroposophy.Social</a></li>
     <li><a href="https://biodynamics.com" target="_blank">Biodynamics.com</a></li>
-    <li><a href="#">suggest correction</a></li>
+    <li><a href="mailto:hello@sophiacommons.org">suggest correction</a></li>
   </ul>
 </div>
 
@@ -564,7 +566,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
 <!-- ═══ HOME ═══ -->
 <div class="pagesec active" id="sec-home">
 
-  <div class="seclabel">Browse by Category &nbsp;·&nbsp; 2,840+ listings &nbsp;·&nbsp; March 22, 2026</div>
+  <div class="seclabel">Browse by Category &nbsp;·&nbsp; 2,840+ listings &nbsp;·&nbsp; March 23, 2026</div>
 
   <!-- ROW 1: Trending + News + Calendar -->
   <div class="twocol" style="grid-template-columns:1fr 1fr;margin-bottom:12px;">
@@ -598,23 +600,23 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
         <a href="#" onclick="showSec('events');return false;">full calendar →</a>
       </div>
       <div class="listblock-body" style="padding:4px 10px 6px;">
-        <div class="evrow">
-          <div class="evdate today"><div class="mo">Mar</div><div class="dy">22</div></div>
+        <div class="evrow" data-event-date="2026-03-22">
+          <div class="evdate"><div class="mo">Mar</div><div class="dy">22</div></div>
           <div class="evinfo"><div class="etag">Study</div><h5><a href="#">Goetheanum Online — Spring Weekend Session</a></h5><div class="emeta">Online · Free for members</div></div>
         </div>
-        <div class="evrow">
+        <div class="evrow" data-event-date="2026-04-05">
           <div class="evdate"><div class="mo">Apr</div><div class="dy">5</div></div>
           <div class="evinfo"><div class="etag">Online Learning</div><h5><a href="#">5 Weekends of Anthroposophy — Spring Cycle</a></h5><div class="emeta">Dornach / Online · Goetheanum Studium</div></div>
         </div>
-        <div class="evrow">
+        <div class="evrow" data-event-date="2026-04-18">
           <div class="evdate"><div class="mo">Apr</div><div class="dy">18</div></div>
           <div class="evinfo"><div class="etag">Conference</div><h5><a href="#">AWSNA Waldorf Education Conference 2026</a></h5><div class="emeta">Chicago, IL · AWSNA</div></div>
         </div>
-        <div class="evrow">
+        <div class="evrow" data-event-date="2026-05-02">
           <div class="evdate"><div class="mo">May</div><div class="dy">2</div></div>
           <div class="evinfo"><div class="etag">Biodynamic</div><h5><a href="#">Biodynamic Farming Regional Forum</a></h5><div class="emeta">Fair Oaks, CA · 9:00 AM – 5:00 PM</div></div>
         </div>
-        <div class="evrow">
+        <div class="evrow" data-event-date="2026-07-06">
           <div class="evdate"><div class="mo">Jul</div><div class="dy">6</div></div>
           <div class="evinfo"><div class="etag">Eurythmy</div><h5><a href="#">Eurythmy Summer Intensive</a></h5><div class="emeta">Spring Valley, NY · Eurythmy Spring Valley</div></div>
         </div>
@@ -631,56 +633,56 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
     <div class="catblock">
       <div class="catblock-head"><h3>Waldorf &amp; Education</h3><span class="alllink">312</span></div>
       <ul>
-        <li><a href="#">Schools directory</a></li>
-        <li><a href="#">Teacher training programs</a></li>
-        <li><a href="#">Curriculum resources</a></li>
-        <li><a href="#">Tutoring &amp; homeschool</a></li>
-        <li><a href="#">Goetheanum Studium – Online</a></li>
-        <li><a href="#">Center for Anthroposophy</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Schools directory</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Teacher training programs</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Curriculum resources</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Tutoring &amp; homeschool</a></li>
+        <li><a href="https://studium.goetheanum.ch/en/online-studies" target="_blank">Goetheanum Studium – Online</a></li>
+        <li><a href="https://centerforanthroposophy.org" target="_blank">Center for Anthroposophy</a></li>
       </ul>
     </div>
     <div class="catblock">
       <div class="catblock-head"><h3>Biodynamic Agriculture</h3><span class="alllink">198</span></div>
       <ul>
-        <li><a href="#">CSA farm shares</a></li>
-        <li><a href="#">Farm apprenticeships</a></li>
-        <li><a href="#">Demeter-certified farms</a></li>
-        <li><a href="#">Seed suppliers</a></li>
-        <li><a href="#">Training programs</a></li>
-        <li><a href="#">Demeter Farm Directory<sup>✓</sup></a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">CSA farm shares</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Farm apprenticeships</a></li>
+        <li><a href="https://biodynamicfood.org" target="_blank">Demeter-certified farms</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Seed suppliers</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Training programs</a></li>
+        <li><a href="https://biodynamicfood.org" target="_blank">Demeter Farm Directory<sup>✓</sup></a></li>
       </ul>
     </div>
     <div class="catblock">
       <div class="catblock-head"><h3>Esoteric Studies</h3><span class="alllink">147</span></div>
       <ul>
-        <li><a href="#">Study groups &amp; circles</a></li>
-        <li><a href="#">Online courses</a></li>
-        <li><a href="#">Reading circles</a></li>
-        <li><a href="#">Lectures &amp; seminars</a></li>
-        <li><a href="#">Inner Work Path</a></li>
-        <li><a href="#">Wisdom Working Directory</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Study groups &amp; circles</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Online courses</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Reading circles</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Lectures &amp; seminars</a></li>
+        <li><a href="https://www.innerworkpath.com" target="_blank">Inner Work Path</a></li>
+        <li><a href="https://www.wisdomworking.org/about" target="_blank">Wisdom Working Directory</a></li>
       </ul>
     </div>
     <div class="catblock">
       <div class="catblock-head"><h3>Arts &amp; Eurythmy</h3><span class="alllink">89</span></div>
       <ul>
-        <li><a href="#">Eurythmy training programs</a></li>
-        <li><a href="#">Performance companies</a></li>
-        <li><a href="#">Classes &amp; workshops</a></li>
-        <li><a href="#">Artistic commissions</a></li>
-        <li><a href="#">Speech formation</a></li>
-        <li><a href="#">Eurythmy Spring Valley<sup>✓</sup></a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Eurythmy training programs</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Performance companies</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Classes &amp; workshops</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Artistic commissions</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Speech formation</a></li>
+        <li><a href="https://www.eurythmy.org" target="_blank">Eurythmy Spring Valley<sup>✓</sup></a></li>
       </ul>
     </div>
     <div class="catblock">
       <div class="catblock-head"><h3>Anthroposophic Medicine</h3><span class="alllink">124</span></div>
       <ul>
-        <li><a href="#">Clinics &amp; hospitals</a></li>
-        <li><a href="#">Practitioners directory</a></li>
-        <li><a href="#">Weleda products</a></li>
-        <li><a href="#">WALA remedies</a></li>
-        <li><a href="#">Therapeutic eurythmy</a></li>
-        <li><a href="#">AnthroMed Register<sup>✓</sup></a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Clinics &amp; hospitals</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Practitioners directory</a></li>
+        <li><a href="https://www.weleda.com" target="_blank">Weleda products</a></li>
+        <li><a href="https://www.wala.world/en/" target="_blank">WALA remedies</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Therapeutic eurythmy</a></li>
+        <li><a href="http://www.anthromed.net" target="_blank">AnthroMed Register<sup>✓</sup></a></li>
       </ul>
     </div>
     <div class="catblock">
@@ -753,12 +755,12 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
     <div class="catblock">
       <div class="catblock-head"><h3>Community &amp; Camphill</h3><span class="alllink">67</span></div>
       <ul>
-        <li><a href="#">Camphill communities</a></li>
-        <li><a href="#">Co-worker positions</a></li>
-        <li><a href="#">Intentional communities</a></li>
-        <li><a href="#">Volunteer opportunities</a></li>
-        <li><a href="#">Camphill Village USA<sup>✓</sup></a></li>
-        <li><a href="#">Camphill Academy<sup>✓</sup></a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Camphill communities</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Co-worker positions</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Intentional communities</a></li>
+        <li><a href="#" onclick="showSec('browse');return false;">Volunteer opportunities</a></li>
+        <li><a href="https://www.ic.org/directory/camphill-village-usa-inc/" target="_blank">Camphill Village USA<sup>✓</sup></a></li>
+        <li><a href="https://camphill.edu" target="_blank">Camphill Academy<sup>✓</sup></a></li>
       </ul>
     </div>
   </div>
@@ -837,7 +839,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
   <div class="listblock">
     <div class="listblock-head"><h3>March – September 2026</h3><a href="#">submit an event →</a></div>
     <div class="listblock-body" style="padding:4px 10px 8px;">
-      <div class="evrow">
+      <div class="evrow" data-event-date="2026-03-22">
         <div class="evdate today"><div class="mo">Mar</div><div class="dy">22</div></div>
         <div class="evinfo">
           <div class="etag">Study · Online</div>
@@ -845,7 +847,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
           <div class="emeta">10:00 AM – 4:00 PM CET &nbsp;·&nbsp; Online &nbsp;·&nbsp; Goetheanum Studium &nbsp;·&nbsp; Free for members</div>
         </div>
       </div>
-      <div class="evrow">
+      <div class="evrow" data-event-date="2026-04-05">
         <div class="evdate"><div class="mo">Apr</div><div class="dy">5</div></div>
         <div class="evinfo">
           <div class="etag">Online Learning · Begins</div>
@@ -853,7 +855,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
           <div class="emeta">Weekends Apr 5 – May 3 &nbsp;·&nbsp; Online / Dornach &nbsp;·&nbsp; Goetheanum Studium</div>
         </div>
       </div>
-      <div class="evrow">
+      <div class="evrow" data-event-date="2026-04-18">
         <div class="evdate"><div class="mo">Apr</div><div class="dy">18</div></div>
         <div class="evinfo">
           <div class="etag">Conference · 3 days</div>
@@ -861,7 +863,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
           <div class="emeta">Apr 18–20 &nbsp;·&nbsp; 9:00 AM – 6:00 PM &nbsp;·&nbsp; Chicago, IL &nbsp;·&nbsp; AWSNA</div>
         </div>
       </div>
-      <div class="evrow">
+      <div class="evrow" data-event-date="2026-05-02">
         <div class="evdate"><div class="mo">May</div><div class="dy">2</div></div>
         <div class="evinfo">
           <div class="etag">Biodynamic · Regional</div>
@@ -869,7 +871,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
           <div class="emeta">May 2–4 &nbsp;·&nbsp; 9:00 AM – 5:00 PM &nbsp;·&nbsp; Fair Oaks, CA &nbsp;·&nbsp; Demeter USA</div>
         </div>
       </div>
-      <div class="evrow">
+      <div class="evrow" data-event-date="2026-06-14">
         <div class="evdate"><div class="mo">Jun</div><div class="dy">14</div></div>
         <div class="evinfo">
           <div class="etag">Community · Open to all</div>
@@ -877,7 +879,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
           <div class="emeta">10:00 AM – 4:00 PM &nbsp;·&nbsp; Copake, NY &nbsp;·&nbsp; Camphill Village USA</div>
         </div>
       </div>
-      <div class="evrow">
+      <div class="evrow" data-event-date="2026-07-06">
         <div class="evdate"><div class="mo">Jul</div><div class="dy">6</div></div>
         <div class="evinfo">
           <div class="etag">Eurythmy · 4 weeks</div>
@@ -885,7 +887,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
           <div class="emeta">Jul 6 – Aug 1 &nbsp;·&nbsp; Daily 9:00 AM &nbsp;·&nbsp; Spring Valley, NY &nbsp;·&nbsp; Eurythmy Spring Valley</div>
         </div>
       </div>
-      <div class="evrow">
+      <div class="evrow" data-event-date="2026-09-27">
         <div class="evdate"><div class="mo">Sep</div><div class="dy">27</div></div>
         <div class="evinfo">
           <div class="etag">Medicine · International</div>
@@ -1107,10 +1109,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
   <div class="ftcols">
     <div class="ftcol">
       <div class="ftlogo" style="display:flex;align-items:center;gap:8px;">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0;opacity:.9;">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#ffffff" stroke-width="9"/>
-          <circle cx="50" cy="50" r="10" fill="#ffffff"/>
-        </svg>
+        <img src="logo.svg" alt="Sophia Commons" style="width:22px;height:22px;flex-shrink:0;opacity:.9;filter:brightness(0) invert(1);">
         Sophia Commons
       </div>
       <div class="ftsub">Anthroposophical Community</div>
@@ -1127,10 +1126,10 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
     <div class="ftcol">
       <div class="ftcol-h">Community</div>
       <a href="#" onclick="handleChat();return false;">Community Chat</a>
-      <a href="#">Submit a Listing</a>
-      <a href="#">Suggest a Correction</a>
-      <a href="#">Volunteer / Help Edit</a>
-      <a href="#">About Sophia Commons</a>
+      <a href="#" onclick="showSubmitForm();return false;">Submit a Listing</a>
+      <a href="mailto:hello@sophiacommons.org">Suggest a Correction</a>
+      <a href="mailto:hello@sophiacommons.org">Volunteer / Help Edit</a>
+      <a href="#" onclick="showSec('home');return false;">About Sophia Commons</a>
     </div>
     <div class="ftcol ftnl">
       <div class="ftcol-h">Newsletter</div>
@@ -1141,8 +1140,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.45);padding:18px 16px 0;}
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons</span>
-    <span><a href="#">privacy</a><a href="#">terms</a><a href="#">contact</a></span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.0.0</span>
+    <span><a href="#" onclick="return false;">privacy</a><a href="#" onclick="return false;">terms</a><a href="mailto:hello@sophiacommons.org">contact</a></span>
   </div>
 </footer>
 
@@ -1159,11 +1158,11 @@ const roomHistory = {
   'general': [
     {av:'M',nm:'Maren H.',t:'9:14 AM',txt:'Good morning — has anyone attended any of the Goetheanum online study weekends? Considering the spring session.'},
     {av:'T',nm:'Thomas R.',t:'9:22 AM',txt:'Yes! I did the October session last year. Recorded lectures plus live discussion groups — format worked really well.'},
-    {av:'A',nm:'Aria S.',t:'9:31 AM',txt:'The Rudolf Steiner Archive just released new English translations. Worth checking if you're studying the agriculture lectures.'},
+    {av:'A',nm:'Aria S.',t:'9:31 AM',txt:'The Rudolf Steiner Archive just released new English translations. Worth checking if you are studying the agriculture lectures.'},
     {av:'J',nm:'Johannes K.',t:'9:44 AM',txt:'Anyone in the Bay Area interested in starting a local study circle? Working through Philosophy of Freedom this spring.'},
   ],
   'waldorf-education': [
-    {av:'C',nm:'Clara W.',t:'8:50 AM',txt:'Has anyone used the updated AWSNA curriculum frameworks? We're revising our grade 6 program.'},
+    {av:'C',nm:'Clara W.',t:'8:50 AM',txt:'Has anyone used the updated AWSNA curriculum frameworks? We are revising our grade 6 program.'},
     {av:'T',nm:'Thomas R.',t:'9:05 AM',txt:'Yes — the new frameworks have much better guidance for main lesson books. Highly recommend the teacher renewal section.'},
   ],
   'biodynamic': [
@@ -1253,9 +1252,9 @@ async function doSignIn() {
 
   let result;
   if (authMode === 'signup') {
-    result = await supabase.auth.signUp({ email, password });
+    result = await _sb.auth.signUp({ email, password });
   } else {
-    result = await supabase.auth.signInWithPassword({ email, password });
+    result = await _sb.auth.signInWithPassword({ email, password });
   }
 
   btn.disabled = false;
@@ -1296,7 +1295,7 @@ function applySignedInState() {
 }
 
 async function doSignOut() {
-  await supabase.auth.signOut();
+  await _sb.auth.signOut();
   signedIn = false; username = '';
   document.getElementById('user-chip').style.display = 'none';
   document.getElementById('signin-link').style.display = 'inline';
@@ -1316,7 +1315,7 @@ async function doPasswordReset(e) {
     errEl.style.display = 'block';
     return;
   }
-  await supabase.auth.resetPasswordForEmail(email, {
+  await _sb.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin
   });
   errEl.style.display = 'none';
@@ -1348,7 +1347,7 @@ async function switchRoom(el, name, desc, count) {
   // Try loading from Supabase first, fall back to local demo data
   let hist = [];
   try {
-    const { data, error } = await supabase
+    const { data, error } = await _sb
       .from('chat_messages')
       .select('*')
       .eq('room', name)
@@ -1375,9 +1374,9 @@ async function switchRoom(el, name, desc, count) {
 
   // Subscribe to new messages in this room via Supabase Realtime
   if (chatSubscription) {
-    supabase.removeChannel(chatSubscription);
+    _sb.removeChannel(chatSubscription);
   }
-  chatSubscription = supabase
+  chatSubscription = _sb
     .channel('room-' + name)
     .on('postgres_changes', {
       event: 'INSERT',
@@ -1409,7 +1408,7 @@ async function sendMsg() {
 
   // Insert into Supabase
   try {
-    await supabase.from('chat_messages').insert({
+    await _sb.from('chat_messages').insert({
       room: currentRoom,
       username: username,
       content: txt
@@ -1427,7 +1426,7 @@ async function doSignup() {
   const v = document.getElementById('signup-email').value.trim();
   if (!v.includes('@')) return;
   try {
-    await supabase.from('newsletter_subscribers').insert({ email: v });
+    await _sb.from('newsletter_subscribers').insert({ email: v });
   } catch(e) { /* duplicate is fine */ }
   document.getElementById('signup-email').style.display='none';
   document.querySelector('.signup-box button').style.display='none';
@@ -1437,7 +1436,7 @@ async function doFtSignup() {
   const v = document.getElementById('ft-email').value.trim();
   if (!v.includes('@')) return;
   try {
-    await supabase.from('newsletter_subscribers').insert({ email: v });
+    await _sb.from('newsletter_subscribers').insert({ email: v });
   } catch(e) { /* duplicate is fine */ }
   document.getElementById('ft-email').style.display='none';
   document.querySelector('.ftnl button').style.display='none';
@@ -1484,34 +1483,45 @@ let map, markers=[], infoWin, mapLoaded=false;
 
 function loadMap() {
   mapLoaded = true;
-  const script = document.createElement('script');
-  script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyD-placeholder&callback=initMap';
-  script.async = true;
+  // Load Leaflet CSS
+  var lnk = document.createElement('link');
+  lnk.rel = 'stylesheet';
+  lnk.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+  document.head.appendChild(lnk);
+  // Load Leaflet JS
+  var script = document.createElement('script');
+  script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  script.onload = function() { initMap(); };
   script.onerror = function() {
-    const el = document.getElementById('dir-map');
+    var el = document.getElementById('dir-map');
     el.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px;';
-    el.innerHTML = '<div style="font-family:\'IM Fell English\',serif;font-size:14px;color:var(--muted);">Interactive map</div>' +
-      '<div style="font-size:11.5px;color:var(--muted);text-align:center;max-width:340px;line-height:1.6;">32 organizations pinned worldwide. Add a Google Maps API key to activate. <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">Get a key →</a></div>' +
+    el.innerHTML = '<div style="font-family:\'IM Fell English\',serif;font-size:14px;color:var(--muted);">Map unavailable</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:6px;max-width:580px;">' +
-      mapLocs.slice(0,16).map(l=>`<span style="font-size:11px;background:#fff;border:1px solid var(--blt);padding:2px 7px;color:var(--link);">${l.name}<span style="color:var(--muted);font-size:10px;"> · ${l.city}</span></span>`).join('') + '</div>';
+      mapLocs.slice(0,16).map(function(l){return '<span style="font-size:11px;background:#fff;border:1px solid var(--blt);padding:2px 7px;color:var(--link);">'+l.name+'<span style="color:var(--muted);font-size:10px;"> · '+l.city+'</span></span>';}).join('') + '</div>';
   };
   document.head.appendChild(script);
 }
 function initMap() {
-  const el = document.getElementById('dir-map');
-  map = new google.maps.Map(el, {center:{lat:30,lng:0},zoom:2,mapTypeControl:false,streetViewControl:false,styles:[{featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]}]});
-  infoWin = new google.maps.InfoWindow();
+  var el = document.getElementById('dir-map');
+  map = L.map(el, {scrollWheelZoom:false}).setView([30,0],2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom:18
+  }).addTo(map);
   renderMarkers('all');
 }
 function renderMarkers(filter) {
-  markers.forEach(m=>m.setMap(null)); markers=[];
-  const locs = filter==='all' ? mapLocs : mapLocs.filter(l=>l.cat===filter);
-  locs.forEach(loc => {
-    const m = new google.maps.Marker({position:{lat:loc.lat,lng:loc.lng},map,title:loc.name,icon:{path:google.maps.SymbolPath.CIRCLE,scale:7,fillColor:catColors[loc.cat]||'#888',fillOpacity:.9,strokeColor:'#fff',strokeWeight:1.5}});
-    m.addListener('click',()=>{
-      infoWin.setContent(`<div style="font-family:'Libre Franklin',sans-serif;padding:3px;max-width:190px;"><div style="font-weight:600;font-size:12.5px;margin-bottom:2px;">${loc.name}</div><div style="font-size:11px;color:#7a7268;">${loc.city}</div></div>`);
-      infoWin.open(map,m);
+  markers.forEach(function(m){map.removeLayer(m);}); markers=[];
+  var locs = filter==='all' ? mapLocs : mapLocs.filter(function(l){return l.cat===filter;});
+  locs.forEach(function(loc) {
+    var color = catColors[loc.cat]||'#888';
+    var icon = L.divIcon({
+      className:'',
+      html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3);"></div>',
+      iconSize:[14,14],iconAnchor:[7,7]
     });
+    var m = L.marker([loc.lat,loc.lng],{icon:icon,title:loc.name}).addTo(map);
+    m.bindPopup('<div style="font-family:\'Libre Franklin\',sans-serif;padding:3px;max-width:190px;"><div style="font-weight:600;font-size:12.5px;margin-bottom:2px;">'+loc.name+'</div><div style="font-size:11px;color:#7a7268;">'+loc.city+'</div></div>');
     markers.push(m);
   });
 }
@@ -1540,7 +1550,7 @@ async function submitListing() {
   };
 
   try {
-    const { error } = await supabase.from('listings_pending').insert(listing);
+    const { error } = await _sb.from('listings_pending').insert(listing);
     if (error) console.warn('Listing submit error:', error);
   } catch(e) {
     console.warn('Listing submit failed:', e);
@@ -1565,7 +1575,7 @@ function doSearch() {
   // Try Supabase full-text search, fall back to local highlight
   (async () => {
     try {
-      const { data, error } = await supabase.rpc('search_all', { query: q, limit_n: 30 });
+      const { data, error } = await _sb.rpc('search_all', { query: q, limit_n: 30 });
       if (!error && data && data.length > 0) {
         // Display search results in a simple overlay
         const results = data.map(r =>
@@ -1620,7 +1630,7 @@ function doSearch() {
 // ── DIRECTORY: Load from Supabase when data is available ──
 async function loadDirectoryFromSupabase() {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await _sb
       .from('directory_entries')
       .select('organization_name, description, category, website_url, location, country, is_verified')
       .eq('status', 'approved')
@@ -1637,6 +1647,69 @@ async function loadDirectoryFromSupabase() {
 
 // Run on page load (non-blocking)
 loadDirectoryFromSupabase();
+
+// ── AUTO-HIDE PAST EVENTS ──
+(function() {
+  var today = new Date();
+  today.setHours(23,59,59,999); // hide after end of the event day
+  document.querySelectorAll('.evrow[data-event-date]').forEach(function(row) {
+    var eventDate = new Date(row.getAttribute('data-event-date') + 'T23:59:59');
+    if (eventDate < today) {
+      row.style.display = 'none';
+    }
+  });
+  // Also update "today" class on the correct event
+  document.querySelectorAll('.evdate.today').forEach(function(el) {
+    var row = el.closest('.evrow');
+    if (row) {
+      var d = new Date(row.getAttribute('data-event-date'));
+      var now = new Date();
+      if (d.toDateString() !== now.toDateString()) {
+        el.classList.remove('today');
+      }
+    }
+  });
+})();
+
+// ── GLOBAL: Handle all remaining href="#" links gracefully ──
+document.addEventListener('click', function(e) {
+  var link = e.target.closest('a[href="#"]');
+  if (!link) return;
+  // Skip links that already have an onclick handler
+  if (link.getAttribute('onclick')) return;
+  e.preventDefault();
+  // If inside a catblock on the homepage, navigate to browse
+  if (link.closest('.catblock') && link.closest('#sec-home')) {
+    showSec('browse');
+    return;
+  }
+  // If inside news section or is a news link, navigate to news
+  if (link.closest('#sec-news') || link.closest('.trendblock')) {
+    showSec('news');
+    return;
+  }
+  // If inside events section, navigate to events
+  if (link.closest('#sec-events') || link.closest('.evinfo')) {
+    showSec('events');
+    return;
+  }
+  // If inside directory, stay on directory
+  if (link.closest('#sec-directory')) {
+    return;
+  }
+  // All other # links: just prevent the jump to top
+});
+
+// ── GLOBAL: Make directory alllink badges navigate to directory ──
+document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', function(e) {
+    e.preventDefault();
+    // Scroll to the category block
+    var block = el.closest('.catblock');
+    if (block) block.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
 
 </script>
 </body>
