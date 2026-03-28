@@ -1365,6 +1365,7 @@
     <button class="admin-tab active" onclick="adminSwitchTab('listings')">Pending Listings</button>
     <button class="admin-tab" onclick="adminSwitchTab('events')">Pending Events</button>
     <button class="admin-tab" onclick="adminSwitchTab('memorials')">Pending Memorials</button>
+    <button class="admin-tab" onclick="adminSwitchTab('newsletter')">Send Newsletter</button>
   </div>
   <div id="admin-listings" class="admin-tab-content active">
     <div id="admin-listings-list" style="margin-top:16px;">
@@ -1379,6 +1380,20 @@
   <div id="admin-memorials" class="admin-tab-content">
     <div id="admin-memorials-list" style="margin-top:16px;">
       <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">Loading pending memorials...</div>
+    </div>
+  </div>
+  <div id="admin-newsletter" class="admin-tab-content">
+    <div style="margin-top:16px;">
+      <div id="newsletter-subscriber-count" class="newsletter-info" style="margin-bottom:14px;font-size:13px;color:var(--text-secondary);">Loading subscriber count...</div>
+      <label class="newsletter-label" for="newsletter-subject">Subject Line</label>
+      <input type="text" id="newsletter-subject" class="newsletter-input" placeholder="e.g. March 2026 Community Update">
+      <label class="newsletter-label" for="newsletter-html" style="margin-top:12px;">HTML Content</label>
+      <textarea id="newsletter-html" class="newsletter-textarea" rows="12" placeholder="<h1>Hello from Sophia Commons</h1>&#10;<p>Your newsletter content here...</p>"></textarea>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:14px;">
+        <button class="admin-btn admin-btn-approve" onclick="sendNewsletter()" id="newsletter-send-btn">Send to All Subscribers</button>
+        <span id="newsletter-status" style="font-size:13px;color:var(--text-muted);"></span>
+      </div>
+      <div id="newsletter-result" style="display:none;margin-top:16px;"></div>
     </div>
   </div>
 </div>

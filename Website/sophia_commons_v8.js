@@ -27,12 +27,24 @@ function goBack() {
 }
 
 // Show a detail page by type and Supabase ID
-async function showDetail(type, id) {
+async function showDetail(type, id, skipPush) {
   captureCurrentSection('detail');
 
   var container = document.getElementById('detail-content');
   container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
-  showSec('detail');
+  showSec('detail', true);
+
+  // Push SEO-friendly detail URL
+  if (!skipPush) {
+    var detailPaths = { directory: '/listing/', event: '/event/', news: '/article/' };
+    var prefix = detailPaths[type];
+    if (prefix) {
+      var path = prefix + id;
+      if (window.location.pathname !== path) {
+        history.pushState({ type: 'detail', detailType: type, detailId: id }, '', path);
+      }
+    }
+  }
 
   if (!sbReady()) {
     container.innerHTML = renderOfflineDetail(type, id);
@@ -299,7 +311,7 @@ const catMeta = {
   'societies & organizations': { dirCat: 'societies', desc: 'National and international anthroposophical societies, branches, federations, and membership organizations.' }
 };
 
-function showCategory(name) {
+function showCategory(name, skipPush) {
   captureCurrentSection('category');
 
   var displayName = name.charAt(0).toUpperCase() + name.slice(1);
@@ -309,7 +321,16 @@ function showCategory(name) {
   document.getElementById('cat-page-label').textContent = displayName;
   document.getElementById('cat-page-desc').textContent = meta.desc || 'Browse listings, organizations, and events in this category.';
   document.getElementById('cat-page-content').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
-  showSec('category');
+  showSec('category', true);
+
+  // Push SEO-friendly category URL
+  if (!skipPush) {
+    var slug = encodeURIComponent(key.replace(/\s+/g, '-'));
+    var path = '/category/' + slug;
+    if (window.location.pathname !== path) {
+      history.pushState({ type: 'category', name: name }, '', path);
+    }
+  }
 
   loadCategoryPage(key, meta.dirCat);
 }
@@ -474,7 +495,16 @@ const roomHistory = {
 };
 
 // ── NAVIGATION ──
-function showSec(id) {
+// Section-to-path mapping for SEO-friendly URLs
+const SEC_PATHS = {
+  home: '/', news: '/news', events: '/events', browse: '/browse',
+  directory: '/directory', books: '/books', podcasts: '/podcasts',
+  memorial: '/memorial'
+};
+const PATH_TO_SEC = {};
+Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
+
+function showSec(id, skipPush) {
   document.querySelectorAll('.pagesec').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('#mainnav button').forEach(b => b.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
@@ -482,11 +512,19 @@ function showSec(id) {
   if (btn) btn.classList.add('active');
   window.scrollTo(0,0);
   if (id === 'directory' && !mapLoaded) loadMap();
+  if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   // Close mobile menu if open
   const leftbar = document.getElementById('leftbar');
   const hamburger = document.getElementById('hamburger-btn');
   if (leftbar) leftbar.classList.remove('mobile-open');
   if (hamburger) hamburger.classList.remove('active');
+  // Push SEO-friendly URL (skip on popstate or initial load)
+  if (!skipPush && SEC_PATHS.hasOwnProperty(id)) {
+    var path = SEC_PATHS[id];
+    if (window.location.pathname !== path) {
+      history.pushState({ type: 'section', id: id }, '', path);
+    }
+  }
 }
 
 function handleChat() {
@@ -524,6 +562,65 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+});
+
+// ── SPA ROUTER (SEO-friendly URLs) ──
+function routeFromPath(pathname, isPopstate) {
+  var p = pathname || '/';
+  var skip = true; // never pushState when routing from URL
+
+  // Section routes
+  if (PATH_TO_SEC[p]) {
+    showSec(PATH_TO_SEC[p], skip);
+    return;
+  }
+
+  // Category route: /category/:slug
+  var catMatch = p.match(/^\/category\/([^\/]+)$/);
+  if (catMatch) {
+    var catName = decodeURIComponent(catMatch[1]).replace(/-/g, ' ');
+    showCategory(catName, skip);
+    return;
+  }
+
+  // Detail routes: /listing/:id, /event/:id, /article/:id
+  var detailMatch = p.match(/^\/(listing|event|article)\/([^\/]+)$/);
+  if (detailMatch) {
+    var typeMap = { listing: 'directory', event: 'event', article: 'news' };
+    showDetail(typeMap[detailMatch[1]], detailMatch[2], skip);
+    return;
+  }
+
+  // Fallback: show home
+  showSec('home', skip);
+}
+
+// Handle browser back/forward
+window.addEventListener('popstate', function(e) {
+  if (e.state) {
+    if (e.state.type === 'section') {
+      showSec(e.state.id, true);
+    } else if (e.state.type === 'detail') {
+      showDetail(e.state.detailType, e.state.detailId, true);
+    } else if (e.state.type === 'category') {
+      showCategory(e.state.name, true);
+    }
+  } else {
+    routeFromPath(window.location.pathname, true);
+  }
+});
+
+// Route on initial page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Replace current state so back button works from the initial page
+  var p = window.location.pathname;
+  if (PATH_TO_SEC[p]) {
+    history.replaceState({ type: 'section', id: PATH_TO_SEC[p] }, '', p);
+  }
+  // Only route if not on root (home is default)
+  if (p !== '/') {
+    routeFromPath(p, false);
+  }
 });
 
 // ── MODAL ──
@@ -623,6 +720,7 @@ function applySignedInState() {
   document.getElementById('chat-app').classList.add('vis');
   document.getElementById('chat-input').placeholder = 'message # general as ' + username + '...';
   scrollMsgs();
+  updateAdminVisibility();
 }
 
 async function doSignOut() {
@@ -634,6 +732,7 @@ async function doSignOut() {
   document.getElementById('chat-signedin').classList.remove('vis');
   document.getElementById('chat-gate-wrap').style.display = 'block';
   document.getElementById('chat-app').classList.remove('vis');
+  updateAdminVisibility();
   showSec('home');
 }
 
@@ -1073,45 +1172,148 @@ document.getElementById('searchinput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') doSearch();
 });
 function doSearch() {
-  const q = document.getElementById('searchinput').value.trim().toLowerCase();
+  var q = document.getElementById('searchinput').value.trim();
   if (!q) return;
+
+  if (sbReady()) {
+    _doSupabaseSearch(q);
+  } else {
+    _doLocalSearch(q.toLowerCase());
+  }
+}
+
+async function _doSupabaseSearch(q) {
+  var tsQuery = q.trim().split(/\s+/).map(function(w) { return w.replace(/[^a-zA-Z0-9]/g, ''); }).filter(Boolean).join(' & ');
+  if (!tsQuery) { _doLocalSearch(q.toLowerCase()); return; }
+
   showSec('browse');
 
-  (async () => {
-    try {
-      const { data, error } = await _sb.rpc('search_all', { query: q, limit_n: 30 });
-      if (!error && data && data.length > 0) {
-        const results = data.map(r =>
-          `<div style="padding:12px 0;border-bottom:1px solid var(--border-subtle);">
-            <span style="font-size:10px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.05em;">${r.item_type}</span>
-            <div style="font-family:Lora,serif;font-weight:700;font-size:15px;margin-top:3px;">${r.title}</div>
-            <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">${r.excerpt || ''}</div>
-          </div>`
-        ).join('');
-        const sec = document.getElementById('sec-browse');
-        const existing = sec.querySelector('.search-results');
-        if (existing) existing.remove();
-        sec.insertAdjacentHTML('afterbegin',
-          `<div class="search-results" style="background:var(--elevated);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px;">
-            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Search results for "${q}" (${data.length} found)
-              <a href="#" onclick="this.closest('.search-results').remove();return false;" style="float:right;font-size:12px;">close</a>
-            </div>
-            ${results}
-          </div>`
-        );
-        return;
-      }
-    } catch(e) { /* Supabase not available, fall back to local */ }
+  try {
+    var results = await Promise.all([
+      _sb.from('directory_entries')
+        .select('id, organization_name, description, category, location')
+        .textSearch('search_vector', tsQuery)
+        .limit(15),
+      _sb.from('events')
+        .select('id, title, description, city, country, start_date, event_type')
+        .textSearch('search_vector', tsQuery)
+        .limit(15),
+      _sb.from('news')
+        .select('id, title, excerpt, source_name, tags')
+        .textSearch('search_vector', tsQuery)
+        .limit(15)
+    ]);
 
-    setTimeout(() => {
-      const links = document.querySelectorAll('#sec-browse a, #sec-directory a');
-      let found = 0;
-      links.forEach(a => {
+    var dirResults = (!results[0].error && results[0].data) ? results[0].data : [];
+    var evResults = (!results[1].error && results[1].data) ? results[1].data : [];
+    var newsResults = (!results[2].error && results[2].data) ? results[2].data : [];
+    var totalCount = dirResults.length + evResults.length + newsResults.length;
+
+    if (totalCount === 0) {
+      _showSearchResults(q, '<div style="text-align:center;padding:32px 0;color:var(--text-muted);">' +
+        '<div style="font-size:28px;margin-bottom:8px;">&#128269;</div>' +
+        '<div style="font-size:15px;font-weight:600;">No results found</div>' +
+        '<div style="font-size:13px;margin-top:4px;">Try a different search term or browse the directory.</div>' +
+        '</div>', 0);
+      return;
+    }
+
+    var html = '';
+
+    if (dirResults.length > 0) {
+      html += '<div style="margin-bottom:16px;">';
+      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">Directory (' + dirResults.length + ')</div>';
+      dirResults.forEach(function(d) {
+        html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">';
+        html += '<a href="#" onclick="showDetail(\'directory\',\'' + d.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(d.organization_name) + '</a>';
+        if (d.category) html += ' <span style="font-size:10px;background:var(--surface);border:1px solid var(--border);padding:1px 6px;border-radius:50px;color:var(--text-muted);">' + esc(d.category) + '</span>';
+        if (d.description) html += '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + esc(d.description.substring(0, 120)) + (d.description.length > 120 ? '...' : '') + '</div>';
+        if (d.location) html += '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">&#128205; ' + esc(d.location) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    if (evResults.length > 0) {
+      html += '<div style="margin-bottom:16px;">';
+      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">Events (' + evResults.length + ')</div>';
+      evResults.forEach(function(ev) {
+        var loc = [ev.city, ev.country].filter(Boolean).join(', ');
+        html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">';
+        html += '<a href="#" onclick="showDetail(\'event\',\'' + ev.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(ev.title) + '</a>';
+        if (ev.event_type) html += ' <span style="font-size:10px;background:var(--surface);border:1px solid var(--border);padding:1px 6px;border-radius:50px;color:var(--text-muted);">' + esc(ev.event_type) + '</span>';
+        if (ev.description) html += '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + esc(ev.description.substring(0, 120)) + (ev.description.length > 120 ? '...' : '') + '</div>';
+        var meta = [];
+        if (ev.start_date) { var sd = new Date(ev.start_date); meta.push(sd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })); }
+        if (loc) meta.push(loc);
+        if (meta.length) html += '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + esc(meta.join(' - ')) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    if (newsResults.length > 0) {
+      html += '<div style="margin-bottom:16px;">';
+      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">News (' + newsResults.length + ')</div>';
+      newsResults.forEach(function(n) {
+        html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">';
+        html += '<a href="#" onclick="showDetail(\'news\',\'' + n.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(n.title) + '</a>';
+        if (n.source_name) html += ' <span style="font-size:11px;color:var(--text-muted);">' + esc(n.source_name) + '</span>';
+        if (n.excerpt) html += '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + esc(n.excerpt.substring(0, 120)) + (n.excerpt.length > 120 ? '...' : '') + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    _showSearchResults(q, html, totalCount);
+  } catch(e) {
+    console.warn('Supabase search error, falling back to local:', e);
+    _doLocalSearch(q.toLowerCase());
+  }
+}
+
+function _showSearchResults(q, contentHtml, count) {
+  showSec('browse');
+  var sec = document.getElementById('sec-browse');
+  var existing = sec.querySelector('.search-results');
+  if (existing) existing.remove();
+
+  sec.insertAdjacentHTML('afterbegin',
+    '<div class="search-results" style="background:var(--elevated);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px;">' +
+      '<div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Search results for "' + esc(q) + '"' + (count > 0 ? ' (' + count + ' found)' : '') +
+        '<a href="#" onclick="this.closest(\'.search-results\').remove();return false;" style="float:right;font-size:12px;color:var(--text-muted);">close</a>' +
+      '</div>' +
+      contentHtml +
+    '</div>'
+  );
+}
+
+function _doLocalSearch(q) {
+  showSec('browse');
+
+  setTimeout(function() {
+    var links = document.querySelectorAll('#sec-browse a, #sec-directory a');
+    var found = 0;
+    links.forEach(function(a) {
+      if (a.textContent.toLowerCase().includes(q)) {
+        a.style.background = 'var(--gold-light)';
+        a.style.borderRadius = '4px';
+        a.style.padding = '1px 4px';
+        found++;
+      } else {
+        a.style.background = '';
+        a.style.borderRadius = '';
+        a.style.padding = '';
+      }
+    });
+    if (found === 0) {
+      showSec('directory');
+      var dirLinks = document.querySelectorAll('#sec-directory a');
+      dirLinks.forEach(function(a) {
         if (a.textContent.toLowerCase().includes(q)) {
           a.style.background = 'var(--gold-light)';
           a.style.borderRadius = '4px';
           a.style.padding = '1px 4px';
-          found++;
         } else {
           a.style.background = '';
           a.style.borderRadius = '';
@@ -1119,22 +1321,14 @@ function doSearch() {
         }
       });
       if (found === 0) {
-        showSec('directory');
-        const dirLinks = document.querySelectorAll('#sec-directory a');
-        dirLinks.forEach(a => {
-          if (a.textContent.toLowerCase().includes(q)) {
-            a.style.background = 'var(--gold-light)';
-            a.style.borderRadius = '4px';
-            a.style.padding = '1px 4px';
-          } else {
-            a.style.background = '';
-            a.style.borderRadius = '';
-            a.style.padding = '';
-          }
-        });
+        _showSearchResults(q, '<div style="text-align:center;padding:32px 0;color:var(--text-muted);">' +
+          '<div style="font-size:28px;margin-bottom:8px;">&#128269;</div>' +
+          '<div style="font-size:15px;font-weight:600;">No results found</div>' +
+          '<div style="font-size:13px;margin-top:4px;">Try a different search term or browse the directory.</div>' +
+          '</div>', 0);
       }
-    }, 100);
-  })();
+    }
+  }, 100);
 }
 
 // ══════════════════════════════════════════
@@ -1144,55 +1338,124 @@ function doSearch() {
 // ══════════════════════════════════════════
 
 // ── EVENTS: Load from Supabase ──
+// Track which Supabase event titles have been merged to avoid duplicates on re-runs
+var _sbMergedEventTitles = {};
+
 async function loadEventsFromSupabase() {
   if (!sbReady()) return;
   try {
-    const { data, error } = await _sb.rpc('get_upcoming_events', { days_ahead: 365, limit_n: 20 });
+    var result = await _sb.rpc('get_upcoming_events', { days_ahead: 365, limit_n: 20 });
+    var data = result.data;
+    var error = result.error;
     if (error || !data || data.length === 0) return;
 
-    const container = document.querySelector('#sec-events .evlist, #sec-events');
+    var container = document.querySelector('#sec-events .evlist, #sec-events');
     if (!container) return;
 
     // Find or create the events list area
-    let evList = document.getElementById('sb-events-list');
+    var evList = document.getElementById('sb-events-list');
     if (!evList) {
       evList = document.createElement('div');
       evList.id = 'sb-events-list';
       // Insert after the section label
-      const label = container.querySelector('.seclabel');
-      if (label) label.insertAdjacentElement('afterend', evList);
+      var seclabel = container.querySelector('.seclabel');
+      if (seclabel) seclabel.insertAdjacentElement('afterend', evList);
       else container.prepend(evList);
     }
 
-    const today = new Date().toDateString();
+    var today = new Date().toDateString();
 
-    evList.innerHTML = data.map(ev => {
-      const d = new Date(ev.start_date);
-      const isToday = d.toDateString() === today;
-      const loc = [ev.city, ev.country].filter(Boolean).join(', ');
-      const tag = ev.category_name || ev.event_type || '';
-      const org = ev.organizer_name || '';
-      return `<div class="evrow reveal visible">
-        <div class="evdate${isToday ? ' today' : ''}">
-          <div class="mo">${MONTHS_SHORT[d.getMonth()]}</div>
-          <div class="dy">${d.getDate()}</div>
-        </div>
-        <div class="evinfo">
-          <div class="etag">${esc(tag)}</div>
-          <h5><a href="#" onclick="showDetail('event','${ev.id}');return false;">${esc(ev.title)}</a></h5>
-          <div class="emeta">${esc(loc)}${org ? ' &middot; ' + esc(org) : ''}${ev.is_free ? ' &middot; Free' : ''}</div>
-        </div>
-      </div>`;
+    evList.innerHTML = data.map(function(ev) {
+      var d = new Date(ev.start_date);
+      var isToday = d.toDateString() === today;
+      var loc = [ev.city, ev.country].filter(Boolean).join(', ');
+      var tag = ev.category_name || ev.event_type || '';
+      var org = ev.organizer_name || '';
+      return '<div class="evrow reveal visible">' +
+        '<div class="evdate' + (isToday ? ' today' : '') + '">' +
+          '<div class="mo">' + MONTHS_SHORT[d.getMonth()] + '</div>' +
+          '<div class="dy">' + d.getDate() + '</div>' +
+        '</div>' +
+        '<div class="evinfo">' +
+          '<div class="etag">' + esc(tag) + '</div>' +
+          '<h5><a href="#" onclick="showDetail(\'event\',\'' + ev.id + '\');return false;">' + esc(ev.title) + '</a></h5>' +
+          '<div class="emeta">' + esc(loc) + (org ? ' &middot; ' + esc(org) : '') + (ev.is_free ? ' &middot; Free' : '') + '</div>' +
+        '</div>' +
+      '</div>';
     }).join('');
 
     // Update count
-    const label = container.querySelector('.seclabel');
+    var label = container.querySelector('.seclabel');
     if (label) {
       label.innerHTML = 'Events &amp; Calendar &nbsp;&middot;&nbsp; ' + data.length + ' upcoming events';
     }
+
+    // Merge Supabase events into calEvents for the calendar system
+    _mergeSupabaseEventsIntoCalendar(data);
+
     console.log('Loaded ' + data.length + ' events from Supabase');
   } catch(e) {
     console.warn('Events load failed:', e);
+  }
+}
+
+function _mergeSupabaseEventsIntoCalendar(sbEvents) {
+  var merged = 0;
+  sbEvents.forEach(function(ev) {
+    // Build a dedup key from title to avoid duplicates across runs
+    var dedupKey = (ev.title || '').toLowerCase().trim();
+    if (_sbMergedEventTitles[dedupKey]) return;
+
+    // Also check if an identical title already exists in calEvents (from hardcoded data)
+    var dateStr = '';
+    if (ev.start_date) {
+      var d = new Date(ev.start_date);
+      dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    var alreadyExists = calEvents.some(function(existing) {
+      return existing.title.toLowerCase().trim() === dedupKey;
+    });
+    if (alreadyExists) {
+      _sbMergedEventTitles[dedupKey] = true;
+      return;
+    }
+
+    // Map Supabase event fields to calEvents format
+    var loc = [ev.city, ev.country].filter(Boolean).join(', ') || '';
+    var cat = (ev.category_name || ev.event_type || 'community').toLowerCase();
+    var org = ev.organizer_name || '';
+    var time = '';
+    if (ev.start_time) {
+      time = ev.start_time;
+      if (ev.end_time) time += ' - ' + ev.end_time;
+    } else if (ev.start_date && ev.end_date && ev.start_date !== ev.end_date) {
+      var sd = new Date(ev.start_date);
+      var ed = new Date(ev.end_date);
+      time = sd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' - ' + ed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    calEvents.push({
+      date: dateStr,
+      title: ev.title || '',
+      cat: cat,
+      loc: loc,
+      org: org,
+      time: time
+    });
+
+    _sbMergedEventTitles[dedupKey] = true;
+    merged++;
+  });
+
+  if (merged > 0) {
+    // Re-render all calendar components with the merged data
+    console.log('Merged ' + merged + ' Supabase events into calendar');
+    renderCalendar();
+    renderEventList();
+    renderMiniCal();
+    renderSidebarUpcoming();
+    updateHeaderCalendar();
   }
 }
 
@@ -1766,6 +2029,295 @@ document.addEventListener('click', function(e) {
     return;
   }
 });
+
+// ══════════════════════════════════════════
+//  ADMIN PANEL
+// ══════════════════════════════════════════
+
+var ADMIN_EMAILS = ['cameron@sophiacommons.org', 'admin@sophiacommons.org'];
+
+function isAdmin() {
+  return signedIn && window._supabaseUser && window._supabaseUser.email &&
+    ADMIN_EMAILS.indexOf(window._supabaseUser.email.toLowerCase()) !== -1;
+}
+
+function updateAdminVisibility() {
+  var btn = document.getElementById('nav-admin');
+  if (btn) btn.style.display = isAdmin() ? 'inline-block' : 'none';
+}
+
+function adminSwitchTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.classList.remove('active'); });
+  document.querySelector('.admin-tab[onclick*="' + tab + '"]').classList.add('active');
+  document.getElementById('admin-' + tab).classList.add('active');
+  if (tab === 'listings') loadAdminListings();
+  else if (tab === 'events') loadAdminEvents();
+  else if (tab === 'memorials') loadAdminMemorials();
+  else if (tab === 'newsletter') loadNewsletterSubscriberCount();
+}
+
+function adminEsc(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+async function loadAdminListings() {
+  var el = document.getElementById('admin-listings-list');
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+  try {
+    var { data, error } = await _sb.from('listings_pending').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    if (error) { el.innerHTML = '<div class="admin-empty">Error loading listings.</div>'; return; }
+    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">No pending listings.</div>'; return; }
+    el.innerHTML = data.map(function(d) {
+      return '<div class="admin-card" id="admin-listing-' + d.id + '">'
+        + '<h4>' + adminEsc(d.name) + '</h4>'
+        + '<div class="admin-meta">'
+        + (d.category ? '<span><strong>Category:</strong> ' + adminEsc(d.category) + '</span>' : '')
+        + (d.location ? '<span><strong>Location:</strong> ' + adminEsc(d.location) + '</span>' : '')
+        + (d.url ? '<span><strong>URL:</strong> ' + adminEsc(d.url) + '</span>' : '')
+        + (d.contact_email ? '<span><strong>Email:</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
+        + '</div>'
+        + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.description) + '</p>' : '')
+        + '<div class="admin-actions">'
+        + '<button class="admin-btn-approve" onclick="adminApproveListing(\'' + d.id + '\')">Approve</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectListing(\'' + d.id + '\')">Reject</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
+}
+
+async function adminApproveListing(id) {
+  if (!sbReady()) return;
+  try {
+    // Fetch the pending listing
+    var { data, error } = await _sb.from('listings_pending').select('*').eq('id', id).single();
+    if (error || !data) { alert('Could not find listing.'); return; }
+    // Insert into directory_entries
+    var entry = {
+      name: data.name,
+      category: data.category || 'Other',
+      location: data.location || null,
+      url: data.url || null,
+      description: data.description || null,
+      contact_email: data.contact_email || null
+    };
+    var { error: insertErr } = await _sb.from('directory_entries').insert(entry);
+    if (insertErr) { alert('Error adding to directory: ' + insertErr.message); return; }
+    // Update status
+    await _sb.from('listings_pending').update({ status: 'approved' }).eq('id', id);
+    var card = document.getElementById('admin-listing-' + id);
+    if (card) card.remove();
+    // Check if empty
+    if (!document.querySelector('#admin-listings-list .admin-card')) {
+      document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">No pending listings.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function adminRejectListing(id) {
+  if (!sbReady()) return;
+  if (!confirm('Reject this listing?')) return;
+  try {
+    await _sb.from('listings_pending').update({ status: 'rejected' }).eq('id', id);
+    var card = document.getElementById('admin-listing-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-listings-list .admin-card')) {
+      document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">No pending listings.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function loadAdminEvents() {
+  var el = document.getElementById('admin-events-list');
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+  try {
+    var { data, error } = await _sb.from('events').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    if (error) { el.innerHTML = '<div class="admin-empty">Error loading events.</div>'; return; }
+    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">No pending events.</div>'; return; }
+    el.innerHTML = data.map(function(d) {
+      return '<div class="admin-card" id="admin-event-' + d.id + '">'
+        + '<h4>' + adminEsc(d.title) + '</h4>'
+        + '<div class="admin-meta">'
+        + (d.event_type ? '<span><strong>Type:</strong> ' + adminEsc(d.event_type) + '</span>' : '')
+        + (d.start_date ? '<span><strong>Date:</strong> ' + adminEsc(d.start_date.substring(0,10)) + '</span>' : '')
+        + (d.location_name ? '<span><strong>Location:</strong> ' + adminEsc(d.location_name) + '</span>' : '')
+        + (d.organizer_name ? '<span><strong>Organizer:</strong> ' + adminEsc(d.organizer_name) + '</span>' : '')
+        + '</div>'
+        + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.description) + '</p>' : '')
+        + '<div class="admin-actions">'
+        + '<button class="admin-btn-approve" onclick="adminApproveEvent(\'' + d.id + '\')">Approve</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectEvent(\'' + d.id + '\')">Reject</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
+}
+
+async function adminApproveEvent(id) {
+  if (!sbReady()) return;
+  try {
+    await _sb.from('events').update({ status: 'upcoming' }).eq('id', id);
+    var card = document.getElementById('admin-event-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-events-list .admin-card')) {
+      document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">No pending events.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function adminRejectEvent(id) {
+  if (!sbReady()) return;
+  if (!confirm('Reject this event?')) return;
+  try {
+    await _sb.from('events').update({ status: 'rejected' }).eq('id', id);
+    var card = document.getElementById('admin-event-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-events-list .admin-card')) {
+      document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">No pending events.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function loadAdminMemorials() {
+  var el = document.getElementById('admin-memorials-list');
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+  try {
+    var { data, error } = await _sb.from('memorials_pending').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    if (error) { el.innerHTML = '<div class="admin-empty">Error loading memorials.</div>'; return; }
+    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">No pending memorials.</div>'; return; }
+    el.innerHTML = data.map(function(d) {
+      return '<div class="admin-card" id="admin-memorial-' + d.id + '">'
+        + '<h4>' + adminEsc(d.name) + '</h4>'
+        + '<div class="admin-meta">'
+        + (d.years ? '<span><strong>Years:</strong> ' + adminEsc(d.years) + '</span>' : '')
+        + (d.location ? '<span><strong>Location:</strong> ' + adminEsc(d.location) + '</span>' : '')
+        + (d.contact_email ? '<span><strong>Email:</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
+        + '</div>'
+        + (d.bio ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.bio) + '</p>' : '')
+        + '<div class="admin-actions">'
+        + '<button class="admin-btn-approve" onclick="adminApproveMemorial(\'' + d.id + '\')">Approve</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectMemorial(\'' + d.id + '\')">Reject</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
+}
+
+async function adminApproveMemorial(id) {
+  if (!sbReady()) return;
+  try {
+    await _sb.from('memorials_pending').update({ status: 'approved' }).eq('id', id);
+    var card = document.getElementById('admin-memorial-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-memorials-list .admin-card')) {
+      document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">No pending memorials.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function adminRejectMemorial(id) {
+  if (!sbReady()) return;
+  if (!confirm('Reject this memorial?')) return;
+  try {
+    await _sb.from('memorials_pending').update({ status: 'rejected' }).eq('id', id);
+    var card = document.getElementById('admin-memorial-' + id);
+    if (card) card.remove();
+    if (!document.querySelector('#admin-memorials-list .admin-card')) {
+      document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">No pending memorials.</div>';
+    }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+// Load admin data when admin section is shown
+function initAdminPanel() {
+  if (!isAdmin()) return;
+  loadAdminListings();
+}
+
+// ── NEWSLETTER SEND ──
+
+var _newsletterSubscriberCount = 0;
+
+async function loadNewsletterSubscriberCount() {
+  var el = document.getElementById('newsletter-subscriber-count');
+  if (!sbReady()) { el.textContent = 'Supabase not connected.'; return; }
+  try {
+    var { count, error } = await _sb.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).eq('confirmed', true);
+    if (error) { el.textContent = 'Error loading subscriber count.'; return; }
+    _newsletterSubscriberCount = count || 0;
+    el.innerHTML = '<strong>' + _newsletterSubscriberCount + '</strong> confirmed subscriber' + (_newsletterSubscriberCount !== 1 ? 's' : '') + ' will receive this email.';
+  } catch(e) {
+    el.textContent = 'Error: ' + e.message;
+  }
+}
+
+async function sendNewsletter() {
+  if (!isAdmin()) { alert('Admin access required.'); return; }
+  if (!sbReady()) { alert('Supabase not connected.'); return; }
+
+  var subject = (document.getElementById('newsletter-subject').value || '').trim();
+  var htmlContent = (document.getElementById('newsletter-html').value || '').trim();
+
+  if (!subject) { alert('Please enter a subject line.'); return; }
+  if (!htmlContent) { alert('Please enter HTML content for the newsletter.'); return; }
+
+  if (_newsletterSubscriberCount === 0) {
+    alert('No confirmed subscribers to send to.');
+    return;
+  }
+
+  if (!confirm('Send this newsletter to ' + _newsletterSubscriberCount + ' confirmed subscriber' + (_newsletterSubscriberCount !== 1 ? 's' : '') + '?\n\nSubject: ' + subject)) {
+    return;
+  }
+
+  var btn = document.getElementById('newsletter-send-btn');
+  var statusEl = document.getElementById('newsletter-status');
+  var resultEl = document.getElementById('newsletter-result');
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  statusEl.textContent = 'Please wait, sending emails in batches...';
+  resultEl.style.display = 'none';
+
+  try {
+    var { data: { session } } = await _sb.auth.getSession();
+    if (!session || !session.access_token) {
+      throw new Error('No active session. Please sign in again.');
+    }
+
+    var response = await fetch(SUPABASE_URL + '/functions/v1/send-newsletter', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + session.access_token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ subject: subject, html_content: htmlContent }),
+    });
+
+    var result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Server returned ' + response.status);
+    }
+
+    resultEl.style.display = 'block';
+    resultEl.className = 'newsletter-result newsletter-result-success';
+    resultEl.innerHTML = '<strong>Newsletter sent successfully</strong><br>'
+      + 'Sent: ' + result.sent + ' | Failed: ' + result.failed + ' | Total: ' + result.total;
+
+    if (result.errors && result.errors.length > 0) {
+      resultEl.className = 'newsletter-result newsletter-result-warning';
+      resultEl.innerHTML += '<br><br><strong>Errors:</strong><br>'
+        + result.errors.map(function(e) { return adminEsc(e.email) + ': ' + adminEsc(e.error); }).join('<br>');
+    }
+
+    statusEl.textContent = '';
+  } catch(e) {
+    resultEl.style.display = 'block';
+    resultEl.className = 'newsletter-result newsletter-result-error';
+    resultEl.innerHTML = '<strong>Failed to send newsletter</strong><br>' + adminEsc(e.message);
+    statusEl.textContent = '';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send to All Subscribers';
+  }
+}
 
 // ── Directory alllink scroll ──
 document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
