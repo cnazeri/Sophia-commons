@@ -265,6 +265,17 @@ sup { color: var(--verified); font-size: 10px; margin-left: 2px; animation: veri
   letter-spacing: 0.05em; text-transform: uppercase;
 }
 #topbar .nav-links a.signinbtn:hover { background: var(--surface); color: var(--gold); border-color: var(--gold); text-decoration: none; }
+#lang-switcher {
+  display: flex; gap: 2px; margin-left: 12px;
+}
+.lang-btn {
+  background: transparent; border: 1px solid var(--border-subtle); color: var(--text-muted);
+  padding: 2px 7px; border-radius: 3px; font-size: 10px; font-weight: 600;
+  font-family: 'Nunito Sans', sans-serif; cursor: pointer; letter-spacing: 0.03em;
+  transition: all 0.2s;
+}
+.lang-btn:hover { border-color: var(--gold); color: var(--gold); }
+.lang-btn.active { background: var(--gold); color: var(--text-inverse); border-color: var(--gold); }
 #user-chip {
   display: none;
   background: var(--gold-light); border: 1px solid var(--gold);
@@ -289,7 +300,7 @@ header {
 }
 #logo:hover { text-decoration: none; color: var(--text-primary); }
 #logo .monad { width: 36px; height: 36px; flex-shrink: 0; }
-#logo span {
+#logo span:last-child {
   font-family: 'Nunito Sans', sans-serif;
   font-size: 10px; font-weight: 600;
   color: var(--text-muted);

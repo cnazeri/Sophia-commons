@@ -234,19 +234,19 @@
 <!-- SIGN-IN MODAL -->
 <div id="modal-overlay" role="dialog" aria-modal="true">
   <div id="modal-box">
-    <button id="modal-close" aria-label="Close" onclick="closeModal()">×</button>
-    <h2 id="modal-title">Sign in</h2>
-    <p id="modal-desc">Access community chat and member features.</p>
+    <button id="modal-close" aria-label="Close" data-i18n="modal.close_aria" onclick="closeModal()">×</button>
+    <h2 id="modal-title" data-i18n="modal.title_signin">Sign in</h2>
+    <p id="modal-desc" data-i18n="modal.desc_signin">Access community chat and member features.</p>
     <div id="auth-error" style="display:none;color:#c0392b;font-size:12px;margin-bottom:8px;padding:6px 10px;background:#fdf0ef;border:1px solid #f5c6cb;"></div>
-    <label for="login-email">Email address</label>
-    <input type="email" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doSignIn()">
-    <label for="login-pass">Password</label>
-    <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignIn()">
-    <button class="btn-primary" id="auth-btn" onclick="doSignIn()">Sign in</button>
+    <label for="login-email" data-i18n="modal.email_label">Email address</label>
+    <input type="email" id="login-email" placeholder="you@example.com" data-i18n-placeholder="modal.email_placeholder" onkeydown="if(event.key==='Enter')doSignIn()">
+    <label for="login-pass" data-i18n="modal.password_label">Password</label>
+    <input type="password" id="login-pass" placeholder="••••••••" data-i18n-placeholder="modal.password_placeholder" onkeydown="if(event.key==='Enter')doSignIn()">
+    <button class="btn-primary" id="auth-btn" data-i18n="modal.btn_signin" onclick="doSignIn()">Sign in</button>
     <div id="modal-foot">
-      <span id="toggle-signup">No account? <a href="#" onclick="toggleAuthMode(event)">Create one free</a></span>
-      <span id="toggle-signin" style="display:none;">Have an account? <a href="#" onclick="toggleAuthMode(event)">Sign in</a></span>
-       &nbsp;·&nbsp; <a href="#" onclick="doPasswordReset(event)">Forgot password?</a>
+      <span id="toggle-signup"><span data-i18n="modal.no_account">No account?</span> <a href="#" onclick="toggleAuthMode(event)" data-i18n="modal.create_free">Create one free</a></span>
+      <span id="toggle-signin" style="display:none;"><span data-i18n="modal.have_account">Have an account?</span> <a href="#" onclick="toggleAuthMode(event)" data-i18n="modal.sign_in_link">Sign in</a></span>
+       &nbsp;·&nbsp; <a href="#" onclick="doPasswordReset(event)" data-i18n="modal.forgot_password">Forgot password?</a>
     </div>
   </div>
 </div>
@@ -255,13 +255,13 @@
 <div id="submit-overlay">
   <div id="submit-box">
     <button class="submit-close-btn" onclick="document.getElementById('submit-overlay').style.display='none';">×</button>
-    <h2>Submit a Listing</h2>
-    <p>Add your organization, farm, school, or initiative to the Sophia Commons directory.</p>
-    <label for="sl-name">Organization name *</label>
-    <input type="text" id="sl-name" placeholder="e.g. Sunrise Waldorf School">
-    <label for="sl-url">Website URL</label>
-    <input type="url" id="sl-url" placeholder="https://…">
-    <label for="sl-cat">Category *</label>
+    <h2 data-i18n="submit.title">Submit a Listing</h2>
+    <p data-i18n="submit.description">Add your organization, farm, school, or initiative to the Sophia Commons directory.</p>
+    <label for="sl-name" data-i18n="submit.name_label">Organization name *</label>
+    <input type="text" id="sl-name" placeholder="e.g. Sunrise Waldorf School" data-i18n-placeholder="submit.name_placeholder">
+    <label for="sl-url" data-i18n="submit.url_label">Website URL</label>
+    <input type="url" id="sl-url" placeholder="https://…" data-i18n-placeholder="submit.url_placeholder">
+    <label for="sl-cat" data-i18n="submit.category_label">Category *</label>
     <select id="sl-cat">
       <option value="">Select a category…</option>
       <option>Waldorf &amp; Education</option>
@@ -281,13 +281,13 @@
       <option>Online Resources</option>
       <option>Christian Community</option>
     </select>
-    <label for="sl-loc">City / Location</label>
-    <input type="text" id="sl-loc" placeholder="e.g. Fair Oaks, CA">
-    <label for="sl-desc">Short description</label>
-    <textarea id="sl-desc" rows="3" placeholder="Describe this organization in 1-2 sentences…"></textarea>
-    <label for="sl-email">Your email (for follow-up)</label>
-    <input type="email" id="sl-email" placeholder="you@example.com">
-    <button class="btn-primary" onclick="submitListing()">Submit for Review</button>
+    <label for="sl-loc" data-i18n="submit.location_label">City / Location</label>
+    <input type="text" id="sl-loc" placeholder="e.g. Fair Oaks, CA" data-i18n-placeholder="submit.location_placeholder">
+    <label for="sl-desc" data-i18n="submit.desc_label">Short description</label>
+    <textarea id="sl-desc" rows="3" placeholder="Describe this organization in 1-2 sentences…" data-i18n-placeholder="submit.desc_placeholder"></textarea>
+    <label for="sl-email" data-i18n="submit.email_label">Your email (for follow-up)</label>
+    <input type="email" id="sl-email" placeholder="you@example.com" data-i18n-placeholder="submit.email_placeholder">
+    <button class="btn-primary" onclick="submitListing()" data-i18n="submit.btn">Submit for Review</button>
     <div id="sl-ok" style="display:none;text-align:center;font-size:13px;color:var(--verified);font-weight:600;margin-top:12px;">✓ Submitted! We'll review and add it within 48 hours.</div>
   </div>
 </div>
@@ -298,11 +298,17 @@
 <!-- TOP BAR -->
 <div id="topbar">
   <span class="nav-links">
-    <a href="#" onclick="showSec('home');return false;">about</a>
-    <a href="#" onclick="showSubmitForm();return false;">submit listing</a>
+    <a href="#" data-i18n="topbar.about" onclick="showSec('home');return false;">about</a>
+    <a href="#" data-i18n="topbar.submit_listing" onclick="showSubmitForm();return false;">submit listing</a>
     <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
-    <a href="#" class="signinbtn" id="signin-link" onclick="openModal();return false;">sign in</a>
+    <a href="#" class="signinbtn" id="signin-link" data-i18n="topbar.sign_in" onclick="openModal();return false;">sign in</a>
   </span>
+  <div id="lang-switcher">
+    <button class="lang-btn active" data-lang="en" onclick="SC_I18N.setLang('en')">EN</button>
+    <button class="lang-btn" data-lang="de" onclick="SC_I18N.setLang('de')">DE</button>
+    <button class="lang-btn" data-lang="ru" onclick="SC_I18N.setLang('ru')">RU</button>
+    <button class="lang-btn" data-lang="es" onclick="SC_I18N.setLang('es')">ES</button>
+  </div>
 </div>
 
 <!-- HEADER -->
@@ -317,22 +323,22 @@
     <span>Anthroposophical Community</span>
   </a>
   <div id="statsbar" class="cal-widget"><span class="cw-date" id="cw-day"></span><span id="cw-date-str"></span><span class="cw-dot"></span><span id="cw-upcoming"></span></div>
-  <a href="#" id="postlink" onclick="showSubmitForm();return false;">+ post a listing</a>
+  <a href="#" id="postlink" data-i18n="topbar.post_listing" onclick="showSubmitForm();return false;">+ post a listing</a>
 </header>
 
 <!-- MAIN NAV -->
 <nav aria-label="Main navigation">
 <div id="mainnav">
-  <button class="active" id="nav-home"      onclick="showSec('home')">home</button>
-  <button id="nav-news"      onclick="showSec('news')">news</button>
-  <button id="nav-events"    onclick="showSec('events')">events</button>
-  <button id="nav-browse"    onclick="showSec('browse')">browse</button>
-  <button id="nav-podcasts"  onclick="showSec('podcasts')">podcasts &amp; media</button>
-  <button id="nav-directory" onclick="showSec('directory')">directory</button>
-  <button id="nav-books"     onclick="showSec('books')">books &amp; library</button>
-  <button id="nav-memorial" onclick="showSec('memorial')">in memoriam</button>
-  <button class="chatnav locked" id="nav-chat" onclick="handleChat()">community chat</button>
-  <button class="chatnav locked" id="nav-admin" onclick="showSec('admin')" style="display:none;">admin</button>
+  <button class="active" id="nav-home"      onclick="showSec('home')" data-i18n="nav.home">home</button>
+  <button id="nav-news"      onclick="showSec('news')" data-i18n="nav.news">news</button>
+  <button id="nav-events"    onclick="showSec('events')" data-i18n="nav.events">events</button>
+  <button id="nav-browse"    onclick="showSec('browse')" data-i18n="nav.browse">browse</button>
+  <button id="nav-podcasts"  onclick="showSec('podcasts')" data-i18n="nav.podcasts">podcasts &amp; media</button>
+  <button id="nav-directory" onclick="showSec('directory')" data-i18n="nav.directory">directory</button>
+  <button id="nav-books"     onclick="showSec('books')" data-i18n="nav.books">books &amp; library</button>
+  <button id="nav-memorial" onclick="showSec('memorial')" data-i18n="nav.memorial">in memoriam</button>
+  <button class="chatnav locked" id="nav-chat" onclick="handleChat()" data-i18n="nav.chat">community chat</button>
+  <button class="chatnav locked" id="nav-admin" onclick="showSec('admin')" style="display:none;" data-i18n="nav.admin">admin</button>
 </div>
 </nav>
 
@@ -345,47 +351,47 @@
 <!-- LEFT SIDEBAR -->
 <div id="leftbar">
   <div id="searchwrap">
-    <input type="text" id="searchinput" placeholder="search…">
-    <button onclick="doSearch()">search</button>
+    <input type="text" id="searchinput" placeholder="search…" data-i18n-placeholder="search.placeholder">
+    <button onclick="doSearch()" data-i18n="search.button">search</button>
   </div>
-  <h5>categories</h5>
+  <h5 data-i18n="sidebar.categories">categories</h5>
   <ul>
-    <li><a href="#" onclick="showCategory('Waldorf & Education');return false;">waldorf &amp; education</a><span class="cbadge">312</span></li>
-    <li><a href="#" onclick="showCategory('Biodynamic Agriculture');return false;">biodynamic agriculture</a><span class="cbadge">198</span></li>
-    <li><a href="#" onclick="showCategory('Esoteric Studies');return false;">esoteric studies</a><span class="cbadge">147</span></li>
-    <li><a href="#" onclick="showCategory('Arts & Eurythmy');return false;">arts &amp; eurythmy</a><span class="cbadge">89</span></li>
-    <li><a href="#" onclick="showCategory('Anthroposophic Medicine');return false;">anthro. medicine</a><span class="cbadge">124</span></li>
-    <li><a href="#" onclick="showCategory('Community & Camphill');return false;">community &amp; camphill</a><span class="cbadge">67</span></li>
-    <li><a href="#" onclick="showCategory('Free & Sharing');return false;">free &amp; sharing</a><span class="cbadge">143</span></li>
-    <li><a href="#" onclick="showCategory('Marketplace');return false;">marketplace</a><span class="cbadge">388</span></li>
-    <li><a href="#" onclick="showCategory('Housing & Room Rent');return false;">housing &amp; room rent</a><span class="cbadge">54</span></li>
-    <li><a href="#" onclick="showCategory('Jobs & Volunteering');return false;">jobs &amp; volunteering</a><span class="cbadge">176</span></li>
-    <li><a href="#" onclick="showCategory('Groups & Circles');return false;">groups, seminars &amp; retreats</a><span class="cbadge">111</span></li>
-    <li><a href="#" onclick="showSec('podcasts');return false;">podcasts &amp; media</a><span class="cbadge">23</span></li>
-    <li><a href="#" onclick="showSec('books');return false;">books &amp; library</a><span class="cbadge">350+</span></li>
-    <li><a href="#" onclick="showSec('eldercare');return false;">eldercare</a><span class="cbadge">42</span></li>
-    <li><a href="#" onclick="showCategory('Online Resources');return false;">online resources</a><span class="cbadge">280</span></li>
+    <li><a href="#" onclick="showCategory('Waldorf & Education');return false;" data-i18n="sidebar.category_waldorf">waldorf &amp; education</a><span class="cbadge">312</span></li>
+    <li><a href="#" onclick="showCategory('Biodynamic Agriculture');return false;" data-i18n="sidebar.category_biodynamic">biodynamic agriculture</a><span class="cbadge">198</span></li>
+    <li><a href="#" onclick="showCategory('Esoteric Studies');return false;" data-i18n="sidebar.category_esoteric">esoteric studies</a><span class="cbadge">147</span></li>
+    <li><a href="#" onclick="showCategory('Arts & Eurythmy');return false;" data-i18n="sidebar.category_arts">arts &amp; eurythmy</a><span class="cbadge">89</span></li>
+    <li><a href="#" onclick="showCategory('Anthroposophic Medicine');return false;" data-i18n="sidebar.category_medicine">anthro. medicine</a><span class="cbadge">124</span></li>
+    <li><a href="#" onclick="showCategory('Community & Camphill');return false;" data-i18n="sidebar.category_camphill">community &amp; camphill</a><span class="cbadge">67</span></li>
+    <li><a href="#" onclick="showCategory('Free & Sharing');return false;" data-i18n="sidebar.category_free">free &amp; sharing</a><span class="cbadge">143</span></li>
+    <li><a href="#" onclick="showCategory('Marketplace');return false;" data-i18n="sidebar.category_marketplace">marketplace</a><span class="cbadge">388</span></li>
+    <li><a href="#" onclick="showCategory('Housing & Room Rent');return false;" data-i18n="sidebar.category_housing">housing &amp; room rent</a><span class="cbadge">54</span></li>
+    <li><a href="#" onclick="showCategory('Jobs & Volunteering');return false;" data-i18n="sidebar.category_jobs">jobs &amp; volunteering</a><span class="cbadge">176</span></li>
+    <li><a href="#" onclick="showCategory('Groups & Circles');return false;" data-i18n="sidebar.category_groups">groups, seminars &amp; retreats</a><span class="cbadge">111</span></li>
+    <li><a href="#" onclick="showSec('podcasts');return false;" data-i18n="sidebar.category_podcasts">podcasts &amp; media</a><span class="cbadge">23</span></li>
+    <li><a href="#" onclick="showSec('books');return false;" data-i18n="sidebar.category_books">books &amp; library</a><span class="cbadge">350+</span></li>
+    <li><a href="#" onclick="showSec('eldercare');return false;" data-i18n="sidebar.category_eldercare">eldercare</a><span class="cbadge">42</span></li>
+    <li><a href="#" onclick="showCategory('Online Resources');return false;" data-i18n="sidebar.category_online">online resources</a><span class="cbadge">280</span></li>
   </ul>
-  <h5>region</h5>
+  <h5 data-i18n="sidebar.region">region</h5>
   <ul>
-    <li><a href="#" onclick="document.getElementById('searchinput').value='north america';doSearch();return false;">north america</a></li>
-    <li><a href="#" onclick="document.getElementById('searchinput').value='europe';doSearch();return false;">europe</a></li>
-    <li><a href="#" onclick="document.getElementById('searchinput').value='uk  ireland';doSearch();return false;">uk &amp; ireland</a></li>
-    <li><a href="#" onclick="document.getElementById('searchinput').value='australia / nz';doSearch();return false;">australia / nz</a></li>
-    <li><a href="#" onclick="document.getElementById('searchinput').value='international';doSearch();return false;">international</a></li>
+    <li><a href="#" onclick="document.getElementById('searchinput').value='north america';doSearch();return false;" data-i18n="sidebar.region_north_america">north america</a></li>
+    <li><a href="#" onclick="document.getElementById('searchinput').value='europe';doSearch();return false;" data-i18n="sidebar.region_europe">europe</a></li>
+    <li><a href="#" onclick="document.getElementById('searchinput').value='uk  ireland';doSearch();return false;" data-i18n="sidebar.region_uk_ireland">uk &amp; ireland</a></li>
+    <li><a href="#" onclick="document.getElementById('searchinput').value='australia / nz';doSearch();return false;" data-i18n="sidebar.region_australia_nz">australia / nz</a></li>
+    <li><a href="#" onclick="document.getElementById('searchinput').value='international';doSearch();return false;" data-i18n="sidebar.region_international">international</a></li>
   </ul>
-  <h5>status</h5>
+  <h5 data-i18n="sidebar.status">status</h5>
   <ul>
-    <li><a href="#" onclick="document.getElementById('searchinput').value='verified only';doSearch();return false;">✓ verified only</a></li>
-    <li><a href="#" onclick="document.getElementById('searchinput').value='all entries';doSearch();return false;">all entries</a></li>
+    <li><a href="#" onclick="document.getElementById('searchinput').value='verified only';doSearch();return false;" data-i18n="sidebar.status_verified">✓ verified only</a></li>
+    <li><a href="#" onclick="document.getElementById('searchinput').value='all entries';doSearch();return false;" data-i18n="sidebar.status_all">all entries</a></li>
   </ul>
-  <h5>quick links</h5>
+  <h5 data-i18n="sidebar.quick_links">quick links</h5>
   <ul>
-    <li><a href="https://goetheanum.ch" target="_blank">Goetheanum</a></li>
-    <li><a href="https://rsarchive.org" target="_blank">Steiner Archive</a></li>
-    <li><a href="https://anthroposophysocial.com" target="_blank">Anthroposophy.Social</a></li>
-    <li><a href="https://biodynamics.com" target="_blank">Biodynamics.com</a></li>
-    <li><a href="mailto:hello@sophiacommons.org">suggest correction</a></li>
+    <li><a href="https://goetheanum.ch" target="_blank" data-i18n="sidebar.quick_goetheanum">Goetheanum</a></li>
+    <li><a href="https://rsarchive.org" target="_blank" data-i18n="sidebar.quick_steiner_archive">Steiner Archive</a></li>
+    <li><a href="https://anthroposophysocial.com" target="_blank" data-i18n="sidebar.quick_anthro_social">Anthroposophy.Social</a></li>
+    <li><a href="https://biodynamics.com" target="_blank" data-i18n="sidebar.quick_biodynamics">Biodynamics.com</a></li>
+    <li><a href="mailto:hello@sophiacommons.org" data-i18n="sidebar.quick_suggest_correction">suggest correction</a></li>
   </ul>
 </div>
 
@@ -403,8 +409,8 @@
     <!-- TRENDING NOW -->
     <div class="trendblock reveal">
       <div class="trendblock-head">
-        <h3>Current Events</h3>
-        <span class="tlabel">today</span>
+        <h3 data-i18n="home.current_events">Current Events</h3>
+        <span class="tlabel" data-i18n="home.current_events_today">today</span>
       </div>
       <div class="trendblock-body">
         <div class="trend-story">
@@ -412,15 +418,15 @@
         </div>
         <a href="#" onclick="document.getElementById('searchinput').value='Demeter Reports Record Farm Certification Growth';doSearch();return false;" style="display:block;font-size:12px;color:var(--text-secondary);padding:3px 0;">Demeter Reports Record Farm Certification Growth</a>
         <a href="#" onclick="document.getElementById('searchinput').value='Camphill Village USA Celebrates 60 Years';doSearch();return false;" style="display:block;font-size:12px;color:var(--text-secondary);padding:3px 0;">Camphill Village USA Celebrates 60 Years</a>
-        <a class="trend-all" href="#" onclick="showSec('news');return false;">all news →</a>
+        <a class="trend-all" href="#" onclick="showSec('news');return false;" data-i18n="home.all_news">all news →</a>
       </div>
     </div>
 
     <!-- UPCOMING EVENTS -->
     <div class="listblock reveal">
       <div class="listblock-head">
-        <h3>Upcoming Events</h3>
-        <a href="#" onclick="showSec('events');return false;">full calendar →</a>
+        <h3 data-i18n="home.upcoming_events">Upcoming Events</h3>
+        <a href="#" onclick="showSec('events');return false;" data-i18n="home.full_calendar">full calendar →</a>
       </div>
       <div class="listblock-body" style="padding:4px 10px 6px;">
         <div class="evrow reveal" data-event-date="2026-03-22">
@@ -441,12 +447,12 @@
   </div><!-- end row 1 -->
 
   <hr class="soft">
-  <div class="seclabel">Main Sections</div>
+  <div class="seclabel" data-i18n="home.main_sections">Main Sections</div>
 
   <!-- ROW 2: Core categories 3-col -->
   <div class="catgrid">
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Waldorf & Education');event.stopPropagation();" style="cursor:pointer;">Waldorf &amp; Education</h3><span class="alllink">312</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Waldorf & Education');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.waldorf_name">Waldorf &amp; Education</h3><span class="alllink">312</span></div>
       <ul>
         <li><a href="#" onclick="showSec('browse');return false;">Schools directory</a></li>
         <li><a href="#" onclick="showSec('browse');return false;">Teacher training programs</a></li>
@@ -457,7 +463,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Biodynamic Agriculture');event.stopPropagation();" style="cursor:pointer;">Biodynamic Agriculture</h3><span class="alllink">198</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Biodynamic Agriculture');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.biodynamic_name">Biodynamic Agriculture</h3><span class="alllink">198</span></div>
       <ul>
         <li><a href="#" onclick="showSec('browse');return false;">CSA farm shares</a></li>
         <li><a href="#" onclick="showSec('browse');return false;">Farm apprenticeships</a></li>
@@ -468,7 +474,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Esoteric Studies');event.stopPropagation();" style="cursor:pointer;">Esoteric Studies</h3><span class="alllink">147</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Esoteric Studies');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.esoteric_name">Esoteric Studies</h3><span class="alllink">147</span></div>
       <ul>
         <li><a href="#" onclick="showSec('browse');return false;">Study groups &amp; circles</a></li>
         <li><a href="#" onclick="showSec('browse');return false;">Online courses</a></li>
@@ -479,7 +485,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Arts & Eurythmy');event.stopPropagation();" style="cursor:pointer;">Arts &amp; Eurythmy</h3><span class="alllink">89</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Arts & Eurythmy');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.arts_name">Arts &amp; Eurythmy</h3><span class="alllink">89</span></div>
       <ul>
         <li><a href="#" onclick="showSec('browse');return false;">Eurythmy training programs</a></li>
         <li><a href="#" onclick="showSec('browse');return false;">Performance companies</a></li>
@@ -490,7 +496,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Anthroposophic Medicine');event.stopPropagation();" style="cursor:pointer;">Anthroposophic Medicine</h3><span class="alllink">124</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Anthroposophic Medicine');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.medicine_name">Anthroposophic Medicine</h3><span class="alllink">124</span></div>
       <ul>
         <li><a href="#" onclick="showSec('browse');return false;">Clinics &amp; hospitals</a></li>
         <li><a href="#" onclick="showSec('browse');return false;">Practitioners directory</a></li>
@@ -501,7 +507,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3>Online Resources</h3><span class="alllink">280</span></div>
+      <div class="catblock-head"><h3 data-i18n="catmeta.online_name">Online Resources</h3><span class="alllink">280</span></div>
       <ul>
         <li><a href="https://rsarchive.org" target="_blank">Rudolf Steiner Archive<sup>✓</sup></a></li>
         <li><a href="https://www.rudolfsteinerweb.com" target="_blank">Rudolf Steiner Web<sup>✓</sup></a></li>
@@ -514,11 +520,11 @@
   </div>
 
   <hr class="soft">
-  <div class="seclabel">Community &amp; Resources</div>
+  <div class="seclabel" data-i18n="home.community_resources">Community &amp; Resources</div>
 
   <div class="catgrid">
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Free & Sharing');event.stopPropagation();" style="cursor:pointer;">Free &amp; Sharing</h3><span class="alllink">143</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Free & Sharing');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.free_name">Free &amp; Sharing</h3><span class="alllink">143</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Free items  giveaways';doSearch();return false;">Free items &amp; giveaways</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Seed  plant exchanges';doSearch();return false;">Seed &amp; plant exchanges</a></li>
@@ -528,7 +534,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Jobs & Volunteering');event.stopPropagation();" style="cursor:pointer;">Jobs &amp; Volunteering</h3><span class="alllink">176</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Jobs & Volunteering');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.jobs_name">Jobs &amp; Volunteering</h3><span class="alllink">176</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Waldorf teaching positions';doSearch();return false;">Waldorf teaching positions</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Farm co-workers';doSearch();return false;">Farm co-workers</a></li>
@@ -538,7 +544,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3>Housing &amp; Room Rent</h3><span class="alllink">54</span></div>
+      <div class="catblock-head"><h3 data-i18n="catmeta.housing_name">Housing &amp; Room Rent</h3><span class="alllink">54</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Rooms for rent';doSearch();return false;">Rooms for rent</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Shared housing';doSearch();return false;">Shared housing</a></li>
@@ -548,7 +554,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Marketplace');event.stopPropagation();" style="cursor:pointer;">Marketplace</h3><span class="alllink">388</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Marketplace');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.marketplace_name">Marketplace</h3><span class="alllink">388</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Books  publications';doSearch();return false;">Books &amp; publications</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Art  crafts';doSearch();return false;">Art &amp; crafts</a></li>
@@ -558,7 +564,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Groups & Circles');event.stopPropagation();" style="cursor:pointer;">Groups, Seminars &amp; Retreats</h3><span class="alllink">111</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Groups & Circles');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.groups_name">Groups, Seminars &amp; Retreats</h3><span class="alllink">111</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Meditation groups';doSearch();return false;">Meditation groups</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Local branch branches';doSearch();return false;">Local branches</a></li>
@@ -568,7 +574,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Community & Camphill');event.stopPropagation();" style="cursor:pointer;">Community &amp; Camphill</h3><span class="alllink">67</span></div>
+      <div class="catblock-head"><h3 onclick="showCategory('Community & Camphill');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.camphill_name">Community &amp; Camphill</h3><span class="alllink">67</span></div>
       <ul>
         <li><a href="#" onclick="showSec('browse');return false;">Camphill communities</a></li>
         <li><a href="#" onclick="showSec('browse');return false;">Co-worker positions</a></li>
@@ -583,18 +589,18 @@
   <!-- Submit Listing CTA -->
   <div class="submit-cta reveal" onclick="showSubmitForm()" style="margin:18px 0;padding:18px 24px;background:linear-gradient(135deg,#faf6ee,#f3ebd8);border:1px solid var(--gold);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;">
     <div>
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink);margin:0 0 4px;">Add Your Organization to the Directory</h3>
-      <p style="font-size:12.5px;color:var(--muted);margin:0;line-height:1.5;">Schools, farms, practices, communities, and initiatives - share your work with the global anthroposophical community.</p>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink);margin:0 0 4px;" data-i18n="home.add_organization_title">Add Your Organization to the Directory</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin:0;line-height:1.5;" data-i18n="home.add_organization_desc">Schools, farms, practices, communities, and initiatives - share your work with the global anthroposophical community.</p>
     </div>
-    <button onclick="showSubmitForm();event.stopPropagation();" style="flex-shrink:0;padding:10px 22px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;">+ Submit a Listing</button>
+    <button onclick="showSubmitForm();event.stopPropagation();" style="flex-shrink:0;padding:10px 22px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;" data-i18n="home.submit_listing_btn">+ Submit a Listing</button>
   </div>
 
   <!-- Community Chat teaser + Podcasts teaser -->
   <div class="catgrid" style="margin-top:0;">
     <div class="catblock reveal" style="background:#faf6f2;border-color:#e0c8b8;">
       <div class="catblock-head" style="background:#f5ece0;border-bottom-color:#e0c8b8;">
-        <h3 style="color:var(--warm);">Community Chat</h3>
-        <span style="font-size:10.5px;color:var(--warm);font-style:italic;">members only</span>
+        <h3 style="color:var(--warm);" data-i18n="home.community_chat">Community Chat</h3>
+        <span style="font-size:10.5px;color:var(--warm);font-style:italic;" data-i18n="home.members_only">members only</span>
       </div>
       <ul style="padding:6px 10px 4px;">
         <li style="margin-bottom:3px;font-size:11.5px;color:var(--muted);"># general &nbsp;·&nbsp; # waldorf-education</li>
@@ -603,11 +609,11 @@
         <li style="margin-bottom:6px;font-size:11.5px;color:var(--muted);"># meetups &nbsp;·&nbsp; # christian-community</li>
       </ul>
       <div style="padding:0 10px 8px;">
-        <a href="#" onclick="handleChat();return false;" style="display:block;background:var(--warm);color:#fff;text-align:center;padding:5px;font-size:11.5px;font-weight:500;">sign in to join chat →</a>
+        <a href="#" onclick="handleChat();return false;" style="display:block;background:var(--warm);color:#fff;text-align:center;padding:5px;font-size:11.5px;font-weight:500;" data-i18n="home.sign_in_to_join">sign in to join chat →</a>
       </div>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3>Podcasts &amp; Media</h3><span class="alllink">23</span></div>
+      <div class="catblock-head"><h3 data-i18n="catmeta.online_name">Podcasts &amp; Media</h3><span class="alllink">23</span></div>
       <ul>
         <li><a href="#" onclick="showSec('podcasts');return false;">ASA Official Podcast<sup>✓</sup></a></li>
         <li><a href="#" onclick="showSec('podcasts');return false;">Goetheanum Podcast<sup>✓</sup></a></li>
@@ -625,7 +631,7 @@
   <div class="seclabel" style="margin-bottom:10px;">News &amp; Announcements &nbsp;·&nbsp; 241 articles</div>
   <!-- featured -->
   <div class="trendblock reveal" style="margin-bottom:14px;">
-    <div class="trendblock-head"><h3>Current Events: Most Read Today</h3><span class="tlabel">3,847 readers</span></div>
+    <div class="trendblock-head"><h3 data-i18n="news.most_read_today">Current Events: Most Read Today</h3><span class="tlabel">3,847 readers</span></div>
     <div class="trendblock-body">
       <div class="trend-story">
         <h4 style="font-family:'Lora',serif;font-size:15px;font-weight:700;margin-bottom:6px;"><a href="#" onclick="document.getElementById('searchinput').value='Goetheanum Launches New Global Online Study Program for 2026';doSearch();return false;">Goetheanum Launches New Global Online Study Program for 2026</a></h4>
@@ -635,7 +641,7 @@
     </div>
   </div>
   <div class="twocol">
-    <div class="listblock reveal"><div class="listblock-head"><h3>Latest Stories</h3></div>
+    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="news.latest_stories">Latest Stories</h3></div>
       <div class="listblock-body">
         <div class="lrow"><span class="ltag">Biodynamic</span><a class="ltitle" href="#" onclick="document.getElementById('searchinput').value='Demeter Reports Record Farm Certification Growth';doSearch();return false;">Demeter Reports Record Farm Certification Growth</a><span class="lmeta">Mar 20</span></div>
         <div class="lrow"><span class="ltag">Waldorf</span><a class="ltitle" href="#" onclick="document.getElementById('searchinput').value='AWSNA Releases Updated Curriculum Guidelines 2026-27';doSearch();return false;">AWSNA Releases Updated Curriculum Guidelines 2026-27</a><span class="lmeta">Mar 19</span></div>
@@ -645,7 +651,7 @@
         <div class="lrow"><span class="ltag">CC</span><a class="ltitle" href="#" onclick="document.getElementById('searchinput').value='New Christian Community Congregation Opens in Denver';doSearch();return false;">New Christian Community Congregation Opens in Denver</a><span class="lmeta">Mar 12</span></div>
       </div>
     </div>
-    <div class="listblock reveal"><div class="listblock-head"><h3>Announcements</h3></div>
+    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="news.announcements">Announcements</h3></div>
       <div class="listblock-body">
         <div class="lrow"><span class="ltag">Event</span><a class="ltitle" href="#" onclick="document.getElementById('searchinput').value='AWSNA Conference Registration Now Open: Chicago, Apr 18';doSearch();return false;">AWSNA Conference Registration Now Open: Chicago, Apr 18</a></div>
         <div class="lrow"><span class="ltag">Directory</span><a class="ltitle" href="#" onclick="document.getElementById('searchinput').value='Christian Community Contacts: 46 new congregation entries';doSearch();return false;">Christian Community Contacts: 46 new congregation entries</a></div>
@@ -674,8 +680,8 @@
   <!-- Upcoming Events List -->
   <div class="listblock reveal">
     <div class="listblock-head">
-      <h3>Upcoming Events</h3>
-      <a href="#" onclick="showEventForm();return false;">submit an event →</a>
+      <h3 data-i18n="events.upcoming_events">Upcoming Events</h3>
+      <a href="#" onclick="showEventForm();return false;" data-i18n="submit_event.submit_link">submit an event →</a>
     </div>
     <div class="listblock-body" id="event-list" style="padding:4px 10px 8px;"></div>
   </div>
@@ -683,7 +689,7 @@
   <!-- Seminars & Retreats -->
   <div class="listblock reveal" style="margin-top:16px;">
     <div class="listblock-head">
-      <h3>Seminars &amp; Retreats</h3>
+      <h3 data-i18n="events.seminars_retreats">Seminars &amp; Retreats</h3>
     </div>
     <div id="seminars-area" class="seminars-grid" style="padding:0 10px 10px;"></div>
   </div>
@@ -693,17 +699,17 @@
 <div id="event-submit-overlay" onclick="if(event.target===this)closeEventForm();">
   <div id="event-submit-box">
     <button class="esm-close" onclick="closeEventForm();">&times;</button>
-    <h2>Submit an Event</h2>
-    <p class="esub">Share an anthroposophical event with the community.</p>
-    <label>Event Title *</label>
-    <input type="text" id="esm-title" placeholder="e.g. Spring Eurythmy Workshop">
+    <h2 data-i18n="submit_event.title">Submit an Event</h2>
+    <p class="esub" data-i18n="submit_event.description">Share an anthroposophical event with the community.</p>
+    <label data-i18n="submit_event.title_label">Event Title *</label>
+    <input type="text" id="esm-title" placeholder="e.g. Spring Eurythmy Workshop" data-i18n-placeholder="submit_event.title_placeholder">
     <div class="esm-row">
-      <div><label>Start Date *</label><input type="date" id="esm-date"></div>
-      <div><label>End Date</label><input type="date" id="esm-end"></div>
+      <div><label data-i18n="submit_event.start_date_label">Start Date *</label><input type="date" id="esm-date"></div>
+      <div><label data-i18n="submit_event.end_date_label">End Date</label><input type="date" id="esm-end"></div>
     </div>
     <div class="esm-row">
-      <div><label>Time</label><input type="text" id="esm-time" placeholder="e.g. 9:00 AM - 5:00 PM"></div>
-      <div><label>Category</label>
+      <div><label data-i18n="submit_event.time_label">Time</label><input type="text" id="esm-time" placeholder="e.g. 9:00 AM - 5:00 PM" data-i18n-placeholder="submit_event.time_placeholder"></div>
+      <div><label data-i18n="submit_event.category_label">Category</label>
         <select id="esm-cat">
           <option value="study">Study</option>
           <option value="conference">Conference</option>
@@ -714,15 +720,15 @@
         </select>
       </div>
     </div>
-    <label>Location</label>
-    <input type="text" id="esm-loc" placeholder="City, Country or 'Online'">
-    <label>Organizer</label>
-    <input type="text" id="esm-org" placeholder="Organization name">
-    <label>Description</label>
-    <textarea id="esm-desc" rows="3" placeholder="Brief description..."></textarea>
-    <label>Website / Link</label>
-    <input type="text" id="esm-url" placeholder="https://...">
-    <button class="esm-btn" onclick="submitEvent();">Submit Event</button>
+    <label data-i18n="submit_event.location_label">Location</label>
+    <input type="text" id="esm-loc" placeholder="City, Country or 'Online'" data-i18n-placeholder="submit_event.location_placeholder">
+    <label data-i18n="submit_event.organizer_label">Organizer</label>
+    <input type="text" id="esm-org" placeholder="Organization name" data-i18n-placeholder="submit_event.organizer_placeholder">
+    <label data-i18n="submit_event.desc_label">Description</label>
+    <textarea id="esm-desc" rows="3" placeholder="Brief description..." data-i18n-placeholder="submit_event.desc_placeholder"></textarea>
+    <label data-i18n="submit_event.url_label">Website / Link</label>
+    <input type="text" id="esm-url" placeholder="https://..." data-i18n-placeholder="submit_event.url_placeholder">
+    <button class="esm-btn" onclick="submitEvent();" data-i18n="submit_event.btn">Submit Event</button>
   </div>
 </div>
 
@@ -730,12 +736,12 @@
 <div class="pagesec" id="sec-browse">
   <div class="seclabel" style="margin-bottom:10px;">Browse Listings &nbsp;·&nbsp; 2,840+ listings</div>
   <div class="catgrid">
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Waldorf & Education');event.stopPropagation();" style="cursor:pointer;">Waldorf &amp; Education</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">312 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Schools directory';doSearch();return false;">Schools directory</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Teacher training';doSearch();return false;">Teacher training</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Curriculum resources';doSearch();return false;">Curriculum resources</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Tutoring services';doSearch();return false;">Tutoring services</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Homeschool support';doSearch();return false;">Homeschool support</a></li></ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Biodynamic Agriculture');event.stopPropagation();" style="cursor:pointer;">Biodynamic Agriculture</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">198 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='CSA farm shares';doSearch();return false;">CSA farm shares</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Farm apprenticeships';doSearch();return false;">Farm apprenticeships</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Demeter farms';doSearch();return false;">Demeter farms</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Seed suppliers';doSearch();return false;">Seed suppliers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Training programs';doSearch();return false;">Training programs</a></li></ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Arts & Eurythmy');event.stopPropagation();" style="cursor:pointer;">Arts &amp; Eurythmy</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">89 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Eurythmy training';doSearch();return false;">Eurythmy training</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Performance companies';doSearch();return false;">Performance companies</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Classes  workshops';doSearch();return false;">Classes &amp; workshops</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Commissions';doSearch();return false;">Commissions</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Speech formation';doSearch();return false;">Speech formation</a></li></ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Anthroposophic Medicine');event.stopPropagation();" style="cursor:pointer;">Anthroposophic Medicine</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">124 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Clinics  hospitals';doSearch();return false;">Clinics &amp; hospitals</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Practitioners';doSearch();return false;">Practitioners</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Weleda products';doSearch();return false;">Weleda products</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='WALA remedies';doSearch();return false;">WALA remedies</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Therapeutic eurythmy';doSearch();return false;">Therapeutic eurythmy</a></li></ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Free & Sharing');event.stopPropagation();" style="cursor:pointer;">Free &amp; Sharing</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">143 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Free items  giveaways';doSearch();return false;">Free items &amp; giveaways</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Seed  plant exchanges';doSearch();return false;">Seed &amp; plant exchanges</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Skill shares  barter';doSearch();return false;">Skill shares &amp; barter</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Books free';doSearch();return false;">Books free</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Tool lending';doSearch();return false;">Tool lending</a></li></ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Jobs & Volunteering');event.stopPropagation();" style="cursor:pointer;">Jobs &amp; Volunteering</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">176 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Waldorf teaching';doSearch();return false;">Waldorf teaching</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Farm co-workers';doSearch();return false;">Farm co-workers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Administrative roles';doSearch();return false;">Administrative roles</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Camphill co-workers';doSearch();return false;">Camphill co-workers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Volunteer positions';doSearch();return false;">Volunteer positions</a></li></ul></div>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Waldorf & Education');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.waldorf_name">Waldorf &amp; Education</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">312 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Schools directory';doSearch();return false;">Schools directory</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Teacher training';doSearch();return false;">Teacher training</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Curriculum resources';doSearch();return false;">Curriculum resources</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Tutoring services';doSearch();return false;">Tutoring services</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Homeschool support';doSearch();return false;">Homeschool support</a></li></ul></div>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Biodynamic Agriculture');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.biodynamic_name">Biodynamic Agriculture</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">198 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='CSA farm shares';doSearch();return false;">CSA farm shares</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Farm apprenticeships';doSearch();return false;">Farm apprenticeships</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Demeter farms';doSearch();return false;">Demeter farms</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Seed suppliers';doSearch();return false;">Seed suppliers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Training programs';doSearch();return false;">Training programs</a></li></ul></div>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Arts & Eurythmy');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.arts_name">Arts &amp; Eurythmy</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">89 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Eurythmy training';doSearch();return false;">Eurythmy training</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Performance companies';doSearch();return false;">Performance companies</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Classes  workshops';doSearch();return false;">Classes &amp; workshops</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Commissions';doSearch();return false;">Commissions</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Speech formation';doSearch();return false;">Speech formation</a></li></ul></div>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Anthroposophic Medicine');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.medicine_name">Anthroposophic Medicine</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">124 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Clinics  hospitals';doSearch();return false;">Clinics &amp; hospitals</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Practitioners';doSearch();return false;">Practitioners</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Weleda products';doSearch();return false;">Weleda products</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='WALA remedies';doSearch();return false;">WALA remedies</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Therapeutic eurythmy';doSearch();return false;">Therapeutic eurythmy</a></li></ul></div>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Free & Sharing');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.free_name">Free &amp; Sharing</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">143 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Free items  giveaways';doSearch();return false;">Free items &amp; giveaways</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Seed  plant exchanges';doSearch();return false;">Seed &amp; plant exchanges</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Skill shares  barter';doSearch();return false;">Skill shares &amp; barter</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Books free';doSearch();return false;">Books free</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Tool lending';doSearch();return false;">Tool lending</a></li></ul></div>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Jobs & Volunteering');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.jobs_name">Jobs &amp; Volunteering</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">176 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Waldorf teaching';doSearch();return false;">Waldorf teaching</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Farm co-workers';doSearch();return false;">Farm co-workers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Administrative roles';doSearch();return false;">Administrative roles</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Camphill co-workers';doSearch();return false;">Camphill co-workers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Volunteer positions';doSearch();return false;">Volunteer positions</a></li></ul></div>
   </div>
 </div>
 
@@ -743,7 +749,7 @@
 <div class="pagesec" id="sec-podcasts">
   <div class="seclabel" style="margin-bottom:10px;">Podcasts &amp; Media &nbsp;·&nbsp; 23 shows, channels, and platforms</div>
   <div class="twocol">
-    <div class="listblock reveal"><div class="listblock-head"><h3>Podcasts</h3><a href="#" onclick="document.getElementById('searchinput').value='all 6';doSearch();return false;">all 6 →</a></div>
+    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="podcasts.podcasts_heading">Podcasts</h3><a href="#" onclick="document.getElementById('searchinput').value='all 6';doSearch();return false;">all 6 →</a></div>
       <div class="listblock-body">
         <div class="lrow"><a class="ltitle" href="https://anthroposophy.org/podcast/" target="_blank">ASA Official Podcast</a><span class="lmeta">Spotify / RSS</span><span class="lv">✓</span></div>
         <div class="lrow"><a class="ltitle" href="https://goetheanum.transistor.fm/" target="_blank">Goetheanum Podcast</a><span class="lmeta">Transistor</span><span class="lv">✓</span></div>
@@ -753,7 +759,7 @@
         <div class="lrow"><a class="ltitle" href="https://open.spotify.com/show/0M4QfnyYevp54XnlERAPTf" target="_blank">Anthroposophy on Spotify</a><span class="lmeta">Global</span><span class="lv">✓</span></div>
       </div>
     </div>
-    <div class="listblock reveal"><div class="listblock-head"><h3>Video &amp; Social</h3><a href="#" onclick="document.getElementById('searchinput').value='all 8';doSearch();return false;">all 8 →</a></div>
+    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="podcasts.video_social_heading">Video &amp; Social</h3><a href="#" onclick="document.getElementById('searchinput').value='all 8';doSearch();return false;">all 8 →</a></div>
       <div class="listblock-body">
         <div class="lrow"><a class="ltitle" href="https://goetheanum.tv" target="_blank">Goetheanum TV</a><span class="lmeta">Dornach, CH</span><span class="lv">✓</span></div>
         <div class="lrow"><a class="ltitle" href="https://dasgoetheanum.com/en" target="_blank">Das Goetheanum Weekly</a><span class="lmeta">Online</span><span class="lv">✓</span></div>
@@ -775,16 +781,16 @@
   <!-- MAP -->
   <div class="mapwrap">
     <div class="mapwrap-head">
-      <h3>Organizations on the Map</h3>
+      <h3 data-i18n="directory.map_heading">Organizations on the Map</h3>
       <select id="map-filter" onchange="filterMap()">
-        <option value="all">All categories</option>
-        <option value="societies">Societies &amp; Orgs</option>
-        <option value="waldorf">Waldorf</option>
-        <option value="biodynamic">Biodynamic</option>
-        <option value="medicine">Medicine</option>
-        <option value="camphill">Camphill</option>
-        <option value="eurythmy">Eurythmy</option>
-        <option value="cc">Christian Community</option>
+        <option value="all" data-i18n="directory.filter_all">All categories</option>
+        <option value="societies" data-i18n="directory.filter_societies">Societies &amp; Orgs</option>
+        <option value="waldorf" data-i18n="directory.filter_waldorf">Waldorf</option>
+        <option value="biodynamic" data-i18n="directory.filter_biodynamic">Biodynamic</option>
+        <option value="medicine" data-i18n="directory.filter_medicine">Medicine</option>
+        <option value="camphill" data-i18n="directory.filter_camphill">Camphill</option>
+        <option value="eurythmy" data-i18n="directory.filter_eurythmy">Eurythmy</option>
+        <option value="cc" data-i18n="directory.filter_cc">Christian Community</option>
       </select>
     </div>
     <div id="dir-map"></div>
@@ -800,7 +806,7 @@
   </div>
 
   <div class="catgrid">
-    <div class="catblock reveal"><div class="catblock-head"><h3>Societies &amp; Organizations</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">14 →</a></div><ul>
+    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.societies_heading">Societies &amp; Organizations</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">14 →</a></div><ul>
       <li><a href="https://goetheanum.ch/en/society" target="_blank">General Anthroposophical Society<sup>✓</sup></a></li>
       <li><a href="https://anthroposophy.org/" target="_blank">Anthroposophical Society USA<sup>✓</sup></a></li>
       <li><a href="https://www.anthroposophynyc.org/" target="_blank">Anthroposophy NYC<sup>✓</sup></a></li>
@@ -814,7 +820,7 @@
       <li><a href="https://www.anthroposophy.org.au/" target="_blank">Anth. Society Australia<sup>✓</sup></a></li>
       <li><a href="https://www.seanz.org/" target="_blank">Steiner Education Aotearoa NZ<sup>✓</sup></a></li>
     </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3>Waldorf Schools</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">36 →</a></div><ul>
+    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.waldorf_schools_heading">Waldorf Schools</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">36 →</a></div><ul>
       <li><a href="https://www.waldorfeducation.org/" target="_blank">AWSNA (160+ schools)<sup>✓</sup></a></li>
       <li><a href="https://www.publicwaldorf.org/" target="_blank">Alliance for Public Waldorf<sup>✓</sup></a></li>
       <li><a href="https://waldorfearlychildhood.org/" target="_blank">Waldorf Early Childhood Assoc.<sup>✓</sup></a></li>
@@ -828,7 +834,7 @@
       <li><a href="https://desertmarigold.org/" target="_blank">Desert Marigold (Public), AZ<sup>✓</sup></a></li>
       <li><a href="https://portlandvillageschool.org/" target="_blank">Portland Village School (Public)<sup>✓</sup></a></li>
     </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3>Teacher Training</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">10 →</a></div><ul>
+    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.teacher_training_heading">Teacher Training</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">10 →</a></div><ul>
       <li><a href="https://www.sunbridge.edu/" target="_blank">Sunbridge Institute<sup>✓</sup></a></li>
       <li><a href="https://centerforanthroposophy.org/" target="_blank">Center for Anthroposophy<sup>✓</sup></a></li>
       <li><a href="https://www.greatlakeswaldorf.org/" target="_blank">Great Lakes Waldorf Inst.<sup>✓</sup></a></li>
@@ -839,7 +845,7 @@
       <li><a href="https://www.sophiainstitute.us/" target="_blank">Sophia Institute<sup>✓</sup></a></li>
       <li><a href="https://studium.goetheanum.ch/en/online-studies" target="_blank">Goetheanum Studium Online<sup>✓</sup></a></li>
     </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Biodynamic Agriculture');event.stopPropagation();" style="cursor:pointer;">Biodynamic Agriculture</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">12 →</a></div><ul>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Biodynamic Agriculture');event.stopPropagation();" style="cursor:pointer;" data-i18n="directory.biodynamic_heading">Biodynamic Agriculture</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">12 →</a></div><ul>
       <li><a href="https://www.biodynamics.com/" target="_blank">Biodynamic Association USA<sup>✓</sup></a></li>
       <li><a href="https://demeter-usa.org/" target="_blank">Demeter USA<sup>✓</sup></a></li>
       <li><a href="https://demeter.net/" target="_blank">Demeter International<sup>✓</sup></a></li>
@@ -852,7 +858,7 @@
       <li><a href="https://biodynamics.net.au/" target="_blank">Biodynamic Assoc. Australia<sup>✓</sup></a></li>
       <li><a href="https://biodynamic.org.nz/" target="_blank">Biodynamic Assoc. New Zealand<sup>✓</sup></a></li>
     </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Anthroposophic Medicine');event.stopPropagation();" style="cursor:pointer;">Anthroposophic Medicine</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">14 →</a></div><ul>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Anthroposophic Medicine');event.stopPropagation();" style="cursor:pointer;" data-i18n="directory.medicine_heading">Anthroposophic Medicine</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">14 →</a></div><ul>
       <li><a href="https://anthroposophicmedicine.org/" target="_blank">PAAM (Physicians Assoc.)<sup>✓</sup></a></li>
       <li><a href="https://www.ivaa.info/" target="_blank">IVAA International<sup>✓</sup></a></li>
       <li><a href="https://medicalsection.goetheanum.ch/" target="_blank">Goetheanum Medical Section<sup>✓</sup></a></li>
@@ -865,7 +871,7 @@
       <li><a href="https://www.truebotanica.com/" target="_blank">True Botanica<sup>✓</sup></a></li>
       <li><a href="https://www.wala.world/en/" target="_blank">WALA Medicines<sup>✓</sup></a></li>
     </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3>Camphill &amp; Communities</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">24 →</a></div><ul>
+    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.camphill_heading">Camphill &amp; Communities</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">24 →</a></div><ul>
       <li><a href="https://www.camphill.org/" target="_blank">Camphill Assoc. North America<sup>✓</sup></a></li>
       <li><a href="https://camphillvillage.org/" target="_blank">Camphill Village USA, Copake<sup>✓</sup></a></li>
       <li><a href="https://www.camphillkimberton.org/" target="_blank">Camphill Village Kimberton Hills<sup>✓</sup></a></li>
@@ -883,7 +889,7 @@
       <li><a href="https://www.newtondee.org.uk/" target="_blank">Newton Dee Village, Scotland<sup>✓</sup></a></li>
       <li><a href="https://www.cvt.org.uk/botton-village" target="_blank">Botton Village, UK<sup>✓</sup></a></li>
     </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3>Eurythmy &amp; Arts</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">7 →</a></div><ul>
+    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.eurythmy_heading">Eurythmy &amp; Arts</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">7 →</a></div><ul>
       <li><a href="https://www.eurythmy.org/" target="_blank">Eurythmy Spring Valley<sup>✓</sup></a></li>
       <li><a href="https://eana.org/" target="_blank">Eurythmy Assoc. North America<sup>✓</sup></a></li>
       <li><a href="https://soundcircleeurythmy.org/" target="_blank">Sound Circle Eurythmy<sup>✓</sup></a></li>
@@ -892,7 +898,7 @@
       <li><a href="https://www.auriel-eurythmy.org/" target="_blank">Auriel Eurythmy, Mexico<sup>✓</sup></a></li>
       <li><a href="https://creativespeech.org/" target="_blank">Speech Arts Assoc. NA<sup>✓</sup></a></li>
     </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3>Publishers &amp; Media</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">11 →</a></div><ul>
+    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.publishers_heading">Publishers &amp; Media</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">11 →</a></div><ul>
       <li><a href="https://steinerbooks.org/" target="_blank">SteinerBooks / Anthro. Press<sup>✓</sup></a></li>
       <li><a href="https://www.rudolfsteinerpress.com/" target="_blank">Rudolf Steiner Press, UK<sup>✓</sup></a></li>
       <li><a href="https://www.templelodge.com/" target="_blank">Temple Lodge Publishing<sup>✓</sup></a></li>
@@ -904,7 +910,7 @@
       <li><a href="https://www.newview.org.uk/" target="_blank">New View Magazine, UK<sup>✓</sup></a></li>
       <li><a href="https://anthroposophy.org/podcast/" target="_blank">The Anthroposopher Podcast<sup>✓</sup></a></li>
     </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3>Christian Community</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">46 →</a></div><ul>
+    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.cc_heading">Christian Community</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">46 →</a></div><ul>
       <li><a href="https://www.thechristiancommunity.org/" target="_blank">CCNA - North America<sup>✓</sup></a></li>
       <li><a href="https://www.thechristiancommunity.org/congregations-by-region/" target="_blank">16 NA Congregations<sup>✓</sup></a></li>
       <li><a href="https://christengemeinschaft-international.org/en" target="_blank">International HQ, Berlin<sup>✓</sup></a></li>
@@ -933,7 +939,7 @@
 
   <!-- ═══ SECTION 1: Complete Written Works (GA 1-28) ═══ -->
   <div class="listblock reveal" style="margin-bottom:16px;">
-    <div class="listblock-head"><h3>Complete Written Works (GA 1 - 28)</h3><span style="font-size:10.5px;color:var(--text-muted);">28 volumes - Steiner's authored books</span></div>
+    <div class="listblock-head"><h3 data-i18n="books.written_works_heading">Complete Written Works (GA 1 - 28)</h3><span style="font-size:10.5px;color:var(--text-muted);" data-i18n="books.written_works_sub">28 volumes - Steiner's authored books</span></div>
     <div class="listblock-body">
       <div class="lrow"><span class="ltag">GA 1</span><a class="ltitle" href="https://rsarchive.org/Books/GA001/" target="_blank">Goethean Science</a><span class="lmeta"><a href="https://steinerbooks.org/products/9781957569321-goethean-science" target="_blank">$24.95 SteinerBooks</a> &middot; <a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Goethean+Science" target="_blank">Amazon</a></span></div>
       <div class="lrow"><span class="ltag">GA 2</span><a class="ltitle" href="https://rsarchive.org/Books/GA002/" target="_blank">Theory of Knowledge Based on Goethe's Worldview</a><span class="lmeta"><a href="https://steinerbooks.org/products/9780880106238-goethes-theory-of-knowledge" target="_blank">$20.00 SteinerBooks</a> &middot; <a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Theory+Knowledge+Goethe" target="_blank">Amazon</a></span></div>
@@ -972,7 +978,7 @@
 
   <div class="twocol">
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Christology &amp; Gospels</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_christology">Christology &amp; Gospels</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880104883-according-to-luke" target="_blank">According to Luke</a><span class="lmeta">$16.95</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880105040-according-to-matthew" target="_blank">According to Matthew</a><span class="lmeta">$25.00</span></div>
@@ -985,7 +991,7 @@
     </div>
   </div>
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Education &amp; Child Development</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_education">Education &amp; Child Development</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880105118-a-modern-art-of-education" target="_blank">A Modern Art of Education</a><span class="lmeta">$20.00</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880105514-balance-in-teaching" target="_blank">Balance in Teaching</a><span class="lmeta">$17.95</span></div>
@@ -1000,7 +1006,7 @@
 
   <div class="twocol">
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Medicine &amp; Healing</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_medicine">Medicine &amp; Healing</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9781957569352-anthroposophic-spiritual-science-and-medical-therapy" target="_blank">Anthroposophic Spiritual Science and Medical Therapy</a><span class="lmeta">$19.95</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9781855841413-an-occult-physiology" target="_blank">An Occult Physiology</a><span class="lmeta">$22.00</span></div>
@@ -1011,7 +1017,7 @@
     </div>
   </div>
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Agriculture &amp; Nature</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_agriculture">Agriculture &amp; Nature</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9781621484004-agriculture" target="_blank">Agriculture Course (GA 327)</a><span class="lmeta">$29.95</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880104579-bees" target="_blank">Bees (GA 351)</a><span class="lmeta">$25.00</span></div>
@@ -1023,7 +1029,7 @@
 
   <div class="twocol">
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Karma &amp; Reincarnation</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_karma">Karma &amp; Reincarnation</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880103992-a-western-approach-to-reincarnation-and-karma" target="_blank">A Western Approach to Reincarnation and Karma</a><span class="lmeta">$24.95</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9781855841543-an-exercise-for-karmic-insight" target="_blank">An Exercise for Karmic Insight</a><span class="lmeta">$6.00</span></div>
@@ -1032,7 +1038,7 @@
     </div>
   </div>
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Arts, Architecture &amp; Eurythmy</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_arts">Arts, Architecture &amp; Eurythmy</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880100427-an-introduction-to-eurythmy" target="_blank">An Introduction to Eurythmy</a><span class="lmeta">$12.00</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9781855840577-architecture-as-a-synthesis-of-the-arts" target="_blank">Architecture as a Synthesis of the Arts</a><span class="lmeta">$26.00</span></div>
@@ -1046,7 +1052,7 @@
 
   <div class="twocol">
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Cosmology &amp; Spiritual Hierarchies</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_cosmology">Cosmology &amp; Spiritual Hierarchies</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880105934-an-esoteric-cosmology" target="_blank">An Esoteric Cosmology</a><span class="lmeta">$18.00</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9781855840607-angels" target="_blank">Angels</a><span class="lmeta">$22.00</span></div>
@@ -1057,7 +1063,7 @@
     </div>
   </div>
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Esoteric &amp; Mystery Traditions</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_esoteric">Esoteric &amp; Mystery Traditions</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780893450090-a-christian-rosenkreutz-anthology" target="_blank">A Christian Rosenkreutz Anthology</a><span class="lmeta">$100.00</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9781855840898-alchemy" target="_blank">Alchemy</a><span class="lmeta">$15.95</span></div>
@@ -1071,7 +1077,7 @@
 
   <div class="twocol">
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Social Life &amp; Community</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_social">Social Life &amp; Community</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9781621481058-awake-for-the-sake-of-the-future" target="_blank">Awake! For the Sake of the Future</a><span class="lmeta">$25.00</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880106672-awakening-to-community" target="_blank">Awakening to Community</a><span class="lmeta">$17.00</span></div>
@@ -1079,7 +1085,7 @@
     </div>
   </div>
   <div class="listblock reveal">
-    <div class="listblock-head"><h3>Philosophy &amp; Science</h3></div>
+    <div class="listblock-head"><h3 data-i18n="books.cat_philosophy">Philosophy &amp; Science</h3></div>
     <div class="listblock-body">
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9780880104012-anthroposophy-a-fragment" target="_blank">Anthroposophy (A Fragment)</a><span class="lmeta">$24.95</span></div>
       <div class="lrow"><a class="ltitle" href="https://steinerbooks.org/products/9781957569406-anthroposophy-and-science" target="_blank">Anthroposophy and Science</a><span class="lmeta">$17.95</span></div>
@@ -1093,7 +1099,7 @@
   <hr class="soft">
   <div class="twocol" style="margin-top:14px;">
   <div class="trendblock reveal" style="border-left-color:var(--sage);">
-    <div class="trendblock-head"><h3>Where to Buy</h3><span class="tlabel">trusted sources</span></div>
+    <div class="trendblock-head"><h3 data-i18n="books.where_to_buy">Where to Buy</h3><span class="tlabel" data-i18n="books.trusted_sources">trusted sources</span></div>
     <div class="trendblock-body">
       <div class="trend-also">
         <a href="https://steinerbooks.org/collections/rudolf-steiner" target="_blank">SteinerBooks: Full Catalog (350+ titles)<sup>&#10003;</sup></a>
@@ -1104,7 +1110,7 @@
     </div>
   </div>
   <div class="trendblock reveal" style="border-left-color:var(--gold);">
-    <div class="trendblock-head"><h3>Free Online Reading</h3><span class="tlabel">rsarchive.org</span></div>
+    <div class="trendblock-head"><h3 data-i18n="books.free_online">Free Online Reading</h3><span class="tlabel" data-i18n="books.free_online_source">rsarchive.org</span></div>
     <div class="trendblock-body">
       <div class="trend-also">
         <a href="https://rsarchive.org/Books/" target="_blank">All 28 Written Works - Free Full Text<sup>&#10003;</sup></a>
@@ -1133,7 +1139,7 @@
   <div class="catgrid" style="margin-bottom:20px;">
 
     <div class="catblock reveal">
-      <div class="catblock-head"><h3>Senior Living Communities</h3><span class="alllink">14 listings</span></div>
+      <div class="catblock-head"><h3 data-i18n="eldercare.senior_living">Senior Living Communities</h3><span class="alllink">14 listings</span></div>
       <ul>
         <li><a href="https://www.fellowshipcommunity.org" target="_blank">Fellowship Community<sup>&#10003;</sup></a> <span style="font-size:11px;color:var(--text-muted);">Spring Valley, NY</span></li>
         <li><a href="https://meadowbrookelder.org" target="_blank">Meadowbrook Elder Care</a> <span style="font-size:11px;color:var(--text-muted);">Chestnut Ridge, NY</span></li>
@@ -1144,7 +1150,7 @@
     </div>
 
     <div class="catblock reveal">
-      <div class="catblock-head"><h3>Home Care &amp; Support Services</h3><span class="alllink">11 listings</span></div>
+      <div class="catblock-head"><h3 data-i18n="eldercare.home_care">Home Care &amp; Support Services</h3><span class="alllink">11 listings</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Anthro Home Care Network';doSearch();return false;">Anthro Home Care Network</a> <span style="font-size:11px;color:var(--text-muted);">Northeast US</span></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Sophia Elder Companions';doSearch();return false;">Sophia Elder Companions</a> <span style="font-size:11px;color:var(--text-muted);">Spring Valley, NY</span></li>
@@ -1155,7 +1161,7 @@
     </div>
 
     <div class="catblock reveal">
-      <div class="catblock-head"><h3>Biography Work &amp; Counseling</h3><span class="alllink">8 listings</span></div>
+      <div class="catblock-head"><h3 data-i18n="eldercare.biography_work">Biography Work &amp; Counseling</h3><span class="alllink">8 listings</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Center for Biography  Social Art';doSearch();return false;">Center for Biography &amp; Social Art<sup>&#10003;</sup></a> <span style="font-size:11px;color:var(--text-muted);">Spring Valley, NY</span></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Elderwise';doSearch();return false;">Elderwise</a> <span style="font-size:11px;color:var(--text-muted);">Seattle, WA</span></li>
@@ -1170,7 +1176,7 @@
   <div class="catgrid" style="margin-bottom:20px;">
 
     <div class="catblock reveal">
-      <div class="catblock-head"><h3>Therapeutic Programs</h3><span class="alllink">5 listings</span></div>
+      <div class="catblock-head"><h3 data-i18n="eldercare.therapeutic">Therapeutic Programs</h3><span class="alllink">5 listings</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Eurythmy Therapy for Seniors';doSearch();return false;">Eurythmy Therapy for Seniors</a> <span style="font-size:11px;color:var(--text-muted);">Multiple locations</span></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Art Therapy Elder Programs';doSearch();return false;">Art Therapy Elder Programs</a> <span style="font-size:11px;color:var(--text-muted);">Spring Valley, NY</span></li>
@@ -1181,7 +1187,7 @@
     </div>
 
     <div class="catblock reveal">
-      <div class="catblock-head"><h3>Threshold &amp; End-of-Life Care</h3><span class="alllink">4 listings</span></div>
+      <div class="catblock-head"><h3 data-i18n="eldercare.threshold">Threshold &amp; End-of-Life Care</h3><span class="alllink">4 listings</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Anthroposophical Hospice Circle';doSearch();return false;">Anthroposophical Hospice Circle</a> <span style="font-size:11px;color:var(--text-muted);">International</span></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Threshold Companioning Training';doSearch();return false;">Threshold Companioning Training</a> <span style="font-size:11px;color:var(--text-muted);">Spring Valley, NY</span></li>
@@ -1191,7 +1197,7 @@
     </div>
 
     <div class="catblock reveal">
-      <div class="catblock-head"><h3>Training &amp; Volunteering</h3><span class="alllink">6 listings</span></div>
+      <div class="catblock-head"><h3 data-i18n="eldercare.training">Training &amp; Volunteering</h3><span class="alllink">6 listings</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Elder Care Worker Training';doSearch();return false;">Elder Care Worker Training</a> <span style="font-size:11px;color:var(--text-muted);">Fellowship Community, NY</span></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Volunteer Elder Companion Program';doSearch();return false;">Volunteer Elder Companion Program</a> <span style="font-size:11px;color:var(--text-muted);">Camphill communities</span></li>
@@ -1205,7 +1211,7 @@
 
   <!-- Resources block -->
   <div class="trendblock reveal" style="border-left-color:var(--sage);margin-bottom:20px;">
-    <div class="trendblock-head"><h3>Resources &amp; Reading</h3><span class="tlabel">curated</span></div>
+    <div class="trendblock-head"><h3 data-i18n="eldercare.resources">Resources &amp; Reading</h3><span class="tlabel" data-i18n="eldercare.curated">curated</span></div>
     <div class="trendblock-body">
       <div class="trend-story">
         <h4><a href="#" onclick="document.getElementById('searchinput').value='"Aging with Grace: An Anthroposophical Approach to the Later Years"';doSearch();return false;">"Aging with Grace: An Anthroposophical Approach to the Later Years"</a></h4>
@@ -1223,9 +1229,9 @@
 
   <!-- Submit eldercare listing -->
   <div class="listblock reveal" style="margin-top:12px;">
-    <div class="listblock-head"><h3>Submit an Eldercare Listing</h3></div>
+    <div class="listblock-head"><h3 data-i18n="eldercare.submit_heading">Submit an Eldercare Listing</h3></div>
     <div class="listblock-body" style="padding:16px;">
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Know of an anthroposophical eldercare community, service, or resource? Submit it for review using the main listing form.</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;" data-i18n="eldercare.submit_desc">Know of an anthroposophical eldercare community, service, or resource? Submit it for review using the main listing form.</p>
       <button onclick="showSubmitForm()" style="padding:10px 24px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">+ Submit a Listing</button>
     </div>
   </div>
@@ -1252,9 +1258,9 @@
 
   <!-- Memorial search -->
   <div style="margin-bottom:24px;display:flex;gap:10px;max-width:500px;">
-    <input type="text" id="memorial-search" placeholder="Search by name..." style="flex:1;padding:10px 18px;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;" onkeydown="if(event.key==='Enter')filterMemorials()">
-    <button onclick="filterMemorials()" style="padding:10px 22px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Search</button>
-    <button onclick="document.getElementById('memorial-search').value='';filterMemorials()" style="padding:10px 16px;background:var(--surface);color:var(--text-secondary);border:1px solid var(--border);border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">All</button>
+    <input type="text" id="memorial-search" placeholder="Search by name..." data-i18n-placeholder="memorial.search_placeholder" style="flex:1;padding:10px 18px;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;" onkeydown="if(event.key==='Enter')filterMemorials()">
+    <button onclick="filterMemorials()" style="padding:10px 22px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" data-i18n="memorial.search_btn">Search</button>
+    <button onclick="document.getElementById('memorial-search').value='';filterMemorials()" style="padding:10px 16px;background:var(--surface);color:var(--text-secondary);border:1px solid var(--border);border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" data-i18n="memorial.all_btn">All</button>
   </div>
 
   <!-- Memorial count -->
@@ -1330,28 +1336,28 @@
 
   <!-- Submit memorial form -->
   <div class="listblock reveal" style="margin-top:12px;">
-    <div class="listblock-head"><h3>Submit a Memorial</h3></div>
+    <div class="listblock-head"><h3 data-i18n="submit_memorial.title">Submit a Memorial</h3></div>
     <div class="listblock-body" style="padding:16px;">
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Honor a member of the anthroposophical community. Submissions are reviewed before publishing.</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;" data-i18n="submit_memorial.description">Honor a member of the anthroposophical community. Submissions are reviewed before publishing.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
         <div>
-          <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;">Full name *</label>
-          <input type="text" id="mem-name" placeholder="First and last name" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;" data-i18n="submit_memorial.name_label">Full name *</label>
+          <input type="text" id="mem-name" placeholder="First and last name" data-i18n-placeholder="submit_memorial.name_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
         </div>
         <div>
-          <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;">Years (e.g. 1920 - 2024)</label>
-          <input type="text" id="mem-years" placeholder="Birth year - Passing year" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;" data-i18n="submit_memorial.years_label">Years (e.g. 1920 - 2024)</label>
+          <input type="text" id="mem-years" placeholder="Birth year - Passing year" data-i18n-placeholder="submit_memorial.years_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
         </div>
       </div>
-      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;">Location</label>
-      <input type="text" id="mem-location" placeholder="City, State/Country" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
-      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;">About this person *</label>
-      <textarea id="mem-bio" rows="3" placeholder="Share a brief tribute: their contributions, community involvement, and what they meant to the movement..." style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;resize:vertical;"></textarea>
-      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;">Photo URL (optional)</label>
-      <input type="url" id="mem-photo" placeholder="https://..." style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
-      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;">Your email (for follow-up)</label>
-      <input type="email" id="mem-email" placeholder="you@example.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
-      <button onclick="submitMemorial()" style="margin-top:16px;padding:11px 28px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Submit Memorial</button>
+      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;" data-i18n="submit_memorial.location_label">Location</label>
+      <input type="text" id="mem-location" placeholder="City, State/Country" data-i18n-placeholder="submit_memorial.location_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
+      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;" data-i18n="submit_memorial.bio_label">About this person *</label>
+      <textarea id="mem-bio" rows="3" placeholder="Share a brief tribute: their contributions, community involvement, and what they meant to the movement..." data-i18n-placeholder="submit_memorial.bio_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;resize:vertical;"></textarea>
+      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;" data-i18n="submit_memorial.photo_label">Photo URL (optional)</label>
+      <input type="url" id="mem-photo" placeholder="https://..." data-i18n-placeholder="submit_memorial.photo_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
+      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;" data-i18n="submit_memorial.email_label">Your email (for follow-up)</label>
+      <input type="email" id="mem-email" placeholder="you@example.com" data-i18n-placeholder="submit_memorial.email_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
+      <button onclick="submitMemorial()" style="margin-top:16px;padding:11px 28px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" data-i18n="submit_memorial.btn">Submit Memorial</button>
       <div id="mem-ok" style="display:none;font-size:13px;color:var(--verified);font-weight:600;margin-top:12px;">Submitted with gratitude. We will review and publish within 48 hours.</div>
     </div>
   </div>
@@ -1364,13 +1370,13 @@
     <button onclick="doSignOut()">sign out</button>
   </div>
   <div id="chat-gate-wrap">
-    <h2>Community Chat</h2>
-    <p>Join conversations with anthroposophists worldwide across 9 topic rooms. Free membership required.</p>
-    <a href="#" class="cgbtn" onclick="openModal();return false;">Sign in to Chat</a>
-    <span style="color:var(--muted);font-size:11.5px;margin:0 8px;">or</span>
-    <a href="#" style="font-size:12px;color:var(--link);" onclick="openModal();return false;">create a free account</a>
+    <h2 data-i18n="chat.heading">Community Chat</h2>
+    <p data-i18n="chat.gate_desc">Join conversations with anthroposophists worldwide across 9 topic rooms. Free membership required.</p>
+    <a href="#" class="cgbtn" onclick="openModal();return false;" data-i18n="chat.sign_in_btn">Sign in to Chat</a>
+    <span style="color:var(--muted);font-size:11.5px;margin:0 8px;" data-i18n="chat.or">or</span>
+    <a href="#" style="font-size:12px;color:var(--link);" onclick="openModal();return false;" data-i18n="chat.create_account_link">create a free account</a>
     <div class="rooms-prev">
-      <h5>Active Rooms</h5>
+      <h5 data-i18n="chat.active_rooms">Active Rooms</h5>
       <span class="rpill"># general</span><span class="rpill"># waldorf-education</span>
       <span class="rpill"># biodynamic</span><span class="rpill"># study-groups</span>
       <span class="rpill"># eurythmy-arts</span><span class="rpill"># medicine</span>
@@ -1380,7 +1386,7 @@
   </div>
   <div id="chat-app">
     <div class="rooms-sb">
-      <div class="rooms-sb-head">Rooms</div>
+      <div class="rooms-sb-head" data-i18n="chat.rooms_heading">Rooms</div>
       <div class="ritem active" onclick="switchRoom(this,'general','Open conversation for all members',12)"><span class="rname"># general</span><span class="rsub">open discussion</span></div>
       <div class="ritem" onclick="switchRoom(this,'waldorf-education','Teachers, parents, and students',7)"><span class="rname"># waldorf-education</span><span class="rsub">teachers &amp; parents</span><span class="unread">3</span></div>
       <div class="ritem" onclick="switchRoom(this,'biodynamic','Farms, CSAs, and growers',5)"><span class="rname"># biodynamic</span><span class="rsub">farms &amp; growers</span></div>
@@ -1405,7 +1411,7 @@
       </div>
       <div class="chat-irow">
         <input type="text" id="chat-input" placeholder="message # general…" onkeydown="if(event.key==='Enter')sendMsg()">
-        <button onclick="sendMsg()">send</button>
+        <button onclick="sendMsg()" data-i18n="chat.send_btn">send</button>
       </div>
     </div>
   </div>
@@ -1414,9 +1420,9 @@
 <!-- ═══ CATEGORY PAGE (dynamic) ═══ -->
 <div class="pagesec" id="sec-category">
   <div style="margin-bottom:12px;">
-    <a href="#" id="cat-back" onclick="goBack();return false;" style="font-size:13px;color:var(--gold);font-weight:600;text-decoration:none;">&larr; Back</a>
+    <a href="#" id="cat-back" onclick="goBack();return false;" style="font-size:13px;color:var(--gold);font-weight:600;text-decoration:none;" data-i18n="catpage.back">&larr; Back</a>
   </div>
-  <div class="seclabel" id="cat-page-label">Category</div>
+  <div class="seclabel" id="cat-page-label" data-i18n="catpage.default_label">Category</div>
   <p id="cat-page-desc" style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;line-height:1.7;"></p>
   <div id="cat-page-content">
   </div>
@@ -1425,7 +1431,7 @@
 <!-- ═══ DETAIL VIEW ═══ -->
 <div class="pagesec" id="sec-detail">
   <div style="margin-bottom:16px;">
-    <a href="#" id="detail-back" onclick="goBack();return false;" style="font-size:13px;color:var(--gold);font-weight:600;text-decoration:none;">&larr; Back</a>
+    <a href="#" id="detail-back" onclick="goBack();return false;" style="font-size:13px;color:var(--gold);font-weight:600;text-decoration:none;" data-i18n="detail.back">&larr; Back</a>
   </div>
   <div id="detail-content">
     <!-- Dynamically populated by showDetail() -->
@@ -1434,12 +1440,12 @@
 
 <!-- ═══ ADMIN PANEL ═══ -->
 <div class="pagesec" id="sec-admin">
-  <div class="seclabel" style="margin-bottom:10px;">Admin Panel</div>
+  <div class="seclabel" style="margin-bottom:10px;" data-i18n="admin.section_label">Admin Panel</div>
   <div class="admin-tabs">
-    <button class="admin-tab active" onclick="adminSwitchTab('listings')">Pending Listings</button>
-    <button class="admin-tab" onclick="adminSwitchTab('events')">Pending Events</button>
-    <button class="admin-tab" onclick="adminSwitchTab('memorials')">Pending Memorials</button>
-    <button class="admin-tab" onclick="adminSwitchTab('newsletter')">Send Newsletter</button>
+    <button class="admin-tab active" onclick="adminSwitchTab('listings')" data-i18n="admin.tab_listings">Pending Listings</button>
+    <button class="admin-tab" onclick="adminSwitchTab('events')" data-i18n="admin.tab_events">Pending Events</button>
+    <button class="admin-tab" onclick="adminSwitchTab('memorials')" data-i18n="admin.tab_memorials">Pending Memorials</button>
+    <button class="admin-tab" onclick="adminSwitchTab('newsletter')" data-i18n="admin.tab_newsletter">Send Newsletter</button>
   </div>
   <div id="admin-listings" class="admin-tab-content active">
     <div id="admin-listings-list" style="margin-top:16px;">
@@ -1459,12 +1465,12 @@
   <div id="admin-newsletter" class="admin-tab-content">
     <div style="margin-top:16px;">
       <div id="newsletter-subscriber-count" class="newsletter-info" style="margin-bottom:14px;font-size:13px;color:var(--text-secondary);">Loading subscriber count...</div>
-      <label class="newsletter-label" for="newsletter-subject">Subject Line</label>
-      <input type="text" id="newsletter-subject" class="newsletter-input" placeholder="e.g. March 2026 Community Update">
-      <label class="newsletter-label" for="newsletter-html" style="margin-top:12px;">HTML Content</label>
-      <textarea id="newsletter-html" class="newsletter-textarea" rows="12" placeholder="<h1>Hello from Sophia Commons</h1>&#10;<p>Your newsletter content here...</p>"></textarea>
+      <label class="newsletter-label" for="newsletter-subject" data-i18n="admin.newsletter_subject_label">Subject Line</label>
+      <input type="text" id="newsletter-subject" class="newsletter-input" placeholder="e.g. March 2026 Community Update" data-i18n-placeholder="admin.newsletter_subject_placeholder">
+      <label class="newsletter-label" for="newsletter-html" style="margin-top:12px;" data-i18n="admin.newsletter_html_label">HTML Content</label>
+      <textarea id="newsletter-html" class="newsletter-textarea" rows="12" placeholder="<h1>Hello from Sophia Commons</h1>&#10;<p>Your newsletter content here...</p>" data-i18n-placeholder="admin.newsletter_html_placeholder"></textarea>
       <div style="display:flex;align-items:center;gap:12px;margin-top:14px;">
-        <button class="admin-btn admin-btn-approve" onclick="sendNewsletter()" id="newsletter-send-btn">Send to All Subscribers</button>
+        <button class="admin-btn admin-btn-approve" onclick="sendNewsletter()" id="newsletter-send-btn" data-i18n="admin.newsletter_send_btn">Send to All Subscribers</button>
         <span id="newsletter-status" style="font-size:13px;color:var(--text-muted);"></span>
       </div>
       <div id="newsletter-result" style="display:none;margin-top:16px;"></div>
@@ -1477,13 +1483,13 @@
 <!-- RIGHT SIDEBAR -->
 <div id="rightbar">
 
-  <h5>calendar</h5>
+  <h5 data-i18n="rightbar.calendar">calendar</h5>
   <div id="sidebar-mini-cal" class="mini-cal"></div>
 
-  <h5>upcoming events</h5>
+  <h5 data-i18n="rightbar.upcoming_events">upcoming events</h5>
   <div id="sidebar-upcoming" class="sb-upcoming"></div>
 
-  <h5>related directories</h5>
+  <h5 data-i18n="rightbar.related_directories">related directories</h5>
   <ul>
     <li><a href="https://biodynamicfood.org/" target="_blank">Demeter Farm Directory</a></li>
     <li><a href="https://waldorfeducation.org/" target="_blank">AWSNA School Finder</a></li>
@@ -1492,22 +1498,22 @@
     <li><a href="https://www.freunde-waldorf.de/en/waldorf-worldwide/waldorf-education/waldorf-world-list/" target="_blank">Waldorf World List</a></li>
   </ul>
 
-  <h5>stay connected</h5>
+  <h5 data-i18n="rightbar.stay_connected">stay connected</h5>
   <div class="signup-box">
-    <p>Weekly digest of new listings, events, and announcements.</p>
-    <input type="email" id="signup-email" placeholder="your@email.com">
-    <button onclick="doSignup()">subscribe</button>
+    <p data-i18n="newsletter.desc">Weekly digest of new listings, events, and announcements.</p>
+    <input type="email" id="signup-email" placeholder="your@email.com" data-i18n-placeholder="newsletter.placeholder">
+    <button onclick="doSignup()" data-i18n="newsletter.subscribe_btn">subscribe</button>
     <div id="rsignup-ok">✓ you're subscribed!</div>
   </div>
 
-  <h5>suggest a listing</h5>
+  <h5 data-i18n="rightbar.suggest_listing">suggest a listing</h5>
   <ul>
-    <li><a href="#" onclick="showSubmitForm();return false;">+ submit a listing</a></li>
-    <li><a href="mailto:hello@sophiacommons.org">suggest a correction</a></li>
-    <li><a href="mailto:hello@sophiacommons.org">volunteer / help edit</a></li>
+    <li><a href="#" onclick="showSubmitForm();return false;" data-i18n="rightbar.submit_listing">+ submit a listing</a></li>
+    <li><a href="mailto:hello@sophiacommons.org" data-i18n="rightbar.suggest_correction">suggest a correction</a></li>
+    <li><a href="mailto:hello@sophiacommons.org" data-i18n="rightbar.volunteer">volunteer / help edit</a></li>
   </ul>
 
-  <h5>community spotlight</h5>
+  <h5 data-i18n="rightbar.community_spotlight">community spotlight</h5>
   <div id="spotlight-block" style="font-size:11.5px;">
     <div style="background:var(--glt);border:1px solid var(--blt);padding:8px 9px;margin-bottom:6px;">
       <div style="font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--warm);margin-bottom:4px;">Most visited this week</div>
@@ -1520,8 +1526,8 @@
       <div style="font-size:11px;color:var(--muted);">62% more views this month</div>
     </div>
   </div>
-  <h5 style="margin-top:12px;">about</h5>
-  <p style="font-size:11px;color:var(--muted);line-height:1.6;">Free, community-maintained directory.</p>
+  <h5 style="margin-top:12px;" data-i18n="rightbar.about">about</h5>
+  <p style="font-size:11px;color:var(--muted);line-height:1.6;" data-i18n="rightbar.about_text">Free, community-maintained directory.</p>
 
 </div><!-- end rightbar -->
 
@@ -1531,42 +1537,43 @@
 <footer>
   <div class="ftcols">
     <div class="ftcol reveal">
-      <div class="ftlogo" style="font-family:'Cormorant Garamond',Georgia,serif;letter-spacing:.1em;">
+      <div class="ftlogo" style="font-family:'Cormorant Garamond',Georgia,serif;letter-spacing:.1em;" data-i18n="footer.site_name">
         Sophia Commons
       </div>
-      <div class="ftsub">Anthroposophical Community</div>
-      <p style="font-size:11.5px;line-height:1.6;">A free, community-maintained resource for anthroposophical initiatives worldwide.</p>
+      <div class="ftsub" data-i18n="footer.tagline">Anthroposophical Community</div>
+      <p style="font-size:11.5px;line-height:1.6;" data-i18n="footer.about_text">A free, community-maintained resource for anthroposophical initiatives worldwide.</p>
     </div>
     <div class="ftcol reveal">
-      <div class="ftcol-h">Directory</div>
-      <a href="#" onclick="showSec('directory');return false;">World Directory</a>
-      <a href="#" onclick="showSec('browse');return false;">Browse Listings</a>
-      <a href="#" onclick="showSec('podcasts');return false;">Podcasts &amp; Media</a>
-      <a href="#" onclick="showSec('events');return false;">Events Calendar</a>
-      <a href="#" onclick="showSec('news');return false;">News &amp; Announcements</a>
+      <div class="ftcol-h" data-i18n="footer.col_directory">Directory</div>
+      <a href="#" onclick="showSec('directory');return false;" data-i18n="footer.link_world_directory">World Directory</a>
+      <a href="#" onclick="showSec('browse');return false;" data-i18n="footer.link_browse">Browse Listings</a>
+      <a href="#" onclick="showSec('podcasts');return false;" data-i18n="footer.link_podcasts">Podcasts &amp; Media</a>
+      <a href="#" onclick="showSec('events');return false;" data-i18n="footer.link_events">Events Calendar</a>
+      <a href="#" onclick="showSec('news');return false;" data-i18n="footer.link_news">News &amp; Announcements</a>
     </div>
     <div class="ftcol reveal">
-      <div class="ftcol-h">Community</div>
-      <a href="#" onclick="handleChat();return false;">Community Chat</a>
-      <a href="#" onclick="showSubmitForm();return false;">Submit a Listing</a>
-      <a href="mailto:hello@sophiacommons.org">Suggest a Correction</a>
-      <a href="mailto:hello@sophiacommons.org">Volunteer / Help Edit</a>
-      <a href="#" onclick="showSec('home');return false;">About Sophia Commons</a>
+      <div class="ftcol-h" data-i18n="footer.col_community">Community</div>
+      <a href="#" onclick="handleChat();return false;" data-i18n="footer.link_chat">Community Chat</a>
+      <a href="#" onclick="showSubmitForm();return false;" data-i18n="footer.link_submit">Submit a Listing</a>
+      <a href="mailto:hello@sophiacommons.org" data-i18n="footer.link_correction">Suggest a Correction</a>
+      <a href="mailto:hello@sophiacommons.org" data-i18n="footer.link_volunteer">Volunteer / Help Edit</a>
+      <a href="#" onclick="showSec('home');return false;" data-i18n="footer.link_about">About Sophia Commons</a>
     </div>
     <div class="ftcol reveal ftnl">
-      <div class="ftcol-h">Newsletter</div>
-      <p style="font-size:11.5px;color:rgba(255,255,255,.45);margin-bottom:8px;line-height:1.6;">Weekly digest of listings, events, and community news.</p>
-      <input type="email" id="ft-email" placeholder="your@email.com">
-      <button onclick="doFtSignup()">subscribe</button>
+      <div class="ftcol-h" data-i18n="footer.col_newsletter">Newsletter</div>
+      <p style="font-size:11.5px;color:rgba(255,255,255,.45);margin-bottom:8px;line-height:1.6;" data-i18n="footer.newsletter_desc">Weekly digest of listings, events, and community news.</p>
+      <input type="email" id="ft-email" placeholder="your@email.com" data-i18n-placeholder="footer.newsletter_placeholder">
+      <button onclick="doFtSignup()" data-i18n="footer.newsletter_btn">subscribe</button>
       <div id="ft-ok">✓ you're subscribed!</div>
     </div>
   </div>
   <div class="ftbot">
     <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.1.0</span>
-    <span><a href="#" onclick="return false;">privacy</a><a href="#" onclick="return false;">terms</a><a href="mailto:hello@sophiacommons.org">contact</a></span>
+    <span><a href="#" onclick="return false;" data-i18n="footer.privacy">privacy</a><a href="#" onclick="return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
+<script src="i18n.js"></script>
 <script src="sophia_commons_v9.js"></script>
 <script>
 if ('serviceWorker' in navigator) {

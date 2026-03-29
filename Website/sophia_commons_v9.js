@@ -31,7 +31,7 @@ async function showDetail(type, id, skipPush) {
   captureCurrentSection('detail');
 
   var container = document.getElementById('detail-content');
-  container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
+  container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + t('detail.loading') + '</div>';
   showSec('detail', true);
 
   // Push SEO-friendly detail URL
@@ -93,7 +93,7 @@ function showStaticDetail(data) {
 
 function renderDirectoryDetail(d) {
   var badges = '';
-  if (d.is_verified) badges += '<span class="detail-badge verified">Verified</span>';
+  if (d.is_verified) badges += '<span class="detail-badge verified">' + t('detail.verified') + '</span>';
   if (d.category) badges += '<span class="detail-badge category">' + esc(d.category) + '</span>';
 
   var meta = '';
@@ -110,42 +110,42 @@ function renderDirectoryDetail(d) {
   }
 
   var actions = '';
-  if (d.website_url) actions += '<a class="btn-primary-detail" href="' + esc(d.website_url) + '" target="_blank">Visit Website &#8599;</a>';
-  if (d.email) actions += '<a class="btn-secondary-detail" href="mailto:' + esc(d.email) + '">Contact &#9993;</a>';
-  if (d.phone) actions += '<a class="btn-secondary-detail" href="tel:' + esc(d.phone) + '">Call &#9742;</a>';
+  if (d.website_url) actions += '<a class="btn-primary-detail" href="' + esc(d.website_url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
+  if (d.email) actions += '<a class="btn-secondary-detail" href="mailto:' + esc(d.email) + '">' + t('detail.contact') + ' &#9993;</a>';
+  if (d.phone) actions += '<a class="btn-secondary-detail" href="tel:' + esc(d.phone) + '">' + t('detail.call') + ' &#9742;</a>';
 
   return '<div class="detail-hero">'
     + badges
     + '<h1>' + esc(d.organization_name) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
-    + '<div class="detail-body">' + esc(d.description || 'No description available.') + '</div>'
+    + '<div class="detail-body">' + esc(d.description || t('detail.no_description')) + '</div>'
     + tags
     + '<div class="detail-actions">' + actions + '</div>'
     + '</div>'
-    + '<div class="detail-sidebar"><h4>Quick Facts</h4>'
-    + '<p><strong>Category:</strong> ' + esc(d.category || 'General') + '</p>'
-    + (d.address ? '<p><strong>Address:</strong> ' + esc(d.address) + '</p>' : '')
-    + (d.location ? '<p><strong>Location:</strong> ' + esc(d.location) + '</p>' : '')
-    + (d.country ? '<p><strong>Country:</strong> ' + esc(d.country) + '</p>' : '')
-    + (d.phone ? '<p><strong>Phone:</strong> <a href="tel:' + esc(d.phone) + '">' + esc(d.phone) + '</a></p>' : '')
-    + (d.email ? '<p><strong>Email:</strong> <a href="mailto:' + esc(d.email) + '">' + esc(d.email) + '</a></p>' : '')
-    + (d.website_url ? '<p><strong>Website:</strong> <a href="' + esc(d.website_url) + '" target="_blank">' + esc(d.website_url.replace('https://','').replace('http://','')) + '</a></p>' : '')
-    + '<p><strong>Status:</strong> ' + (d.is_verified ? '<span style="color:var(--sage);font-weight:700;">&#10003; Verified</span>' : 'Listed') + '</p>'
+    + '<div class="detail-sidebar"><h4>' + t('detail.quick_facts') + '</h4>'
+    + '<p><strong>' + t('detail.category') + ':</strong> ' + esc(d.category || t('common.general')) + '</p>'
+    + (d.address ? '<p><strong>' + t('detail.address') + ':</strong> ' + esc(d.address) + '</p>' : '')
+    + (d.location ? '<p><strong>' + t('detail.location') + ':</strong> ' + esc(d.location) + '</p>' : '')
+    + (d.country ? '<p><strong>' + t('detail.country') + ':</strong> ' + esc(d.country) + '</p>' : '')
+    + (d.phone ? '<p><strong>' + t('detail.phone') + ':</strong> <a href="tel:' + esc(d.phone) + '">' + esc(d.phone) + '</a></p>' : '')
+    + (d.email ? '<p><strong>' + t('detail.email') + ':</strong> <a href="mailto:' + esc(d.email) + '">' + esc(d.email) + '</a></p>' : '')
+    + (d.website_url ? '<p><strong>' + t('detail.website') + ':</strong> <a href="' + esc(d.website_url) + '" target="_blank">' + esc(d.website_url.replace('https://','').replace('http://','')) + '</a></p>' : '')
+    + '<p><strong>' + t('detail.status') + ':</strong> ' + (d.is_verified ? '<span style="color:var(--sage);font-weight:700;">&#10003; ' + t('detail.verified') + '</span>' : t('detail.listed')) + '</p>'
     + '</div>'
     + '<div id="related-listings"></div>';
 }
 
 function renderEventDetail(ev) {
   var d = new Date(ev.start_date);
-  var endStr = ev.end_date ? new Date(ev.end_date).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'}) : '';
-  var dateStr = d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
-  var timeStr = ev.is_all_day ? 'All day' : d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+  var endStr = ev.end_date ? localDate(ev.end_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'}) : '';
+  var dateStr = localDate(ev.start_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+  var timeStr = ev.is_all_day ? t('event_detail.all_day') : d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
 
   var badges = '';
-  if (ev.featured) badges += '<span class="detail-badge category">Featured</span>';
+  if (ev.featured) badges += '<span class="detail-badge category">' + t('event_detail.featured') + '</span>';
   if (ev.event_type) badges += '<span class="detail-badge type">' + esc(ev.event_type) + '</span>';
-  if (ev.is_free) badges += '<span class="detail-badge free">Free</span>';
-  if (ev.is_online) badges += '<span class="detail-badge type">Online</span>';
+  if (ev.is_free) badges += '<span class="detail-badge free">' + t('event_detail.free') + '</span>';
+  if (ev.is_online) badges += '<span class="detail-badge type">' + t('event_detail.online') + '</span>';
 
   var meta = '';
   meta += '<span>&#128197; ' + esc(dateStr) + '</span>';
@@ -155,33 +155,33 @@ function renderEventDetail(ev) {
   if (ev.organizer_name) meta += '<span>&#127915; ' + esc(ev.organizer_name) + '</span>';
 
   var actions = '';
-  if (ev.ticket_url) actions += '<a class="btn-primary-detail" href="' + esc(ev.ticket_url) + '" target="_blank">Get Tickets &#8599;</a>';
-  if (ev.online_url) actions += '<a class="btn-primary-detail" href="' + esc(ev.online_url) + '" target="_blank">Join Online &#8599;</a>';
-  if (ev.organizer_url) actions += '<a class="btn-secondary-detail" href="' + esc(ev.organizer_url) + '" target="_blank">Organizer Website</a>';
+  if (ev.ticket_url) actions += '<a class="btn-primary-detail" href="' + esc(ev.ticket_url) + '" target="_blank">' + t('event_detail.get_tickets') + ' &#8599;</a>';
+  if (ev.online_url) actions += '<a class="btn-primary-detail" href="' + esc(ev.online_url) + '" target="_blank">' + t('event_detail.join_online') + ' &#8599;</a>';
+  if (ev.organizer_url) actions += '<a class="btn-secondary-detail" href="' + esc(ev.organizer_url) + '" target="_blank">' + t('event_detail.organizer_website') + '</a>';
 
   return '<div class="detail-hero">'
     + badges
     + '<h1>' + esc(ev.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
     + '<div class="detail-body">' + esc(ev.description || '') + '</div>'
-    + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold);font-weight:700;margin-bottom:12px;">Ticket price: $' + ev.ticket_price + '</p>' : '')
+    + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold);font-weight:700;margin-bottom:12px;">' + t('event_detail.ticket_price').replace('${price}', ev.ticket_price) + '</p>' : '')
     + '<div class="detail-actions">' + actions + '</div>'
     + '</div>'
-    + '<div class="detail-sidebar"><h4>Event Details</h4>'
-    + '<p><strong>Date:</strong> ' + esc(dateStr) + '</p>'
-    + '<p><strong>Time:</strong> ' + esc(timeStr) + '</p>'
-    + (ev.location_name ? '<p><strong>Venue:</strong> ' + esc(ev.location_name) + '</p>' : '')
-    + (ev.city ? '<p><strong>City:</strong> ' + esc(ev.city) + '</p>' : '')
-    + (ev.organizer_name ? '<p><strong>Organizer:</strong> ' + esc(ev.organizer_name) + '</p>' : '')
+    + '<div class="detail-sidebar"><h4>' + t('event_detail.title') + '</h4>'
+    + '<p><strong>' + t('event_detail.date') + ':</strong> ' + esc(dateStr) + '</p>'
+    + '<p><strong>' + t('event_detail.time') + ':</strong> ' + esc(timeStr) + '</p>'
+    + (ev.location_name ? '<p><strong>' + t('event_detail.venue') + ':</strong> ' + esc(ev.location_name) + '</p>' : '')
+    + (ev.city ? '<p><strong>' + t('event_detail.city') + ':</strong> ' + esc(ev.city) + '</p>' : '')
+    + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
     + '</div>'
     + '<div id="related-listings"></div>';
 }
 
 function renderNewsDetail(n) {
-  var pubDate = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : '';
+  var pubDate = n.published_at ? localDate(n.published_at, {month:'long', day:'numeric', year:'numeric'}) : '';
 
   var badges = '';
-  if (n.featured) badges += '<span class="detail-badge category">Featured</span>';
+  if (n.featured) badges += '<span class="detail-badge category">' + t('news_detail.featured') + '</span>';
   if (n.tags && n.tags.length) {
     n.tags.forEach(function(t) { badges += '<span class="detail-badge type">' + esc(t) + '</span>'; });
   }
@@ -191,7 +191,7 @@ function renderNewsDetail(n) {
   if (n.source_name) meta += '<span>&#128240; ' + esc(n.source_name) + '</span>';
 
   var actions = '';
-  if (n.source_url) actions += '<a class="btn-primary-detail" href="' + esc(n.source_url) + '" target="_blank">Read at Source &#8599;</a>';
+  if (n.source_url) actions += '<a class="btn-primary-detail" href="' + esc(n.source_url) + '" target="_blank">' + t('news_detail.read_at_source') + ' &#8599;</a>';
 
   return '<div class="detail-hero">'
     + badges
@@ -204,15 +204,15 @@ function renderNewsDetail(n) {
 
 function renderStaticDetail(d) {
   var badges = '';
-  if (d.verified) badges += '<span class="detail-badge verified">Verified</span>';
+  if (d.verified) badges += '<span class="detail-badge verified">' + t('detail.verified') + '</span>';
   if (d.category) badges += '<span class="detail-badge category">' + esc(d.category) + '</span>';
 
   var meta = '';
   if (d.location) meta += '<span>&#128205; ' + esc(d.location) + '</span>';
 
   var actions = '';
-  if (d.url) actions += '<a class="btn-primary-detail" href="' + esc(d.url) + '" target="_blank">Visit Website &#8599;</a>';
-  if (d.amazon) actions += '<a class="btn-secondary-detail" href="' + esc(d.amazon) + '" target="_blank">Buy on Amazon</a>';
+  if (d.url) actions += '<a class="btn-primary-detail" href="' + esc(d.url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
+  if (d.amazon) actions += '<a class="btn-secondary-detail" href="' + esc(d.amazon) + '" target="_blank">' + t('detail.buy_on_amazon') + '</a>';
 
   return '<div class="detail-hero">'
     + badges
@@ -226,17 +226,17 @@ function renderStaticDetail(d) {
 function renderNotFound() {
   return '<div style="text-align:center;padding:60px 20px;">'
     + '<div style="font-size:3rem;margin-bottom:12px;">&#128214;</div>'
-    + '<h2 style="font-family:Lora,serif;font-size:1.3rem;color:var(--text-primary);margin-bottom:8px;">Listing Not Found</h2>'
-    + '<p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">This item may have been removed or is not yet available.</p>'
-    + '<a href="#" onclick="goBack();return false;" style="color:var(--gold);font-weight:600;">&larr; Go back</a>'
+    + '<h2 style="font-family:Lora,serif;font-size:1.3rem;color:var(--text-primary);margin-bottom:8px;">' + t('detail.not_found_title') + '</h2>'
+    + '<p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">' + t('detail.not_found_desc') + '</p>'
+    + '<a href="#" onclick="goBack();return false;" style="color:var(--gold);font-weight:600;">&larr; ' + t('detail.go_back') + '</a>'
     + '</div>';
 }
 
 function renderOfflineDetail() {
   return '<div style="text-align:center;padding:60px 20px;">'
-    + '<h2 style="font-family:Lora,serif;font-size:1.3rem;color:var(--text-primary);margin-bottom:8px;">Detail View</h2>'
-    + '<p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">Connect to the internet to view full listing details.</p>'
-    + '<a href="#" onclick="goBack();return false;" style="color:var(--gold);font-weight:600;">&larr; Go back</a>'
+    + '<h2 style="font-family:Lora,serif;font-size:1.3rem;color:var(--text-primary);margin-bottom:8px;">' + t('detail.offline_title') + '</h2>'
+    + '<p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">' + t('detail.offline_desc') + '</p>'
+    + '<a href="#" onclick="goBack();return false;" style="color:var(--gold);font-weight:600;">&larr; ' + t('detail.go_back') + '</a>'
     + '</div>';
 }
 
@@ -254,7 +254,7 @@ async function loadRelatedDirectory(category, excludeId) {
     if (!data || data.length === 0) return;
     var el = document.getElementById('related-listings');
     if (!el) return;
-    el.innerHTML = '<h4 style="font-family:Lora,serif;font-size:14px;font-weight:700;margin-bottom:12px;">Related in ' + esc(category) + '</h4>'
+    el.innerHTML = '<h4 style="font-family:Lora,serif;font-size:14px;font-weight:700;margin-bottom:12px;">' + t('detail.related_in').replace('{category}', esc(category)) + '</h4>'
       + '<div class="detail-related">'
       + data.map(function(r) {
         return '<div class="detail-related-card" onclick="showDetail(\'directory\',\'' + r.id + '\')">'
@@ -279,13 +279,13 @@ async function loadRelatedEvents(categoryId, excludeId) {
     if (!data || data.length === 0) return;
     var el = document.getElementById('related-listings');
     if (!el) return;
-    el.innerHTML = '<h4 style="font-family:Lora,serif;font-size:14px;font-weight:700;margin-bottom:12px;">More Upcoming Events</h4>'
+    el.innerHTML = '<h4 style="font-family:Lora,serif;font-size:14px;font-weight:700;margin-bottom:12px;">' + t('event_detail.more_upcoming') + '</h4>'
       + '<div class="detail-related">'
       + data.map(function(r) {
         var d = new Date(r.start_date);
         return '<div class="detail-related-card" onclick="showDetail(\'event\',\'' + r.id + '\')">'
           + '<h5>' + esc(r.title) + '</h5>'
-          + '<p>' + d.toLocaleDateString('en-US', {month:'short', day:'numeric'}) + ' - ' + esc(r.city || '') + '</p>'
+          + '<p>' + localDate(r.start_date, {month:'short', day:'numeric'}) + ' - ' + esc(r.city || '') + '</p>'
           + '</div>';
       }).join('')
       + '</div>';
@@ -322,10 +322,11 @@ function showCategory(name, skipPush) {
   var meta = catMeta[key] || {};
 
   document.getElementById('cat-page-label').textContent = displayName;
-  document.getElementById('cat-page-desc').textContent = meta.desc || 'Browse listings, organizations, and events in this category.';
-  document.getElementById('cat-page-content').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
+  var catI18nKey = 'catmeta.' + key.replace(/[^a-z]/g, '_') + '_desc';
+  document.getElementById('cat-page-desc').textContent = t(catI18nKey) !== catI18nKey ? t(catI18nKey) : (meta.desc || t('catpage.default_browse_desc'));
+  document.getElementById('cat-page-content').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + t('common.loading') + '</div>';
   showSec('category', true);
-  updateSEOMeta(displayName + ' | Sophia Commons Directory', meta.desc || 'Browse anthroposophical organizations and events in this category.', '/category/' + encodeURIComponent(name));
+  updateSEOMeta(displayName + ' | Sophia Commons Directory', meta.desc || t('catpage.default_seo_desc'), '/category/' + encodeURIComponent(name));
 
   // Push SEO-friendly category URL
   if (!skipPush) {
@@ -358,7 +359,7 @@ async function loadCategoryPage(catKey, dirCat) {
 
   if (dirEntries.length > 0) {
     html += '<div class="listblock" style="margin-bottom:16px;">';
-    html += '<div class="listblock-head"><h3>Organizations &amp; Directory</h3><span style="font-size:10.5px;color:var(--text-muted);">' + dirEntries.length + ' entries</span></div>';
+    html += '<div class="listblock-head"><h3>' + t('catpage.organizations_heading') + '</h3><span style="font-size:10.5px;color:var(--text-muted);">' + t('directory.entries_label').replace('{count}', dirEntries.length) + '</span></div>';
     html += '<div class="listblock-body">';
     dirEntries.forEach(function(d) {
       var v = d.is_verified ? '<span style="color:var(--verified);font-weight:700;margin-right:4px;">&#10003;</span>' : '';
@@ -400,7 +401,7 @@ async function loadCategoryPage(catKey, dirCat) {
 
   if (events.length > 0) {
     html += '<div class="listblock" style="margin-bottom:16px;">';
-    html += '<div class="listblock-head"><h3>Upcoming Events</h3><span style="font-size:10.5px;color:var(--text-muted);">' + events.length + ' events</span></div>';
+    html += '<div class="listblock-head"><h3>' + t('catpage.upcoming_events_heading') + '</h3><span style="font-size:10.5px;color:var(--text-muted);">' + events.length + ' events</span></div>';
     html += '<div class="listblock-body">';
     events.forEach(function(ev) {
       var d = new Date(ev.start_date);
@@ -408,7 +409,7 @@ async function loadCategoryPage(catKey, dirCat) {
       html += '<div class="evrow" style="cursor:pointer;" onclick="showDetail(\'event\',\'' + ev.id + '\')">'
         + '<div class="evdate"><div class="mo">' + MONTHS_SHORT[d.getMonth()] + '</div><div class="dy">' + d.getDate() + '</div></div>'
         + '<div class="evinfo">'
-        + '<div class="etag">' + esc(ev.event_type || '') + (ev.is_free ? ' &middot; Free' : '') + '</div>'
+        + '<div class="etag">' + esc(ev.event_type || '') + (ev.is_free ? ' &middot; ' + t('common.free') : '') + '</div>'
         + '<h5>' + esc(ev.title) + '</h5>'
         + '<div class="emeta">' + esc(loc) + (ev.organizer_name ? ' &middot; ' + esc(ev.organizer_name) : '') + '</div>'
         + '</div></div>';
@@ -437,7 +438,7 @@ async function loadCategoryPage(catKey, dirCat) {
 
   if (news.length > 0) {
     html += '<div class="listblock" style="margin-bottom:16px;">';
-    html += '<div class="listblock-head"><h3>Related News</h3></div>';
+    html += '<div class="listblock-head"><h3>' + t('catpage.related_news_heading') + '</h3></div>';
     html += '<div class="listblock-body">';
     news.forEach(function(n) {
       var ago = timeAgo(n.published_at);
@@ -453,15 +454,15 @@ async function loadCategoryPage(catKey, dirCat) {
   if (dirEntries.length === 0 && events.length === 0 && news.length === 0) {
     html += '<div style="text-align:center;padding:48px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;">'
       + '<div style="font-size:2.5rem;margin-bottom:12px;">&#128218;</div>'
-      + '<h3 style="font-family:Lora,serif;font-size:1.1rem;color:var(--text-primary);margin-bottom:8px;">This category is growing</h3>'
-      + '<p style="color:var(--text-muted);font-size:13px;max-width:400px;margin:0 auto 16px;line-height:1.6;">We are building out this section. Be the first to contribute a listing, event, or resource.</p>'
+      + '<h3 style="font-family:Lora,serif;font-size:1.1rem;color:var(--text-primary);margin-bottom:8px;">' + t('catpage.empty_title') + '</h3>'
+      + '<p style="color:var(--text-muted);font-size:13px;max-width:400px;margin:0 auto 16px;line-height:1.6;">' + t('catpage.empty_desc') + '</p>'
       + '</div>';
   }
 
   // ── 5. Submit CTA ──
   html += '<div style="text-align:center;margin-top:20px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;">'
-    + '<p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">Know of an organization, event, or resource for this category?</p>'
-    + '<button onclick="showSubmitForm()" style="padding:11px 28px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:Nunito Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">+ Submit a Listing</button>'
+    + '<p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">' + t('catpage.submit_cta') + '</p>'
+    + '<button onclick="showSubmitForm()" style="padding:11px 28px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:Nunito Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">' + t('catpage.submit_btn') + '</button>'
     + '</div>';
 
   container.innerHTML = html;
@@ -508,16 +509,19 @@ const SEC_PATHS = {
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
 
-var SEC_META = {
-  home:      { title: 'Sophia Commons | Anthroposophical Community Directory', desc: 'The free global directory for the anthroposophical community. Find Waldorf schools, biodynamic farms, Camphill communities, eurythmy, anthroposophic medicine, events, and more.' },
-  news:      { title: 'News | Sophia Commons', desc: 'Latest news from the anthroposophical world - Waldorf education, biodynamic agriculture, eurythmy, Camphill communities, and spiritual science.' },
-  events:    { title: 'Events & Calendar | Sophia Commons', desc: 'Upcoming anthroposophical events, conferences, workshops, study groups, and retreats worldwide.' },
-  browse:    { title: 'Browse Categories | Sophia Commons', desc: 'Browse Waldorf schools, biodynamic farms, Camphill communities, eurythmy programs, anthroposophic medicine, and more by category.' },
-  directory: { title: 'Global Directory | Sophia Commons', desc: 'Interactive map and directory of 430+ anthroposophical organizations across 30+ countries worldwide.' },
-  books:     { title: 'Books & Library | Sophia Commons', desc: 'Rudolf Steiner books, lecture cycles, and anthroposophical literature. Browse the complete GA catalog.' },
-  podcasts:  { title: 'Podcasts & Media | Sophia Commons', desc: 'Anthroposophy podcasts, videos, and media resources for spiritual science, Waldorf education, and biodynamics.' },
-  memorial:  { title: 'In Memoriam | Sophia Commons', desc: 'Honoring members of the anthroposophical community who have crossed the threshold.' }
-};
+function _getSecMeta() {
+  return {
+    home:      { title: t('meta.title'), desc: t('meta.og_description') },
+    news:      { title: t('meta.news_title'), desc: t('meta.news_desc') },
+    events:    { title: t('meta.events_title'), desc: t('meta.events_desc') },
+    browse:    { title: t('meta.browse_title'), desc: t('meta.browse_desc') },
+    directory: { title: t('meta.directory_title'), desc: t('meta.directory_desc') },
+    books:     { title: t('meta.books_title'), desc: t('meta.books_desc') },
+    podcasts:  { title: t('meta.podcasts_title'), desc: t('meta.podcasts_desc') },
+    memorial:  { title: t('meta.memorial_title'), desc: t('meta.memorial_desc') }
+  };
+}
+var SEC_META = null;
 
 function updateSEOMeta(title, desc, path) {
   document.title = title;
@@ -551,7 +555,8 @@ function showSec(id, skipPush) {
   if (hamburger) hamburger.classList.remove('active');
   if (ov) ov.classList.remove('active');
   // Update SEO meta
-  var meta = SEC_META[id];
+  var secMeta = _getSecMeta();
+  var meta = secMeta[id];
   if (meta) updateSEOMeta(meta.title, meta.desc, SEC_PATHS[id] || '/');
   // Push SEO-friendly URL
   if (!skipPush && SEC_PATHS.hasOwnProperty(id)) {
@@ -577,7 +582,7 @@ function toggleMobileMenu() {
   if (ov) ov.classList.toggle('active');
   var expanded = lb.classList.contains('mobile-open');
   hb.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-  hb.setAttribute('aria-label', expanded ? 'Close navigation menu' : 'Open navigation menu');
+  hb.setAttribute('aria-label', expanded ? t('a11y.close_nav') : t('a11y.open_nav'));
 }
 
 // ── STICKY NAV SCROLL ──
@@ -684,16 +689,16 @@ function toggleAuthMode(e) {
   errEl.style.display = 'none';
   if (authMode === 'signin') {
     authMode = 'signup';
-    document.getElementById('modal-title').textContent = 'Create account';
-    document.getElementById('modal-desc').textContent = 'Join the Sophia Commons community.';
-    document.getElementById('auth-btn').textContent = 'Create account';
+    document.getElementById('modal-title').textContent = t('modal.title_signup');
+    document.getElementById('modal-desc').textContent = t('modal.desc_signup');
+    document.getElementById('auth-btn').textContent = t('modal.btn_signup');
     document.getElementById('toggle-signup').style.display = 'none';
     document.getElementById('toggle-signin').style.display = 'inline';
   } else {
     authMode = 'signin';
-    document.getElementById('modal-title').textContent = 'Sign in';
-    document.getElementById('modal-desc').textContent = 'Access community chat and member features.';
-    document.getElementById('auth-btn').textContent = 'Sign in';
+    document.getElementById('modal-title').textContent = t('modal.title_signin');
+    document.getElementById('modal-desc').textContent = t('modal.desc_signin');
+    document.getElementById('auth-btn').textContent = t('modal.btn_signin');
     document.getElementById('toggle-signup').style.display = 'inline';
     document.getElementById('toggle-signin').style.display = 'none';
   }
@@ -707,20 +712,20 @@ async function doSignIn() {
 
   if (!email) { document.getElementById('login-email').focus(); return; }
   if (!password || password.length < 6) {
-    errEl.textContent = 'Password must be at least 6 characters.';
+    errEl.textContent = t('auth.password_min');
     errEl.style.display = 'block';
     return;
   }
 
   if (!sbReady()) {
-    errEl.textContent = 'Authentication service is temporarily unavailable. Please try again later.';
+    errEl.textContent = t('auth.service_unavailable');
     errEl.style.display = 'block';
     return;
   }
 
   const btn = document.getElementById('auth-btn');
   btn.disabled = true;
-  btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating account...';
+  btn.textContent = authMode === 'signin' ? t('auth.signing_in') : t('auth.creating_account');
 
   let result;
   if (authMode === 'signup') {
@@ -730,7 +735,7 @@ async function doSignIn() {
   }
 
   btn.disabled = false;
-  btn.textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
+  btn.textContent = authMode === 'signin' ? t('modal.btn_signin') : t('modal.btn_signup');
 
   if (result.error) {
     errEl.textContent = result.error.message;
@@ -740,7 +745,7 @@ async function doSignIn() {
 
   if (authMode === 'signup' && !result.data.session) {
     errEl.style.display = 'none';
-    document.getElementById('modal-desc').textContent = 'Check your email for a confirmation link, then sign in.';
+    document.getElementById('modal-desc').textContent = t('auth.check_email');
     document.getElementById('auth-btn').style.display = 'none';
     return;
   }
@@ -760,7 +765,7 @@ function applySignedInState() {
   document.getElementById('chat-signedin').classList.add('vis');
   document.getElementById('chat-gate-wrap').style.display = 'none';
   document.getElementById('chat-app').classList.add('vis');
-  document.getElementById('chat-input').placeholder = 'message # general as ' + username + '...';
+  document.getElementById('chat-input').placeholder = t('chat.input_placeholder').replace('{room}', 'general').replace('{username}', username);
   scrollMsgs();
   updateAdminVisibility();
 }
@@ -783,7 +788,7 @@ async function doPasswordReset(e) {
   const email = document.getElementById('login-email').value.trim();
   const errEl = document.getElementById('auth-error');
   if (!email || !email.includes('@')) {
-    errEl.textContent = 'Enter your email address above, then click Forgot password.';
+    errEl.textContent = t('auth.reset_prompt');
     errEl.style.display = 'block';
     return;
   }
@@ -792,7 +797,7 @@ async function doPasswordReset(e) {
     redirectTo: window.location.origin
   });
   errEl.style.display = 'none';
-  document.getElementById('modal-desc').textContent = 'Password reset email sent. Check your inbox.';
+  document.getElementById('modal-desc').textContent = t('auth.reset_sent');
 }
 
 // Auto-restore session on page load
@@ -813,8 +818,8 @@ async function switchRoom(el, name, desc, count) {
   currentRoom = name;
   document.getElementById('room-title').textContent = '# ' + name;
   document.getElementById('room-desc').textContent = desc;
-  document.getElementById('online-ct').textContent = String.fromCharCode(9679) + ' ' + count + ' online';
-  document.getElementById('chat-input').placeholder = 'message # ' + name + ' as ' + username + '...';
+  document.getElementById('online-ct').textContent = String.fromCharCode(9679) + ' ' + t('chat.online_count').replace('{count}', count);
+  document.getElementById('chat-input').placeholder = t('chat.input_placeholder').replace('{room}', name).replace('{username}', username);
   const msgs = document.getElementById('messages');
 
   let hist = [];
@@ -841,7 +846,7 @@ async function switchRoom(el, name, desc, count) {
 
   msgs.innerHTML = hist.map(m =>
     `<div class="msg"><div class="av">${m.av}</div><div class="bub"><div class="bmeta"><span class="nm">${m.nm}</span>${m.t}</div><div class="btxt">${esc(m.txt)}</div></div></div>`
-  ).join('') + `<div class="msg sys"><div class="av">&middot;</div><div class="bub"><div class="btxt">you joined # ${name}</div></div></div>`;
+  ).join('') + `<div class="msg sys"><div class="av">&middot;</div><div class="bub"><div class="btxt">${t('chat.you_joined').replace('{room}', name)}</div></div></div>`;
   scrollMsgs();
 
   if (chatSubscription && sbReady()) {
@@ -904,7 +909,7 @@ function filterMemorials() {
       card.style.display = 'none';
     }
   });
-  document.getElementById('memorial-count').textContent = 'Showing ' + visible + ' memorial' + (visible !== 1 ? 's' : '');
+  document.getElementById('memorial-count').textContent = t('memorial.showing_count').replace('{count}', visible);
 }
 
 // Load community-submitted memorials from Supabase
@@ -921,7 +926,7 @@ async function loadCommunityMemorials() {
     const grid = document.getElementById('community-memorials');
     if (!grid) return;
 
-    const heading = '<hr class="soft"><div class="seclabel" style="margin-bottom:14px;">Community Tributes &nbsp;·&nbsp; ' + data.length + ' memorials</div>';
+    const heading = '<hr class="soft"><div class="seclabel" style="margin-bottom:14px;">' + t('memorial.community_tributes') + ' &nbsp;·&nbsp; ' + t('memorial.showing_count').replace('{count}', data.length) + '</div>';
     const cards = data.map(m => {
       const initials = m.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
       const avatar = m.photo_url
@@ -940,7 +945,7 @@ async function loadCommunityMemorials() {
 
     // Update count
     const total = document.querySelectorAll('.memorial-card').length;
-    document.getElementById('memorial-count').textContent = 'Showing ' + total + ' memorials';
+    document.getElementById('memorial-count').textContent = t('memorial.showing_count').replace('{count}', total);
   } catch(e) {
     // Supabase not configured yet
   }
@@ -952,7 +957,7 @@ async function submitMemorial() {
   const name = document.getElementById('mem-name').value.trim();
   const bio = document.getElementById('mem-bio').value.trim();
   if (!name || !bio) {
-    alert('Please fill in the name and a brief tribute.');
+    alert(t('error.fill_name_tribute'));
     return;
   }
 
@@ -1140,7 +1145,7 @@ function loadMap() {
   script.onerror = function() {
     var el = document.getElementById('dir-map');
     el.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px;';
-    el.innerHTML = '<div style="font-family:Lora,serif;font-size:14px;color:var(--text-muted);">Map unavailable</div>' +
+    el.innerHTML = '<div style="font-family:Lora,serif;font-size:14px;color:var(--text-muted);">' + t('directory.map_unavailable') + '</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:6px;max-width:580px;">' +
       mapLocs.slice(0,16).map(function(l){return '<span style="font-size:12px;background:#fff;border:1px solid var(--border-subtle);padding:4px 10px;border-radius:50px;color:var(--text-secondary);">'+l.name+'<span style="color:var(--text-muted);font-size:11px;"> · '+l.city+'</span></span>';}).join('') + '</div>';
   };
@@ -1211,7 +1216,7 @@ async function submitListing() {
   const name = document.getElementById('sl-name').value.trim();
   const cat  = document.getElementById('sl-cat').value;
   if (!name || !cat) {
-    alert('Please fill in the organization name and category.');
+    alert(t('error.fill_name_category'));
     return;
   }
 
@@ -1290,8 +1295,8 @@ async function _doSupabaseSearch(q) {
     if (totalCount === 0) {
       _showSearchResults(q, '<div style="text-align:center;padding:32px 0;color:var(--text-muted);">' +
         '<div style="font-size:28px;margin-bottom:8px;">&#128269;</div>' +
-        '<div style="font-size:15px;font-weight:600;">No results found</div>' +
-        '<div style="font-size:13px;margin-top:4px;">Try a different search term or browse the directory.</div>' +
+        '<div style="font-size:15px;font-weight:600;">' + t('search.no_results_title') + '</div>' +
+        '<div style="font-size:13px;margin-top:4px;">' + t('search.no_results_desc') + '</div>' +
         '</div>', 0);
       return;
     }
@@ -1300,7 +1305,7 @@ async function _doSupabaseSearch(q) {
 
     if (dirResults.length > 0) {
       html += '<div style="margin-bottom:16px;">';
-      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">Directory (' + dirResults.length + ')</div>';
+      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + t('search_results.directory') + ' (' + dirResults.length + ')</div>';
       dirResults.forEach(function(d) {
         html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">';
         html += '<a href="#" onclick="showDetail(\'directory\',\'' + d.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(d.organization_name) + '</a>';
@@ -1314,7 +1319,7 @@ async function _doSupabaseSearch(q) {
 
     if (evResults.length > 0) {
       html += '<div style="margin-bottom:16px;">';
-      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">Events (' + evResults.length + ')</div>';
+      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + t('search_results.events') + ' (' + evResults.length + ')</div>';
       evResults.forEach(function(ev) {
         var loc = [ev.city, ev.country].filter(Boolean).join(', ');
         html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">';
@@ -1322,7 +1327,7 @@ async function _doSupabaseSearch(q) {
         if (ev.event_type) html += ' <span style="font-size:10px;background:var(--surface);border:1px solid var(--border);padding:1px 6px;border-radius:50px;color:var(--text-muted);">' + esc(ev.event_type) + '</span>';
         if (ev.description) html += '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + esc(ev.description.substring(0, 120)) + (ev.description.length > 120 ? '...' : '') + '</div>';
         var meta = [];
-        if (ev.start_date) { var sd = new Date(ev.start_date); meta.push(sd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })); }
+        if (ev.start_date) { meta.push(localDate(ev.start_date, { month: 'short', day: 'numeric', year: 'numeric' })); }
         if (loc) meta.push(loc);
         if (meta.length) html += '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + esc(meta.join(' - ')) + '</div>';
         html += '</div>';
@@ -1332,7 +1337,7 @@ async function _doSupabaseSearch(q) {
 
     if (newsResults.length > 0) {
       html += '<div style="margin-bottom:16px;">';
-      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">News (' + newsResults.length + ')</div>';
+      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + t('search_results.news') + ' (' + newsResults.length + ')</div>';
       newsResults.forEach(function(n) {
         html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">';
         html += '<a href="#" onclick="showDetail(\'news\',\'' + n.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(n.title) + '</a>';
@@ -1358,8 +1363,8 @@ function _showSearchResults(q, contentHtml, count) {
 
   sec.insertAdjacentHTML('afterbegin',
     '<div class="search-results" style="background:var(--elevated);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px;">' +
-      '<div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Search results for "' + esc(q) + '"' + (count > 0 ? ' (' + count + ' found)' : '') +
-        '<a href="#" onclick="this.closest(\'.search-results\').remove();return false;" style="float:right;font-size:12px;color:var(--text-muted);">close</a>' +
+      '<div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">' + t('search.results_for').replace('{query}', esc(q)) + (count > 0 ? ' (' + t('search.results_count').replace('{count}', count) + ')' : '') +
+        '<a href="#" onclick="this.closest(\'.search-results\').remove();return false;" style="float:right;font-size:12px;color:var(--text-muted);">' + t('search.close') + '</a>' +
       '</div>' +
       contentHtml +
     '</div>'
@@ -1401,8 +1406,8 @@ function _doLocalSearch(q) {
       if (found === 0) {
         _showSearchResults(q, '<div style="text-align:center;padding:32px 0;color:var(--text-muted);">' +
           '<div style="font-size:28px;margin-bottom:8px;">&#128269;</div>' +
-          '<div style="font-size:15px;font-weight:600;">No results found</div>' +
-          '<div style="font-size:13px;margin-top:4px;">Try a different search term or browse the directory.</div>' +
+          '<div style="font-size:15px;font-weight:600;">' + t('search.no_results_title') + '</div>' +
+          '<div style="font-size:13px;margin-top:4px;">' + t('search.no_results_desc') + '</div>' +
           '</div>', 0);
       }
     }
@@ -1457,7 +1462,7 @@ async function loadEventsFromSupabase() {
         '<div class="evinfo">' +
           '<div class="etag">' + esc(tag) + '</div>' +
           '<h5><a href="#" onclick="showDetail(\'event\',\'' + ev.id + '\');return false;">' + esc(ev.title) + '</a></h5>' +
-          '<div class="emeta">' + esc(loc) + (org ? ' &middot; ' + esc(org) : '') + (ev.is_free ? ' &middot; Free' : '') + '</div>' +
+          '<div class="emeta">' + esc(loc) + (org ? ' &middot; ' + esc(org) : '') + (ev.is_free ? ' &middot; ' + t('common.free') : '') + '</div>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -1465,7 +1470,7 @@ async function loadEventsFromSupabase() {
     // Update count
     var label = container.querySelector('.seclabel');
     if (label) {
-      label.innerHTML = 'Events &amp; Calendar &nbsp;&middot;&nbsp; ' + data.length + ' upcoming events';
+      label.innerHTML = t('events.section_label') + ' &nbsp;&middot;&nbsp; ' + t('events.upcoming_count').replace('{count}', data.length);
     }
 
     // Merge Supabase events into calEvents for the calendar system
@@ -1510,7 +1515,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
     } else if (ev.start_date && ev.end_date && ev.start_date !== ev.end_date) {
       var sd = new Date(ev.start_date);
       var ed = new Date(ev.end_date);
-      time = sd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' - ' + ed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      time = localDate(ev.start_date, { month: 'short', day: 'numeric' }) + ' - ' + localDate(ev.end_date, { month: 'short', day: 'numeric' });
     }
 
     calEvents.push({
@@ -1562,7 +1567,7 @@ async function loadNewsFromSupabase() {
       const f = featured[0];
       const ago = timeAgo(f.published_at);
       html += `<div class="trendblock reveal visible" style="margin-bottom:16px;">
-        <div class="trendblock-head"><h3>Featured</h3><span class="tlabel">${ago}</span></div>
+        <div class="trendblock-head"><h3>${t('common.featured')}</h3><span class="tlabel">${ago}</span></div>
         <div class="trendblock-body">
           <div class="trend-story">
             <h4><a href="#" onclick="showDetail('news','${f.id}');return false;">${esc(f.title)}</a></h4>
@@ -1576,7 +1581,7 @@ async function loadNewsFromSupabase() {
     // Regular articles
     if (regular.length > 0) {
       html += `<div class="listblock reveal visible">
-        <div class="listblock-head"><h3>Latest Stories</h3></div>
+        <div class="listblock-head"><h3>${t('news.latest_stories')}</h3></div>
         <div class="listblock-body">
           ${regular.map(n => {
             const tag = (n.tags && n.tags[0]) || '';
@@ -1603,7 +1608,7 @@ async function loadNewsFromSupabase() {
     // Update count
     const label = container.querySelector('.seclabel');
     if (label) {
-      label.innerHTML = 'News &amp; Announcements &nbsp;&middot;&nbsp; ' + data.length + ' articles';
+      label.innerHTML = t('news.section_label') + ' &nbsp;&middot;&nbsp; ' + t('news.articles_count').replace('{count}', data.length);
     }
     console.log('Loaded ' + data.length + ' news from Supabase');
   } catch(e) {
@@ -1646,16 +1651,16 @@ async function loadDirectoryFromSupabase() {
     }
 
     const catLabels = {
-      societies: 'Societies & Organizations',
-      waldorf: 'Waldorf Schools & Training',
-      biodynamic: 'Biodynamic Agriculture',
-      medicine: 'Anthroposophic Medicine',
-      camphill: 'Camphill & Communities',
-      eurythmy: 'Arts & Eurythmy',
-      eldercare: 'Eldercare',
-      community: 'Community Centers',
-      online: 'Online Resources',
-      other: 'Other'
+      societies: t('dir_cat_labels.societies'),
+      waldorf: t('dir_cat_labels.waldorf'),
+      biodynamic: t('dir_cat_labels.biodynamic'),
+      medicine: t('dir_cat_labels.medicine'),
+      camphill: t('dir_cat_labels.camphill'),
+      eurythmy: t('dir_cat_labels.eurythmy'),
+      eldercare: t('dir_cat_labels.eldercare'),
+      community: t('dir_cat_labels.community'),
+      online: t('dir_cat_labels.online'),
+      other: t('dir_cat_labels.other')
     };
 
     let html = '<div class="catgrid" style="grid-template-columns:repeat(3,1fr);margin-top:16px;">';
@@ -1683,11 +1688,11 @@ function timeAgo(dateStr) {
   const d = new Date(dateStr);
   const now = new Date();
   const diff = Math.floor((now - d) / 86400000);
-  if (diff === 0) return 'today';
-  if (diff === 1) return 'yesterday';
-  if (diff < 7) return diff + ' days ago';
-  if (diff < 30) return Math.floor(diff / 7) + ' weeks ago';
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (diff === 0) return t('common.today');
+  if (diff === 1) return t('common.yesterday');
+  if (diff < 7) return t('common.days_ago').replace('{count}', diff);
+  if (diff < 30) return t('common.weeks_ago').replace('{count}', Math.floor(diff / 7));
+  return localDate(dateStr, { month: 'short', day: 'numeric' });
 }
 
 // ══════════════════════════════════════════
@@ -1782,7 +1787,7 @@ function calNavMonth(dir) {
 function showDayEvents(dateStr) {
   var dayEvs = calEvents.filter(function(e) { return e.date === dateStr; });
   var d = new Date(dateStr + 'T12:00:00');
-  var label = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  var label = localDate(dateStr, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
   // Remove existing popup
   var old = document.querySelector('.day-popup-overlay');
@@ -1822,7 +1827,7 @@ function renderEventList() {
   var todayStr = new Date().toDateString();
   upcoming.forEach(function(ev) {
     var d = new Date(ev.date + 'T12:00:00');
-    var mo = d.toLocaleString('en-US', { month: 'short' });
+    var mo = localDate(ev.date, { month: 'short' });
     var dy = d.getDate();
     var isToday = (d.toDateString() === todayStr);
     html += '<div class="evrow reveal">';
@@ -1921,7 +1926,7 @@ function renderSidebarUpcoming() {
   var html = '';
   upcoming.forEach(function(ev) {
     var d = new Date(ev.date + 'T12:00:00');
-    var mo = d.toLocaleString('en-US', { month: 'short' });
+    var mo = localDate(ev.date, { month: 'short' });
     var dy = d.getDate();
     html += '<div class="sb-ev">';
     html += '<div class="sb-ev-date">' + mo + '<br>' + dy + '</div>';
@@ -1939,12 +1944,12 @@ function updateHeaderCalendar() {
   var upEl = document.getElementById('cw-upcoming');
   if (!dayEl) return;
 
-  dayEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
-  dateEl.textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  dayEl.textContent = localDate(now, { weekday: 'long' });
+  dateEl.textContent = localDate(now, { month: 'long', day: 'numeric', year: 'numeric' });
 
   var todayStr = now.toISOString().split('T')[0];
   var futureCount = calEvents.filter(function(e) { return e.date >= todayStr; }).length;
-  upEl.textContent = futureCount + ' upcoming events';
+  upEl.textContent = t('header.upcoming_events').replace('{count}', futureCount);
 }
 
 // ── EVENT FORM ──
@@ -1958,7 +1963,7 @@ function closeEventForm() {
 function submitEvent() {
   var title = document.getElementById('esm-title').value.trim();
   var date = document.getElementById('esm-date').value;
-  if (!title || !date) { alert('Please fill in at least the title and start date.'); return; }
+  if (!title || !date) { alert(t('error.fill_title_date')); return; }
 
   var description = document.getElementById('esm-desc').value.trim();
   var endDate = document.getElementById('esm-end').value;
@@ -2085,12 +2090,23 @@ async function loadBooksFromSupabase() {
     });
 
     var secLabel = container.querySelector('.seclabel');
-    if (secLabel) secLabel.innerHTML = 'Books &amp; Library &nbsp;&middot;&nbsp; ' + data.length + ' titles';
+    if (secLabel) secLabel.innerHTML = t('books.section_label') + ' &nbsp;&middot;&nbsp; ' + t('books.titles_count').replace('{count}', data.length);
     sbBooksList.innerHTML = html;
     console.log('Loaded ' + data.length + ' books from Supabase');
   } catch(e) {
     console.warn('Books load failed:', e);
   }
+}
+
+// ── RERENDER FOR LANGUAGE CHANGE ──
+function rerenderForLang() {
+  var activeSection = document.querySelector('.pagesec.active');
+  if (!activeSection) return;
+  var id = activeSection.id.replace('sec-', '');
+  if (id === 'events') { renderCalendar(); renderEventList(); renderSidebarUpcoming(); }
+  if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
+  if (id === 'memorial') { loadCommunityMemorials(); }
+  if (typeof SC_I18N !== 'undefined') SC_I18N.applyTranslations();
 }
 
 // ── INIT: Load all data once Supabase is ready ──
@@ -2208,24 +2224,24 @@ function adminEsc(s) { if (!s) return ''; var d = document.createElement('div');
 
 async function loadAdminListings() {
   var el = document.getElementById('admin-listings-list');
-  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">' + t('error.supabase_not_connected') + '</div>'; return; }
   try {
     var { data, error } = await _sb.from('listings_pending').select('*').eq('status', 'pending').order('created_at', { ascending: false });
-    if (error) { el.innerHTML = '<div class="admin-empty">Error loading listings.</div>'; return; }
-    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">No pending listings.</div>'; return; }
+    if (error) { el.innerHTML = '<div class="admin-empty">' + t('error.loading_listings') + '</div>'; return; }
+    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">' + t('admin.no_pending_listings') + '</div>'; return; }
     el.innerHTML = data.map(function(d) {
       return '<div class="admin-card" id="admin-listing-' + d.id + '">'
         + '<h4>' + adminEsc(d.name) + '</h4>'
         + '<div class="admin-meta">'
-        + (d.category ? '<span><strong>Category:</strong> ' + adminEsc(d.category) + '</span>' : '')
-        + (d.location ? '<span><strong>Location:</strong> ' + adminEsc(d.location) + '</span>' : '')
-        + (d.url ? '<span><strong>URL:</strong> ' + adminEsc(d.url) + '</span>' : '')
-        + (d.contact_email ? '<span><strong>Email:</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
+        + (d.category ? '<span><strong>' + t('admin.category_label') + '</strong> ' + adminEsc(d.category) + '</span>' : '')
+        + (d.location ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(d.location) + '</span>' : '')
+        + (d.url ? '<span><strong>' + t('admin.url_label') + '</strong> ' + adminEsc(d.url) + '</span>' : '')
+        + (d.contact_email ? '<span><strong>' + t('admin.email_label') + '</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
         + '</div>'
         + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.description) + '</p>' : '')
         + '<div class="admin-actions">'
-        + '<button class="admin-btn-approve" onclick="adminApproveListing(\'' + d.id + '\')">Approve</button>'
-        + '<button class="admin-btn-reject" onclick="adminRejectListing(\'' + d.id + '\')">Reject</button>'
+        + '<button class="admin-btn-approve" onclick="adminApproveListing(\'' + d.id + '\')">' + t('admin.approve') + '</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectListing(\'' + d.id + '\')">' + t('admin.reject') + '</button>'
         + '</div></div>';
     }).join('');
   } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
@@ -2236,7 +2252,7 @@ async function adminApproveListing(id) {
   try {
     // Fetch the pending listing
     var { data, error } = await _sb.from('listings_pending').select('*').eq('id', id).single();
-    if (error || !data) { alert('Could not find listing.'); return; }
+    if (error || !data) { alert(t('error.could_not_find_listing')); return; }
     // Insert into directory_entries
     var entry = {
       name: data.name,
@@ -2254,44 +2270,44 @@ async function adminApproveListing(id) {
     if (card) card.remove();
     // Check if empty
     if (!document.querySelector('#admin-listings-list .admin-card')) {
-      document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">No pending listings.</div>';
+      document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_listings') + '</div>';
     }
   } catch(e) { alert('Error: ' + e.message); }
 }
 
 async function adminRejectListing(id) {
   if (!sbReady()) return;
-  if (!confirm('Reject this listing?')) return;
+  if (!confirm(t('admin.confirm_reject_listing'))) return;
   try {
     await _sb.from('listings_pending').update({ status: 'rejected' }).eq('id', id);
     var card = document.getElementById('admin-listing-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-listings-list .admin-card')) {
-      document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">No pending listings.</div>';
+      document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_listings') + '</div>';
     }
   } catch(e) { alert('Error: ' + e.message); }
 }
 
 async function loadAdminEvents() {
   var el = document.getElementById('admin-events-list');
-  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">' + t('error.supabase_not_connected') + '</div>'; return; }
   try {
     var { data, error } = await _sb.from('events').select('*').eq('status', 'pending').order('created_at', { ascending: false });
-    if (error) { el.innerHTML = '<div class="admin-empty">Error loading events.</div>'; return; }
-    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">No pending events.</div>'; return; }
+    if (error) { el.innerHTML = '<div class="admin-empty">' + t('error.loading_events') + '</div>'; return; }
+    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">' + t('admin.no_pending_events') + '</div>'; return; }
     el.innerHTML = data.map(function(d) {
       return '<div class="admin-card" id="admin-event-' + d.id + '">'
         + '<h4>' + adminEsc(d.title) + '</h4>'
         + '<div class="admin-meta">'
-        + (d.event_type ? '<span><strong>Type:</strong> ' + adminEsc(d.event_type) + '</span>' : '')
-        + (d.start_date ? '<span><strong>Date:</strong> ' + adminEsc(d.start_date.substring(0,10)) + '</span>' : '')
-        + (d.location_name ? '<span><strong>Location:</strong> ' + adminEsc(d.location_name) + '</span>' : '')
-        + (d.organizer_name ? '<span><strong>Organizer:</strong> ' + adminEsc(d.organizer_name) + '</span>' : '')
+        + (d.event_type ? '<span><strong>' + t('admin.type_label') + '</strong> ' + adminEsc(d.event_type) + '</span>' : '')
+        + (d.start_date ? '<span><strong>' + t('admin.date_label') + '</strong> ' + adminEsc(d.start_date.substring(0,10)) + '</span>' : '')
+        + (d.location_name ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(d.location_name) + '</span>' : '')
+        + (d.organizer_name ? '<span><strong>' + t('admin.organizer_label') + '</strong> ' + adminEsc(d.organizer_name) + '</span>' : '')
         + '</div>'
         + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.description) + '</p>' : '')
         + '<div class="admin-actions">'
-        + '<button class="admin-btn-approve" onclick="adminApproveEvent(\'' + d.id + '\')">Approve</button>'
-        + '<button class="admin-btn-reject" onclick="adminRejectEvent(\'' + d.id + '\')">Reject</button>'
+        + '<button class="admin-btn-approve" onclick="adminApproveEvent(\'' + d.id + '\')">' + t('admin.approve') + '</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectEvent(\'' + d.id + '\')">' + t('admin.reject') + '</button>'
         + '</div></div>';
     }).join('');
   } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
@@ -2304,43 +2320,43 @@ async function adminApproveEvent(id) {
     var card = document.getElementById('admin-event-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-events-list .admin-card')) {
-      document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">No pending events.</div>';
+      document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_events') + '</div>';
     }
   } catch(e) { alert('Error: ' + e.message); }
 }
 
 async function adminRejectEvent(id) {
   if (!sbReady()) return;
-  if (!confirm('Reject this event?')) return;
+  if (!confirm(t('admin.confirm_reject_event'))) return;
   try {
     await _sb.from('events').update({ status: 'rejected' }).eq('id', id);
     var card = document.getElementById('admin-event-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-events-list .admin-card')) {
-      document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">No pending events.</div>';
+      document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_events') + '</div>';
     }
   } catch(e) { alert('Error: ' + e.message); }
 }
 
 async function loadAdminMemorials() {
   var el = document.getElementById('admin-memorials-list');
-  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">' + t('error.supabase_not_connected') + '</div>'; return; }
   try {
     var { data, error } = await _sb.from('memorials_pending').select('*').eq('status', 'pending').order('created_at', { ascending: false });
-    if (error) { el.innerHTML = '<div class="admin-empty">Error loading memorials.</div>'; return; }
-    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">No pending memorials.</div>'; return; }
+    if (error) { el.innerHTML = '<div class="admin-empty">' + t('error.loading_memorials') + '</div>'; return; }
+    if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">' + t('admin.no_pending_memorials') + '</div>'; return; }
     el.innerHTML = data.map(function(d) {
       return '<div class="admin-card" id="admin-memorial-' + d.id + '">'
         + '<h4>' + adminEsc(d.name) + '</h4>'
         + '<div class="admin-meta">'
-        + (d.years ? '<span><strong>Years:</strong> ' + adminEsc(d.years) + '</span>' : '')
-        + (d.location ? '<span><strong>Location:</strong> ' + adminEsc(d.location) + '</span>' : '')
-        + (d.contact_email ? '<span><strong>Email:</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
+        + (d.years ? '<span><strong>' + t('admin.years_label') + '</strong> ' + adminEsc(d.years) + '</span>' : '')
+        + (d.location ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(d.location) + '</span>' : '')
+        + (d.contact_email ? '<span><strong>' + t('admin.email_label') + '</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
         + '</div>'
         + (d.bio ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.bio) + '</p>' : '')
         + '<div class="admin-actions">'
-        + '<button class="admin-btn-approve" onclick="adminApproveMemorial(\'' + d.id + '\')">Approve</button>'
-        + '<button class="admin-btn-reject" onclick="adminRejectMemorial(\'' + d.id + '\')">Reject</button>'
+        + '<button class="admin-btn-approve" onclick="adminApproveMemorial(\'' + d.id + '\')">' + t('admin.approve') + '</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectMemorial(\'' + d.id + '\')">' + t('admin.reject') + '</button>'
         + '</div></div>';
     }).join('');
   } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
@@ -2353,20 +2369,20 @@ async function adminApproveMemorial(id) {
     var card = document.getElementById('admin-memorial-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-memorials-list .admin-card')) {
-      document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">No pending memorials.</div>';
+      document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_memorials') + '</div>';
     }
   } catch(e) { alert('Error: ' + e.message); }
 }
 
 async function adminRejectMemorial(id) {
   if (!sbReady()) return;
-  if (!confirm('Reject this memorial?')) return;
+  if (!confirm(t('admin.confirm_reject_memorial'))) return;
   try {
     await _sb.from('memorials_pending').update({ status: 'rejected' }).eq('id', id);
     var card = document.getElementById('admin-memorial-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-memorials-list .admin-card')) {
-      document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">No pending memorials.</div>';
+      document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_memorials') + '</div>';
     }
   } catch(e) { alert('Error: ' + e.message); }
 }
@@ -2383,10 +2399,10 @@ var _newsletterSubscriberCount = 0;
 
 async function loadNewsletterSubscriberCount() {
   var el = document.getElementById('newsletter-subscriber-count');
-  if (!sbReady()) { el.textContent = 'Supabase not connected.'; return; }
+  if (!sbReady()) { el.textContent = t('error.supabase_not_connected'); return; }
   try {
     var { count, error } = await _sb.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).eq('confirmed', true);
-    if (error) { el.textContent = 'Error loading subscriber count.'; return; }
+    if (error) { el.textContent = t('error.loading_subscriber_count'); return; }
     _newsletterSubscriberCount = count || 0;
     el.innerHTML = '<strong>' + _newsletterSubscriberCount + '</strong> confirmed subscriber' + (_newsletterSubscriberCount !== 1 ? 's' : '') + ' will receive this email.';
   } catch(e) {
@@ -2395,21 +2411,21 @@ async function loadNewsletterSubscriberCount() {
 }
 
 async function sendNewsletter() {
-  if (!isAdmin()) { alert('Admin access required.'); return; }
-  if (!sbReady()) { alert('Supabase not connected.'); return; }
+  if (!isAdmin()) { alert(t('error.admin_required')); return; }
+  if (!sbReady()) { alert(t('error.supabase_not_connected')); return; }
 
   var subject = (document.getElementById('newsletter-subject').value || '').trim();
   var htmlContent = (document.getElementById('newsletter-html').value || '').trim();
 
-  if (!subject) { alert('Please enter a subject line.'); return; }
-  if (!htmlContent) { alert('Please enter HTML content for the newsletter.'); return; }
+  if (!subject) { alert(t('error.enter_subject')); return; }
+  if (!htmlContent) { alert(t('error.enter_html')); return; }
 
   if (_newsletterSubscriberCount === 0) {
-    alert('No confirmed subscribers to send to.');
+    alert(t('error.no_subscribers'));
     return;
   }
 
-  if (!confirm('Send this newsletter to ' + _newsletterSubscriberCount + ' confirmed subscriber' + (_newsletterSubscriberCount !== 1 ? 's' : '') + '?\n\nSubject: ' + subject)) {
+  if (!confirm(t('admin.newsletter_confirm').replace('{count}', _newsletterSubscriberCount).replace('{subject}', subject))) {
     return;
   }
 
@@ -2418,14 +2434,14 @@ async function sendNewsletter() {
   var resultEl = document.getElementById('newsletter-result');
 
   btn.disabled = true;
-  btn.textContent = 'Sending...';
-  statusEl.textContent = 'Please wait, sending emails in batches...';
+  btn.textContent = t('admin.newsletter_sending');
+  statusEl.textContent = t('admin.newsletter_please_wait');
   resultEl.style.display = 'none';
 
   try {
     var { data: { session } } = await _sb.auth.getSession();
     if (!session || !session.access_token) {
-      throw new Error('No active session. Please sign in again.');
+      throw new Error(t('error.no_active_session'));
     }
 
     var response = await fetch(SUPABASE_URL + '/functions/v1/send-newsletter', {
@@ -2445,12 +2461,12 @@ async function sendNewsletter() {
 
     resultEl.style.display = 'block';
     resultEl.className = 'newsletter-result newsletter-result-success';
-    resultEl.innerHTML = '<strong>Newsletter sent successfully</strong><br>'
-      + 'Sent: ' + result.sent + ' | Failed: ' + result.failed + ' | Total: ' + result.total;
+    resultEl.innerHTML = '<strong>' + t('admin.newsletter_success') + '</strong><br>'
+      + t('admin.newsletter_sent_stats').replace('{sent}', result.sent).replace('{failed}', result.failed).replace('{total}', result.total);
 
     if (result.errors && result.errors.length > 0) {
       resultEl.className = 'newsletter-result newsletter-result-warning';
-      resultEl.innerHTML += '<br><br><strong>Errors:</strong><br>'
+      resultEl.innerHTML += '<br><br><strong>' + t('admin.newsletter_errors') + '</strong><br>'
         + result.errors.map(function(e) { return adminEsc(e.email) + ': ' + adminEsc(e.error); }).join('<br>');
     }
 
@@ -2458,11 +2474,11 @@ async function sendNewsletter() {
   } catch(e) {
     resultEl.style.display = 'block';
     resultEl.className = 'newsletter-result newsletter-result-error';
-    resultEl.innerHTML = '<strong>Failed to send newsletter</strong><br>' + adminEsc(e.message);
+    resultEl.innerHTML = '<strong>' + t('admin.newsletter_failed') + '</strong><br>' + adminEsc(e.message);
     statusEl.textContent = '';
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Send to All Subscribers';
+    btn.textContent = t('admin.newsletter_send_btn');
   }
 }
 
@@ -2475,3 +2491,6 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
     if (block) block.scrollIntoView({behavior:'smooth',block:'start'});
   });
 });
+
+// ── INIT I18N ──
+if (typeof SC_I18N !== 'undefined') SC_I18N.init();
