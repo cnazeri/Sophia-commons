@@ -34,3 +34,6 @@ __pycache__/
 ~$*
 .~lock.*
 tmp/
+
+# Local Netlify folder
+.netlify
