@@ -546,8 +546,10 @@ function showSec(id, skipPush) {
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   const leftbar = document.getElementById('leftbar');
   const hamburger = document.getElementById('hamburger-btn');
+  const ov = document.getElementById('menu-overlay');
   if (leftbar) leftbar.classList.remove('mobile-open');
   if (hamburger) hamburger.classList.remove('active');
+  if (ov) ov.classList.remove('active');
   // Update SEO meta
   var meta = SEC_META[id];
   if (meta) updateSEOMeta(meta.title, meta.desc, SEC_PATHS[id] || '/');
@@ -567,8 +569,15 @@ function handleChat() {
 
 // ── MOBILE MENU ──
 function toggleMobileMenu() {
-  document.getElementById('leftbar').classList.toggle('mobile-open');
-  document.getElementById('hamburger-btn').classList.toggle('active');
+  var lb = document.getElementById('leftbar');
+  var hb = document.getElementById('hamburger-btn');
+  var ov = document.getElementById('menu-overlay');
+  lb.classList.toggle('mobile-open');
+  hb.classList.toggle('active');
+  if (ov) ov.classList.toggle('active');
+  var expanded = lb.classList.contains('mobile-open');
+  hb.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  hb.setAttribute('aria-label', expanded ? 'Close navigation menu' : 'Open navigation menu');
 }
 
 // ── STICKY NAV SCROLL ──
@@ -927,7 +936,7 @@ async function loadCommunityMemorials() {
         + '</div>';
     }).join('');
 
-    grid.innerHTML = heading + '<div class="catgrid" style="grid-template-columns:repeat(3,1fr);">' + cards + '</div>';
+    grid.innerHTML = heading + '<div class="catgrid">' + cards + '</div>';
 
     // Update count
     const total = document.querySelectorAll('.memorial-card').length;
@@ -1236,6 +1245,13 @@ document.getElementById('searchinput').addEventListener('keydown', function(e) {
 function doSearch() {
   var q = document.getElementById('searchinput').value.trim();
   if (!q) return;
+
+  var leftbar = document.getElementById('leftbar');
+  var hamburger = document.getElementById('hamburger-btn');
+  var menuOverlay = document.getElementById('menu-overlay');
+  if (leftbar) leftbar.classList.remove('mobile-open');
+  if (hamburger) hamburger.classList.remove('active');
+  if (menuOverlay) menuOverlay.classList.remove('active');
 
   if (sbReady()) {
     _doSupabaseSearch(q);

@@ -132,7 +132,7 @@ sup { color: var(--verified); font-size: 10px; margin-left: 2px; animation: veri
   background: var(--elevated);
   border: 1px solid var(--border);
   border-radius: 16px;
-  width: 360px;
+  width: 360px; max-width: calc(100vw - 32px);
   padding: 32px 28px;
   position: relative;
   box-shadow: 0 20px 60px rgba(44,36,24,0.2);
@@ -188,7 +188,7 @@ sup { color: var(--verified); font-size: 10px; margin-left: 2px; animation: veri
   background: none; border: none;
   font-size: 22px; cursor: pointer;
   color: var(--text-muted);
-  width: 32px; height: 32px;
+  width: 44px; height: 44px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.2s;
@@ -206,7 +206,7 @@ sup { color: var(--verified); font-size: 10px; margin-left: 2px; animation: veri
   background: var(--elevated);
   border: 1px solid var(--border);
   border-radius: 16px;
-  width: 420px; max-height: 90vh; overflow-y: auto;
+  width: 420px; max-width: calc(100vw - 32px); max-height: 90vh; overflow-y: auto;
   padding: 32px 28px;
   position: relative;
   box-shadow: 0 20px 60px rgba(44,36,24,0.2);
@@ -948,7 +948,9 @@ footer {
     padding-top: 80px;
   }
   #leftbar.mobile-open { display: block; }
-  #rightbar { border-left: none; border-top: 1px solid var(--border-subtle); }
+  .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 199; display: none; }
+  .menu-overlay.active { display: block; }
+  #rightbar { display: none; }
   .catgrid { grid-template-columns: 1fr 1fr; }
   .twocol { grid-template-columns: 1fr; }
   #chat-app.vis { grid-template-columns: 1fr; }
@@ -956,8 +958,9 @@ footer {
   .ftcols { grid-template-columns: 1fr 1fr; }
   header { flex-wrap: wrap; }
   #statsbar { display: none; }
-  #mainnav { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  #mainnav button { padding: 10px 12px; font-size: 11px; }
+  #mainnav { overflow-x: auto; -webkit-overflow-scrolling: touch; position: relative; }
+  #mainnav::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 30px; background: linear-gradient(to right, transparent, var(--bg)); pointer-events: none; }
+  #mainnav button { padding: 12px 14px; font-size: 12px; }
 }
 
 /* ── CATEGORY CLICK-THROUGH ── */
@@ -1665,9 +1668,13 @@ footer {
   .catgrid { grid-template-columns: 1fr; }
   .ftcols { grid-template-columns: 1fr; }
   #logo { font-size: 1.2rem; }
-  body { font-size: 14px; }
+  body { font-size: 15px; }
+  #dir-map { height: 280px; }
   .cal-grid { font-size: 9px; }
+  .cal-ev { font-size: 11px; }
   .cal-day { min-height: 40px; }
+  .sem-tag { font-size: 11px; }
+  .mc-grid .mc-lbl { font-size: 10px; }
   .seminars-grid { grid-template-columns: 1fr; }
   .esm-row { grid-template-columns: 1fr; }
 }

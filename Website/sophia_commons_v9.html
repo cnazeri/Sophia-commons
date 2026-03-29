@@ -229,6 +229,7 @@
 </head>
 <body>
 <a href="#maincontent" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;">Skip to main content</a>
+<div id="menu-overlay" class="menu-overlay" onclick="toggleMobileMenu()"></div>
 
 <!-- SIGN-IN MODAL -->
 <div id="modal-overlay" role="dialog" aria-modal="true">
@@ -306,7 +307,7 @@
 
 <!-- HEADER -->
 <header>
-  <button id="hamburger-btn" onclick="toggleMobileMenu()">
+  <button id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Open navigation menu" aria-expanded="false" aria-controls="leftbar">
     <span></span>
     <span></span>
     <span></span>
@@ -397,7 +398,7 @@
   <div class="seclabel">Browse by Category &nbsp;·&nbsp; 2,840+ listings &nbsp;·&nbsp; March 23, 2026</div>
 
   <!-- ROW 1: Trending + News + Calendar -->
-  <div class="twocol" style="grid-template-columns:1fr 1fr;margin-bottom:12px;">
+  <div class="twocol" style="margin-bottom:12px;">
 
     <!-- TRENDING NOW -->
     <div class="trendblock reveal">
@@ -580,7 +581,7 @@
   </div>
 
   <!-- Community Chat teaser + Podcasts teaser -->
-  <div class="catgrid" style="grid-template-columns:1fr 1fr;margin-top:0;">
+  <div class="catgrid" style="margin-top:0;">
     <div class="catblock reveal" style="background:#faf6f2;border-color:#e0c8b8;">
       <div class="catblock-head" style="background:#f5ece0;border-bottom-color:#e0c8b8;">
         <h3 style="color:var(--warm);">Community Chat</h3>
@@ -1120,7 +1121,7 @@
   </p>
 
   <!-- Eldercare feature grid -->
-  <div class="catgrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+  <div class="catgrid" style="margin-bottom:20px;">
 
     <div class="catblock reveal">
       <div class="catblock-head"><h3>Senior Living Communities</h3><span class="alllink">14 listings</span></div>
@@ -1157,7 +1158,7 @@
 
   </div>
 
-  <div class="catgrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+  <div class="catgrid" style="margin-bottom:20px;">
 
     <div class="catblock reveal">
       <div class="catblock-head"><h3>Therapeutic Programs</h3><span class="alllink">5 listings</span></div>
@@ -1251,7 +1252,7 @@
   <div id="memorial-count" style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">Showing 6 memorials</div>
 
   <!-- Memorial cards grid -->
-  <div class="catgrid" id="memorial-grid" style="grid-template-columns:repeat(3,1fr);">
+  <div class="catgrid" id="memorial-grid">
 
     <div class="catblock reveal memorial-card" data-name="Rudolf Steiner" style="text-align:center;padding:20px 16px;">
       <div class="mem-avatar" id="avatar-steiner" style="width:90px;height:90px;border-radius:50%;background:var(--surface);border:2px solid var(--border);margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
