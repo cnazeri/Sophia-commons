@@ -311,7 +311,8 @@ const catMeta = {
   'jobs & volunteering':     { dirCat: null,          desc: 'Waldorf teaching positions, biodynamic farm apprenticeships, Camphill co-worker roles, administrative jobs, and volunteer opportunities across the movement.' },
   'groups & circles':        { dirCat: null,          desc: 'Study circles, meditation groups, reading groups, local branch meetings, youth groups, and working groups in the anthroposophical tradition.' },
   'online resources':        { dirCat: 'online',      desc: 'Websites, archives, podcasts, video channels, online courses, and digital tools for the anthroposophical community.' },
-  'societies & organizations': { dirCat: 'societies', desc: 'National and international anthroposophical societies, branches, federations, and membership organizations.' }
+  'societies & organizations': { dirCat: 'societies', desc: 'National and international anthroposophical societies, branches, federations, and membership organizations.' },
+  'social media':              { dirCat: 'social_media', desc: 'Facebook groups, YouTube channels, X/Twitter accounts, Instagram pages, Discord communities, and other social media for the anthroposophical movement.' }
 };
 
 function showCategory(name, skipPush) {
