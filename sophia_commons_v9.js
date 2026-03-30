@@ -744,11 +744,14 @@ async function doSignIn() {
     return;
   }
 
+  // If signup succeeded but no session, auto-sign in
   if (authMode === 'signup' && !result.data.session) {
-    errEl.style.display = 'none';
-    document.getElementById('modal-desc').textContent = t('auth.check_email');
-    document.getElementById('auth-btn').style.display = 'none';
-    return;
+    result = await _sb.auth.signInWithPassword({ email, password });
+    if (result.error) {
+      errEl.textContent = result.error.message;
+      errEl.style.display = 'block';
+      return;
+    }
   }
 
   username = email.split('@')[0];
