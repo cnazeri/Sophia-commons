@@ -36,7 +36,7 @@ async function showDetail(type, id, skipPush) {
 
   // Push SEO-friendly detail URL
   if (!skipPush) {
-    var detailPaths = { directory: '/listing/', event: '/event/', news: '/article/' };
+    var detailPaths = { directory: '/listing/', event: '/event/', news: '/article/', listing: '/classified/' };
     var prefix = detailPaths[type];
     if (prefix) {
       var path = prefix + id;
@@ -59,6 +59,7 @@ async function showDetail(type, id, skipPush) {
       container.innerHTML = renderDirectoryDetail(data);
       updateSEOMeta(data.organization_name + ' | Sophia Commons', (data.description || '').substring(0, 160), '/listing/' + id);
       loadRelatedDirectory(data.category, data.id);
+      _trackView('directory', id);
     } else if (type === 'event') {
       var { data, error } = await _sb.from('events')
         .select('*').eq('id', id).single();
@@ -66,12 +67,22 @@ async function showDetail(type, id, skipPush) {
       container.innerHTML = renderEventDetail(data);
       updateSEOMeta(data.title + ' | Sophia Commons Events', (data.description || '').substring(0, 160), '/event/' + id);
       loadRelatedEvents(data.category_id, data.id);
+      _trackView('event', id);
     } else if (type === 'news') {
       var { data, error } = await _sb.from('news')
         .select('*').eq('id', id).single();
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderNewsDetail(data);
       updateSEOMeta(data.title + ' | Sophia Commons News', (data.excerpt || data.body || '').substring(0, 160), '/article/' + id);
+      _trackView('news', id);
+    } else if (type === 'listing') {
+      var { data, error } = await _sb.from('listings')
+        .select('*, profiles(username), categories(name,slug)')
+        .eq('id', id).single();
+      if (error || !data) { container.innerHTML = renderNotFound(); return; }
+      container.innerHTML = renderListingDetail(data);
+      updateSEOMeta(data.title + ' | Sophia Commons Marketplace', (data.description || '').substring(0, 160), '/classified/' + id);
+      _trackView('listing', id);
     } else {
       container.innerHTML = renderNotFound();
     }
@@ -104,8 +115,8 @@ function renderDirectoryDetail(d) {
 
   var tags = '';
   if (d.tags && d.tags.length) {
-    tags = '<div style="margin-top:12px;">' + d.tags.map(function(t) {
-      return '<span style="display:inline-block;background:var(--surface);border:1px solid var(--border);padding:3px 10px;border-radius:50px;font-size:11px;color:var(--text-muted);margin:2px 4px 2px 0;">' + esc(t) + '</span>';
+    tags = '<div style="margin-top:12px;">' + d.tags.map(function(tg) {
+      return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>';
     }).join('') + '</div>';
   }
 
@@ -131,6 +142,7 @@ function renderDirectoryDetail(d) {
     + (d.email ? '<p><strong>' + t('detail.email') + ':</strong> <a href="mailto:' + esc(d.email) + '">' + esc(d.email) + '</a></p>' : '')
     + (d.website_url ? '<p><strong>' + t('detail.website') + ':</strong> <a href="' + esc(d.website_url) + '" target="_blank">' + esc(d.website_url.replace('https://','').replace('http://','')) + '</a></p>' : '')
     + '<p><strong>' + t('detail.status') + ':</strong> ' + (d.is_verified ? '<span style="color:var(--sage);font-weight:700;">&#10003; ' + t('detail.verified') + '</span>' : t('detail.listed')) + '</p>'
+    + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'directory\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + '</div>'
     + '<div id="related-listings"></div>';
 }
@@ -173,6 +185,7 @@ function renderEventDetail(ev) {
     + (ev.location_name ? '<p><strong>' + t('event_detail.venue') + ':</strong> ' + esc(ev.location_name) + '</p>' : '')
     + (ev.city ? '<p><strong>' + t('event_detail.city') + ':</strong> ' + esc(ev.city) + '</p>' : '')
     + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
+    + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'event\',\'' + ev.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + '</div>'
     + '<div id="related-listings"></div>';
 }
@@ -198,7 +211,7 @@ function renderNewsDetail(n) {
     + '<h1>' + esc(n.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
     + '<div class="detail-body">' + esc(n.body || n.excerpt || '') + '</div>'
-    + '<div class="detail-actions">' + actions + '</div>'
+    + '<div class="detail-actions">' + actions + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'news\',\'' + n.id + '\')">' + t('report.flag_btn') + '</button>' : '') + '</div>'
     + '</div>';
 }
 
@@ -246,7 +259,7 @@ async function loadRelatedDirectory(category, excludeId) {
   if (!sbReady()) return;
   try {
     var { data } = await _sb.from('directory_entries')
-      .select('id, organization_name, description, category, location, is_verified')
+      .select('id, organization_name, description, category, location, is_verified, tags')
       .eq('status', 'approved')
       .eq('category', category)
       .neq('id', excludeId)
@@ -350,7 +363,7 @@ async function loadCategoryPage(catKey, dirCat) {
   if (sbReady() && dirCat) {
     try {
       var { data } = await _sb.from('directory_entries')
-        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email')
+        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags')
         .eq('status', 'approved').eq('category', dirCat)
         .order('is_verified', { ascending: false }).order('organization_name')
         .limit(50);
@@ -376,6 +389,9 @@ async function loadCategoryPage(catKey, dirCat) {
       }
       if (d.phone || d.email) {
         html += '<div style="font-size:11px;color:var(--text-muted);padding:0 0 8px 20px;">' + (d.phone ? '&#9742; ' + esc(d.phone) + ' ' : '') + (d.email ? '&#9993; ' + esc(d.email) : '') + '</div>';
+      }
+      if (d.tags && d.tags.length) {
+        html += '<div style="padding:0 0 8px 20px;margin-top:-2px;">' + d.tags.slice(0, 4).map(function(tg) { return '<a class="dir-tag" href="#" onclick="event.stopPropagation();filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>';
       }
     });
     html += '</div></div>';
@@ -505,7 +521,7 @@ const roomHistory = {
 const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
   directory: '/directory', books: '/books', podcasts: '/podcasts',
-  memorial: '/memorial'
+  memorial: '/memorial', marketplace: '/marketplace'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
@@ -519,7 +535,8 @@ function _getSecMeta() {
     directory: { title: t('meta.directory_title'), desc: t('meta.directory_desc') },
     books:     { title: t('meta.books_title'), desc: t('meta.books_desc') },
     podcasts:  { title: t('meta.podcasts_title'), desc: t('meta.podcasts_desc') },
-    memorial:  { title: t('meta.memorial_title'), desc: t('meta.memorial_desc') }
+    memorial:  { title: t('meta.memorial_title'), desc: t('meta.memorial_desc') },
+    marketplace: { title: t('meta.marketplace_title'), desc: t('meta.marketplace_desc') }
   };
 }
 var SEC_META = null;
@@ -816,6 +833,15 @@ window.addEventListener('supabase-auth-ready', function(e) {
 // ── CHAT ──
 let currentRoom = 'general';
 let chatSubscription = null;
+let presenceChannel = null;
+let typingTimeout = null;
+let typingUsers = {};
+
+function _renderMsg(m, isMine, msgId) {
+  var deleteBtn = isMine && msgId ? '<button class="msg-delete" onclick="deleteMsg(\'' + msgId + '\',this)" title="Delete">&times;</button>' : '';
+  var cls = isMine ? 'msg mine' : 'msg';
+  return '<div class="' + cls + '" data-msg-id="' + (msgId || '') + '"><div class="av">' + m.av + '</div><div class="bub"><div class="bmeta"><span class="nm">' + esc(m.nm) + '</span>' + m.t + deleteBtn + '</div><div class="btxt">' + esc(m.txt) + '</div></div></div>';
+}
 
 async function switchRoom(el, name, desc, count) {
   document.querySelectorAll('.ritem').forEach(r => r.classList.remove('active'));
@@ -824,9 +850,11 @@ async function switchRoom(el, name, desc, count) {
   currentRoom = name;
   document.getElementById('room-title').textContent = '# ' + name;
   document.getElementById('room-desc').textContent = desc;
-  document.getElementById('online-ct').textContent = String.fromCharCode(9679) + ' ' + t('chat.online_count').replace('{count}', count);
   document.getElementById('chat-input').placeholder = t('chat.input_placeholder').replace('{room}', name).replace('{username}', username);
   const msgs = document.getElementById('messages');
+  var typingEl = document.getElementById('typing-indicator');
+  if (typingEl) typingEl.textContent = '';
+  typingUsers = {};
 
   let hist = [];
   try {
@@ -837,28 +865,32 @@ async function switchRoom(el, name, desc, count) {
       .order('created_at', { ascending: true })
       .limit(50);
     if (!error && data && data.length > 0) {
+      var uid = window._supabaseUser ? window._supabaseUser.id : null;
       hist = data.map(m => ({
         av: (m.username || 'U')[0].toUpperCase(),
         nm: m.username || 'User',
         t: new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
-        txt: m.content
+        txt: m.content,
+        id: m.id,
+        mine: uid && m.user_id === uid
       }));
     } else {
-      hist = roomHistory[name] || [];
+      hist = (roomHistory[name] || []).map(m => Object.assign({}, m, {id: null, mine: false}));
     }
   } catch(e) {
-    hist = roomHistory[name] || [];
+    hist = (roomHistory[name] || []).map(m => Object.assign({}, m, {id: null, mine: false}));
   }
 
-  msgs.innerHTML = hist.map(m =>
-    `<div class="msg"><div class="av">${m.av}</div><div class="bub"><div class="bmeta"><span class="nm">${m.nm}</span>${m.t}</div><div class="btxt">${esc(m.txt)}</div></div></div>`
-  ).join('') + `<div class="msg sys"><div class="av">&middot;</div><div class="bub"><div class="btxt">${t('chat.you_joined').replace('{room}', name)}</div></div></div>`;
+  msgs.innerHTML = hist.map(m => _renderMsg(m, m.mine, m.id)).join('')
+    + '<div class="msg sys"><div class="av">&middot;</div><div class="bub"><div class="btxt">' + t('chat.you_joined').replace('{room}', name) + '</div></div></div>';
   scrollMsgs();
 
-  if (chatSubscription && sbReady()) {
-    _sb.removeChannel(chatSubscription);
-  }
+  // Clean up previous subscriptions
+  if (chatSubscription && sbReady()) { _sb.removeChannel(chatSubscription); }
+  if (presenceChannel && sbReady()) { _sb.removeChannel(presenceChannel); }
   if (!sbReady()) return;
+
+  // Real-time messages (INSERT + DELETE)
   chatSubscription = _sb
     .channel('room-' + name)
     .on('postgres_changes', {
@@ -869,13 +901,72 @@ async function switchRoom(el, name, desc, count) {
     }, (payload) => {
       const m = payload.new;
       if (m.user_id && window._supabaseUser && m.user_id === window._supabaseUser.id) return;
-      const t = new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-      const av = (m.username || 'U')[0].toUpperCase();
-      document.getElementById('messages').innerHTML +=
-        `<div class="msg"><div class="av">${av}</div><div class="bub"><div class="bmeta"><span class="nm">${esc(m.username || 'User')}</span>${t}</div><div class="btxt">${esc(m.content)}</div></div></div>`;
+      var msg = {
+        av: (m.username || 'U')[0].toUpperCase(),
+        nm: m.username || 'User',
+        t: new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+        txt: m.content
+      };
+      document.getElementById('messages').innerHTML += _renderMsg(msg, false, m.id);
       scrollMsgs();
     })
+    .on('postgres_changes', {
+      event: 'DELETE',
+      schema: 'public',
+      table: 'chat_messages',
+      filter: 'room=eq.' + name
+    }, (payload) => {
+      var el = document.querySelector('[data-msg-id="' + payload.old.id + '"]');
+      if (el) el.remove();
+    })
     .subscribe();
+
+  // Presence tracking (real online count)
+  presenceChannel = _sb.channel('presence-' + name, { config: { presence: { key: username || 'anon' } } });
+  presenceChannel.on('presence', { event: 'sync' }, () => {
+    var state = presenceChannel.presenceState();
+    var onlineCount = Object.keys(state).length;
+    document.getElementById('online-ct').textContent = String.fromCharCode(9679) + ' ' + t('chat.online_count').replace('{count}', onlineCount);
+  });
+  // Typing indicator via broadcast
+  presenceChannel.on('broadcast', { event: 'typing' }, (payload) => {
+    var who = payload.payload.username;
+    if (who === username) return;
+    typingUsers[who] = Date.now();
+    _updateTypingIndicator();
+    setTimeout(function() { delete typingUsers[who]; _updateTypingIndicator(); }, 3000);
+  });
+  presenceChannel.subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      await presenceChannel.track({ username: username, online_at: new Date().toISOString() });
+    }
+  });
+}
+
+function _updateTypingIndicator() {
+  var el = document.getElementById('typing-indicator');
+  if (!el) return;
+  var names = Object.keys(typingUsers);
+  if (names.length === 0) { el.textContent = ''; return; }
+  if (names.length === 1) { el.textContent = names[0] + ' ' + t('chat.is_typing'); return; }
+  if (names.length === 2) { el.textContent = names[0] + ' ' + t('chat.and') + ' ' + names[1] + ' ' + t('chat.are_typing'); return; }
+  el.textContent = t('chat.several_typing');
+}
+
+function broadcastTyping() {
+  if (!presenceChannel || !username) return;
+  if (typingTimeout) clearTimeout(typingTimeout);
+  presenceChannel.send({ type: 'broadcast', event: 'typing', payload: { username: username } });
+  typingTimeout = setTimeout(function() { typingTimeout = null; }, 2000);
+}
+
+async function deleteMsg(msgId, btn) {
+  if (!msgId || !sbReady()) return;
+  try {
+    await _sb.from('chat_messages').delete().eq('id', msgId);
+    var row = btn.closest('.msg');
+    if (row) row.remove();
+  } catch(e) { console.warn('Delete failed:', e); }
 }
 
 async function sendMsg() {
@@ -883,16 +974,22 @@ async function sendMsg() {
   const txt = inp.value.trim(); if (!txt) return;
   const msgs = document.getElementById('messages');
   const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  var uid = window._supabaseUser ? window._supabaseUser.id : null;
 
-  msgs.innerHTML += `<div class="msg mine"><div class="av">${username[0].toUpperCase()}</div><div class="bub"><div class="bmeta"><span class="nm">${esc(username)}</span>${time}</div><div class="btxt">${esc(txt)}</div></div></div>`;
+  var tmpMsg = {av: username[0].toUpperCase(), nm: username, t: time, txt: txt};
+  msgs.innerHTML += _renderMsg(tmpMsg, true, 'pending');
   inp.value = ''; scrollMsgs();
 
   try {
-    await _sb.from('chat_messages').insert({
+    var { data } = await _sb.from('chat_messages').insert({
       room: currentRoom,
       username: username,
+      user_id: uid,
       content: txt
-    });
+    }).select().single();
+    // Update pending message with real ID
+    var pending = document.querySelector('[data-msg-id="pending"]');
+    if (pending && data) pending.setAttribute('data-msg-id', data.id);
   } catch(e) {
     console.warn('Chat insert failed:', e);
   }
@@ -1383,15 +1480,54 @@ async function submitMemorial() {
 }
 
 // ── SIGNUPS (Newsletter) ──
+function _isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 async function handleNewsletterSignup(emailId, btnSelector, confirmId) {
-  const v = document.getElementById(emailId).value.trim();
-  if (!v.includes('@')) return;
+  var inp = document.getElementById(emailId);
+  var v = inp.value.trim();
+  var errId = emailId + '-err';
+  var errEl = document.getElementById(errId);
+
+  // Clear previous error
+  if (errEl) errEl.style.display = 'none';
+  inp.classList.remove('input-error');
+
+  if (!v) {
+    inp.classList.add('input-error');
+    if (errEl) { errEl.textContent = t('newsletter.error_empty'); errEl.style.display = 'block'; }
+    return;
+  }
+  if (!_isValidEmail(v)) {
+    inp.classList.add('input-error');
+    if (errEl) { errEl.textContent = t('newsletter.error_invalid'); errEl.style.display = 'block'; }
+    return;
+  }
+
+  if (!sbReady()) {
+    if (errEl) { errEl.textContent = t('error.service_unavailable'); errEl.style.display = 'block'; }
+    return;
+  }
+
+  var btn = document.querySelector(btnSelector);
+  if (btn) { btn.disabled = true; btn.textContent = t('newsletter.subscribing'); }
+
   try {
-    await _sb.from('newsletter_subscribers').insert({ email: v });
-  } catch(e) { /* duplicate is fine */ }
-  document.getElementById(emailId).style.display='none';
-  document.querySelector(btnSelector).style.display='none';
-  document.getElementById(confirmId).style.display='block';
+    var { error } = await _sb.from('newsletter_subscribers').insert({ email: v, confirmed: true });
+    if (error && error.code === '23505') {
+      // Already subscribed (duplicate)
+    } else if (error) {
+      throw error;
+    }
+    inp.style.display = 'none';
+    if (btn) btn.style.display = 'none';
+    document.getElementById(confirmId).style.display = 'block';
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = t('newsletter.subscribe_btn'); }
+    if (errEl) { errEl.textContent = t('newsletter.error_failed'); errEl.style.display = 'block'; }
+    console.warn('Newsletter signup error:', e);
+  }
 }
 function doSignup() { handleNewsletterSignup('signup-email', '.signup-box button', 'rsignup-ok'); }
 function doFtSignup() { handleNewsletterSignup('ft-email', '.ftnl button', 'ft-ok'); }
@@ -1657,7 +1793,7 @@ function doSearch() {
   if (menuOverlay) menuOverlay.classList.remove('active');
 
   if (sbReady()) {
-    _doSupabaseSearch(q);
+    _doSupabaseSearchV2(q);
   } else {
     _doLocalSearch(q.toLowerCase());
   }
@@ -1672,7 +1808,7 @@ async function _doSupabaseSearch(q) {
   try {
     var results = await Promise.all([
       _sb.from('directory_entries')
-        .select('id, organization_name, description, category, location')
+        .select('id, organization_name, description, category, location, tags')
         .textSearch('search_vector', tsQuery)
         .limit(15),
       _sb.from('events')
@@ -2020,12 +2156,26 @@ async function loadDirectoryFromSupabase() {
   try {
     const { data, error } = await _sb
       .from('directory_entries')
-      .select('id, organization_name, description, category, website_url, location, country, is_verified')
+      .select('id, organization_name, description, category, website_url, location, country, is_verified, tags')
       .eq('status', 'approved')
       .order('is_verified', { ascending: false })
       .order('organization_name')
       .limit(100);
     if (error || !data || data.length === 0) return;
+
+    // Build tag counts for popular tags
+    const tagCounts = {};
+    data.forEach(d => {
+      if (d.tags && d.tags.length) {
+        d.tags.forEach(tag => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+      }
+    });
+    // Sort by frequency, take top 20
+    const popularTags = Object.entries(tagCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 20);
 
     // Group by category
     const groups = {};
@@ -2048,6 +2198,18 @@ async function loadDirectoryFromSupabase() {
       else container.appendChild(dirList);
     }
 
+    // Popular tags bar
+    let tagsHtml = '';
+    if (popularTags.length > 0) {
+      tagsHtml += '<div class="popular-tags-bar" id="dir-popular-tags">';
+      tagsHtml += '<h4>Popular Tags</h4>';
+      tagsHtml += '<div class="tag-cloud">';
+      popularTags.forEach(function(pair) {
+        tagsHtml += '<a class="dir-tag" href="#" onclick="filterByTag(\'' + esc(pair[0]).replace(/'/g, "\\'") + '\');return false;">' + esc(pair[0]) + '<span class="dir-tag-count">' + pair[1] + '</span></a>';
+      });
+      tagsHtml += '</div></div>';
+    }
+
     const catLabels = {
       societies: t('dir_cat_labels.societies'),
       waldorf: t('dir_cat_labels.waldorf'),
@@ -2061,7 +2223,8 @@ async function loadDirectoryFromSupabase() {
       other: t('dir_cat_labels.other')
     };
 
-    let html = '<div class="catgrid" style="grid-template-columns:repeat(3,1fr);margin-top:16px;">';
+    let html = tagsHtml + '<div id="tag-filter-bar"></div>';
+    html += '<div class="catgrid" style="grid-template-columns:repeat(3,1fr);margin-top:16px;" id="dir-catgrid">';
     for (const [cat, entries] of Object.entries(groups)) {
       const label = catLabels[cat] || cat;
       html += `<div class="catblock reveal visible">
@@ -2069,15 +2232,174 @@ async function loadDirectoryFromSupabase() {
         <ul>${entries.map(e => {
           const v = e.is_verified ? '<sup>&#10003;</sup>' : '';
           const loc = e.location || '';
-          return `<li><a href="#" onclick="showDetail('directory','${e.id}');return false;">${esc(e.organization_name)}${v}</a> <span style="font-size:11px;color:var(--text-muted);">${esc(loc)}</span></li>`;
+          const entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
+          return `<li><a href="#" onclick="showDetail('directory','${e.id}');return false;">${esc(e.organization_name)}${v}</a> <span style="font-size:11px;color:var(--text-muted);">${esc(loc)}</span>${entryTags}</li>`;
         }).join('')}</ul>
       </div>`;
     }
     html += '</div>';
     dirList.innerHTML = html;
+
+    // Store data for tag filtering
+    window._directoryData = data;
+    window._dirCatLabels = catLabels;
     console.log('Loaded ' + data.length + ' directory entries from Supabase');
   } catch(e) {
     console.warn('Directory load failed:', e);
+  }
+}
+
+// ── TAG FILTER: filter directory entries by tag ──
+var _activeTag = null;
+
+function filterByTag(tag) {
+  // Navigate to directory section
+  showSec('directory');
+
+  // If same tag clicked, clear filter
+  if (_activeTag === tag) {
+    clearTagFilter();
+    return;
+  }
+  _activeTag = tag;
+
+  // If we don't have cached data, do a Supabase query
+  if (!window._directoryData || !window._directoryData.length) {
+    _filterByTagFromSupabase(tag);
+    return;
+  }
+
+  // Filter from cached data
+  var filtered = window._directoryData.filter(function(d) {
+    return d.tags && d.tags.indexOf(tag) !== -1;
+  });
+
+  _renderTagFilterResults(tag, filtered);
+}
+
+function _renderTagFilterResults(tag, filtered) {
+  var catLabels = window._dirCatLabels || {};
+  var dirList = document.getElementById('sb-directory-list');
+  if (!dirList) return;
+
+  // Update active state on tag cloud
+  var tagLinks = dirList.querySelectorAll('.popular-tags-bar .dir-tag');
+  tagLinks.forEach(function(el) {
+    if (el.textContent.replace(/\d+$/, '').trim() === tag) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+
+  // Show filter bar
+  var filterBar = document.getElementById('tag-filter-bar');
+  if (filterBar) {
+    filterBar.innerHTML = '<div class="tag-filter-active-bar">'
+      + '<span>Showing <strong>' + filtered.length + '</strong> entries tagged <strong>"' + esc(tag) + '"</strong></span>'
+      + '<a class="tag-filter-clear" href="#" onclick="clearTagFilter();return false;">Clear filter &times;</a>'
+      + '</div>';
+  }
+
+  // Rebuild the catgrid with filtered results
+  var catGrid = document.getElementById('dir-catgrid');
+  if (!catGrid) return;
+
+  if (filtered.length === 0) {
+    catGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px 0;color:var(--text-muted);">'
+      + '<div style="font-size:15px;font-weight:600;">No entries found with tag "' + esc(tag) + '"</div>'
+      + '<div style="font-size:13px;margin-top:4px;">Try a different tag or <a href="#" onclick="clearTagFilter();return false;">clear the filter</a>.</div>'
+      + '</div>';
+    return;
+  }
+
+  // Group filtered by category
+  var groups = {};
+  filtered.forEach(function(d) {
+    var cat = d.category || 'other';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(d);
+  });
+
+  var html = '';
+  for (var cat in groups) {
+    var entries = groups[cat];
+    var label = catLabels[cat] || cat;
+    html += '<div class="catblock reveal visible">'
+      + '<div class="catblock-head"><h3>' + esc(label) + '</h3><span class="alllink">' + entries.length + '</span></div>'
+      + '<ul>' + entries.map(function(e) {
+          var v = e.is_verified ? '<sup>&#10003;</sup>' : '';
+          var loc = e.location || '';
+          var entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag' + (tg === _activeTag ? ' active' : '') + '" href="#" onclick="filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
+          return '<li><a href="#" onclick="showDetail(\'directory\',\'' + e.id + '\');return false;">' + esc(e.organization_name) + v + '</a> <span style="font-size:11px;color:var(--text-muted);">' + esc(loc) + '</span>' + entryTags + '</li>';
+        }).join('')
+      + '</ul></div>';
+  }
+  catGrid.innerHTML = html;
+}
+
+async function _filterByTagFromSupabase(tag) {
+  if (!sbReady()) return;
+  try {
+    var { data, error } = await _sb
+      .from('directory_entries')
+      .select('id, organization_name, description, category, website_url, location, country, is_verified, tags')
+      .eq('status', 'approved')
+      .contains('tags', [tag])
+      .order('is_verified', { ascending: false })
+      .order('organization_name')
+      .limit(50);
+    if (error || !data) data = [];
+    _renderTagFilterResults(tag, data);
+  } catch(e) {
+    console.warn('Tag filter query failed:', e);
+  }
+}
+
+function clearTagFilter() {
+  _activeTag = null;
+  // Re-render from cached data
+  if (window._directoryData && window._directoryData.length) {
+    var dirList = document.getElementById('sb-directory-list');
+    if (!dirList) return;
+
+    // Clear filter bar
+    var filterBar = document.getElementById('tag-filter-bar');
+    if (filterBar) filterBar.innerHTML = '';
+
+    // Clear active state on tags
+    var tagLinks = dirList.querySelectorAll('.popular-tags-bar .dir-tag');
+    tagLinks.forEach(function(el) { el.classList.remove('active'); });
+
+    // Rebuild full catgrid
+    var catLabels = window._dirCatLabels || {};
+    var groups = {};
+    window._directoryData.forEach(function(d) {
+      var cat = d.category || 'other';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(d);
+    });
+
+    var catGrid = document.getElementById('dir-catgrid');
+    if (!catGrid) return;
+
+    var html = '';
+    for (var cat in groups) {
+      var entries = groups[cat];
+      var label = catLabels[cat] || cat;
+      html += '<div class="catblock reveal visible">'
+        + '<div class="catblock-head"><h3>' + esc(label) + '</h3><span class="alllink">' + entries.length + '</span></div>'
+        + '<ul>' + entries.map(function(e) {
+            var v = e.is_verified ? '<sup>&#10003;</sup>' : '';
+            var loc = e.location || '';
+            var entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
+            return '<li><a href="#" onclick="showDetail(\'directory\',\'' + e.id + '\');return false;">' + esc(e.organization_name) + v + '</a> <span style="font-size:11px;color:var(--text-muted);">' + esc(loc) + '</span>' + entryTags + '</li>';
+          }).join('')
+        + '</ul></div>';
+    }
+    catGrid.innerHTML = html;
+  } else {
+    loadDirectoryFromSupabase();
   }
 }
 
@@ -2504,23 +2826,40 @@ function rerenderForLang() {
   if (id === 'events') { renderCalendar(); renderEventList(); renderSidebarUpcoming(); }
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
+  if (id === 'marketplace') { renderMarketplace(); }
+  if (id === 'podcasts') { renderPodcastSection(); }
+  if (id === 'directory') { _loadAllSupabaseData(); }
+  if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
   if (typeof SC_I18N !== 'undefined') SC_I18N.applyTranslations();
 }
 
-// ── INIT: Load all data once Supabase is ready ──
+// ── INIT: Load all data once Supabase AND i18n are ready ──
+function _loadAllSupabaseData() {
+  if (!sbReady()) return;
+  Promise.all([
+    loadEventsFromSupabase(),
+    loadNewsFromSupabase(),
+    loadDirectoryFromSupabase(),
+    loadBooksFromSupabase(),
+    loadMarketplace()
+  ]).catch(function(e) { console.warn('Data load error:', e); });
+  renderPodcastSection();
+}
+
+// Defer data load until i18n is ready so t() calls resolve properly
 (function initSupabaseData() {
-  function loadAll() {
-    if (sbReady()) {
-      Promise.all([
-        loadEventsFromSupabase(),
-        loadNewsFromSupabase(),
-        loadDirectoryFromSupabase(),
-        loadBooksFromSupabase()
-      ]).catch(function(e) { console.warn('Data load error:', e); });
+  function tryLoad() {
+    if (typeof SC_I18N !== 'undefined' && SC_I18N._ready) {
+      _loadAllSupabaseData();
+    } else {
+      // i18n not ready yet, wait for it
+      window.addEventListener('i18n-ready', function() { _loadAllSupabaseData(); });
+      // Fallback: if i18n never fires (e.g. offline), load after 500ms anyway
+      setTimeout(function() { _loadAllSupabaseData(); }, 500);
     }
   }
-  if (sbReady()) { loadAll(); }
-  else { setTimeout(loadAll, 150); }
+  if (sbReady()) { tryLoad(); }
+  else { setTimeout(tryLoad, 150); }
 })();
 
 // ── AUTO-HIDE PAST EVENTS ──
@@ -2882,6 +3221,371 @@ async function sendNewsletter() {
     btn.disabled = false;
     btn.textContent = t('admin.newsletter_send_btn');
   }
+}
+
+// ── VIEW TRACKING ──
+var _viewedItems = {};
+function _trackView(type, id) {
+  if (!sbReady()) return;
+  var key = type + ':' + id;
+  if (_viewedItems[key]) return; // only once per session
+  _viewedItems[key] = true;
+  if (type === 'listing') {
+    _sb.rpc('increment_view_count', { listing_id: id }).catch(function() {});
+  }
+  // For directory, events, news - log to analytics table if it exists
+  _sb.from('view_logs').insert({ item_type: type, item_id: id }).catch(function() {});
+}
+
+// ── CONTENT REPORTING / FLAGGING ──
+function openReportModal(itemType, itemId) {
+  if (!signedIn) { openModal(); return; }
+  var modal = document.getElementById('report-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  document.getElementById('report-item-type').value = itemType;
+  document.getElementById('report-item-id').value = itemId;
+  document.getElementById('report-reason').value = '';
+  document.getElementById('report-details').value = '';
+  document.getElementById('report-status').style.display = 'none';
+}
+
+function closeReportModal() {
+  var modal = document.getElementById('report-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function submitReport() {
+  if (!sbReady() || !signedIn) return;
+  var itemType = document.getElementById('report-item-type').value;
+  var itemId = document.getElementById('report-item-id').value;
+  var reason = document.getElementById('report-reason').value;
+  var details = (document.getElementById('report-details').value || '').trim();
+  var statusEl = document.getElementById('report-status');
+
+  if (!reason) {
+    statusEl.textContent = t('report.select_reason');
+    statusEl.className = 'report-status report-status-error';
+    statusEl.style.display = 'block';
+    return;
+  }
+
+  var btn = document.getElementById('report-submit-btn');
+  btn.disabled = true;
+  btn.textContent = t('report.submitting');
+
+  try {
+    var uid = window._supabaseUser ? window._supabaseUser.id : null;
+    if (!uid) throw new Error('Not authenticated');
+    var { error } = await _sb.from('reports').insert({
+      reporter_id: uid,
+      item_type: itemType,
+      item_id: itemId,
+      reason: reason,
+      details: details || null
+    });
+    if (error) throw error;
+    statusEl.textContent = t('report.success');
+    statusEl.className = 'report-status report-status-success';
+    statusEl.style.display = 'block';
+    setTimeout(closeReportModal, 2000);
+  } catch(e) {
+    statusEl.textContent = t('report.error') + ': ' + e.message;
+    statusEl.className = 'report-status report-status-error';
+    statusEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t('report.submit_btn');
+  }
+}
+
+// ── MARKETPLACE / CLASSIFIEDS ──
+var _marketplaceData = [];
+var _marketplaceFilter = 'all';
+
+async function loadMarketplace() {
+  if (!sbReady()) return;
+  try {
+    var { data, error } = await _sb.from('listings')
+      .select('*, profiles(username), categories(name,slug)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (!error && data) {
+      _marketplaceData = data;
+      renderMarketplace();
+    }
+  } catch(e) { console.warn('Marketplace load error:', e); }
+}
+
+function filterMarketplace(type) {
+  _marketplaceFilter = type;
+  document.querySelectorAll('.mp-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  var activeBtn = document.querySelector('.mp-filter-btn[data-filter="' + type + '"]');
+  if (activeBtn) activeBtn.classList.add('active');
+  renderMarketplace();
+}
+
+function renderMarketplace() {
+  var container = document.getElementById('marketplace-listings');
+  if (!container) return;
+  var items = _marketplaceFilter === 'all' ? _marketplaceData : _marketplaceData.filter(function(l) { return l.listing_type === _marketplaceFilter; });
+
+  if (items.length === 0) {
+    container.innerHTML = '<div class="mp-empty"><div style="font-size:28px;margin-bottom:8px;">&#128722;</div><div>' + t('marketplace.no_listings') + '</div></div>';
+    return;
+  }
+
+  container.innerHTML = items.map(function(l) {
+    var typeLabel = {for_sale: t('marketplace.type_for_sale'), wanted: t('marketplace.type_wanted'), offering: t('marketplace.type_offering'), seeking: t('marketplace.type_seeking'), announcement: t('marketplace.type_announcement')};
+    var typeCls = 'mp-type-' + l.listing_type;
+    var price = l.price ? ('$' + Number(l.price).toFixed(2)) : '';
+    var poster = (l.profiles && l.profiles.username) ? l.profiles.username : t('marketplace.anonymous');
+    var catName = (l.categories && l.categories.name) ? l.categories.name : '';
+    var loc = [l.location, l.country].filter(Boolean).join(', ');
+    var ago = _timeAgo(l.created_at);
+    var views = l.view_count || 0;
+
+    return '<div class="mp-card" onclick="showDetail(\'listing\',\'' + l.id + '\')">'
+      + '<div class="mp-card-header">'
+      + '<span class="mp-type ' + typeCls + '">' + (typeLabel[l.listing_type] || l.listing_type) + '</span>'
+      + (price ? '<span class="mp-price">' + esc(price) + '</span>' : '')
+      + '</div>'
+      + '<h4 class="mp-title">' + esc(l.title) + '</h4>'
+      + '<p class="mp-desc">' + esc((l.description || '').substring(0, 120)) + (l.description && l.description.length > 120 ? '...' : '') + '</p>'
+      + '<div class="mp-meta">'
+      + (catName ? '<span>' + esc(catName) + '</span>' : '')
+      + (loc ? '<span>&#128205; ' + esc(loc) + '</span>' : '')
+      + '<span>' + esc(poster) + ' &middot; ' + ago + '</span>'
+      + '<span>' + views + ' ' + t('marketplace.views') + '</span>'
+      + '</div></div>';
+  }).join('');
+}
+
+function renderListingDetail(d) {
+  var typeLabel = {for_sale: t('marketplace.type_for_sale'), wanted: t('marketplace.type_wanted'), offering: t('marketplace.type_offering'), seeking: t('marketplace.type_seeking'), announcement: t('marketplace.type_announcement')};
+  var price = d.price ? ('$' + Number(d.price).toFixed(2)) : '';
+  var poster = (d.profiles && d.profiles.username) ? d.profiles.username : t('marketplace.anonymous');
+  var catName = (d.categories && d.categories.name) ? d.categories.name : '';
+  var loc = [d.location, d.region, d.country].filter(Boolean).join(', ');
+  var tags = (d.tags || []).map(function(tg) { return '<span class="detail-badge category">' + esc(tg) + '</span>'; }).join('');
+
+  var actions = '';
+  if (d.website_url) actions += '<a class="btn-primary-detail" href="' + esc(d.website_url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
+  if (d.contact_email) actions += '<a class="btn-secondary-detail" href="mailto:' + esc(d.contact_email) + '">' + t('detail.contact') + ' &#9993;</a>';
+  if (d.contact_phone) actions += '<a class="btn-secondary-detail" href="tel:' + esc(d.contact_phone) + '">' + t('detail.call') + ' &#9742;</a>';
+
+  var reportBtn = signedIn ? '<button class="btn-report" onclick="event.stopPropagation();openReportModal(\'listing\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '';
+
+  return '<div class="detail-card">'
+    + '<div class="detail-header">'
+    + '<h1>' + esc(d.title) + '</h1>'
+    + '<div class="detail-badges">'
+    + '<span class="detail-badge mp-type mp-type-' + d.listing_type + '">' + (typeLabel[d.listing_type] || d.listing_type) + '</span>'
+    + (price ? '<span class="detail-badge" style="background:var(--gold);color:#fff;">' + esc(price) + '</span>' : '')
+    + tags + '</div>'
+    + (actions ? '<div class="detail-actions">' + actions + '</div>' : '')
+    + '</div>'
+    + '<div class="detail-body">' + esc(d.description || t('detail.no_description')) + '</div>'
+    + '<div class="detail-sidebar"><h4>' + t('detail.quick_facts') + '</h4>'
+    + '<p><strong>' + t('marketplace.posted_by') + ':</strong> ' + esc(poster) + '</p>'
+    + (catName ? '<p><strong>' + t('detail.category') + ':</strong> ' + esc(catName) + '</p>' : '')
+    + (loc ? '<p><strong>' + t('detail.location') + ':</strong> ' + esc(loc) + '</p>' : '')
+    + '<p><strong>' + t('marketplace.views') + ':</strong> ' + (d.view_count || 0) + '</p>'
+    + '<p><strong>' + t('marketplace.posted') + ':</strong> ' + localDate(d.created_at, {month:'short',day:'numeric',year:'numeric'}) + '</p>'
+    + '<p><strong>' + t('marketplace.expires') + ':</strong> ' + localDate(d.expires_at, {month:'short',day:'numeric',year:'numeric'}) + '</p>'
+    + reportBtn
+    + '</div></div>';
+}
+
+function showSubmitListingForm() {
+  if (!signedIn) { openModal(); return; }
+  var overlay = document.getElementById('listing-submit-overlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+
+function closeListingForm() {
+  var overlay = document.getElementById('listing-submit-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+async function submitClassifiedListing() {
+  if (!sbReady() || !signedIn) return;
+  var title = (document.getElementById('cl-title').value || '').trim();
+  var desc = (document.getElementById('cl-desc').value || '').trim();
+  var listingType = document.getElementById('cl-type').value;
+  var price = (document.getElementById('cl-price').value || '').trim();
+  var location = (document.getElementById('cl-location').value || '').trim();
+  var country = (document.getElementById('cl-country').value || '').trim();
+  var contactEmail = (document.getElementById('cl-email').value || '').trim();
+  var tags = (document.getElementById('cl-tags').value || '').trim();
+
+  if (!title || !desc || !listingType) {
+    alert(t('marketplace.error_required'));
+    return;
+  }
+
+  var uid = window._supabaseUser ? window._supabaseUser.id : null;
+  if (!uid) { alert(t('error.not_authenticated')); return; }
+
+  try {
+    var { error } = await _sb.from('listings').insert({
+      user_id: uid,
+      category_id: 1,
+      title: title,
+      description: desc,
+      listing_type: listingType,
+      price: price ? parseFloat(price) : null,
+      location: location || null,
+      country: country || null,
+      contact_email: contactEmail || null,
+      tags: tags ? tags.split(',').map(function(t) { return t.trim(); }) : []
+    });
+    if (error) throw error;
+    document.getElementById('cl-success').style.display = 'block';
+    setTimeout(function() { closeListingForm(); document.getElementById('cl-success').style.display = 'none'; }, 2500);
+    loadMarketplace();
+  } catch(e) {
+    alert(t('marketplace.error_submit') + ': ' + e.message);
+  }
+}
+
+// ── PODCASTS & MEDIA (enhanced) ──
+var podcastData = {
+  podcasts: [
+    {title:'ASA Official Podcast', url:'https://anthroposophy.org/podcast/', platform:'Spotify / RSS', desc:'Official podcast of the Anthroposophical Society in America. Interviews, lectures, and community highlights.', lang:'EN', verified:true},
+    {title:'Goetheanum Podcast', url:'https://goetheanum.transistor.fm/', platform:'Transistor', desc:'News and perspectives from the Goetheanum in Dornach, Switzerland.', lang:'EN/DE', verified:true},
+    {title:'Inner Work Path: Lisa Romero', url:'https://www.innerworkpath.com/category/podcast/', platform:'Australia', desc:'Guided meditations and inner development exercises rooted in anthroposophy.', lang:'EN', verified:true},
+    {title:'Rudolf Steiner Audio Podcast', url:'https://www.rudolfsteiner.podbean.com/', platform:'Podbean', desc:'Audio readings of Rudolf Steiner lectures and written works. Free access.', lang:'EN', verified:true},
+    {title:'New Thinking Allowed', url:'https://newthinkingallowed.org/rudolf-steiner-anthroposophy/', platform:'Video', desc:'Jeffrey Mishlove interviews scholars and practitioners on anthroposophy and spiritual science.', lang:'EN', verified:true},
+    {title:'Anthroposophy on Spotify', url:'https://open.spotify.com/show/0M4QfnyYevp54XnlERAPTf', platform:'Spotify', desc:'Curated playlists and episodes exploring anthroposophical themes.', lang:'EN', verified:true}
+  ],
+  video: [
+    {title:'Goetheanum TV', url:'https://goetheanum.tv', platform:'Streaming', desc:'Live and recorded events from the Goetheanum world center.', lang:'DE/EN', verified:true},
+    {title:'Das Goetheanum Weekly', url:'https://dasgoetheanum.com/en', platform:'Online', desc:'Weekly digital magazine covering anthroposophical news and culture.', lang:'DE/EN', verified:true},
+    {title:'ASA YouTube Channel', url:'https://www.youtube.com/@AnthroposophyUSA', platform:'YouTube', desc:'Video lectures, conferences, and community events from ASA.', lang:'EN', verified:true},
+    {title:'Anthroposophy.Social', url:'https://anthroposophysocial.com', platform:'Platform', desc:'Community platform for anthroposophical discussions and media sharing.', lang:'EN', verified:true},
+    {title:'Goetheanum Studium - Instagram', url:'https://www.instagram.com/goetheanum_studium/', platform:'Instagram', desc:'Visual insights into studies and events at the Goetheanum.', lang:'DE/EN', verified:true},
+    {title:'ASA Facebook Page', url:'https://www.facebook.com/AnthroposophyUSA/', platform:'Facebook', desc:'Official ASA page with event announcements and community news.', lang:'EN', verified:true},
+    {title:'Anthroposophy Community Group', url:'https://www.facebook.com/groups/anthroposophy/', platform:'Facebook', desc:'Global discussion group for anthroposophical topics and questions.', lang:'EN', verified:true},
+    {title:'Rudolf Steiner Archive - Facebook', url:'https://www.facebook.com/RudolfSteinerArchive/', platform:'Facebook', desc:'Updates from the Rudolf Steiner Archive in Interlochen, MI.', lang:'EN', verified:true}
+  ],
+  archives: [
+    {title:'Rudolf Steiner Archive', url:'https://rsarchive.org', platform:'rsarchive.org', desc:'Complete archive of Steiner lectures and writings. The largest online collection.', lang:'EN', verified:true},
+    {title:'Rudolf Steiner Audio', url:'https://www.rudolfsteineraudio.com', platform:'Audio', desc:'Professional audio recordings of Steiner lectures and books.', lang:'EN', verified:true},
+    {title:'Waldorf Library', url:'https://www.waldorflibrary.org', platform:'Library', desc:'Digital library of Waldorf education resources and research papers.', lang:'EN', verified:true},
+    {title:'Steiner Books', url:'https://www.steinerbooks.org', platform:'Publisher', desc:'Leading publisher of English-language anthroposophical books and journals.', lang:'EN', verified:true}
+  ]
+};
+
+function renderPodcastSection() {
+  var container = document.getElementById('podcasts-dynamic');
+  if (!container) return;
+
+  var totalCount = podcastData.podcasts.length + podcastData.video.length + podcastData.archives.length;
+  document.getElementById('podcasts-count').textContent = totalCount + ' ' + t('podcasts.shows_label');
+
+  function renderBlock(items, heading) {
+    var html = '<div class="listblock reveal"><div class="listblock-head"><h3>' + heading + '</h3><span class="podcast-count">' + items.length + ' ' + t('podcasts.items') + '</span></div><div class="listblock-body">';
+    items.forEach(function(p) {
+      html += '<div class="lrow podcast-row">'
+        + '<div class="podcast-info">'
+        + '<a class="ltitle" href="' + esc(p.url) + '" target="_blank">' + esc(p.title) + '</a>'
+        + (p.verified ? '<span class="lv">&#10003;</span>' : '')
+        + '<span class="lmeta">' + esc(p.platform) + (p.lang ? ' &middot; ' + esc(p.lang) : '') + '</span>'
+        + '<div class="podcast-desc">' + esc(p.desc) + '</div>'
+        + '</div></div>';
+    });
+    html += '</div></div>';
+    return html;
+  }
+
+  container.innerHTML = '<div class="twocol">'
+    + renderBlock(podcastData.podcasts, t('podcasts.podcasts_heading'))
+    + renderBlock(podcastData.video, t('podcasts.video_social_heading'))
+    + '</div>'
+    + renderBlock(podcastData.archives, t('podcasts.archives_heading'));
+}
+
+// ── UPGRADED FULL-TEXT SEARCH ──
+async function _doSupabaseSearchV2(q) {
+  if (!sbReady()) { _doLocalSearch(q.toLowerCase()); return; }
+  showSec('browse');
+
+  try {
+    // Try RPC search_all first (better ranking)
+    var { data, error } = await _sb.rpc('search_all', { search_term: q, limit_n: 30 });
+    if (!error && data && data.length > 0) {
+      var dirResults = data.filter(function(r) { return r.type === 'directory'; });
+      var evResults = data.filter(function(r) { return r.type === 'event'; });
+      var newsResults = data.filter(function(r) { return r.type === 'news'; });
+      var listResults = data.filter(function(r) { return r.type === 'listing'; });
+      var totalCount = data.length;
+
+      var html = '';
+      if (dirResults.length > 0) {
+        html += _renderSearchGroup(t('search_results.directory'), dirResults, function(d) {
+          return '<a href="#" onclick="showDetail(\'directory\',\'' + d.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(d.title) + '</a>'
+            + (d.description ? '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + esc(d.description.substring(0, 120)) + '</div>' : '');
+        });
+      }
+      if (evResults.length > 0) {
+        html += _renderSearchGroup(t('search_results.events'), evResults, function(d) {
+          return '<a href="#" onclick="showDetail(\'event\',\'' + d.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(d.title) + '</a>'
+            + (d.description ? '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + esc(d.description.substring(0, 120)) + '</div>' : '');
+        });
+      }
+      if (newsResults.length > 0) {
+        html += _renderSearchGroup(t('search_results.news'), newsResults, function(d) {
+          return '<a href="#" onclick="showDetail(\'news\',\'' + d.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(d.title) + '</a>'
+            + (d.description ? '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + esc(d.description.substring(0, 120)) + '</div>' : '');
+        });
+      }
+      if (listResults.length > 0) {
+        html += _renderSearchGroup(t('search_results.marketplace'), listResults, function(d) {
+          return '<a href="#" onclick="showDetail(\'listing\',\'' + d.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(d.title) + '</a>'
+            + (d.description ? '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + esc(d.description.substring(0, 120)) + '</div>' : '');
+        });
+      }
+
+      if (totalCount === 0) {
+        _showSearchResults(q, '<div style="text-align:center;padding:32px 0;color:var(--text-muted);">'
+          + '<div style="font-size:28px;margin-bottom:8px;">&#128269;</div>'
+          + '<div style="font-size:15px;font-weight:600;">' + t('search.no_results_title') + '</div>'
+          + '<div style="font-size:13px;margin-top:4px;">' + t('search.no_results_desc') + '</div>'
+          + '</div>', 0);
+      } else {
+        _showSearchResults(q, html, totalCount);
+      }
+      return;
+    }
+  } catch(e) {
+    console.warn('search_all RPC not available, using v1 search:', e);
+  }
+  // Fall back to original search
+  _doSupabaseSearch(q);
+}
+
+function _renderSearchGroup(label, items, renderItem) {
+  var html = '<div style="margin-bottom:16px;">';
+  html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + label + ' (' + items.length + ')</div>';
+  items.forEach(function(d) {
+    html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">' + renderItem(d) + '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+// ── HELPER: Time ago ──
+function _timeAgo(dateStr) {
+  var now = Date.now();
+  var then = new Date(dateStr).getTime();
+  var diff = Math.floor((now - then) / 1000);
+  if (diff < 60) return t('time.just_now');
+  if (diff < 3600) return Math.floor(diff / 60) + t('time.minutes_ago');
+  if (diff < 86400) return Math.floor(diff / 3600) + t('time.hours_ago');
+  if (diff < 2592000) return Math.floor(diff / 86400) + t('time.days_ago');
+  return localDate(dateStr, {month:'short', day:'numeric'});
 }
 
 // ── Directory alllink scroll ──

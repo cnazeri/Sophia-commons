@@ -77,18 +77,24 @@ var SC_I18N = (function () {
     });
   }
 
+  var _ready = false;
+
   function init() {
     return loadLang('en').then(function (data) {
       fallback = data;
       cache.en = data;
       var saved = localStorage.getItem('sc-lang') || 'en';
       return setLang(saved);
+    }).then(function () {
+      _ready = true;
+      window.dispatchEvent(new Event('i18n-ready'));
     });
   }
 
   function getLang() { return currentLang; }
+  function isReady() { return _ready; }
 
-  return { t: t, localDate: localDate, localTime: localTime, setLang: setLang, init: init, getLang: getLang, applyTranslations: applyTranslations };
+  return { t: t, localDate: localDate, localTime: localTime, setLang: setLang, init: init, getLang: getLang, applyTranslations: applyTranslations, get _ready() { return _ready; } };
 })();
 
 var t = SC_I18N.t;
