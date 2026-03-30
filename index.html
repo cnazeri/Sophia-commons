@@ -1599,11 +1599,20 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <h3 style="font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;margin:0;">Weekly Digest Generator</h3>
       </div>
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Generate a weekly wrap-up article summarizing this week's highlights — new listings, upcoming events, news, and memorials. The article will be published to the News section.</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">A weekly wrap-up is auto-generated every Saturday night as a draft. Review below and click "Approve & Publish" when ready. You can also generate one manually.</p>
 
-      <div style="display:flex;gap:10px;margin-bottom:16px;">
-        <button class="admin-btn admin-btn-approve" onclick="generateWeeklyDigest()" id="digest-generate-btn" style="padding:10px 22px;">Generate This Week's Digest</button>
-        <button class="admin-btn admin-btn-approve" onclick="previewWeeklyDigest()" style="padding:10px 22px;background:var(--surface);color:var(--text-primary);border:1px solid var(--border);">Preview First</button>
+      <!-- Drafts awaiting approval -->
+      <div style="margin-bottom:18px;">
+        <h4 style="font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:700;color:var(--gold,#b8956a);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Awaiting Your Approval</h4>
+        <div id="digest-drafts">
+          <div style="color:var(--text-muted);font-size:12px;">Loading...</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+        <button class="admin-btn admin-btn-approve" onclick="generateWeeklyDigest(true)" id="digest-generate-btn" style="padding:10px 22px;">Generate Draft</button>
+        <button onclick="previewWeeklyDigest()" style="padding:10px 22px;background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;cursor:pointer;">Preview</button>
+        <button onclick="generateWeeklyDigest(false)" style="padding:10px 22px;background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;cursor:pointer;">Publish Immediately</button>
       </div>
 
       <div id="digest-status" style="font-size:13px;color:var(--text-muted);margin-bottom:12px;"></div>
@@ -1734,7 +1743,7 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.7.0</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.7.1</span>
     <span><a href="#" onclick="return false;" data-i18n="footer.privacy">privacy</a><a href="#" onclick="return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>

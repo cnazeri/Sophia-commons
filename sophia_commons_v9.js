@@ -2960,7 +2960,7 @@ function adminSwitchTab(tab) {
   else if (tab === 'memorials') loadAdminMemorials();
   else if (tab === 'newsletter') loadNewsletterSubscriberCount();
   else if (tab === 'traffic') refreshDashboard();
-  else if (tab === 'digest') loadDigestHistory();
+  else if (tab === 'digest') { loadDigestDrafts(); loadDigestHistory(); }
 }
 
 function adminEsc(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
@@ -4096,7 +4096,8 @@ async function previewWeeklyDigest() {
   statusEl.textContent = 'Preview ready. Review above, then click "Generate" to publish.';
 }
 
-async function generateWeeklyDigest() {
+// Generate digest as draft (for auto-generation or manual)
+async function generateWeeklyDigest(asDraft) {
   if (!isAdmin()) return;
   var statusEl = document.getElementById('digest-status');
   var btn = document.getElementById('digest-generate-btn');
@@ -4108,8 +4109,8 @@ async function generateWeeklyDigest() {
     var data = await gatherDigestData();
     var html = buildDigestHTML(data);
     var title = 'Weekly Wrap-Up: ' + data.weekOf;
+    var isDraft = asDraft === true;
 
-    // Insert into news table
     var { error } = await _sb.from('news').insert({
       title: title,
       body: html,
@@ -4117,20 +4118,90 @@ async function generateWeeklyDigest() {
       source_name: 'Sophia Commons Staff',
       tags: ['weekly-digest'],
       featured: true,
-      status: 'published',
-      published_at: new Date().toISOString()
+      status: isDraft ? 'draft' : 'published',
+      published_at: isDraft ? null : new Date().toISOString()
     });
 
     if (error) throw error;
 
-    statusEl.textContent = 'Digest published to News! "' + title + '"';
-    statusEl.style.color = 'var(--success,#27ae60)';
+    if (isDraft) {
+      statusEl.textContent = 'Draft created: "' + title + '" — awaiting your approval.';
+      statusEl.style.color = 'var(--gold,#b8956a)';
+    } else {
+      statusEl.textContent = 'Digest published to News! "' + title + '"';
+      statusEl.style.color = 'var(--success,#27ae60)';
+    }
+    loadDigestDrafts();
     loadDigestHistory();
   } catch(e) {
-    statusEl.textContent = 'Error: ' + (e.message || 'Failed to publish');
+    statusEl.textContent = 'Error: ' + (e.message || 'Failed to generate');
     statusEl.style.color = 'var(--error,#c0392b)';
   }
   btn.disabled = false;
+}
+
+// Approve a draft digest — publish it
+async function approveDigest(id) {
+  if (!isAdmin()) return;
+  try {
+    var { error } = await _sb.from('news')
+      .update({ status: 'published', published_at: new Date().toISOString() })
+      .eq('id', id);
+    if (error) throw error;
+    document.getElementById('digest-status').textContent = 'Digest approved and published!';
+    document.getElementById('digest-status').style.color = 'var(--success,#27ae60)';
+    loadDigestDrafts();
+    loadDigestHistory();
+  } catch(e) {
+    alert('Error approving: ' + (e.message || 'Unknown'));
+  }
+}
+
+// Delete a draft digest
+async function deleteDigest(id) {
+  if (!isAdmin()) return;
+  if (!confirm('Delete this draft digest?')) return;
+  try {
+    await _sb.from('news').delete().eq('id', id);
+    loadDigestDrafts();
+  } catch(e) {
+    alert('Error: ' + (e.message || 'Unknown'));
+  }
+}
+
+// Load pending draft digests
+async function loadDigestDrafts() {
+  var el = document.getElementById('digest-drafts');
+  if (!el || !sbReady()) return;
+  try {
+    var { data, error } = await _sb.from('news')
+      .select('id, title, body, created_at')
+      .eq('status', 'draft')
+      .contains('tags', ['weekly-digest'])
+      .order('created_at', { ascending: false })
+      .limit(5);
+    if (error || !data || data.length === 0) {
+      el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No drafts awaiting approval.</div>';
+      return;
+    }
+    el.innerHTML = data.map(function(d) {
+      var date = new Date(d.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+      return '<div style="background:var(--surface);border:1px solid var(--gold,#b8956a);border-radius:8px;padding:14px;margin-bottom:10px;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+        + '<strong style="font-size:13px;">' + esc(d.title) + '</strong>'
+        + '<span style="font-size:11px;color:var(--text-muted);">' + date + '</span>'
+        + '</div>'
+        + '<details style="margin-bottom:10px;"><summary style="font-size:12px;color:var(--text-muted);cursor:pointer;">Preview content</summary>'
+        + '<div style="font-size:12px;line-height:1.6;color:var(--text-secondary);margin-top:8px;max-height:300px;overflow-y:auto;">' + d.body + '</div>'
+        + '</details>'
+        + '<div style="display:flex;gap:8px;">'
+        + '<button class="admin-btn admin-btn-approve" onclick="approveDigest(\'' + d.id + '\')" style="padding:6px 16px;font-size:12px;">Approve &amp; Publish</button>'
+        + '<button class="admin-btn admin-btn-reject" onclick="deleteDigest(\'' + d.id + '\')" style="padding:6px 16px;font-size:12px;">Delete</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">Error loading drafts.</div>';
+  }
 }
 
 async function loadDigestHistory() {
