@@ -930,8 +930,19 @@ async function loadCommunityMemorials() {
     const grid = document.getElementById('community-memorials');
     if (!grid) return;
 
-    const heading = '<hr class="soft"><div class="seclabel" style="margin-bottom:14px;">' + t('memorial.community_tributes') + ' &nbsp;·&nbsp; ' + t('memorial.showing_count').replace('{count}', data.length) + '</div>';
-    const cards = data.map(m => {
+    // Deduplicate: skip entries that match hardcoded memorial names
+    const hardcodedNames = [];
+    document.querySelectorAll('#memorial-grid .memorial-card').forEach(function(card) {
+      var n = card.getAttribute('data-name');
+      if (n) hardcodedNames.push(n.toLowerCase().trim());
+    });
+    const filtered = data.filter(function(m) {
+      return hardcodedNames.indexOf(m.name.toLowerCase().trim()) === -1;
+    });
+    if (filtered.length === 0) return;
+
+    const heading = '<hr class="soft"><div class="seclabel" style="margin-bottom:14px;">' + t('memorial.community_tributes') + ' &nbsp;·&nbsp; ' + t('memorial.showing_count').replace('{count}', filtered.length) + '</div>';
+    const cards = filtered.map(m => {
       const initials = m.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
       const avatar = m.photo_url
         ? '<img src="' + esc(m.photo_url) + '" alt="' + esc(m.name) + '" style="width:100%;height:100%;object-fit:cover;">'
