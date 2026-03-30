@@ -2201,7 +2201,7 @@ document.addEventListener('click', function(e) {
 //  ADMIN PANEL
 // ══════════════════════════════════════════
 
-var ADMIN_EMAILS = ['cameron@sophiacommons.org', 'admin@sophiacommons.org'];
+var ADMIN_EMAILS = ['cameron.nazeri@gmail.com', 'cameron@sophiacommons.org', 'admin@sophiacommons.org'];
 
 function isAdmin() {
   return signedIn && window._supabaseUser && window._supabaseUser.email &&
