@@ -2783,5 +2783,143 @@ function fillDashTable(tableId, countsObj, limit) {
   tbody.innerHTML = html || '<tr><td colspan="3" style="color:var(--text-muted);text-align:center;padding:12px;">No data yet</td></tr>';
 }
 
+// ══════════════════════════════════════════
+//  MOON PHASE WIDGET
+// ══════════════════════════════════════════
+(function() {
+  var SYNODIC_MONTH = 29.53058867;
+  var KNOWN_NEW_MOON = new Date(Date.UTC(2000, 0, 6, 18, 14, 0));
+
+  function getMoonAge(date) {
+    var diff = date.getTime() - KNOWN_NEW_MOON.getTime();
+    var days = diff / (1000 * 60 * 60 * 24);
+    var age = days % SYNODIC_MONTH;
+    if (age < 0) age += SYNODIC_MONTH;
+    return age;
+  }
+
+  function getPhaseInfo(age) {
+    var fraction = age / SYNODIC_MONTH;
+    var illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
+    var phaseName;
+    if (age < 1.845) phaseName = 'New Moon';
+    else if (age < 7.383) phaseName = 'Waxing Crescent';
+    else if (age < 9.228) phaseName = 'First Quarter';
+    else if (age < 14.765) phaseName = 'Waxing Gibbous';
+    else if (age < 16.610) phaseName = 'Full Moon';
+    else if (age < 22.148) phaseName = 'Waning Gibbous';
+    else if (age < 23.993) phaseName = 'Last Quarter';
+    else if (age < 27.685) phaseName = 'Waning Crescent';
+    else phaseName = 'New Moon';
+    return { name: phaseName, illumination: Math.round(illumination * 100), fraction: fraction };
+  }
+
+  function getMoonDistance(age) {
+    var fraction = age / SYNODIC_MONTH;
+    return Math.round(384400 - 25100 * Math.cos(2 * Math.PI * fraction * 1.1));
+  }
+
+  var ECLIPSES = [
+    { date: new Date(2026, 1, 17), type: 'solar', subtype: 'Annular', name: 'Annular Solar Eclipse', emoji: '\uD83C\uDF1E' },
+    { date: new Date(2026, 2, 3),  type: 'lunar', subtype: 'Total',   name: 'Total Lunar Eclipse',   emoji: '\uD83C\uDF11' },
+    { date: new Date(2026, 7, 12), type: 'solar', subtype: 'Total',   name: 'Total Solar Eclipse',   emoji: '\uD83C\uDF1E' },
+    { date: new Date(2026, 7, 28), type: 'lunar', subtype: 'Partial', name: 'Partial Lunar Eclipse', emoji: '\uD83C\uDF17' },
+    { date: new Date(2027, 1, 6),  type: 'solar', subtype: 'Annular', name: 'Annular Solar Eclipse', emoji: '\uD83C\uDF1E' },
+    { date: new Date(2027, 1, 20), type: 'lunar', subtype: 'Penumbral', name: 'Penumbral Lunar Eclipse', emoji: '\uD83C\uDF15' },
+    { date: new Date(2027, 6, 18), type: 'lunar', subtype: 'Penumbral', name: 'Penumbral Lunar Eclipse', emoji: '\uD83C\uDF15' },
+    { date: new Date(2027, 7, 2),  type: 'solar', subtype: 'Total',   name: 'Total Solar Eclipse',   emoji: '\uD83C\uDF1E' },
+    { date: new Date(2028, 0, 12), type: 'lunar', subtype: 'Partial', name: 'Partial Lunar Eclipse', emoji: '\uD83C\uDF17' },
+    { date: new Date(2028, 0, 26), type: 'solar', subtype: 'Annular', name: 'Annular Solar Eclipse', emoji: '\uD83C\uDF1E' },
+    { date: new Date(2028, 6, 6),  type: 'lunar', subtype: 'Partial', name: 'Partial Lunar Eclipse', emoji: '\uD83C\uDF17' },
+    { date: new Date(2028, 6, 22), type: 'solar', subtype: 'Total',   name: 'Total Solar Eclipse',   emoji: '\uD83C\uDF1E' },
+    { date: new Date(2028, 11, 31), type: 'lunar', subtype: 'Total',  name: 'Total Lunar Eclipse',   emoji: '\uD83C\uDF11' }
+  ];
+
+  function getUpcomingPhases(age) {
+    var phases = [
+      { name: 'New Moon', emoji: '\uD83C\uDF11', center: 0 },
+      { name: 'First Quarter', emoji: '\uD83C\uDF13', center: 7.383 },
+      { name: 'Full Moon', emoji: '\uD83C\uDF15', center: 14.765 },
+      { name: 'Last Quarter', emoji: '\uD83C\uDF17', center: 22.148 }
+    ];
+    var upcoming = [];
+    var now = new Date();
+    phases.forEach(function(p) {
+      var daysUntil = p.center - age;
+      if (daysUntil <= 0) daysUntil += SYNODIC_MONTH;
+      if (daysUntil < 1) daysUntil += SYNODIC_MONTH;
+      upcoming.push({ name: p.name, emoji: p.emoji, date: new Date(now.getTime() + daysUntil * 86400000), daysUntil: Math.round(daysUntil), isEclipse: false });
+    });
+    ECLIPSES.forEach(function(e) {
+      var diff = (e.date.getTime() - now.getTime()) / 86400000;
+      if (diff > 0 && diff < 180) {
+        upcoming.push({ name: e.name, emoji: e.emoji, date: e.date, daysUntil: Math.round(diff), isEclipse: true, eclipseType: e.subtype + ' ' + (e.type === 'solar' ? 'Solar' : 'Lunar') });
+      }
+    });
+    upcoming.sort(function(a, b) { return a.daysUntil - b.daysUntil; });
+    return upcoming.slice(0, 4);
+  }
+
+  function drawMoon(canvas, fraction) {
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width, h = canvas.height, cx = w / 2, cy = h / 2, r = w / 2 - 4;
+    ctx.clearRect(0, 0, w, h);
+    var glow = ctx.createRadialGradient(cx, cy, r * 0.8, cx, cy, r + 8);
+    glow.addColorStop(0, 'rgba(200,200,180,0.08)');
+    glow.addColorStop(1, 'rgba(200,200,180,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, w, h);
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = '#2a2a3a'; ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+    ctx.beginPath();
+    var phase = fraction;
+    if (phase <= 0.5) {
+      ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2, false);
+      ctx.ellipse(cx, cy, Math.abs(r * (1 - phase * 4)) < r ? Math.abs(r * (1 - phase * 4)) : r, r, 0, Math.PI / 2, -Math.PI / 2, phase < 0.25);
+    } else {
+      var wp = phase - 0.5;
+      ctx.arc(cx, cy, r, Math.PI / 2, -Math.PI / 2, false);
+      ctx.ellipse(cx, cy, Math.abs(r * (1 - wp * 4)) < r ? Math.abs(r * (1 - wp * 4)) : r, r, 0, -Math.PI / 2, Math.PI / 2, wp < 0.25);
+    }
+    ctx.fillStyle = '#e8e4d4'; ctx.fill();
+    [[0.3,0.35,0.08],[0.55,0.6,0.06],[0.4,0.7,0.05],[0.65,0.35,0.04],[0.5,0.45,0.07],[0.35,0.55,0.03]].forEach(function(c) {
+      ctx.beginPath(); ctx.arc(cx + (c[0] - 0.5) * r * 2, cy + (c[1] - 0.5) * r * 2, c[2] * r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.06)'; ctx.fill();
+    });
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(100,100,120,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+  }
+
+  function renderMoon() {
+    var canvas = document.getElementById('moon-canvas');
+    if (!canvas) return;
+    var now = new Date();
+    var age = getMoonAge(now);
+    var info = getPhaseInfo(age);
+    var distance = getMoonDistance(age);
+    var upcoming = getUpcomingPhases(age);
+    drawMoon(canvas, info.fraction);
+    document.getElementById('moon-phase-name').textContent = info.name;
+    document.getElementById('moon-illumination').textContent = info.illumination + '% illuminated';
+    document.getElementById('moon-age').textContent = age.toFixed(1) + ' days';
+    document.getElementById('moon-distance').textContent = (distance / 1000).toFixed(0) + 'k km';
+    document.getElementById('moon-cycle-fill').style.width = ((age / SYNODIC_MONTH) * 100) + '%';
+    document.getElementById('moon-cycle-label').textContent = 'Day ' + Math.floor(age) + ' of ' + SYNODIC_MONTH.toFixed(1);
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var upHtml = '';
+    upcoming.forEach(function(u) {
+      var dateStr = months[u.date.getMonth()] + ' ' + u.date.getDate();
+      if (u.isEclipse) {
+        upHtml += '<div class="moon-next-row eclipse"><span>' + u.emoji + ' ' + u.name + '<span class="moon-eclipse-type">' + u.eclipseType + '</span></span><span>' + dateStr + '</span></div>';
+      } else {
+        upHtml += '<div class="moon-next-row"><span>' + u.emoji + ' ' + u.name + '</span><span>' + dateStr + '</span></div>';
+      }
+    });
+    document.getElementById('moon-upcoming').innerHTML = upHtml;
+  }
+  renderMoon();
+  setInterval(renderMoon, 3600000);
+})();
+
 // ── INIT I18N ──
 if (typeof SC_I18N !== 'undefined') SC_I18N.init();

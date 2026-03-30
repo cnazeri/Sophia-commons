@@ -1604,6 +1604,31 @@
   <h5 data-i18n="rightbar.upcoming_events">upcoming events</h5>
   <div id="sidebar-upcoming" class="sb-upcoming"></div>
 
+  <h5>cycle of the moon</h5>
+  <div id="moon-widget-sidebar" style="text-align:center;margin-bottom:12px;">
+    <canvas id="moon-canvas" width="180" height="180" style="width:90px;height:90px;"></canvas>
+    <div id="moon-phase-name" style="font-size:12px;font-weight:700;color:var(--text-primary,#1a1e2e);margin-top:6px;"></div>
+    <div id="moon-illumination" style="font-size:10.5px;color:var(--text-muted,#6a7080);margin-bottom:6px;"></div>
+    <div style="height:4px;background:var(--border,#e0e4ee);border-radius:2px;overflow:hidden;margin-bottom:3px;">
+      <div id="moon-cycle-fill" style="height:100%;background:linear-gradient(90deg,#2a4a8a,#8a7a3a);border-radius:2px;width:0%;"></div>
+    </div>
+    <div id="moon-cycle-label" style="font-size:9px;color:var(--text-muted,#6a7080);margin-bottom:8px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;border-top:1px solid var(--border,#e0e4ee);padding-top:6px;margin-bottom:8px;">
+      <div style="text-align:center;">
+        <div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted,#6a7080);font-weight:600;">Age</div>
+        <div id="moon-age" style="font-size:11px;color:var(--text-primary,#1a1e2e);font-weight:600;"></div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted,#6a7080);font-weight:600;">Distance</div>
+        <div id="moon-distance" style="font-size:11px;color:var(--text-primary,#1a1e2e);font-weight:600;"></div>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--border,#e0e4ee);padding-top:6px;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted,#6a7080);margin-bottom:4px;">upcoming phases</div>
+      <div id="moon-upcoming"></div>
+    </div>
+  </div>
+
   <h5 data-i18n="rightbar.related_directories">related directories</h5>
   <ul>
     <li><a href="https://biodynamicfood.org/" target="_blank">Demeter Farm Directory</a></li>
@@ -1683,7 +1708,7 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.2.4</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.3.0</span>
     <span><a href="#" onclick="return false;" data-i18n="footer.privacy">privacy</a><a href="#" onclick="return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>

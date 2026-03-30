@@ -1712,6 +1712,40 @@ footer {
   .dash-cols { grid-template-columns: 1fr; }
 }
 
+/* ── MOON WIDGET ── */
+.moon-next-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text-primary, #1a1e2e);
+  margin-bottom: 3px;
+  padding: 2px 0;
+}
+.moon-next-row span:last-child {
+  color: var(--text-muted, #6a7080);
+  font-size: 9.5px;
+}
+.moon-next-row.eclipse {
+  background: linear-gradient(90deg, #fff8e1, #fff3e0);
+  border: 1px solid #ffe0b2;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+.moon-next-row.eclipse span:first-child {
+  color: #bf360c;
+  font-weight: 600;
+}
+.moon-eclipse-type {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #e65100;
+  display: block;
+  line-height: 1.2;
+}
+
 @media (max-width: 540px) {
   #topbar { padding: 6px 16px; }
   header { padding: 12px 16px; }
