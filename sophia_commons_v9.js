@@ -3087,6 +3087,10 @@ async function loadAdminMemorials() {
     if (error) { el.innerHTML = '<div class="admin-empty">' + t('error.loading_memorials') + '</div>'; return; }
     if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">' + t('admin.no_pending_memorials') + '</div>'; return; }
     el.innerHTML = data.map(function(d) {
+      var photoHtml = '';
+      if (d.photo_url) {
+        photoHtml = '<div style="margin-bottom:10px;"><img src="' + adminEsc(d.photo_url) + '" alt="' + adminEsc(d.name) + '" style="max-width:140px;max-height:140px;border-radius:8px;border:1px solid var(--border);object-fit:cover;"></div>';
+      }
       return '<div class="admin-card" id="admin-memorial-' + d.id + '">'
         + '<h4>' + adminEsc(d.name) + '</h4>'
         + '<div class="admin-meta">'
@@ -3094,6 +3098,7 @@ async function loadAdminMemorials() {
         + (d.location ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(d.location) + '</span>' : '')
         + (d.contact_email ? '<span><strong>' + t('admin.email_label') + '</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
         + '</div>'
+        + photoHtml
         + (d.bio ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.bio) + '</p>' : '')
         + '<div class="admin-actions">'
         + '<button class="admin-btn-approve" onclick="adminApproveMemorial(\'' + d.id + '\')">' + t('admin.approve') + '</button>'
