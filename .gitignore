@@ -37,3 +37,14 @@ tmp/
 
 # Local Netlify folder
 .netlify
+
+# Claude Code
+.claude/
+
+# Internal docs
+docs/
+
+# Enrichment data and scripts
+Directory/enriched_directory.json
+scripts/
+backend/enrich_updates.sql
