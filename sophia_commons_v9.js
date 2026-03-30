@@ -931,13 +931,22 @@ async function loadCommunityMemorials() {
     if (!grid) return;
 
     // Deduplicate: skip entries that match hardcoded memorial names
+    // Normalize names to handle encoding differences (König vs Koenig vs König)
+    function normalizeName(s) {
+      return s.toLowerCase().trim()
+        .replace(/ö/g, 'o').replace(/oe/g, 'o')
+        .replace(/ä/g, 'a').replace(/ae/g, 'a')
+        .replace(/ü/g, 'u').replace(/ue/g, 'u')
+        .replace(/ß/g, 'ss')
+        .replace(/[^a-z0-9 ]/g, '');
+    }
     const hardcodedNames = [];
     document.querySelectorAll('#memorial-grid .memorial-card').forEach(function(card) {
       var n = card.getAttribute('data-name');
-      if (n) hardcodedNames.push(n.toLowerCase().trim());
+      if (n) hardcodedNames.push(normalizeName(n));
     });
     const filtered = data.filter(function(m) {
-      return hardcodedNames.indexOf(m.name.toLowerCase().trim()) === -1;
+      return hardcodedNames.indexOf(normalizeName(m.name)) === -1;
     });
     if (filtered.length === 0) return;
 

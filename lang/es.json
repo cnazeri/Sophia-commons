@@ -555,7 +555,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.2.1",
+  "footer.version": "v1.2.2",
   "footer.privacy": "privacidad",
   "footer.terms": "terminos",
   "footer.contact": "contacto",
@@ -592,5 +592,6 @@
 
   "search_results.directory": "Directorio",
   "search_results.events": "Eventos",
-  "search_results.news": "Noticias"
+  "search_results.news": "Noticias",
+  "header.upcoming_events": "{count} eventos próximos"
 }
