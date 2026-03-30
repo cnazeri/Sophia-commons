@@ -1,4 +1,4 @@
-var CACHE_NAME = 'sophia-commons-v1.2.3';
+var CACHE_NAME = 'sophia-commons-v1.2.4';
 var STATIC_ASSETS = [
   '/',
   '/sophia_commons_v9.css',
