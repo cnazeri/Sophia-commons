@@ -2209,8 +2209,11 @@ function isAdmin() {
 }
 
 function updateAdminVisibility() {
+  var show = isAdmin();
   var btn = document.getElementById('nav-admin');
-  if (btn) btn.style.display = isAdmin() ? 'inline-block' : 'none';
+  if (btn) btn.style.display = show ? 'inline-block' : 'none';
+  var link = document.getElementById('adminlink');
+  if (link) link.style.display = show ? 'inline-block' : 'none';
 }
 
 function adminSwitchTab(tab) {
