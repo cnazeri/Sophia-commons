@@ -1712,6 +1712,10 @@ footer {
   .dash-cols { grid-template-columns: 1fr; }
 }
 
+/* ── MEMORIAL CARDS (clickable) ── */
+.memorial-card { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+.memorial-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
 /* ── MOON WIDGET ── */
 .moon-next-row {
   display: flex;

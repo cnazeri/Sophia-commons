@@ -650,6 +650,8 @@ window.addEventListener('popstate', function(e) {
       showSec(e.state.id, true);
     } else if (e.state.type === 'detail') {
       showDetail(e.state.detailType, e.state.detailId, true);
+    } else if (e.state.type === 'memorial') {
+      showMemorialDetail(e.state.name);
     } else if (e.state.type === 'category') {
       showCategory(e.state.name, true);
     }
@@ -915,6 +917,315 @@ function filterMemorials() {
   });
   document.getElementById('memorial-count').textContent = t('memorial.showing_count').replace('{count}', visible);
 }
+
+// ══════════════════════════════════════════
+//  MEMORIAL DETAIL PROFILES
+// ══════════════════════════════════════════
+
+var MEMORIAL_PROFILES = {
+  'Rudolf Steiner': {
+    name: 'Rudolf Steiner',
+    years: '1861 \u2013 1925',
+    born: 'February 27, 1861 \u2014 Kraljevec, Austria-Hungary (now Croatia)',
+    died: 'March 30, 1925 \u2014 Dornach, Switzerland',
+    photo: 'https://upload.wikimedia.org/wikipedia/commons/f/f5/Steiner_um_1905.jpg',
+    summary: 'Founder of anthroposophy, Waldorf education, biodynamic agriculture, and anthroposophic medicine.',
+    bio: '<p>Rudolf Joseph Lorenz Steiner was an Austrian philosopher, social reformer, architect, esotericist, and claimed clairvoyant. He gained initial recognition at the end of the nineteenth century as a literary critic and published philosophical works including <em>The Philosophy of Freedom</em> (1894).</p>'
+      + '<p>At the beginning of the twentieth century he founded a spiritual movement \u2014 anthroposophy \u2014 with roots in German idealist philosophy and theosophy. He characterized it as a path of knowledge leading from the spiritual in the human being to the spiritual in the universe.</p>'
+      + '<p>Steiner\'s work led to innovations in education (Waldorf schools, now numbering over 1,000 worldwide), agriculture (biodynamic farming), medicine (anthroposophic medicine), special education (the Camphill movement), economics (threefold social order), drama, speech, and the movement art of eurythmy.</p>'
+      + '<p>He designed 17 buildings, including the First and Second Goetheanum in Dornach, Switzerland, which remains the world center of the anthroposophical movement. His collected works comprise approximately 350 volumes of lectures and 30 written books.</p>',
+    contributions: ['Anthroposophy', 'Waldorf Education', 'Biodynamic Agriculture', 'Anthroposophic Medicine', 'Eurythmy', 'Threefold Social Order', 'Goethean Science'],
+    works: ['The Philosophy of Freedom (1894)', 'Theosophy (1904)', 'How to Know Higher Worlds (1904)', 'An Outline of Esoteric Science (1910)', 'The Calendar of the Soul (1912)']
+  },
+  'Marie Steiner-von Sivers': {
+    name: 'Marie Steiner-von Sivers',
+    years: '1867 \u2013 1948',
+    born: 'March 14, 1867 \u2014 W\u0142oc\u0142awek, Congress Poland (Russian Empire)',
+    died: 'December 27, 1948 \u2014 Beatenberg, Switzerland',
+    photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Marie_Steiner.jpg',
+    summary: 'Co-worker of Rudolf Steiner and guardian of his literary estate.',
+    bio: '<p>Marie Steiner-von Sivers was born into a Baltic German family. She studied drama and recitation in Paris before meeting Rudolf Steiner in 1900. She became his closest collaborator and they married in 1914.</p>'
+      + '<p>Marie played a central role in the development of the Anthroposophical Society. She organized Steiner\'s extensive lecture tours, managed the society\'s publications, and developed speech formation (<em>Sprachgestaltung</em>) and dramatic arts as spiritual disciplines rooted in anthroposophy.</p>'
+      + '<p>After Rudolf Steiner\'s death in 1925, Marie devoted herself to preserving and publishing his literary estate, ensuring that his approximately 6,000 lectures and numerous written works would be made available to future generations. She founded the Rudolf Steiner Nachlassverwaltung (Estate Administration).</p>'
+      + '<p>Her work in artistic speech and drama laid the foundations for the development of these arts within the anthroposophical movement, influencing Waldorf education and therapeutic practices worldwide.</p>',
+    contributions: ['Speech Formation (Sprachgestaltung)', 'Dramatic Arts', 'Steiner Literary Estate Preservation', 'Anthroposophical Society Leadership'],
+    works: ['Correspondence and Documents 1901\u20131925 (with Rudolf Steiner)', 'Rudolf Steiner and the Rediscovery of the Mysteries']
+  },
+  'Ita Wegman': {
+    name: 'Ita Wegman',
+    years: '1876 \u2013 1943',
+    born: 'February 22, 1876 \u2014 Karawang, Dutch East Indies (now Indonesia)',
+    died: 'March 4, 1943 \u2014 Arlesheim, Switzerland',
+    photo: 'https://upload.wikimedia.org/wikipedia/commons/6/60/Ita_Wegman_1899.jpg',
+    summary: 'Co-founder of anthroposophic medicine alongside Rudolf Steiner.',
+    bio: '<p>Ita Wegman was born in the Dutch East Indies (present-day Indonesia) to a Dutch colonial family. She studied medicine in Zurich, becoming one of the early women physicians in Switzerland, and obtained her medical degree in 1911.</p>'
+      + '<p>She met Rudolf Steiner in 1902 and became deeply involved in anthroposophy. Together with Steiner, she developed anthroposophic medicine \u2014 an integrative approach combining conventional medicine with spiritual insights. They co-authored <em>Fundamentals of Therapy</em> (1925).</p>'
+      + '<p>In 1921, she founded the Klinisch-Therapeutisches Institut (Clinical-Therapeutic Institute) in Arlesheim, Switzerland \u2014 the first anthroposophic clinic, which continues today as the Ita Wegman Klinik. She also helped develop curative eurythmy as a therapeutic practice.</p>'
+      + '<p>After Steiner\'s death, she served on the Executive Council of the General Anthroposophical Society and continued expanding anthroposophic medicine internationally until her death in 1943.</p>',
+    contributions: ['Anthroposophic Medicine', 'Ita Wegman Clinic (Arlesheim)', 'Curative Eurythmy', 'Mistletoe Therapy (Iscador)'],
+    works: ['Fundamentals of Therapy (with Rudolf Steiner, 1925)', 'An die Freunde (To the Friends)']
+  },
+  'Ehrenfried Pfeiffer': {
+    name: 'Ehrenfried Pfeiffer',
+    years: '1899 \u2013 1961',
+    born: 'February 19, 1899 \u2014 Munich, Germany',
+    died: 'November 30, 1961 \u2014 Spring Valley, New York, USA',
+    photo: null,
+    summary: 'Pioneer of biodynamic agriculture in North America.',
+    bio: '<p>Ehrenfried Pfeiffer was a soil scientist, author, and leading figure in the biodynamic agriculture movement. As a young man he was personally mentored by Rudolf Steiner, who entrusted him with the practical development of biodynamic farming methods.</p>'
+      + '<p>Pfeiffer developed sensitive crystallization methods for evaluating soil and food quality, known as the "Pfeiffer Crystallization Method." This technique uses copper chloride crystallization to assess the vitality and life forces in biological substances.</p>'
+      + '<p>He emigrated to the United States in 1933 and established the Threefold Farm in Spring Valley, New York, one of the first biodynamic farms in North America. He also founded a biochemical research laboratory and worked extensively on composting methods.</p>'
+      + '<p>His book <em>Bio-Dynamic Farming and Gardening</em> (1938) was instrumental in spreading biodynamic practices throughout the English-speaking world. He trained countless farmers and gardeners in biodynamic methods until his death in 1961.</p>',
+    contributions: ['Biodynamic Agriculture in North America', 'Pfeiffer Crystallization Method', 'Threefold Farm', 'Composting Research'],
+    works: ['Bio-Dynamic Farming and Gardening (1938)', 'The Earth\'s Face and Human Destiny (1947)', 'Sensitive Crystallization Processes (1936)', 'Soil Fertility, Renewal, and Preservation (1947)']
+  },
+  'Karl K\u00f6nig': {
+    name: 'Karl K\u00f6nig',
+    years: '1902 \u2013 1966',
+    born: 'September 25, 1902 \u2014 Vienna, Austria',
+    died: 'March 27, 1966 \u2014 \u00dcberlingen am Bodensee, Germany',
+    photo: null,
+    summary: 'Founder of the Camphill movement.',
+    bio: '<p>Karl K\u00f6nig was an Austrian pediatrician, educator, and social innovator who founded the Camphill movement \u2014 a worldwide network of intentional communities for people with developmental disabilities.</p>'
+      + '<p>Born into a Jewish family in Vienna, K\u00f6nig studied medicine and became interested in curative education through anthroposophy. After the Anschluss in 1938, he fled Austria and eventually settled in Scotland.</p>'
+      + '<p>In 1940, he established the first Camphill community at Camphill House near Aberdeen, Scotland, with a group of young Austrian refugees. The community was founded on the principle that every human being, regardless of disability, has inherent dignity and spiritual potential.</p>'
+      + '<p>The Camphill movement grew to encompass over 100 communities in more than 20 countries. K\u00f6nig also made significant contributions to curative education and social therapy, and wrote extensively on embryology, the human senses, and the spiritual foundations of community life.</p>',
+    contributions: ['Camphill Movement', 'Curative Education', 'Social Therapy', 'Community Building'],
+    works: ['The First Three Years of the Child', 'Brothers and Sisters', 'The Human Soul', 'Eternal Individuality']
+  },
+  'Albert Steffen': {
+    name: 'Albert Steffen',
+    years: '1884 \u2013 1963',
+    born: 'December 10, 1884 \u2014 Wynau, Switzerland',
+    died: 'July 13, 1963 \u2014 Dornach, Switzerland',
+    photo: 'https://upload.wikimedia.org/wikipedia/commons/f/f8/Albert_Steffen_-_1916.jpg',
+    summary: 'Swiss poet, playwright, and president of the General Anthroposophical Society.',
+    bio: '<p>Albert Steffen was a Swiss poet, novelist, playwright, and painter who served as president of the General Anthroposophical Society from 1925 until his death in 1963 \u2014 the longest tenure in the society\'s history.</p>'
+      + '<p>Steffen initially gained recognition as a literary figure independent of anthroposophy, publishing several novels and volumes of poetry. He met Rudolf Steiner in 1907 and became deeply committed to anthroposophy, viewing it as a wellspring for artistic renewal.</p>'
+      + '<p>As president, Steffen guided the society through the turbulent years of World War II and the post-war period. He was also editor of the society\'s weekly journal <em>Das Goetheanum</em> for nearly four decades.</p>'
+      + '<p>His literary works \u2014 including novels, dramas, poems, and essays \u2014 sought to unite spiritual insight with artistic expression. He believed that art could serve as a bridge between the spiritual and physical worlds, carrying forward Rudolf Steiner\'s artistic impulse.</p>',
+    contributions: ['General Anthroposophical Society Presidency (1925\u20131963)', 'Literary Arts', 'Das Goetheanum Journal Editor', 'Anthroposophical Drama'],
+    works: ['Ott, Alois und Werelsche (1907)', 'The Death Experience of Manes (1934)', 'Pilgerfahrt zum Lebensbaum (1953)', 'Begegnungen mit Rudolf Steiner (1926)']
+  }
+};
+
+function showMemorialDetail(name) {
+  captureCurrentSection('detail');
+  var container = document.getElementById('detail-content');
+
+  // Check hardcoded profiles first
+  var profile = MEMORIAL_PROFILES[name];
+  if (profile) {
+    container.innerHTML = renderMemorialDetail(profile);
+    showSec('detail', true);
+    history.pushState({ type: 'memorial', name: name }, '', '/memorial/' + encodeURIComponent(name.replace(/\s+/g, '-').toLowerCase()));
+    loadMemorialPhotos(name);
+    return;
+  }
+
+  // Try Supabase
+  if (sbReady()) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
+    showSec('detail', true);
+    _sb.from('memorials').select('*').eq('name', name).eq('status', 'approved').single().then(function(result) {
+      if (result.error || !result.data) {
+        container.innerHTML = renderNotFound();
+        return;
+      }
+      var d = result.data;
+      container.innerHTML = renderMemorialDetail({
+        name: d.name,
+        years: d.years || '',
+        born: '',
+        died: '',
+        photo: d.photo_url || null,
+        summary: '',
+        bio: '<p>' + esc(d.bio) + '</p>',
+        contributions: [],
+        works: []
+      });
+      loadMemorialPhotos(d.name);
+    });
+  } else {
+    container.innerHTML = renderNotFound();
+    showSec('detail', true);
+  }
+}
+
+function renderMemorialDetail(d) {
+  var initials = d.name.split(' ').map(function(w) { return w[0]; }).join('').substring(0, 2).toUpperCase();
+  var avatarContent = d.photo
+    ? '<img src="' + esc(d.photo) + '" alt="' + esc(d.name) + '" style="width:100%;height:100%;object-fit:cover;">'
+    : '<span style="font-family:Lora,serif;font-size:3rem;color:var(--text-muted);">' + initials + '</span>';
+
+  var contribs = '';
+  if (d.contributions && d.contributions.length) {
+    contribs = '<div style="margin-top:24px;"><h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:10px;">Key Contributions</h3><div style="display:flex;flex-wrap:wrap;gap:6px;">';
+    d.contributions.forEach(function(c) {
+      contribs += '<span style="display:inline-block;background:var(--gold-light,#faf6ee);border:1px solid var(--gold,#b8956a);padding:4px 12px;border-radius:50px;font-size:12px;color:var(--gold,#b8956a);font-weight:600;">' + esc(c) + '</span>';
+    });
+    contribs += '</div></div>';
+  }
+
+  var works = '';
+  if (d.works && d.works.length) {
+    works = '<div style="margin-top:24px;"><h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:10px;">Selected Works</h3><ul style="list-style:none;padding:0;">';
+    d.works.forEach(function(w) {
+      works += '<li style="font-size:13px;color:var(--text-secondary);padding:6px 0;border-bottom:1px solid var(--border);font-style:italic;">&#128214; ' + esc(w) + '</li>';
+    });
+    works += '</ul></div>';
+  }
+
+  var uploadSection = '';
+  if (signedIn) {
+    uploadSection = '<div style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px;">'
+      + '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:8px;">Share a Photo</h3>'
+      + '<p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Upload a photo of ' + esc(d.name) + ' to share with the community.</p>'
+      + '<input type="file" id="memorial-photo-upload" accept="image/*" style="font-size:12px;margin-bottom:8px;">'
+      + '<br><button onclick="uploadMemorialPhoto(\'' + esc(d.name).replace(/'/g, "\\'") + '\')" style="padding:8px 18px;background:var(--gold);color:var(--text-inverse,#fff);border:none;border-radius:50px;font-family:Nunito Sans,sans-serif;font-size:12px;font-weight:600;cursor:pointer;">Upload Photo</button>'
+      + '<div id="memorial-upload-status" style="font-size:12px;margin-top:8px;color:var(--text-muted);"></div>'
+      + '</div>';
+  }
+
+  return '<div style="max-width:700px;margin:0 auto;">'
+    // Header with portrait
+    + '<div style="text-align:center;margin-bottom:28px;">'
+    + '<div style="width:140px;height:140px;border-radius:50%;background:var(--surface);border:3px solid var(--border);margin:0 auto 16px;overflow:hidden;display:flex;align-items:center;justify-content:center;">' + avatarContent + '</div>'
+    + '<h1 style="font-family:Lora,Georgia,serif;font-size:1.6rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">' + esc(d.name) + '</h1>'
+    + '<div style="font-size:14px;color:var(--gold,#b8956a);font-weight:600;margin-bottom:6px;">' + esc(d.years) + '</div>'
+    + (d.summary ? '<p style="font-size:14px;color:var(--text-muted);font-style:italic;max-width:500px;margin:0 auto;">' + esc(d.summary) + '</p>' : '')
+    + '</div>'
+    // Life details
+    + (d.born || d.died ? '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">'
+      + (d.born ? '<div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Born</div><div style="font-size:13px;color:var(--text-primary);">' + esc(d.born) + '</div></div>' : '')
+      + (d.died ? '<div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Crossed the Threshold</div><div style="font-size:13px;color:var(--text-primary);">' + esc(d.died) + '</div></div>' : '')
+      + '</div>' : '')
+    // Biography
+    + '<div style="font-size:14px;color:var(--text-secondary);line-height:1.75;">' + d.bio + '</div>'
+    // Contributions
+    + contribs
+    // Works
+    + works
+    // Community photos
+    + '<div style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px;">'
+    + '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:10px;">Community Photos</h3>'
+    + '<div id="memorial-photos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;">'
+    + '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;grid-column:1/-1;">Loading photos...</div>'
+    + '</div>'
+    + '</div>'
+    // Upload section (members only)
+    + uploadSection
+    + '</div>';
+}
+
+// Load community-uploaded photos for a memorial
+async function loadMemorialPhotos(name) {
+  var grid = document.getElementById('memorial-photos-grid');
+  if (!grid) return;
+
+  if (!sbReady()) {
+    grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;grid-column:1/-1;">No photos yet. ' + (signedIn ? 'Be the first to share one!' : 'Sign in to upload.') + '</div>';
+    return;
+  }
+
+  try {
+    var { data, error } = await _sb
+      .from('memorial_photos')
+      .select('id, photo_url, caption, uploaded_by, created_at')
+      .eq('memorial_name', name)
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;grid-column:1/-1;">No photos yet. ' + (signedIn ? 'Be the first to share one!' : 'Sign in to upload.') + '</div>';
+      return;
+    }
+
+    grid.innerHTML = data.map(function(p) {
+      return '<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">'
+        + '<img src="' + esc(p.photo_url) + '" alt="' + esc(name) + '" style="width:100%;height:100px;object-fit:cover;">'
+        + (p.caption ? '<div style="padding:4px 6px;font-size:10px;color:var(--text-muted);">' + esc(p.caption) + '</div>' : '')
+        + '</div>';
+    }).join('');
+  } catch(e) {
+    grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;grid-column:1/-1;">No photos yet.</div>';
+  }
+}
+
+// Upload a memorial photo
+async function uploadMemorialPhoto(name) {
+  var statusEl = document.getElementById('memorial-upload-status');
+  var fileInput = document.getElementById('memorial-photo-upload');
+  if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+    statusEl.textContent = 'Please select a photo first.';
+    statusEl.style.color = 'var(--error,#c0392b)';
+    return;
+  }
+
+  if (!sbReady() || !signedIn) {
+    statusEl.textContent = 'You must be signed in to upload.';
+    statusEl.style.color = 'var(--error,#c0392b)';
+    return;
+  }
+
+  var file = fileInput.files[0];
+  if (file.size > 5 * 1024 * 1024) {
+    statusEl.textContent = 'File too large. Max 5MB.';
+    statusEl.style.color = 'var(--error,#c0392b)';
+    return;
+  }
+
+  statusEl.textContent = 'Uploading...';
+  statusEl.style.color = 'var(--text-muted)';
+
+  try {
+    // Upload to Supabase Storage
+    var fileName = 'memorial-' + Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    var { data: uploadData, error: uploadErr } = await _sb.storage
+      .from('memorial-photos')
+      .upload(fileName, file, { contentType: file.type });
+
+    if (uploadErr) throw uploadErr;
+
+    // Get public URL
+    var { data: urlData } = _sb.storage.from('memorial-photos').getPublicUrl(fileName);
+    var photoUrl = urlData.publicUrl;
+
+    // Save record to memorial_photos table (pending approval)
+    var { error: insertErr } = await _sb.from('memorial_photos').insert({
+      memorial_name: name,
+      photo_url: photoUrl,
+      uploaded_by: window._supabaseUser ? window._supabaseUser.email : 'anonymous',
+      status: 'pending'
+    });
+
+    if (insertErr) throw insertErr;
+
+    statusEl.textContent = 'Photo uploaded! It will appear after admin review.';
+    statusEl.style.color = 'var(--success,#27ae60)';
+    fileInput.value = '';
+  } catch(e) {
+    console.error('Upload error:', e);
+    statusEl.textContent = 'Upload failed: ' + (e.message || 'Unknown error');
+    statusEl.style.color = 'var(--error,#c0392b)';
+  }
+}
+
+// Add click handlers to memorial cards
+document.addEventListener('click', function(e) {
+  var card = e.target.closest('.memorial-card');
+  if (!card) return;
+  var name = card.getAttribute('data-name');
+  if (name) {
+    e.preventDefault();
+    showMemorialDetail(name);
+  }
+});
+
+// Style memorial cards as clickable
+document.querySelectorAll('.memorial-card').forEach(function(card) {
+  card.style.cursor = 'pointer';
+});
 
 // Load community-submitted memorials from Supabase
 async function loadCommunityMemorials() {
