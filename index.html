@@ -1366,8 +1366,11 @@
       <input type="text" id="mem-location" placeholder="City, State/Country" data-i18n-placeholder="submit_memorial.location_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
       <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;" data-i18n="submit_memorial.bio_label">About this person *</label>
       <textarea id="mem-bio" rows="3" placeholder="Share a brief tribute: their contributions, community involvement, and what they meant to the movement..." data-i18n-placeholder="submit_memorial.bio_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;resize:vertical;"></textarea>
-      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;" data-i18n="submit_memorial.photo_label">Photo URL (optional)</label>
-      <input type="url" id="mem-photo" placeholder="https://..." data-i18n-placeholder="submit_memorial.photo_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
+      <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;">Upload Photo (optional)</label>
+      <input type="file" id="mem-photo-file" accept="image/*" style="font-size:13px;margin-bottom:6px;font-family:'Nunito Sans',sans-serif;">
+      <div id="mem-photo-preview" style="display:none;margin-bottom:8px;"><img id="mem-photo-preview-img" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid var(--border);object-fit:cover;"></div>
+      <div id="mem-photo-status" style="font-size:11px;color:var(--text-muted);margin-bottom:4px;"></div>
+      <input type="hidden" id="mem-photo" value="">
       <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;" data-i18n="submit_memorial.email_label">Your email (for follow-up)</label>
       <input type="email" id="mem-email" placeholder="you@example.com" data-i18n-placeholder="submit_memorial.email_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
       <button onclick="submitMemorial()" style="margin-top:16px;padding:11px 28px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" data-i18n="submit_memorial.btn">Submit Memorial</button>
@@ -1708,7 +1711,7 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.4.0</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.4.1</span>
     <span><a href="#" onclick="return false;" data-i18n="footer.privacy">privacy</a><a href="#" onclick="return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>

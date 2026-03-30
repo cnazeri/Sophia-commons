@@ -1288,6 +1288,27 @@ async function loadCommunityMemorials() {
 loadCommunityMemorials();
 
 // ── MEMORIAL SUBMISSION ──
+// Photo preview for memorial submission
+(function() {
+  var fileInput = document.getElementById('mem-photo-file');
+  if (fileInput) {
+    fileInput.addEventListener('change', function() {
+      var preview = document.getElementById('mem-photo-preview');
+      var previewImg = document.getElementById('mem-photo-preview-img');
+      if (fileInput.files && fileInput.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+  }
+})();
+
 async function submitMemorial() {
   const name = document.getElementById('mem-name').value.trim();
   const bio = document.getElementById('mem-bio').value.trim();
@@ -1296,12 +1317,50 @@ async function submitMemorial() {
     return;
   }
 
+  var photoUrl = null;
+  var statusEl = document.getElementById('mem-photo-status');
+  var fileInput = document.getElementById('mem-photo-file');
+
+  // Upload photo if one was selected
+  if (fileInput && fileInput.files && fileInput.files[0]) {
+    var file = fileInput.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      statusEl.textContent = 'Photo too large. Max 5MB.';
+      statusEl.style.color = 'var(--error,#c0392b)';
+      return;
+    }
+    statusEl.textContent = 'Uploading photo...';
+    statusEl.style.color = 'var(--text-muted)';
+
+    try {
+      var fileName = 'memorial-' + Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      var { data: uploadData, error: uploadErr } = await _sb.storage
+        .from('memorial-photos')
+        .upload(fileName, file, { contentType: file.type });
+
+      if (uploadErr) {
+        statusEl.textContent = 'Photo upload failed: ' + uploadErr.message;
+        statusEl.style.color = 'var(--error,#c0392b)';
+        return;
+      }
+
+      var { data: urlData } = _sb.storage.from('memorial-photos').getPublicUrl(fileName);
+      photoUrl = urlData.publicUrl;
+      statusEl.textContent = 'Photo uploaded!';
+      statusEl.style.color = 'var(--success,#27ae60)';
+    } catch(e) {
+      statusEl.textContent = 'Photo upload failed.';
+      statusEl.style.color = 'var(--error,#c0392b)';
+      return;
+    }
+  }
+
   const memorial = {
     name: name,
     years: document.getElementById('mem-years').value.trim() || null,
     location: document.getElementById('mem-location').value.trim() || null,
     bio: bio,
-    photo_url: document.getElementById('mem-photo').value.trim() || null,
+    photo_url: photoUrl,
     contact_email: document.getElementById('mem-email').value.trim() || null
   };
 
@@ -1314,9 +1373,13 @@ async function submitMemorial() {
 
   document.getElementById('mem-ok').style.display = 'block';
   // Clear form
-  ['mem-name','mem-years','mem-location','mem-bio','mem-photo','mem-email'].forEach(id => {
+  ['mem-name','mem-years','mem-location','mem-bio','mem-email'].forEach(function(id) {
     document.getElementById(id).value = '';
   });
+  if (fileInput) fileInput.value = '';
+  document.getElementById('mem-photo').value = '';
+  document.getElementById('mem-photo-preview').style.display = 'none';
+  if (statusEl) statusEl.textContent = '';
 }
 
 // ── SIGNUPS (Newsletter) ──
