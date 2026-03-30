@@ -1672,6 +1672,46 @@ footer {
   color: #c62828;
 }
 
+/* ── ADMIN TRAFFIC DASHBOARD ── */
+.dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.dash-card .dash-label { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
+.dash-card .dash-value { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: var(--text-primary); line-height: 1.1; }
+.dash-card .dash-change { font-size: 10.5px; margin-top: 3px; }
+.dash-change.up { color: var(--success); }
+.dash-change.down { color: var(--error); }
+.dash-chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 18px; }
+.dash-chart-wrap h3 { font-family: 'Nunito Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; }
+.dash-chart-bar { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
+.dash-bar { background: var(--accent); min-width: 8px; flex: 1; border-radius: 4px 4px 0 0; position: relative; transition: background .15s; }
+.dash-bar:hover { background: var(--link); }
+.dash-bar-tip { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--text-primary); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; white-space: nowrap; pointer-events: none; margin-bottom: 4px; }
+.dash-bar:hover .dash-bar-tip { display: block; }
+.dash-chart-labels { display: flex; gap: 3px; margin-top: 4px; }
+.dash-chart-labels span { flex: 1; text-align: center; font-size: 9px; color: var(--text-muted); }
+.dash-range { display: flex; gap: 6px; margin-bottom: 14px; }
+.dash-range button { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-family: 'Nunito Sans', sans-serif; font-size: 10.5px; color: var(--text-muted); cursor: pointer; }
+.dash-range button:hover { color: var(--text-primary); }
+.dash-range button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.dash-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+.dash-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.dash-table-wrap h3 { font-family: 'Nunito Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+.dash-table { width: 100%; border-collapse: collapse; }
+.dash-table th { text-align: left; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.dash-table td { font-size: 12px; color: var(--text-primary); padding: 5px 0; border-bottom: 1px solid var(--border-light, #f0f0f5); }
+.dash-table td:last-child { text-align: right; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.dash-table .bar-cell { width: 80px; }
+.dash-table .mini-bar { height: 6px; background: var(--accent); border-radius: 3px; display: inline-block; vertical-align: middle; }
+.dash-live { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 12px; color: var(--text-muted); }
+.dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: livePulse 2s infinite; }
+@keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+.dash-live strong { color: var(--text-primary); }
+
+@media (max-width: 700px) {
+  .dash-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-cols { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 540px) {
   #topbar { padding: 6px 16px; }
   header { padding: 12px 16px; }

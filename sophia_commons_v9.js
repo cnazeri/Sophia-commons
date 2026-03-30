@@ -2219,6 +2219,7 @@ function adminSwitchTab(tab) {
   else if (tab === 'events') loadAdminEvents();
   else if (tab === 'memorials') loadAdminMemorials();
   else if (tab === 'newsletter') loadNewsletterSubscriberCount();
+  else if (tab === 'traffic') refreshDashboard();
 }
 
 function adminEsc(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
@@ -2492,6 +2493,269 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
     if (block) block.scrollIntoView({behavior:'smooth',block:'start'});
   });
 });
+
+// ══════════════════════════════════════════
+//  TRAFFIC DASHBOARD — PAGE VIEW TRACKER
+// ══════════════════════════════════════════
+
+(function initTracker() {
+  var sessionId = sessionStorage.getItem('sc_sid');
+  if (!sessionId) {
+    sessionId = crypto.randomUUID ? crypto.randomUUID() : ('s_' + Math.random().toString(36).slice(2) + Date.now().toString(36));
+    sessionStorage.setItem('sc_sid', sessionId);
+  }
+
+  function getBrowser() {
+    var ua = navigator.userAgent;
+    if (ua.indexOf('Firefox') > -1) return 'Firefox';
+    if (ua.indexOf('Edg') > -1) return 'Edge';
+    if (ua.indexOf('OPR') > -1 || ua.indexOf('Opera') > -1) return 'Opera';
+    if (ua.indexOf('Chrome') > -1) return 'Chrome';
+    if (ua.indexOf('Safari') > -1) return 'Safari';
+    return 'Other';
+  }
+
+  function getOS() {
+    var ua = navigator.userAgent;
+    if (ua.indexOf('Win') > -1) return 'Windows';
+    if (ua.indexOf('Mac') > -1) return 'macOS';
+    if (ua.indexOf('Linux') > -1) return 'Linux';
+    if (/Android/.test(ua)) return 'Android';
+    if (/iPhone|iPad|iPod/.test(ua)) return 'iOS';
+    return 'Other';
+  }
+
+  function getDevice() {
+    if (/Mobi|Android.*Mobile|iPhone/.test(navigator.userAgent)) return 'Mobile';
+    if (/iPad|Android(?!.*Mobile)|Tablet/.test(navigator.userAgent)) return 'Tablet';
+    return 'Desktop';
+  }
+
+  function trackView(page) {
+    if (typeof _sb === 'undefined') return;
+    _sb.from('page_views').insert({
+      session_id: sessionId,
+      page: page || 'home',
+      referrer: document.referrer || null,
+      browser: getBrowser(),
+      os: getOS(),
+      device: getDevice(),
+      screen_w: window.screen.width,
+      screen_h: window.screen.height,
+      language: navigator.language || null,
+      timestamp: new Date().toISOString()
+    }).then(function() {}).catch(function() {});
+  }
+
+  // Track initial page load
+  trackView('home');
+
+  // Track section navigations by hooking into showSec
+  var _origShowSecTracker = window.showSec;
+  window.showSec = function(id) {
+    _origShowSecTracker(id);
+    trackView(id);
+  };
+
+  // Heartbeat for live visitor count (ping every 30s)
+  function heartbeat() {
+    if (typeof _sb === 'undefined') return;
+    _sb.from('page_views_heartbeat').upsert({
+      session_id: sessionId,
+      last_seen: new Date().toISOString()
+    }, { onConflict: 'session_id' }).then(function() {}).catch(function() {});
+  }
+  heartbeat();
+  setInterval(heartbeat, 30000);
+})();
+
+// ── Dashboard Data Loading ──
+var _dashRange = '7d';
+
+function setDashRange(range) {
+  _dashRange = range;
+  document.querySelectorAll('#dash-range button').forEach(function(b) { b.classList.remove('active'); });
+  event.target.classList.add('active');
+  refreshDashboard();
+}
+
+function daysFromRange(range) {
+  if (range === '7d') return 7;
+  if (range === '30d') return 30;
+  return 90;
+}
+
+async function refreshDashboard() {
+  if (!isAdmin()) return;
+  var days = daysFromRange(_dashRange);
+  var since = new Date();
+  since.setDate(since.getDate() - days);
+  var sinceISO = since.toISOString();
+
+  var prevSince = new Date();
+  prevSince.setDate(prevSince.getDate() - days * 2);
+  var prevSinceISO = prevSince.toISOString();
+
+  try {
+    var { data: views, error: vErr } = await _sb
+      .from('page_views')
+      .select('*')
+      .gte('timestamp', sinceISO)
+      .order('timestamp', { ascending: true });
+
+    if (vErr) throw vErr;
+    if (!views) views = [];
+
+    var { data: prevViews } = await _sb
+      .from('page_views')
+      .select('session_id, page, timestamp')
+      .gte('timestamp', prevSinceISO)
+      .lt('timestamp', sinceISO);
+
+    if (!prevViews) prevViews = [];
+
+    var liveThreshold = new Date(Date.now() - 60000).toISOString();
+    var { data: liveData } = await _sb
+      .from('page_views_heartbeat')
+      .select('session_id')
+      .gte('last_seen', liveThreshold);
+
+    // KPI Cards
+    var totalViews = views.length;
+    var uniqueSessions = new Set(views.map(function(v) { return v.session_id; })).size;
+    var prevTotal = prevViews.length;
+    var prevUnique = new Set(prevViews.map(function(v) { return v.session_id; })).size;
+
+    document.getElementById('dash-total-views').textContent = totalViews.toLocaleString();
+    document.getElementById('dash-unique').textContent = uniqueSessions.toLocaleString();
+    setChangeEl('dash-views-change', totalViews, prevTotal);
+    setChangeEl('dash-unique-change', uniqueSessions, prevUnique);
+
+    // Avg session duration
+    var sessionTimes = {};
+    views.forEach(function(v) {
+      if (!sessionTimes[v.session_id]) sessionTimes[v.session_id] = { min: v.timestamp, max: v.timestamp };
+      if (v.timestamp < sessionTimes[v.session_id].min) sessionTimes[v.session_id].min = v.timestamp;
+      if (v.timestamp > sessionTimes[v.session_id].max) sessionTimes[v.session_id].max = v.timestamp;
+    });
+    var durations = Object.values(sessionTimes).map(function(t) {
+      return (new Date(t.max) - new Date(t.min)) / 1000;
+    });
+    var avgSession = durations.length ? Math.round(durations.reduce(function(a, b) { return a + b; }, 0) / durations.length) : 0;
+    document.getElementById('dash-avg-session').textContent = avgSession + 's';
+
+    // Bounce rate
+    var sessionCounts = {};
+    views.forEach(function(v) {
+      sessionCounts[v.session_id] = (sessionCounts[v.session_id] || 0) + 1;
+    });
+    var totalSess = Object.keys(sessionCounts).length;
+    var bounced = Object.values(sessionCounts).filter(function(c) { return c === 1; }).length;
+    var bounceRate = totalSess ? Math.round((bounced / totalSess) * 100) : 0;
+    document.getElementById('dash-bounce').textContent = bounceRate + '%';
+
+    // Live visitors
+    document.getElementById('dash-live-count').textContent = (liveData ? liveData.length : 0);
+
+    // Bar chart: views per day
+    var dayBuckets = {};
+    for (var d = 0; d < days; d++) {
+      var dt = new Date();
+      dt.setDate(dt.getDate() - (days - 1 - d));
+      var key = dt.toISOString().slice(0, 10);
+      dayBuckets[key] = 0;
+    }
+    views.forEach(function(v) {
+      var k = v.timestamp.slice(0, 10);
+      if (dayBuckets.hasOwnProperty(k)) dayBuckets[k]++;
+    });
+    var bucketKeys = Object.keys(dayBuckets);
+    var maxVal = Math.max.apply(null, Object.values(dayBuckets)) || 1;
+
+    var barsHtml = '';
+    var labelsHtml = '';
+    bucketKeys.forEach(function(k, i) {
+      var pct = (dayBuckets[k] / maxVal) * 100;
+      barsHtml += '<div class="dash-bar" style="height:' + Math.max(pct, 2) + '%"><span class="dash-bar-tip">' + k + ': ' + dayBuckets[k] + '</span></div>';
+      var showLabel = (days <= 7) || (days <= 30 && i % 5 === 0) || (days > 30 && i % 10 === 0);
+      labelsHtml += '<span>' + (showLabel ? k.slice(5) : '') + '</span>';
+    });
+    document.getElementById('dash-chart-bars').innerHTML = barsHtml;
+    document.getElementById('dash-chart-labels').innerHTML = labelsHtml;
+
+    // Top Pages
+    var pageCounts = {};
+    views.forEach(function(v) { var p = v.page || 'home'; pageCounts[p] = (pageCounts[p] || 0) + 1; });
+    fillDashTable('dash-top-pages', pageCounts, 8);
+
+    // Referrers
+    var refCounts = {};
+    views.forEach(function(v) {
+      var r = v.referrer || '(direct)';
+      try { r = r ? new URL(r).hostname : '(direct)'; } catch(e) {}
+      refCounts[r] = (refCounts[r] || 0) + 1;
+    });
+    fillDashTable('dash-referrers', refCounts, 8);
+
+    // Browsers
+    var browserCounts = {};
+    views.forEach(function(v) { browserCounts[v.browser || 'Unknown'] = (browserCounts[v.browser || 'Unknown'] || 0) + 1; });
+    fillDashTable('dash-browsers', browserCounts, 6);
+
+    // Devices
+    var deviceCounts = {};
+    views.forEach(function(v) { deviceCounts[v.device || 'Unknown'] = (deviceCounts[v.device || 'Unknown'] || 0) + 1; });
+    fillDashTable('dash-devices', deviceCounts, 6);
+
+    // OS
+    var osCounts = {};
+    views.forEach(function(v) { osCounts[v.os || 'Unknown'] = (osCounts[v.os || 'Unknown'] || 0) + 1; });
+    fillDashTable('dash-os', osCounts, 6);
+
+    // Countries (language as proxy)
+    var langCounts = {};
+    views.forEach(function(v) { var l = v.country || v.language || 'Unknown'; langCounts[l] = (langCounts[l] || 0) + 1; });
+    fillDashTable('dash-countries', langCounts, 8);
+
+  } catch (err) {
+    console.error('Dashboard error:', err);
+  }
+}
+
+function setChangeEl(elId, current, previous) {
+  var el = document.getElementById(elId);
+  if (!previous) { el.textContent = ''; return; }
+  var pct = Math.round(((current - previous) / previous) * 100);
+  if (pct > 0) {
+    el.className = 'dash-change up';
+    el.textContent = '+' + pct + '% vs prior period';
+  } else if (pct < 0) {
+    el.className = 'dash-change down';
+    el.textContent = pct + '% vs prior period';
+  } else {
+    el.className = 'dash-change';
+    el.textContent = 'No change';
+  }
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  var d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function fillDashTable(tableId, countsObj, limit) {
+  var sorted = Object.entries(countsObj).sort(function(a, b) { return b[1] - a[1]; }).slice(0, limit);
+  var maxVal = sorted.length ? sorted[0][1] : 1;
+  var tbody = document.querySelector('#' + tableId + ' tbody');
+  var html = '';
+  sorted.forEach(function(entry) {
+    var pct = Math.round((entry[1] / maxVal) * 100);
+    html += '<tr><td>' + escHtml(entry[0]) + '</td><td>' + entry[1] + '</td><td class="bar-cell"><span class="mini-bar" style="width:' + pct + '%"></span></td></tr>';
+  });
+  tbody.innerHTML = html || '<tr><td colspan="3" style="color:var(--text-muted);text-align:center;padding:12px;">No data yet</td></tr>';
+}
 
 // ── INIT I18N ──
 if (typeof SC_I18N !== 'undefined') SC_I18N.init();

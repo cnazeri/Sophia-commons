@@ -1459,6 +1459,7 @@
     <button class="admin-tab" onclick="adminSwitchTab('events')" data-i18n="admin.tab_events">Pending Events</button>
     <button class="admin-tab" onclick="adminSwitchTab('memorials')" data-i18n="admin.tab_memorials">Pending Memorials</button>
     <button class="admin-tab" onclick="adminSwitchTab('newsletter')" data-i18n="admin.tab_newsletter">Send Newsletter</button>
+    <button class="admin-tab" onclick="adminSwitchTab('traffic')">Traffic Dashboard</button>
   </div>
   <div id="admin-listings" class="admin-tab-content active">
     <div id="admin-listings-list" style="margin-top:16px;">
@@ -1489,6 +1490,107 @@
       <div id="newsletter-result" style="display:none;margin-top:16px;"></div>
     </div>
   </div>
+
+  <!-- TRAFFIC DASHBOARD PANEL -->
+  <div id="admin-traffic" class="admin-tab-content">
+    <div style="margin-top:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;margin:0;">Traffic Dashboard</h3>
+        <button class="admin-btn admin-btn-approve" onclick="refreshDashboard()" style="padding:5px 14px;font-size:11px;">Refresh</button>
+      </div>
+
+      <div class="dash-live">
+        <span class="dash-live-dot"></span>
+        <span><strong id="dash-live-count">0</strong> visitors online now</span>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-label">Total Page Views</div>
+          <div class="dash-value" id="dash-total-views">--</div>
+          <div class="dash-change" id="dash-views-change"></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-label">Unique Visitors</div>
+          <div class="dash-value" id="dash-unique">--</div>
+          <div class="dash-change" id="dash-unique-change"></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-label">Avg. Session (s)</div>
+          <div class="dash-value" id="dash-avg-session">--</div>
+          <div class="dash-change" id="dash-session-change"></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-label">Bounce Rate</div>
+          <div class="dash-value" id="dash-bounce">--</div>
+          <div class="dash-change" id="dash-bounce-change"></div>
+        </div>
+      </div>
+
+      <div class="dash-range" id="dash-range">
+        <button class="active" onclick="setDashRange('7d')">7 days</button>
+        <button onclick="setDashRange('30d')">30 days</button>
+        <button onclick="setDashRange('90d')">90 days</button>
+      </div>
+      <div class="dash-chart-wrap">
+        <h3>Page Views Over Time</h3>
+        <div class="dash-chart-bar" id="dash-chart-bars"></div>
+        <div class="dash-chart-labels" id="dash-chart-labels"></div>
+      </div>
+
+      <div class="dash-cols">
+        <div class="dash-table-wrap">
+          <h3>Top Pages</h3>
+          <table class="dash-table" id="dash-top-pages">
+            <thead><tr><th>Page / Section</th><th>Views</th><th class="bar-cell"></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="dash-table-wrap">
+          <h3>Referrer Sources</h3>
+          <table class="dash-table" id="dash-referrers">
+            <thead><tr><th>Source</th><th>Visits</th><th class="bar-cell"></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dash-cols">
+        <div class="dash-table-wrap">
+          <h3>Browsers</h3>
+          <table class="dash-table" id="dash-browsers">
+            <thead><tr><th>Browser</th><th>Sessions</th><th class="bar-cell"></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="dash-table-wrap">
+          <h3>Devices</h3>
+          <table class="dash-table" id="dash-devices">
+            <thead><tr><th>Type</th><th>Sessions</th><th class="bar-cell"></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dash-cols">
+        <div class="dash-table-wrap">
+          <h3>Top Countries</h3>
+          <table class="dash-table" id="dash-countries">
+            <thead><tr><th>Country</th><th>Visitors</th><th class="bar-cell"></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="dash-table-wrap">
+          <h3>Operating Systems</h3>
+          <table class="dash-table" id="dash-os">
+            <thead><tr><th>OS</th><th>Sessions</th><th class="bar-cell"></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 </div><!-- end center -->
