@@ -1461,6 +1461,7 @@
     <button class="admin-tab" onclick="adminSwitchTab('memorials')" data-i18n="admin.tab_memorials">Pending Memorials</button>
     <button class="admin-tab" onclick="adminSwitchTab('newsletter')" data-i18n="admin.tab_newsletter">Send Newsletter</button>
     <button class="admin-tab" onclick="adminSwitchTab('traffic')">Traffic Dashboard</button>
+    <button class="admin-tab" onclick="adminSwitchTab('digest')">Weekly Digest</button>
   </div>
   <div id="admin-listings" class="admin-tab-content active">
     <div id="admin-listings-list" style="margin-top:16px;">
@@ -1592,6 +1593,38 @@
     </div>
   </div>
 
+  <!-- WEEKLY DIGEST PANEL -->
+  <div id="admin-digest" class="admin-tab-content">
+    <div style="margin-top:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;margin:0;">Weekly Digest Generator</h3>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Generate a weekly wrap-up article summarizing this week's highlights — new listings, upcoming events, news, and memorials. The article will be published to the News section.</p>
+
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button class="admin-btn admin-btn-approve" onclick="generateWeeklyDigest()" id="digest-generate-btn" style="padding:10px 22px;">Generate This Week's Digest</button>
+        <button class="admin-btn admin-btn-approve" onclick="previewWeeklyDigest()" style="padding:10px 22px;background:var(--surface);color:var(--text-primary);border:1px solid var(--border);">Preview First</button>
+      </div>
+
+      <div id="digest-status" style="font-size:13px;color:var(--text-muted);margin-bottom:12px;"></div>
+
+      <div id="digest-preview" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h4 style="margin:0;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:700;">Preview</h4>
+          <button onclick="document.getElementById('digest-preview').style.display='none'" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--text-muted);">&times;</button>
+        </div>
+        <div id="digest-preview-content" style="font-size:13px;line-height:1.7;color:var(--text-secondary);"></div>
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px;">
+        <h4 style="font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Past Digests</h4>
+        <div id="digest-history">
+          <div style="color:var(--text-muted);font-size:12px;">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 </div><!-- end center -->
@@ -1701,7 +1734,7 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.6.2</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.7.0</span>
     <span><a href="#" onclick="return false;" data-i18n="footer.privacy">privacy</a><a href="#" onclick="return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>

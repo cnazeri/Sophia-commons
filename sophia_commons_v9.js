@@ -2960,6 +2960,7 @@ function adminSwitchTab(tab) {
   else if (tab === 'memorials') loadAdminMemorials();
   else if (tab === 'newsletter') loadNewsletterSubscriberCount();
   else if (tab === 'traffic') refreshDashboard();
+  else if (tab === 'digest') loadDigestHistory();
 }
 
 function adminEsc(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
@@ -3924,6 +3925,237 @@ function fillDashTable(tableId, countsObj, limit) {
     html += '<tr><td>' + escHtml(entry[0]) + '</td><td>' + entry[1] + '</td><td class="bar-cell"><span class="mini-bar" style="width:' + pct + '%"></span></td></tr>';
   });
   tbody.innerHTML = html || '<tr><td colspan="3" style="color:var(--text-muted);text-align:center;padding:12px;">No data yet</td></tr>';
+}
+
+// ══════════════════════════════════════════
+//  WEEKLY DIGEST GENERATOR
+// ══════════════════════════════════════════
+
+async function gatherDigestData() {
+  var now = new Date();
+  var weekAgo = new Date(now.getTime() - 7 * 86400000);
+  var weekAgoISO = weekAgo.toISOString();
+  var twoWeeksOut = new Date(now.getTime() + 14 * 86400000).toISOString();
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  var digest = {
+    weekOf: months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(),
+    weekStart: months[weekAgo.getMonth()] + ' ' + weekAgo.getDate(),
+    newListings: [],
+    upcomingEvents: [],
+    recentNews: [],
+    newMemorials: [],
+    stats: { totalListings: 0, pageViews: 0, newVisitors: 0 }
+  };
+
+  try {
+    // New directory listings this week
+    var { data: listings } = await _sb.from('directory_entries')
+      .select('id, organization_name, category, location, country')
+      .gte('created_at', weekAgoISO)
+      .order('created_at', { ascending: false })
+      .limit(10);
+    if (listings) digest.newListings = listings;
+
+    // Upcoming events (next 14 days)
+    var { data: events } = await _sb.from('events')
+      .select('id, title, event_date, location, category_id')
+      .gte('event_date', now.toISOString().slice(0, 10))
+      .lte('event_date', twoWeeksOut.slice(0, 10))
+      .order('event_date', { ascending: true })
+      .limit(10);
+    if (events) digest.upcomingEvents = events;
+
+    // Recent news
+    var { data: news } = await _sb.from('news')
+      .select('id, title, excerpt, source_name, published_at')
+      .eq('status', 'published')
+      .gte('published_at', weekAgoISO)
+      .order('published_at', { ascending: false })
+      .limit(5);
+    if (news) digest.recentNews = news;
+
+    // New memorials
+    var { data: memorials } = await _sb.from('memorials')
+      .select('name, years, bio')
+      .eq('status', 'approved')
+      .gte('created_at', weekAgoISO)
+      .limit(5);
+    if (memorials) digest.newMemorials = memorials;
+
+    // Stats
+    var { count: totalListings } = await _sb.from('directory_entries')
+      .select('id', { count: 'exact', head: true });
+    digest.stats.totalListings = totalListings || 0;
+
+    var { count: pageViews } = await _sb.from('page_views')
+      .select('id', { count: 'exact', head: true })
+      .gte('timestamp', weekAgoISO);
+    digest.stats.pageViews = pageViews || 0;
+
+    var { data: visitors } = await _sb.from('page_views')
+      .select('session_id')
+      .gte('timestamp', weekAgoISO);
+    digest.stats.newVisitors = visitors ? new Set(visitors.map(function(v) { return v.session_id; })).size : 0;
+
+  } catch(e) {
+    console.warn('Digest data error:', e);
+  }
+
+  return digest;
+}
+
+function buildDigestHTML(d) {
+  var html = '';
+
+  // Header
+  html += '<h2 style="font-family:Lora,Georgia,serif;font-size:1.4rem;font-weight:700;margin-bottom:6px;">Weekly Wrap-Up: ' + d.weekOf + '</h2>';
+  html += '<p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Your weekly summary of what\'s happening in the anthroposophical community. Covering ' + d.weekStart + ' through ' + d.weekOf + '.</p>';
+
+  // Stats bar
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;">';
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--text-primary);">' + d.stats.totalListings.toLocaleString() + '</div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);">Total Listings</div></div>';
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--text-primary);">' + d.stats.pageViews.toLocaleString() + '</div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);">Page Views</div></div>';
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--text-primary);">' + d.stats.newVisitors.toLocaleString() + '</div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);">Unique Visitors</div></div>';
+  html += '</div>';
+
+  // New Listings
+  if (d.newListings.length > 0) {
+    html += '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:6px;">New Directory Listings</h3>';
+    html += '<ul style="list-style:none;padding:0;margin-bottom:20px;">';
+    d.newListings.forEach(function(l) {
+      html += '<li style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">';
+      html += '<a href="#" onclick="showDetail(\'directory\',\'' + l.id + '\');return false;" style="font-weight:600;">' + esc(l.organization_name) + '</a>';
+      html += '<span style="color:var(--text-muted);margin-left:8px;">' + esc(l.category || '') + (l.location ? ' · ' + esc(l.location) : '') + '</span>';
+      html += '</li>';
+    });
+    html += '</ul>';
+  }
+
+  // Upcoming Events
+  if (d.upcomingEvents.length > 0) {
+    html += '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:6px;">Upcoming Events</h3>';
+    html += '<ul style="list-style:none;padding:0;margin-bottom:20px;">';
+    d.upcomingEvents.forEach(function(e) {
+      var dateStr = e.event_date ? new Date(e.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+      html += '<li style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">';
+      html += '<span style="font-weight:700;color:var(--gold);margin-right:8px;">' + dateStr + '</span>';
+      html += '<a href="#" onclick="showDetail(\'event\',\'' + e.id + '\');return false;" style="font-weight:600;">' + esc(e.title) + '</a>';
+      html += (e.location ? '<span style="color:var(--text-muted);margin-left:8px;">' + esc(e.location) + '</span>' : '');
+      html += '</li>';
+    });
+    html += '</ul>';
+  }
+
+  // News Highlights
+  if (d.recentNews.length > 0) {
+    html += '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:6px;">News Highlights</h3>';
+    html += '<ul style="list-style:none;padding:0;margin-bottom:20px;">';
+    d.recentNews.forEach(function(n) {
+      html += '<li style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">';
+      html += '<a href="#" onclick="showDetail(\'news\',\'' + n.id + '\');return false;" style="font-weight:600;display:block;margin-bottom:2px;">' + esc(n.title) + '</a>';
+      html += (n.excerpt ? '<span style="color:var(--text-secondary);font-size:12px;">' + esc(n.excerpt).substring(0, 120) + '...</span>' : '');
+      html += '</li>';
+    });
+    html += '</ul>';
+  }
+
+  // New Memorials
+  if (d.newMemorials.length > 0) {
+    html += '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:6px;">In Memoriam</h3>';
+    html += '<ul style="list-style:none;padding:0;margin-bottom:20px;">';
+    d.newMemorials.forEach(function(m) {
+      html += '<li style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">';
+      html += '<strong>' + esc(m.name) + '</strong>';
+      html += (m.years ? ' <span style="color:var(--gold);">(' + esc(m.years) + ')</span>' : '');
+      html += '</li>';
+    });
+    html += '</ul>';
+  }
+
+  // No activity fallback
+  if (d.newListings.length === 0 && d.upcomingEvents.length === 0 && d.recentNews.length === 0 && d.newMemorials.length === 0) {
+    html += '<p style="color:var(--text-muted);font-style:italic;text-align:center;padding:20px;">A quiet week in the community. Check back next week for updates!</p>';
+  }
+
+  html += '<p style="font-size:11px;color:var(--text-muted);margin-top:20px;border-top:1px solid var(--border);padding-top:12px;">This digest is automatically generated every week from Sophia Commons activity. <a href="#" onclick="showSec(\'home\');return false;">Return to Home</a></p>';
+
+  return html;
+}
+
+async function previewWeeklyDigest() {
+  var statusEl = document.getElementById('digest-status');
+  statusEl.textContent = 'Gathering data...';
+  statusEl.style.color = 'var(--text-muted)';
+
+  var data = await gatherDigestData();
+  var html = buildDigestHTML(data);
+
+  document.getElementById('digest-preview-content').innerHTML = html;
+  document.getElementById('digest-preview').style.display = 'block';
+  statusEl.textContent = 'Preview ready. Review above, then click "Generate" to publish.';
+}
+
+async function generateWeeklyDigest() {
+  if (!isAdmin()) return;
+  var statusEl = document.getElementById('digest-status');
+  var btn = document.getElementById('digest-generate-btn');
+  btn.disabled = true;
+  statusEl.textContent = 'Generating digest...';
+  statusEl.style.color = 'var(--text-muted)';
+
+  try {
+    var data = await gatherDigestData();
+    var html = buildDigestHTML(data);
+    var title = 'Weekly Wrap-Up: ' + data.weekOf;
+
+    // Insert into news table
+    var { error } = await _sb.from('news').insert({
+      title: title,
+      body: html,
+      excerpt: 'Your weekly summary of new listings, events, news, and community highlights from Sophia Commons.',
+      source_name: 'Sophia Commons Staff',
+      tags: ['weekly-digest'],
+      featured: true,
+      status: 'published',
+      published_at: new Date().toISOString()
+    });
+
+    if (error) throw error;
+
+    statusEl.textContent = 'Digest published to News! "' + title + '"';
+    statusEl.style.color = 'var(--success,#27ae60)';
+    loadDigestHistory();
+  } catch(e) {
+    statusEl.textContent = 'Error: ' + (e.message || 'Failed to publish');
+    statusEl.style.color = 'var(--error,#c0392b)';
+  }
+  btn.disabled = false;
+}
+
+async function loadDigestHistory() {
+  var el = document.getElementById('digest-history');
+  if (!sbReady()) { el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">Not connected</div>'; return; }
+  try {
+    var { data, error } = await _sb.from('news')
+      .select('id, title, published_at')
+      .contains('tags', ['weekly-digest'])
+      .order('published_at', { ascending: false })
+      .limit(8);
+    if (error || !data || data.length === 0) {
+      el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No past digests yet.</div>';
+      return;
+    }
+    el.innerHTML = data.map(function(d) {
+      var date = new Date(d.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;">'
+        + '<a href="#" onclick="showDetail(\'news\',\'' + d.id + '\');return false;" style="font-weight:600;">' + esc(d.title) + '</a>'
+        + '<span style="color:var(--text-muted);">' + date + '</span>'
+        + '</div>';
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">Error loading history.</div>';
+  }
 }
 
 // ══════════════════════════════════════════
