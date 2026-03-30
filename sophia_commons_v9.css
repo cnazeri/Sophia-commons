@@ -1789,6 +1789,22 @@ footer {
   .dash-cols { grid-template-columns: 1fr; }
 }
 
+/* ── ADMIN PENDING BADGE ── */
+.admin-pending-badge {
+  display: inline-block;
+  background: #c0392b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
 /* ── MEMORIAL CARDS (clickable) ── */
 .memorial-card { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
 .memorial-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }

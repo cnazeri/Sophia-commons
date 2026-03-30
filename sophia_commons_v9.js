@@ -2947,6 +2947,7 @@ function updateAdminVisibility() {
   if (btn) btn.style.display = show ? 'inline-block' : 'none';
   var link = document.getElementById('adminlink');
   if (link) link.style.display = show ? 'inline-block' : 'none';
+  if (show) checkAdminPendingCounts();
 }
 
 function adminSwitchTab(tab) {
@@ -3137,6 +3138,65 @@ async function adminRejectMemorial(id) {
 function initAdminPanel() {
   if (!isAdmin()) return;
   loadAdminListings();
+  checkAdminPendingCounts();
+}
+
+async function checkAdminPendingCounts() {
+  if (!sbReady()) return;
+  try {
+    // Check pending listings
+    var { count: listingsCount } = await _sb.from('listings_pending')
+      .select('id', { count: 'exact', head: true })
+      .or('status.is.null,status.eq.pending');
+    highlightAdminTab('listings', listingsCount || 0);
+
+    // Check pending events
+    var { count: eventsCount } = await _sb.from('events_pending')
+      .select('id', { count: 'exact', head: true })
+      .or('status.is.null,status.eq.pending');
+    highlightAdminTab('events', eventsCount || 0);
+
+    // Check pending memorials
+    var { count: memorialsCount } = await _sb.from('memorials_pending')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'pending');
+    highlightAdminTab('memorials', memorialsCount || 0);
+
+    // Highlight top bar admin link if anything is pending
+    var totalPending = (listingsCount || 0) + (eventsCount || 0) + (memorialsCount || 0);
+    var adminLink = document.getElementById('adminlink');
+    if (adminLink && totalPending > 0) {
+      adminLink.style.color = '#c0392b';
+      adminLink.style.fontWeight = '700';
+      var existingBadge = adminLink.querySelector('.admin-pending-badge');
+      if (existingBadge) existingBadge.remove();
+      var b = document.createElement('span');
+      b.className = 'admin-pending-badge';
+      b.textContent = totalPending;
+      adminLink.appendChild(b);
+    }
+  } catch(e) {
+    // Tables may not exist yet
+  }
+}
+
+function highlightAdminTab(tabName, count) {
+  var btn = document.querySelector('.admin-tab[onclick*="' + tabName + '"]');
+  if (!btn) return;
+  // Remove existing badge
+  var existing = btn.querySelector('.admin-pending-badge');
+  if (existing) existing.remove();
+  if (count > 0) {
+    btn.style.color = '#c0392b';
+    btn.style.fontWeight = '700';
+    var badge = document.createElement('span');
+    badge.className = 'admin-pending-badge';
+    badge.textContent = count;
+    btn.appendChild(badge);
+  } else {
+    btn.style.color = '';
+    btn.style.fontWeight = '';
+  }
 }
 
 // ── NEWSLETTER SEND ──
