@@ -425,6 +425,31 @@ CREATE TABLE IF NOT EXISTS public.newsletter_subscribers (
 CREATE INDEX IF NOT EXISTS idx_newsletter_email     ON public.newsletter_subscribers (email);
 CREATE INDEX IF NOT EXISTS idx_newsletter_confirmed ON public.newsletter_subscribers (confirmed);
 
+ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can subscribe (insert)
+CREATE POLICY "newsletter: public insert"
+  ON public.newsletter_subscribers FOR INSERT
+  WITH CHECK (true);
+
+-- Admins can read all subscribers
+CREATE POLICY "newsletter: admin read"
+  ON public.newsletter_subscribers FOR SELECT
+  TO authenticated
+  USING (public.is_admin());
+
+-- Admins can manage subscribers
+CREATE POLICY "newsletter: admin update"
+  ON public.newsletter_subscribers FOR UPDATE
+  TO authenticated
+  USING (public.is_admin());
+
+-- Admins can delete subscribers
+CREATE POLICY "newsletter: admin delete"
+  ON public.newsletter_subscribers FOR DELETE
+  TO authenticated
+  USING (public.is_admin());
+
 
 -- =============================================================================
 -- SEED DATA: Categories
@@ -551,6 +576,12 @@ CREATE POLICY "memorials_pending: admin update"
   TO authenticated
   USING (public.is_admin());
 
+-- Admins can delete pending memorials (approve/reject)
+CREATE POLICY "memorials_pending: admin delete"
+  ON public.memorials_pending FOR DELETE
+  TO authenticated
+  USING (public.is_admin());
+
 
 -- =============================================================================
 -- TABLE: listings_pending
@@ -564,10 +595,11 @@ CREATE TABLE IF NOT EXISTS public.listings_pending (
   category      text        NOT NULL,
   location      text,
   description   text,
-  contact_email text,
-  submitted_at  timestamptz NOT NULL DEFAULT now(),
-  status        text        NOT NULL DEFAULT 'pending'
-                            CHECK (status IN ('pending', 'approved', 'rejected'))
+  contact_email      text,
+  directory_entry_id uuid,
+  submitted_at       timestamptz NOT NULL DEFAULT now(),
+  status             text        NOT NULL DEFAULT 'pending'
+                                 CHECK (status IN ('pending', 'approved', 'rejected'))
 );
 
 ALTER TABLE public.listings_pending ENABLE ROW LEVEL SECURITY;
@@ -636,4 +668,90 @@ CREATE TRIGGER trg_steiner_books_updated_at
 
 CREATE INDEX IF NOT EXISTS idx_steiner_books_ga_number ON public.steiner_books (ga_number);
 CREATE INDEX IF NOT EXISTS idx_steiner_books_category  ON public.steiner_books (category);
+
+-- =============================================================================
+-- TABLE: comments
+-- Threaded comments on all content types.
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS public.comments (
+  id          uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  post_type   text        NOT NULL
+                          CHECK (post_type IN ('listing', 'event', 'news', 'directory', 'memorial')),
+  post_id     uuid        NOT NULL,
+  user_id     uuid        NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
+  parent_id   uuid        REFERENCES public.comments (id) ON DELETE CASCADE,
+  content     text        NOT NULL CHECK (char_length(content) <= 2000),
+  is_edited   boolean     NOT NULL DEFAULT false,
+  is_deleted  boolean     NOT NULL DEFAULT false,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  updated_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_comments_post      ON public.comments (post_type, post_id);
+CREATE INDEX IF NOT EXISTS idx_comments_parent    ON public.comments (parent_id);
+CREATE INDEX IF NOT EXISTS idx_comments_user      ON public.comments (user_id);
+CREATE INDEX IF NOT EXISTS idx_comments_created   ON public.comments (created_at DESC);
+
+CREATE TRIGGER set_comments_updated_at
+  BEFORE UPDATE ON public.comments
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "comments: public read"
+  ON public.comments FOR SELECT
+  USING (true);
+
+CREATE POLICY "comments: authenticated insert"
+  ON public.comments FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "comments: owner update"
+  ON public.comments FOR UPDATE
+  TO authenticated
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "comments: admin update"
+  ON public.comments FOR ALL
+  TO authenticated
+  USING (public.is_admin());
+
+-- =============================================================================
+-- TABLE: comment_votes
+-- Upvotes/downvotes on comments.
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS public.comment_votes (
+  id          uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  comment_id  uuid        NOT NULL REFERENCES public.comments (id) ON DELETE CASCADE,
+  user_id     uuid        NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
+  vote        smallint    NOT NULL CHECK (vote IN (1, -1)),
+  UNIQUE (comment_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_comment_votes_comment ON public.comment_votes (comment_id);
+
+ALTER TABLE public.comment_votes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "comment_votes: read own"
+  ON public.comment_votes FOR SELECT
+  TO authenticated
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "comment_votes: insert own"
+  ON public.comment_votes FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "comment_votes: update own"
+  ON public.comment_votes FOR UPDATE
+  TO authenticated
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "comment_votes: delete own"
+  ON public.comment_votes FOR DELETE
+  TO authenticated
+  USING (auth.uid() = user_id);
 CREATE INDEX IF NOT EXISTS idx_steiner_books_title     ON public.steiner_books (title);

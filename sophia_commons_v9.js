@@ -1754,18 +1754,30 @@ async function submitListing() {
     return;
   }
 
-  const listing = {
-    name: name,
-    url: document.getElementById('sl-url').value.trim() || null,
-    category: cat,
-    location: document.getElementById('sl-loc').value.trim() || null,
-    description: document.getElementById('sl-desc').value.trim() || null,
-    contact_email: document.getElementById('sl-email').value.trim() || null
-  };
+  const url = document.getElementById('sl-url').value.trim() || null;
+  const loc = document.getElementById('sl-loc').value.trim() || null;
+  const description = document.getElementById('sl-desc').value.trim() || null;
+  const contact_email = document.getElementById('sl-email').value.trim() || null;
 
   try {
-    const { error } = await _sb.from('listings_pending').insert(listing);
-    if (error) console.warn('Listing submit error:', error);
+    // Auto-approve: add to directory immediately
+    var { data: dirEntry } = await _sb.from('directory_entries').insert({
+      organization_name: name,
+      category: cat,
+      location: loc,
+      website_url: url,
+      description: description,
+      email: contact_email,
+      status: 'approved'
+    }).select('id').single();
+
+    // Track in pending table for admin review (can still reject/remove)
+    await _sb.from('listings_pending').insert({
+      name: name, url: url, category: cat, location: loc,
+      description: description, contact_email: contact_email,
+      status: 'approved',
+      directory_entry_id: dirEntry ? dirEntry.id : null
+    });
   } catch(e) {
     console.warn('Listing submit failed:', e);
   }
@@ -2969,12 +2981,14 @@ async function loadAdminListings() {
   var el = document.getElementById('admin-listings-list');
   if (!sbReady()) { el.innerHTML = '<div class="admin-empty">' + t('error.supabase_not_connected') + '</div>'; return; }
   try {
-    var { data, error } = await _sb.from('listings_pending').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    var { data, error } = await _sb.from('listings_pending').select('*').or('status.eq.pending,status.eq.approved').order('submitted_at', { ascending: false });
     if (error) { el.innerHTML = '<div class="admin-empty">' + t('error.loading_listings') + '</div>'; return; }
     if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">' + t('admin.no_pending_listings') + '</div>'; return; }
     el.innerHTML = data.map(function(d) {
+      var isApproved = d.status === 'approved';
+      var statusBadge = isApproved ? '<span style="background:#27ae60;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px;">LIVE</span>' : '<span style="background:#e67e22;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px;">PENDING</span>';
       return '<div class="admin-card" id="admin-listing-' + d.id + '">'
-        + '<h4>' + adminEsc(d.name) + '</h4>'
+        + '<h4>' + adminEsc(d.name) + statusBadge + '</h4>'
         + '<div class="admin-meta">'
         + (d.category ? '<span><strong>' + t('admin.category_label') + '</strong> ' + adminEsc(d.category) + '</span>' : '')
         + (d.location ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(d.location) + '</span>' : '')
@@ -2983,7 +2997,7 @@ async function loadAdminListings() {
         + '</div>'
         + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.description) + '</p>' : '')
         + '<div class="admin-actions">'
-        + '<button class="admin-btn-approve" onclick="adminApproveListing(\'' + d.id + '\')">' + t('admin.approve') + '</button>'
+        + (isApproved ? '' : '<button class="admin-btn-approve" onclick="adminApproveListing(\'' + d.id + '\')">' + t('admin.approve') + '</button>')
         + '<button class="admin-btn-reject" onclick="adminRejectListing(\'' + d.id + '\')">' + t('admin.reject') + '</button>'
         + '</div></div>';
     }).join('');
@@ -2998,17 +3012,18 @@ async function adminApproveListing(id) {
     if (error || !data) { alert(t('error.could_not_find_listing')); return; }
     // Insert into directory_entries
     var entry = {
-      name: data.name,
+      organization_name: data.name,
       category: data.category || 'Other',
       location: data.location || null,
-      url: data.url || null,
+      website_url: data.url || null,
       description: data.description || null,
-      contact_email: data.contact_email || null
+      email: data.contact_email || null,
+      status: 'approved'
     };
-    var { error: insertErr } = await _sb.from('directory_entries').insert(entry);
+    var { data: dirEntry, error: insertErr } = await _sb.from('directory_entries').insert(entry).select('id').single();
     if (insertErr) { alert('Error adding to directory: ' + insertErr.message); return; }
-    // Update status
-    await _sb.from('listings_pending').update({ status: 'approved' }).eq('id', id);
+    // Update status and link directory entry
+    await _sb.from('listings_pending').update({ status: 'approved', directory_entry_id: dirEntry ? dirEntry.id : null }).eq('id', id);
     var card = document.getElementById('admin-listing-' + id);
     if (card) card.remove();
     // Check if empty
@@ -3022,6 +3037,11 @@ async function adminRejectListing(id) {
   if (!sbReady()) return;
   if (!confirm(t('admin.confirm_reject_listing'))) return;
   try {
+    // Check if there's a linked directory entry to remove
+    var { data: pending } = await _sb.from('listings_pending').select('directory_entry_id').eq('id', id).single();
+    if (pending && pending.directory_entry_id) {
+      await _sb.from('directory_entries').delete().eq('id', pending.directory_entry_id);
+    }
     await _sb.from('listings_pending').update({ status: 'rejected' }).eq('id', id);
     var card = document.getElementById('admin-listing-' + id);
     if (card) card.remove();
@@ -3113,12 +3133,23 @@ async function loadAdminMemorials() {
 async function adminApproveMemorial(id) {
   if (!sbReady()) return;
   try {
-    await _sb.from('memorials_pending').update({ status: 'approved' }).eq('id', id);
+    // Fetch the pending memorial
+    var { data: mem, error: fetchErr } = await _sb.from('memorials_pending').select('*').eq('id', id).single();
+    if (fetchErr || !mem) { alert('Error fetching memorial'); return; }
+    // Insert into public memorials table
+    var { error: insertErr } = await _sb.from('memorials').insert({
+      name: mem.name, years: mem.years, location: mem.location,
+      bio: mem.bio, photo_url: mem.photo_url, status: 'approved'
+    });
+    if (insertErr) { alert('Error approving: ' + insertErr.message); return; }
+    // Remove from pending
+    await _sb.from('memorials_pending').delete().eq('id', id);
     var card = document.getElementById('admin-memorial-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-memorials-list .admin-card')) {
       document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_memorials') + '</div>';
     }
+    checkAdminPendingCounts();
   } catch(e) { alert('Error: ' + e.message); }
 }
 
@@ -3126,12 +3157,21 @@ async function adminRejectMemorial(id) {
   if (!sbReady()) return;
   if (!confirm(t('admin.confirm_reject_memorial'))) return;
   try {
-    await _sb.from('memorials_pending').update({ status: 'rejected' }).eq('id', id);
+    // Fetch to check for photo cleanup
+    var { data: mem } = await _sb.from('memorials_pending').select('photo_url').eq('id', id).single();
+    // Delete the photo from storage if it exists
+    if (mem && mem.photo_url) {
+      var path = mem.photo_url.split('/memorial-photos/')[1];
+      if (path) await _sb.storage.from('memorial-photos').remove([decodeURIComponent(path)]);
+    }
+    // Delete from pending table
+    await _sb.from('memorials_pending').delete().eq('id', id);
     var card = document.getElementById('admin-memorial-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-memorials-list .admin-card')) {
       document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_memorials') + '</div>';
     }
+    checkAdminPendingCounts();
   } catch(e) { alert('Error: ' + e.message); }
 }
 
@@ -3145,10 +3185,10 @@ function initAdminPanel() {
 async function checkAdminPendingCounts() {
   if (!sbReady()) return;
   try {
-    // Check pending listings
+    // Check pending/approved listings for admin review
     var { count: listingsCount } = await _sb.from('listings_pending')
       .select('id', { count: 'exact', head: true })
-      .or('status.is.null,status.eq.pending');
+      .or('status.is.null,status.eq.pending,status.eq.approved');
     highlightAdminTab('listings', listingsCount || 0);
 
     // Check pending events
@@ -3166,15 +3206,20 @@ async function checkAdminPendingCounts() {
     // Highlight top bar admin link if anything is pending
     var totalPending = (listingsCount || 0) + (eventsCount || 0) + (memorialsCount || 0);
     var adminLink = document.getElementById('adminlink');
-    if (adminLink && totalPending > 0) {
-      adminLink.style.color = '#c0392b';
-      adminLink.style.fontWeight = '700';
+    if (adminLink) {
       var existingBadge = adminLink.querySelector('.admin-pending-badge');
       if (existingBadge) existingBadge.remove();
-      var b = document.createElement('span');
-      b.className = 'admin-pending-badge';
-      b.textContent = totalPending;
-      adminLink.appendChild(b);
+      if (totalPending > 0) {
+        adminLink.style.color = '#c0392b';
+        adminLink.style.fontWeight = '700';
+        var b = document.createElement('span');
+        b.className = 'admin-pending-badge';
+        b.textContent = totalPending;
+        adminLink.appendChild(b);
+      } else {
+        adminLink.style.color = '';
+        adminLink.style.fontWeight = '';
+      }
     }
   } catch(e) {
     // Tables may not exist yet
