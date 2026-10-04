@@ -1,8 +1,10 @@
-var CACHE_NAME = 'sophia-commons-v1.7.2';
+var CACHE_NAME = 'sophia-commons-v1.10.0';
 var STATIC_ASSETS = [
   '/',
   '/sophia_commons_v9.css',
   '/sophia_commons_v9.js',
+  '/i18n.js',
+  '/lang/en.json',
   '/manifest.json'
 ];
 
@@ -30,16 +32,14 @@ self.addEventListener('activate', function(event) {
 self.addEventListener('fetch', function(event) {
   var url = new URL(event.request.url);
 
-  // Skip non-GET and external API calls
+  // Only handle same-origin GETs; let the browser deal with APIs, fonts, analytics and CDNs.
   if (event.request.method !== 'GET') return;
-  if (url.hostname.includes('supabase.co')) return;
-  if (url.hostname.includes('googleapis.com')) return;
-  if (url.hostname.includes('google-analytics.com')) return;
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith(
     fetch(event.request).then(function(response) {
       // Cache successful responses for static assets
-      if (response.ok && (url.pathname.endsWith('.css') || url.pathname.endsWith('.js') || url.pathname === '/')) {
+      if (response.ok && (/\.(css|js)$/.test(url.pathname) || /^\/lang\/[a-z]{2}\.json$/.test(url.pathname) || url.pathname === '/')) {
         var clone = response.clone();
         caches.open(CACHE_NAME).then(function(cache) {
           cache.put(event.request, clone);
@@ -48,7 +48,7 @@ self.addEventListener('fetch', function(event) {
       return response;
     }).catch(function() {
       // Serve from cache when offline
-      return caches.match(event.request).then(function(cached) {
+      return caches.match(event.request, { ignoreSearch: true }).then(function(cached) {
         if (cached) return cached;
         // For navigation requests, serve the cached index
         if (event.request.mode === 'navigate') {

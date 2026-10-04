@@ -22,7 +22,19 @@ function captureCurrentSection(excludeId) {
 //  event, news article, and directory entry.
 // ══════════════════════════════════════════
 
+// Record how deep we are in in-app history, so the on-page Back button can use the real
+// browser history (keeps Back/Forward and the URL in sync) without ever leaving the site.
+(function() {
+  var origPush = history.pushState.bind(history);
+  history.pushState = function(state, title, url) {
+    var depth = (history.state && history.state.depth) || 0;
+    var st = Object.assign({}, state || {}, { depth: depth + 1 });
+    return origPush(st, title, url);
+  };
+})();
+
 function goBack() {
+  if (history.state && history.state.depth > 0) { history.back(); return; }
   showSec(previousSection || 'home');
 }
 
@@ -58,7 +70,9 @@ async function showDetail(type, id, skipPush) {
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderDirectoryDetail(data);
       updateSEOMeta(data.organization_name + ' | Sophia Commons', (data.description || '').substring(0, 160), '/listing/' + id);
+      _injectDirectorySEO(data);
       loadRelatedDirectory(data.category, data.id);
+      loadComments('directory', id);
       _trackView('directory', id);
     } else if (type === 'event') {
       var { data, error } = await _sb.from('events')
@@ -66,7 +80,9 @@ async function showDetail(type, id, skipPush) {
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderEventDetail(data);
       updateSEOMeta(data.title + ' | Sophia Commons Events', (data.description || '').substring(0, 160), '/event/' + id);
+      _injectEventSEO(data);
       loadRelatedEvents(data.category_id, data.id);
+      loadComments('event', id);
       _trackView('event', id);
     } else if (type === 'news') {
       var { data, error } = await _sb.from('news')
@@ -74,6 +90,8 @@ async function showDetail(type, id, skipPush) {
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderNewsDetail(data);
       updateSEOMeta(data.title + ' | Sophia Commons News', (data.excerpt || data.body || '').substring(0, 160), '/article/' + id);
+      _injectNewsSEO(data);
+      loadComments('news', id);
       _trackView('news', id);
     } else if (type === 'listing') {
       var { data, error } = await _sb.from('listings')
@@ -82,6 +100,8 @@ async function showDetail(type, id, skipPush) {
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderListingDetail(data);
       updateSEOMeta(data.title + ' | Sophia Commons Marketplace', (data.description || '').substring(0, 160), '/classified/' + id);
+      _injectListingSEO(data);
+      loadComments('listing', id);
       _trackView('listing', id);
     } else {
       container.innerHTML = renderNotFound();
@@ -116,12 +136,12 @@ function renderDirectoryDetail(d) {
   var tags = '';
   if (d.tags && d.tags.length) {
     tags = '<div style="margin-top:12px;">' + d.tags.map(function(tg) {
-      return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>';
+      return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + escJs(tg) + '\');return false;">' + esc(tg) + '</a>';
     }).join('') + '</div>';
   }
 
   var actions = '';
-  if (d.website_url) actions += '<a class="btn-primary-detail" href="' + esc(d.website_url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
+  if (d.website_url) actions += '<a class="btn-primary-detail" href="' + escUrl(d.website_url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
   if (d.email) actions += '<a class="btn-secondary-detail" href="mailto:' + esc(d.email) + '">' + t('detail.contact') + ' &#9993;</a>';
   if (d.phone) actions += '<a class="btn-secondary-detail" href="tel:' + esc(d.phone) + '">' + t('detail.call') + ' &#9742;</a>';
 
@@ -140,10 +160,11 @@ function renderDirectoryDetail(d) {
     + (d.country ? '<p><strong>' + t('detail.country') + ':</strong> ' + esc(d.country) + '</p>' : '')
     + (d.phone ? '<p><strong>' + t('detail.phone') + ':</strong> <a href="tel:' + esc(d.phone) + '">' + esc(d.phone) + '</a></p>' : '')
     + (d.email ? '<p><strong>' + t('detail.email') + ':</strong> <a href="mailto:' + esc(d.email) + '">' + esc(d.email) + '</a></p>' : '')
-    + (d.website_url ? '<p><strong>' + t('detail.website') + ':</strong> <a href="' + esc(d.website_url) + '" target="_blank">' + esc(d.website_url.replace('https://','').replace('http://','')) + '</a></p>' : '')
+    + (d.website_url ? '<p><strong>' + t('detail.website') + ':</strong> <a href="' + escUrl(d.website_url) + '" target="_blank">' + esc(d.website_url.replace('https://','').replace('http://','')) + '</a></p>' : '')
     + '<p><strong>' + t('detail.status') + ':</strong> ' + (d.is_verified ? '<span style="color:var(--sage);font-weight:700;">&#10003; ' + t('detail.verified') + '</span>' : t('detail.listed')) + '</p>'
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'directory\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + '</div>'
+    + renderCommentsSection('directory', d.id)
     + '<div id="related-listings"></div>';
 }
 
@@ -167,16 +188,16 @@ function renderEventDetail(ev) {
   if (ev.organizer_name) meta += '<span>&#127915; ' + esc(ev.organizer_name) + '</span>';
 
   var actions = '';
-  if (ev.ticket_url) actions += '<a class="btn-primary-detail" href="' + esc(ev.ticket_url) + '" target="_blank">' + t('event_detail.get_tickets') + ' &#8599;</a>';
-  if (ev.online_url) actions += '<a class="btn-primary-detail" href="' + esc(ev.online_url) + '" target="_blank">' + t('event_detail.join_online') + ' &#8599;</a>';
-  if (ev.organizer_url) actions += '<a class="btn-secondary-detail" href="' + esc(ev.organizer_url) + '" target="_blank">' + t('event_detail.organizer_website') + '</a>';
+  if (ev.ticket_url) actions += '<a class="btn-primary-detail" href="' + escUrl(ev.ticket_url) + '" target="_blank">' + t('event_detail.get_tickets') + ' &#8599;</a>';
+  if (ev.online_url) actions += '<a class="btn-primary-detail" href="' + escUrl(ev.online_url) + '" target="_blank">' + t('event_detail.join_online') + ' &#8599;</a>';
+  if (ev.organizer_url) actions += '<a class="btn-secondary-detail" href="' + escUrl(ev.organizer_url) + '" target="_blank">' + t('event_detail.organizer_website') + '</a>';
 
   return '<div class="detail-hero">'
     + badges
     + '<h1>' + esc(ev.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
     + '<div class="detail-body">' + esc(ev.description || '') + '</div>'
-    + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold);font-weight:700;margin-bottom:12px;">' + t('event_detail.ticket_price').replace('${price}', ev.ticket_price) + '</p>' : '')
+    + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold-text);font-weight:700;margin-bottom:12px;">' + t('event_detail.ticket_price').replace('${price}', ev.ticket_price) + '</p>' : '')
     + '<div class="detail-actions">' + actions + '</div>'
     + '</div>'
     + '<div class="detail-sidebar"><h4>' + t('event_detail.title') + '</h4>'
@@ -187,8 +208,50 @@ function renderEventDetail(ev) {
     + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'event\',\'' + ev.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + '</div>'
+    + renderCommentsSection('event', ev.id)
     + '<div id="related-listings"></div>';
 }
+
+// Minimal allow-list HTML sanitizer (used for the generated weekly digest, which is stored as HTML
+// and was shown as raw tags because the body was escaped). Strips every attribute except safe hrefs.
+function _sanitizeHtml(html) {
+  var doc = new DOMParser().parseFromString('<div>' + String(html || '') + '</div>', 'text/html');
+  var root = doc.body.firstChild;
+  var ALLOWED = { H2:1, H3:1, H4:1, P:1, UL:1, OL:1, LI:1, A:1, STRONG:1, EM:1, B:1, I:1, BR:1, SPAN:1, DIV:1 };
+  var PATHS = { directory: '/listing/', event: '/event/', news: '/article/', listing: '/classified/' };
+  (function walk(node) {
+    Array.prototype.slice.call(node.childNodes).forEach(function(ch) {
+      if (ch.nodeType === 3) return;
+      if (ch.nodeType !== 1 || !ALLOWED[ch.tagName]) {
+        if (ch.nodeType === 1 && !/^(SCRIPT|STYLE|IFRAME|OBJECT|EMBED)$/.test(ch.tagName)) {
+          ch.replaceWith(doc.createTextNode(ch.textContent));
+        } else { ch.remove(); }
+        return;
+      }
+      var href = ch.tagName === 'A' ? (ch.getAttribute('href') || '') : '';
+      var oc = ch.getAttribute('onclick') || '';
+      Array.prototype.slice.call(ch.attributes).forEach(function(a) { ch.removeAttribute(a.name); });
+      if (ch.tagName === 'A') {
+        var m = oc.match(/showDetail\('(\w+)',\s*'([\w-]+)'\)/);
+        if (m && PATHS[m[1]]) href = PATHS[m[1]] + m[2];
+        ch.setAttribute('href', href.charAt(0) === '/' && href.charAt(1) !== '/' ? href : safeUrl(href));
+        if (/^https?:/.test(href) && href.indexOf(location.origin) !== 0) { ch.setAttribute('target', '_blank'); ch.setAttribute('rel', 'noopener'); }
+      }
+      walk(ch);
+    });
+  })(root);
+  return root.innerHTML;
+}
+
+// In-app links rendered as real hrefs (/event/<id> etc.) open inside the SPA without a reload.
+document.addEventListener('click', function(e) {
+  var a = e.target.closest && e.target.closest('.detail-body a[href^="/"]');
+  if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+  e.preventDefault();
+  var path = a.getAttribute('href');
+  history.pushState({ type: 'route' }, '', path);
+  routeFromPath(path);
+});
 
 function renderNewsDetail(n) {
   var pubDate = n.published_at ? localDate(n.published_at, {month:'long', day:'numeric', year:'numeric'}) : '';
@@ -204,15 +267,16 @@ function renderNewsDetail(n) {
   if (n.source_name) meta += '<span>&#128240; ' + esc(n.source_name) + '</span>';
 
   var actions = '';
-  if (n.source_url) actions += '<a class="btn-primary-detail" href="' + esc(n.source_url) + '" target="_blank">' + t('news_detail.read_at_source') + ' &#8599;</a>';
+  if (n.source_url) actions += '<a class="btn-primary-detail" href="' + escUrl(n.source_url) + '" target="_blank">' + t('news_detail.read_at_source') + ' &#8599;</a>';
 
   return '<div class="detail-hero">'
     + badges
     + '<h1>' + esc(n.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
-    + '<div class="detail-body">' + esc(n.body || n.excerpt || '') + '</div>'
+    + '<div class="detail-body">' + ((n.tags || []).indexOf('weekly-digest') >= 0 && n.body ? _sanitizeHtml(n.body) : esc(n.body || n.excerpt || '')) + '</div>'
     + '<div class="detail-actions">' + actions + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'news\',\'' + n.id + '\')">' + t('report.flag_btn') + '</button>' : '') + '</div>'
-    + '</div>';
+    + '</div>'
+    + renderCommentsSection('news', n.id);
 }
 
 function renderStaticDetail(d) {
@@ -224,8 +288,8 @@ function renderStaticDetail(d) {
   if (d.location) meta += '<span>&#128205; ' + esc(d.location) + '</span>';
 
   var actions = '';
-  if (d.url) actions += '<a class="btn-primary-detail" href="' + esc(d.url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
-  if (d.amazon) actions += '<a class="btn-secondary-detail" href="' + esc(d.amazon) + '" target="_blank">' + t('detail.buy_on_amazon') + '</a>';
+  if (d.url) actions += '<a class="btn-primary-detail" href="' + escUrl(d.url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
+  if (d.amazon) actions += '<a class="btn-secondary-detail" href="' + escUrl(d.amazon) + '" target="_blank">' + t('detail.buy_on_amazon') + '</a>';
 
   return '<div class="detail-hero">'
     + badges
@@ -241,7 +305,7 @@ function renderNotFound() {
     + '<div style="font-size:3rem;margin-bottom:12px;">&#128214;</div>'
     + '<h2 style="font-family:Lora,serif;font-size:1.3rem;color:var(--text-primary);margin-bottom:8px;">' + t('detail.not_found_title') + '</h2>'
     + '<p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">' + t('detail.not_found_desc') + '</p>'
-    + '<a href="#" onclick="goBack();return false;" style="color:var(--gold);font-weight:600;">&larr; ' + t('detail.go_back') + '</a>'
+    + '<a href="#" onclick="goBack();return false;" style="color:var(--gold-text);font-weight:600;">&larr; ' + t('detail.go_back') + '</a>'
     + '</div>';
 }
 
@@ -249,8 +313,90 @@ function renderOfflineDetail() {
   return '<div style="text-align:center;padding:60px 20px;">'
     + '<h2 style="font-family:Lora,serif;font-size:1.3rem;color:var(--text-primary);margin-bottom:8px;">' + t('detail.offline_title') + '</h2>'
     + '<p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">' + t('detail.offline_desc') + '</p>'
-    + '<a href="#" onclick="goBack();return false;" style="color:var(--gold);font-weight:600;">&larr; ' + t('detail.go_back') + '</a>'
+    + '<a href="#" onclick="goBack();return false;" style="color:var(--gold-text);font-weight:600;">&larr; ' + t('detail.go_back') + '</a>'
     + '</div>';
+}
+
+// ── SEO STRUCTURED DATA ──
+
+function _injectJsonLd(data) {
+  var existing = document.getElementById('detail-jsonld');
+  if (existing) existing.remove();
+  var script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.id = 'detail-jsonld';
+  script.textContent = JSON.stringify(data);
+  document.head.appendChild(script);
+}
+
+function _injectDirectorySEO(d) {
+  _injectJsonLd({
+    '@context': 'https://schema.org',
+    '@type': d.is_verified ? 'Organization' : 'LocalBusiness',
+    'name': d.organization_name,
+    'description': (d.description || '').substring(0, 300),
+    'url': d.website_url || ('https://sophiacommons.org/listing/' + d.id),
+    'address': d.address || d.location ? {
+      '@type': 'PostalAddress',
+      'streetAddress': d.address || '',
+      'addressLocality': d.location || '',
+      'addressCountry': d.country || ''
+    } : undefined,
+    'telephone': d.phone || undefined,
+    'email': d.email || undefined
+  });
+}
+
+function _injectEventSEO(ev) {
+  var loc = {};
+  if (ev.is_online) {
+    loc = { '@type': 'VirtualLocation', 'url': ev.online_url || '' };
+  } else {
+    loc = { '@type': 'Place', 'name': ev.location_name || ev.city || '', 'address': { '@type': 'PostalAddress', 'addressLocality': ev.city || '', 'addressCountry': ev.country || '' } };
+  }
+  _injectJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    'name': ev.title,
+    'description': (ev.description || '').substring(0, 300),
+    'startDate': ev.start_date,
+    'endDate': ev.end_date || undefined,
+    'eventStatus': 'https://schema.org/EventScheduled',
+    'eventAttendanceMode': ev.is_online ? 'https://schema.org/OnlineEventAttendanceMode' : 'https://schema.org/OfflineEventAttendanceMode',
+    'location': loc,
+    'organizer': ev.organizer_name ? { '@type': 'Organization', 'name': ev.organizer_name, 'url': ev.organizer_url || undefined } : undefined,
+    'isAccessibleForFree': ev.is_free || false,
+    'offers': ev.ticket_url ? { '@type': 'Offer', 'url': ev.ticket_url, 'price': ev.ticket_price || '0', 'priceCurrency': 'USD' } : undefined
+  });
+}
+
+function _injectNewsSEO(n) {
+  _injectJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    'headline': n.title,
+    'description': (n.excerpt || n.body || '').substring(0, 300),
+    'datePublished': n.published_at || n.created_at,
+    'author': n.source_name ? { '@type': 'Organization', 'name': n.source_name } : { '@type': 'Organization', 'name': 'Sophia Commons' },
+    'publisher': { '@type': 'Organization', 'name': 'Sophia Commons', 'url': 'https://sophiacommons.org' },
+    'mainEntityOfPage': 'https://sophiacommons.org/article/' + n.id
+  });
+}
+
+function _injectListingSEO(d) {
+  _injectJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    'name': d.title,
+    'description': (d.description || '').substring(0, 300),
+    'offers': {
+      '@type': 'Offer',
+      'price': d.price || '0',
+      'priceCurrency': 'USD',
+      'availability': d.status === 'active' ? 'https://schema.org/InStock' : 'https://schema.org/Discontinued',
+      'validThrough': d.expires_at || undefined
+    }
+  });
 }
 
 // ── RELATED ITEMS ──
@@ -273,7 +419,7 @@ async function loadRelatedDirectory(category, excludeId) {
         return '<div class="detail-related-card" onclick="showDetail(\'directory\',\'' + r.id + '\')">'
           + '<h5>' + esc(r.organization_name) + (r.is_verified ? ' <span style="color:var(--sage);">&#10003;</span>' : '') + '</h5>'
           + '<p>' + esc((r.description || '').substring(0, 100)) + (r.description && r.description.length > 100 ? '...' : '') + '</p>'
-          + '<p style="color:var(--gold);font-size:11px;margin-top:4px;">' + esc(r.location || '') + '</p>'
+          + '<p style="color:var(--gold-text);font-size:11px;margin-top:4px;">' + esc(r.location || '') + '</p>'
           + '</div>';
       }).join('')
       + '</div>';
@@ -314,7 +460,7 @@ async function loadRelatedEvents(categoryId, excludeId) {
 const catMeta = {
   'waldorf & education':     { dirCat: 'waldorf',    desc: 'Waldorf and Steiner schools, teacher training institutes, homeschool resources, curriculum materials, and professional development for educators worldwide.' },
   'biodynamic agriculture':  { dirCat: 'biodynamic', desc: 'Demeter-certified biodynamic farms, CSA programs, apprenticeships, seed suppliers, training courses, and agricultural research in the tradition of Rudolf Steiner.' },
-  'esoteric studies':        { dirCat: null,          desc: 'Study groups, lecture cycles, meditation practices, courses in spiritual science, and resources for the independent study of Rudolf Steiner\'s work.' },
+  'esoteric studies':        { dirCat: ['societies', 'online'],          desc: 'Study groups, lecture cycles, meditation practices, courses in spiritual science, and resources for the independent study of Rudolf Steiner\'s work.' },
   'arts & eurythmy':         { dirCat: 'eurythmy',   desc: 'Eurythmy schools and performances, visual arts, music, speech formation, drama, and artistic practices rooted in anthroposophical principles.' },
   'anthroposophic medicine': { dirCat: 'medicine',    desc: 'Anthroposophic physicians, clinics, hospitals, therapeutic eurythmy, art therapy, Weleda and WALA remedies, and nurse training programs.' },
   'community & camphill':    { dirCat: 'camphill',    desc: 'Camphill communities, intentional living, co-worker positions, volunteer programs, and inclusive communities for people with disabilities.' },
@@ -322,13 +468,16 @@ const catMeta = {
   'marketplace':             { dirCat: null,          desc: 'Buy, sell, and trade anthroposophical books, biodynamic products, handcrafts, musical instruments, art, and educational materials.' },
   'housing & room rent':     { dirCat: null,          desc: 'Rooms, apartments, and community housing near Waldorf schools, Camphill communities, and biodynamic farms. Land for intentional communities.' },
   'jobs & volunteering':     { dirCat: null,          desc: 'Waldorf teaching positions, biodynamic farm apprenticeships, Camphill co-worker roles, administrative jobs, and volunteer opportunities across the movement.' },
-  'groups & circles':        { dirCat: null,          desc: 'Study circles, meditation groups, reading groups, local branch meetings, youth groups, and working groups in the anthroposophical tradition.' },
+  'groups & circles':        { dirCat: 'societies',          desc: 'Study circles, meditation groups, reading groups, local branch meetings, youth groups, and working groups in the anthroposophical tradition.' },
   'online resources':        { dirCat: 'online',      desc: 'Websites, archives, podcasts, video channels, online courses, and digital tools for the anthroposophical community.' },
   'societies & organizations': { dirCat: 'societies', desc: 'National and international anthroposophical societies, branches, federations, and membership organizations.' },
+  'eldercare':                 { dirCat: 'eldercare', desc: 'Anthroposophical senior living, nursing care, Camphill elder programs and support for the later years of life.' },
+  'podcasts & media':          { dirCat: 'online', desc: 'Podcasts, video channels, archives and publications from the anthroposophical world.' },
   'social media':              { dirCat: 'social_media', desc: 'Facebook groups, YouTube channels, X/Twitter accounts, Instagram pages, Discord communities, and other social media for the anthroposophical movement.' }
 };
 
-function showCategory(name, skipPush) {
+function showCategory(name, skipPush, opts) {
+  opts = opts || {};
   captureCurrentSection('category');
 
   var displayName = name.charAt(0).toUpperCase() + name.slice(1);
@@ -345,56 +494,35 @@ function showCategory(name, skipPush) {
   // Push SEO-friendly category URL
   if (!skipPush) {
     var slug = encodeURIComponent(key.replace(/\s+/g, '-'));
-    var path = '/category/' + slug;
-    if (window.location.pathname !== path) {
-      history.pushState({ type: 'category', name: name }, '', path);
+    var path = '/category/' + slug + (opts.q ? '?q=' + encodeURIComponent(opts.q) : '');
+    if (window.location.pathname + window.location.search !== path) {
+      history.pushState({ type: 'category', name: name, q: opts.q || '' }, '', path);
     }
   }
 
-  loadCategoryPage(key, meta.dirCat);
+  loadCategoryPage(key, meta.dirCat, opts);
 }
 
-async function loadCategoryPage(catKey, dirCat) {
+async function loadCategoryPage(catKey, dirCat, opts) {
+  opts = opts || {};
   var container = document.getElementById('cat-page-content');
   var html = '';
 
-  // ── 1. Directory Entries ──
+  // ── 1. Directory Entries (with an in-page filter box) ──
   var dirEntries = [];
   if (sbReady() && dirCat) {
     try {
-      var { data } = await _sb.from('directory_entries')
-        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags')
-        .eq('status', 'approved').eq('category', dirCat)
-        .order('is_verified', { ascending: false }).order('organization_name')
-        .limit(50);
+      var q0 = _sb.from('directory_entries')
+        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags, category')
+        .eq('status', 'approved');
+      q0 = Array.isArray(dirCat) ? q0.in('category', dirCat) : q0.eq('category', dirCat);
+      var { data } = await q0.order('is_verified', { ascending: false }).order('organization_name').limit(500);
       if (data) dirEntries = data;
     } catch(e) {}
   }
 
   if (dirEntries.length > 0) {
-    html += '<div class="listblock" style="margin-bottom:16px;">';
-    html += '<div class="listblock-head"><h3>' + t('catpage.organizations_heading') + '</h3><span style="font-size:10.5px;color:var(--text-muted);">' + t('directory.entries_label').replace('{count}', dirEntries.length) + '</span></div>';
-    html += '<div class="listblock-body">';
-    dirEntries.forEach(function(d) {
-      var v = d.is_verified ? '<span style="color:var(--verified);font-weight:700;margin-right:4px;">&#10003;</span>' : '';
-      var loc = [d.location, d.country].filter(Boolean).join(', ');
-      var addr = d.address ? esc(d.address) + ', ' + esc(loc) : esc(loc);
-      html += '<div class="lrow" style="cursor:pointer;padding:8px 0;" onclick="showDetail(\'directory\',\'' + d.id + '\')">'
-        + v
-        + '<a class="ltitle" href="#" onclick="return false;" style="font-size:14px;">' + esc(d.organization_name) + '</a>'
-        + '<span class="lmeta">' + addr + '</span>'
-        + '</div>';
-      if (d.description) {
-        html += '<div style="font-size:12px;color:var(--text-muted);padding:0 0 6px 20px;margin-top:-4px;line-height:1.5;">' + esc(d.description.substring(0, 160)) + (d.description.length > 160 ? '...' : '') + '</div>';
-      }
-      if (d.phone || d.email) {
-        html += '<div style="font-size:11px;color:var(--text-muted);padding:0 0 8px 20px;">' + (d.phone ? '&#9742; ' + esc(d.phone) + ' ' : '') + (d.email ? '&#9993; ' + esc(d.email) : '') + '</div>';
-      }
-      if (d.tags && d.tags.length) {
-        html += '<div style="padding:0 0 8px 20px;margin-top:-2px;">' + d.tags.slice(0, 4).map(function(tg) { return '<a class="dir-tag" href="#" onclick="event.stopPropagation();filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>';
-      }
-    });
-    html += '</div></div>';
+    html += _dirListShell(dirEntries, opts.q || '');
   }
 
   // ── 2. Related Events ──
@@ -479,64 +607,323 @@ async function loadCategoryPage(catKey, dirCat) {
   // ── 5. Submit CTA ──
   html += '<div style="text-align:center;margin-top:20px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;">'
     + '<p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">' + t('catpage.submit_cta') + '</p>'
-    + '<button onclick="showSubmitForm()" style="padding:11px 28px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:Nunito Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">' + t('catpage.submit_btn') + '</button>'
+    + '<button onclick="showSubmitForm()" style="padding:11px 28px;background:var(--gold);color:var(--on-gold);border:none;border-radius:50px;font-family:Nunito Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">' + t('catpage.submit_btn') + '</button>'
     + '</div>';
 
   container.innerHTML = html;
+  if (dirEntries.length > 0) { window._catGroupByCategory = Array.isArray(dirCat); window._catEntries = dirEntries; _applyCatFilter(opts.q || ''); }
 }
 
-// Room message history (simulated, replace with Supabase realtime)
-const roomHistory = {
-  'general': [
-    {av:'M',nm:'Maren H.',t:'9:14 AM',txt:'Good morning - has anyone attended any of the Goetheanum online study weekends? Considering the spring session.'},
-    {av:'T',nm:'Thomas R.',t:'9:22 AM',txt:'Yes! I did the October session last year. Recorded lectures plus live discussion groups - format worked really well.'},
-    {av:'A',nm:'Aria S.',t:'9:31 AM',txt:'The Rudolf Steiner Archive just released new English translations. Worth checking if you are studying the agriculture lectures.'},
-    {av:'J',nm:'Johannes K.',t:'9:44 AM',txt:'Anyone in the Bay Area interested in starting a local study circle? Working through Philosophy of Freedom this spring.'},
-  ],
-  'waldorf-education': [
-    {av:'C',nm:'Clara W.',t:'8:50 AM',txt:'Has anyone used the updated AWSNA curriculum frameworks? We are revising our grade 6 program.'},
-    {av:'T',nm:'Thomas R.',t:'9:05 AM',txt:'Yes - the new frameworks have much better guidance for main lesson books. Highly recommend the teacher renewal section.'},
-  ],
-  'biodynamic': [
-    {av:'A',nm:'Aria S.',t:'7:30 AM',txt:'Planting calendar reminder: root days this week are Tuesday and Friday. Good time for root crops.'},
-    {av:'M',nm:'Maren H.',t:'7:45 AM',txt:'Thank you! Also - anyone sourcing Demeter-certified seeds for summer planting in the Northeast?'},
-  ],
-  'study-groups': [
-    {av:'J',nm:'Johannes K.',t:'10:00 AM',txt:'Our NYC branch is reading Theosophy chapter 3 this Thursday at 7pm. All welcome - message me for the Zoom link.'},
-  ],
-  'meetups': [
-    {av:'C',nm:'Clara W.',t:'Yesterday',txt:'Wonderful turnout at the Bay Area biodynamic farm tour last weekend - thanks to everyone who came!'},
-    {av:'M',nm:'Maren H.',t:'Yesterday',txt:'Next meetup: Waldorf parents coffee morning in Spring Valley, March 28. See the Events tab for details.'},
-  ],
-  'medicine': [],
-  'eurythmy-arts': [],
-  'christian-community': [],
-  'new-members': [
-    {av:'J',nm:'Johannes K.',t:'Yesterday',txt:'Welcome to all new members this week! Feel free to introduce yourself here - where are you from and what brings you to Sophia Commons?'},
-  ],
+// ── Directory list with filter (category, region and verified pages) ──
+function _dirListShell(entries, q) {
+  // Most common tags in this set become one-tap filter chips
+  var tc = {};
+  entries.forEach(function(d) { (d.tags || []).forEach(function(tg) { tc[tg] = (tc[tg] || 0) + 1; }); });
+  var chips = Object.keys(tc).filter(function(k) { return tc[k] >= 2 && tc[k] < entries.length; })
+    .sort(function(a, b) { return tc[b] - tc[a]; }).slice(0, 8);
+  return '<div class="listblock dir-filter-block" style="margin-bottom:16px;">'
+    + '<div class="listblock-head"><h3>' + t('catpage.organizations_heading') + '</h3><span class="dir-count" id="cat-count"></span></div>'
+    + '<div class="dir-filter">'
+    +   '<input type="search" id="cat-filter" aria-label="' + esc(t('dir.filter_aria', 'Filter these listings')) + '" placeholder="' + esc(t('dir.filter_placeholder', 'Filter {count} listings by name, place or topic').replace('{count}', entries.length)) + '" value="' + esc(q) + '" oninput="_applyCatFilter(this.value)">'
+    +   (chips.length ? '<div class="dir-chips">' + chips.map(function(c) { return '<button type="button" class="dir-chip" onclick="_setCatFilter(\'' + escJs(c) + '\')">' + esc(c) + '</button>'; }).join('') + '</div>' : '')
+    + '</div>'
+    + '<div class="listblock-body" id="cat-entries"></div></div>';
+}
+
+function _setCatFilter(v) {
+  var inp = document.getElementById('cat-filter');
+  if (inp) { inp.value = (inp.value.trim().toLowerCase() === v.toLowerCase()) ? '' : v; _applyCatFilter(inp.value); inp.focus(); }
+}
+
+var _catFilterTimer = null;
+function _applyCatFilter(q) {
+  var entries = window._catEntries || [];
+  var box = document.getElementById('cat-entries');
+  if (!box) return;
+  q = String(q || '').trim().toLowerCase();
+  var words = q.split(/\s+/).filter(Boolean);
+  var list = !words.length ? entries : entries.filter(function(d) {
+    var hay = [d.organization_name, d.description, d.location, d.country, (d.tags || []).join(' ')].join(' ').toLowerCase();
+    return words.every(function(w) { return hay.indexOf(w) !== -1; });
+  });
+  var note = '';
+  if (words.length && !list.length) {
+    note = '<div class="empty-note">' + esc(t('dir.no_match', 'No listings match "{q}". Showing all {count} instead.').replace('{q}', q).replace('{count}', entries.length)) + '</div>';
+    list = entries;
+  }
+  var cnt = document.getElementById('cat-count');
+  if (cnt) cnt.textContent = list.length === entries.length
+    ? t('dir.count_all', '{count} listings').replace('{count}', entries.length)
+    : t('dir.count_some', '{shown} of {count} listings').replace('{shown}', list.length).replace('{count}', entries.length);
+  document.querySelectorAll('.dir-chip').forEach(function(b) { b.classList.toggle('active', !!q && b.textContent.toLowerCase() === q); });
+  var groupByCat = window._catGroupByCategory;
+  var html = note;
+  var lastCat = null;
+  list.forEach(function(d) {
+    if (groupByCat && d.category !== lastCat) {
+      lastCat = d.category;
+      html += '<div class="dir-group-head">' + esc(_catLabel(d.category)) + '</div>';
+    }
+    var v = d.is_verified ? '<span class="dir-verified" title="Verified">&#10003;</span>' : '';
+    var loc = [d.location, d.country].filter(Boolean).join(', ');
+    html += '<div class="dir-row">'
+      + '<div class="dir-row-main">' + v
+      + '<a class="ltitle" href="/listing/' + esc(d.id) + '" onclick="showDetail(\'directory\',\'' + escJs(d.id) + '\');return false;">' + esc(d.organization_name) + '</a>'
+      + (loc ? '<span class="lmeta">' + esc(loc) + '</span>' : '') + '</div>'
+      + (d.description ? '<div class="dir-row-desc">' + esc(d.description.substring(0, 170)) + (d.description.length > 170 ? '…' : '') + '</div>' : '')
+      + '</div>';
+  });
+  box.innerHTML = html;
+  // Keep the URL in sync with the filter (no new history entries while typing)
+  clearTimeout(_catFilterTimer);
+  _catFilterTimer = setTimeout(function() {
+    if (!/^\/(category|region)\//.test(location.pathname)) return;
+    var url = location.pathname + (q ? '?q=' + encodeURIComponent(q) : '');
+    if (url !== location.pathname + location.search) history.replaceState(Object.assign({}, history.state || {}, { q: q }), '', url);
+  }, 400);
+}
+
+function _catLabel(slug) {
+  var m = { waldorf: 'Waldorf & Education', biodynamic: 'Biodynamic Agriculture', eurythmy: 'Arts & Eurythmy', medicine: 'Anthroposophic Medicine',
+    camphill: 'Camphill', community: 'Community', eldercare: 'Eldercare', online: 'Online Resources', social_media: 'Social Media', societies: 'Societies & Branches' };
+  return m[slug] || slug;
+}
+
+// ── REGION & VERIFIED PAGES (sidebar "region" and "status" links used to run a text search) ──
+var REGIONS = {
+  'north-america': { label: 'North America', countries: ['USA', 'United States', 'Canada', 'Mexico'] },
+  'latin-america': { label: 'Latin America', countries: ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru', 'Mexico'] },
+  'europe':        { label: 'Europe', countries: ['Germany', 'Switzerland', 'Austria', 'France', 'Netherlands', 'Norway', 'Sweden', 'Denmark', 'Finland', 'Italy', 'Spain', 'Czech Republic', 'Hungary', 'Romania', 'Estonia', 'Latvia', 'Russia', 'Belgium', 'Portugal', 'Poland'] },
+  'uk-ireland':    { label: 'UK & Ireland', countries: ['UK', 'United Kingdom', 'Ireland'] },
+  'africa':        { label: 'Africa', countries: ['South Africa', 'Kenya', 'Tanzania', 'Botswana', 'Egypt'] },
+  'asia':          { label: 'Asia', countries: ['India', 'Japan', 'China', 'South Korea', 'Taiwan', 'Thailand', 'Philippines', 'Vietnam', 'Israel'] },
+  'australia-nz':  { label: 'Australia & New Zealand', countries: ['Australia', 'New Zealand'] },
+  'international': { label: 'International & Online', countries: ['International', 'Online'] },
+  'verified':      { label: 'Verified organizations', verified: true }
 };
+
+async function showRegion(key, skipPush, opts) {
+  opts = opts || {};
+  var r = REGIONS[key];
+  if (!r) { showSec('directory', skipPush); return; }
+  captureCurrentSection('category');
+  var rLabel = t('region.' + key.replace(/-/g, '_'), r.label);
+  document.getElementById('cat-page-label').textContent = rLabel;
+  document.getElementById('cat-page-desc').textContent = r.verified
+    ? t('region.verified_desc', 'Organizations whose details have been checked by the Sophia Commons team.')
+    : t('region.desc', 'Anthroposophical schools, farms, clinics, communities and resources in {region}.').replace('{region}', rLabel);
+  var container = document.getElementById('cat-page-content');
+  container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + t('common.loading') + '</div>';
+  showSec('category', true);
+  var path = '/region/' + key + (opts.q ? '?q=' + encodeURIComponent(opts.q) : '');
+  updateSEOMeta(rLabel + ' | Sophia Commons Directory', document.getElementById('cat-page-desc').textContent, '/region/' + key);
+  if (!skipPush && location.pathname + location.search !== path) history.pushState({ type: 'region', key: key, q: opts.q || '' }, '', path);
+  if (!sbReady()) { container.innerHTML = '<div class="empty-note">The directory is offline right now. Please try again shortly.</div>'; return; }
+  try {
+    var q = _sb.from('directory_entries')
+      .select('id, organization_name, description, location, country, is_verified, tags, category')
+      .eq('status', 'approved');
+    q = r.verified ? q.eq('is_verified', true) : q.in('country', r.countries);
+    var res = await q.order('category').order('organization_name').limit(1000);
+    var list = res.data || [];
+    if (!list.length) {
+      container.innerHTML = '<div class="empty-note">' + esc(t('region.empty', 'No listings here yet.')) + ' <a href="#" onclick="showSubmitForm();return false;">' + esc(t('region.add_first', 'Add the first one')) + '</a></div>';
+      return;
+    }
+    window._catGroupByCategory = true;
+    window._catEntries = list;
+    container.innerHTML = _dirListShell(list, opts.q || '');
+    _applyCatFilter(opts.q || '');
+  } catch (e) {
+    container.innerHTML = '<div class="empty-note">Could not load this region. Please try again.</div>';
+  }
+}
+
+// ── ELDERCARE: real directory listings instead of placeholder names ──
+var _eldercareLoaded = false;
+async function loadEldercareLive() {
+  if (_eldercareLoaded || !sbReady()) return;
+  var box = document.getElementById('eldercare-live');
+  if (!box) return;
+  try {
+    var res = await _sb.from('directory_entries')
+      .select('id, organization_name, description, location, country, is_verified, tags')
+      .eq('status', 'approved').eq('category', 'eldercare').order('country').order('organization_name').limit(500);
+    var list = res.data || [];
+    if (!list.length) return;
+    _eldercareLoaded = true;
+    var byCountry = {};
+    list.forEach(function(d) { var c = d.country || 'Other'; (byCountry[c] = byCountry[c] || []).push(d); });
+    var html = '<div class="catgrid" style="margin-bottom:20px;">';
+    Object.keys(byCountry).sort(function(a, b) { return byCountry[b].length - byCountry[a].length; }).forEach(function(c) {
+      html += '<div class="catblock"><div class="catblock-head"><h3>' + esc(c) + '</h3><span class="alllink">' + byCountry[c].length + '</span></div><ul>'
+        + byCountry[c].map(function(d) {
+          return '<li><a href="/listing/' + esc(d.id) + '" onclick="showDetail(\'directory\',\'' + escJs(d.id) + '\');return false;">' + esc(d.organization_name) + (d.is_verified ? '<sup>&#10003;</sup>' : '') + '</a>'
+            + (d.location ? ' <span class="lmeta">' + esc(d.location) + '</span>' : '') + '</li>';
+        }).join('') + '</ul></div>';
+    });
+    html += '</div>';
+    box.innerHTML = html;
+    var cur = document.getElementById('eldercare-curated');
+    if (cur) cur.style.display = 'none';
+    var lbl = document.getElementById('eldercare-seclabel');
+    if (lbl) lbl.innerHTML = esc(t('eldercare.label', 'Eldercare')) + ' &nbsp;&middot;&nbsp; ' + esc(t('eldercare.count_live', '{count} listings in {countries} countries').replace('{count}', list.length).replace('{countries}', Object.keys(byCountry).length));
+  } catch (e) {}
+}
+
+// ── WIRE PLACEHOLDER LINKS ──
+// About 150 links on Home / Browse / Eldercare pointed at "#" and either jumped to the Browse
+// page or ran a free-text search for the link's words. Each now opens its parent category,
+// pre-filtered to that topic, with a real, shareable URL.
+var SUBCAT_QUERY = {
+  'schools directory': '', 'center for anthroposophy': 'center for anthroposophy',
+  'teacher training programs': 'teacher training', 'teacher training': 'teacher training',
+  'curriculum resources': 'curriculum', 'tutoring & homeschool': 'homeschool', 'tutoring services': 'tutoring',
+  'homeschool support': 'homeschool', 'csa farm shares': 'csa', 'farm apprenticeships': 'apprentice',
+  'demeter-certified farms': 'demeter', 'demeter farms': 'demeter', 'seed suppliers': 'seed',
+  'training programs': 'training', 'eurythmy training programs': 'training', 'eurythmy training': 'training',
+  'performance companies': 'stage', 'classes & workshops': 'workshop', 'artistic commissions': 'art',
+  'commissions': 'art', 'speech formation': 'speech', 'clinics & hospitals': 'clinic', 'practitioners directory': '',
+  'practitioners': '', 'weleda products': 'weleda', 'wala remedies': 'wala', 'therapeutic eurythmy': 'therapeutic',
+  'camphill communities': '', 'co-worker positions': 'co-worker', 'intentional communities': 'intentional',
+  'volunteer opportunities': 'volunteer', 'study groups & circles': 'study', 'online courses': 'course',
+  'reading circles': 'reading', 'lectures & seminars': 'lecture', 'meditation groups': 'meditation',
+  'local branches': 'branch', 'seminars & retreats': 'seminar', 'youth groups': 'youth'
+};
+var HEAD_I18N_TO_CAT = {
+  'catmeta.housing_name': 'housing & room rent', 'catmeta.online_name': 'online resources',
+  'home.podcasts_media': 'podcasts & media', 'eldercare.senior_living': 'eldercare', 'eldercare.home_care': 'eldercare',
+  'eldercare.biography_work': 'eldercare', 'eldercare.therapeutic': 'eldercare', 'eldercare.threshold': 'eldercare',
+  'eldercare.training': 'eldercare'
+};
+
+function _catNameForBlock(block) {
+  var h3 = block.querySelector('.catblock-head h3');
+  if (!h3) return null;
+  var m = (h3.getAttribute('onclick') || '').match(/showCategory\('([^']+)'/);
+  if (m) return m[1];
+  return HEAD_I18N_TO_CAT[h3.getAttribute('data-i18n')] || null;
+}
+
+function _catPath(name, q) {
+  return '/category/' + encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-')) + (q ? '?q=' + encodeURIComponent(q) : '');
+}
+
+function _wirePlaceholderLinks() {
+  document.querySelectorAll('.catblock').forEach(function(block) {
+    var name = _catNameForBlock(block);
+    if (!name) return;
+    var h3 = block.querySelector('.catblock-head h3');
+    if (h3 && !h3.getAttribute('onclick')) {
+      h3.style.cursor = 'pointer';
+      h3.addEventListener('click', function() { showCategory(name); });
+    }
+    block.querySelectorAll('a[href="#"]').forEach(function(a) {
+      var oc = a.getAttribute('onclick') || '';
+      if (!/doSearch\(\)|showSec\('(browse|eldercare)'\)|^return false;?$/.test(oc)) return;
+      var text = a.textContent.replace(/[\u2713\u2714\u2192]/g, '').trim().toLowerCase();
+      var isAll = /^view all|^\d|^all /.test(text) || !text;
+      var q = isAll ? '' : (SUBCAT_QUERY.hasOwnProperty(text) ? SUBCAT_QUERY[text] : text);
+      a.removeAttribute('onclick');
+      a.setAttribute('href', _catPath(name, q));
+      a.addEventListener('click', function(e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault(); e.stopPropagation();
+        showCategory(name, false, { q: q });
+      });
+    });
+    // Count badges like "312 →" open the category too
+    block.querySelectorAll('.catblock-head .alllink').forEach(function(b) {
+      b.style.cursor = 'pointer';
+      b.addEventListener('click', function(e) { e.stopPropagation(); showCategory(name); });
+    });
+  });
+
+  // Sidebar region / status links
+  var regionMap = { 'sidebar.region_north_america': 'north-america', 'sidebar.region_europe': 'europe',
+    'sidebar.region_uk_ireland': 'uk-ireland', 'sidebar.region_australia_nz': 'australia-nz',
+    'sidebar.region_international': 'international', 'sidebar.region_latin_america': 'latin-america',
+    'sidebar.region_africa': 'africa', 'sidebar.region_asia': 'asia', 'sidebar.status_verified': 'verified' };
+  Object.keys(regionMap).forEach(function(k) {
+    document.querySelectorAll('[data-i18n="' + k + '"]').forEach(function(a) {
+      var key = regionMap[k];
+      a.removeAttribute('onclick');
+      a.setAttribute('href', '/region/' + key);
+      a.addEventListener('click', function(e) { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); showRegion(key); });
+    });
+  });
+  document.querySelectorAll('[data-i18n="sidebar.status_all"]').forEach(function(a) {
+    a.removeAttribute('onclick'); a.setAttribute('href', '/directory');
+    a.addEventListener('click', function(e) { e.preventDefault(); showSec('directory'); });
+  });
+}
+_wirePlaceholderLinks();
+
+// Classified sections (Free & Sharing, Jobs, Housing, Marketplace) have no posts yet. Say so
+// plainly and invite the first post, instead of showing invented counts.
+async function _markEmptyClassifieds() {
+  if (!sbReady()) return;
+  try {
+    var r = await _sb.from('listings').select('id', { count: 'exact', head: true }).eq('status', 'active');
+    if (r.error || (r.count || 0) > 0) return;
+    document.querySelectorAll('.catblock').forEach(function(block) {
+      var name = _catNameForBlock(block);
+      var meta = name && catMeta[name.toLowerCase()];
+      if (!meta || meta.dirCat || block.querySelector('.catblock-empty')) return;
+      block.classList.add('is-empty');
+      var badge = block.querySelector('.catblock-head .alllink');
+      if (badge) { badge.hidden = false; badge.textContent = t('classifieds.new', 'new'); badge.classList.add('badge-new'); }
+      block.insertAdjacentHTML('beforeend', '<div class="catblock-empty">' + esc(t('classifieds.no_posts', 'No posts yet.')) + ' <a href="#" onclick="showSubmitForm();return false;">' + esc(t('classifieds.post_first', 'Post the first one')) + '</a></div>');
+    });
+  } catch (e) {}
+}
+
+// Static headlines that only ran an empty search: on the News page they become plain text
+// (there is no article to open yet); elsewhere they open the News page.
+(function() {
+  document.querySelectorAll('a[href="#"][onclick*="doSearch()"]').forEach(function(a) {
+    if (a.closest('#leftbar')) return;
+    if (a.closest('#sec-news')) {
+      var span = document.createElement('span');
+      span.className = a.className || 'ltitle';
+      span.innerHTML = a.innerHTML;
+      a.replaceWith(span);
+    } else if (a.closest('.trendblock') || a.closest('.evrow')) {
+      a.removeAttribute('onclick'); a.setAttribute('href', '/news');
+      a.addEventListener('click', function(e) { e.preventDefault(); showSec('news'); });
+    }
+  });
+})();
+
+// Room message history (simulated, replace with Supabase realtime)
+// (Removed: a set of invented sample conversations that were shown as real member messages
+// whenever a room was empty.)
+const roomHistory = {};
 
 // ── NAVIGATION ──
 // Section-to-path mapping for SEO-friendly URLs
 const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
   directory: '/directory', books: '/books', podcasts: '/podcasts',
-  memorial: '/memorial', marketplace: '/marketplace'
+  memorial: '/memorial', eldercare: '/eldercare', privacy: '/privacy', terms: '/terms', about: '/about'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
 
 function _getSecMeta() {
   return {
-    home:      { title: t('meta.title'), desc: t('meta.og_description') },
-    news:      { title: t('meta.news_title'), desc: t('meta.news_desc') },
-    events:    { title: t('meta.events_title'), desc: t('meta.events_desc') },
-    browse:    { title: t('meta.browse_title'), desc: t('meta.browse_desc') },
-    directory: { title: t('meta.directory_title'), desc: t('meta.directory_desc') },
-    books:     { title: t('meta.books_title'), desc: t('meta.books_desc') },
-    podcasts:  { title: t('meta.podcasts_title'), desc: t('meta.podcasts_desc') },
-    memorial:  { title: t('meta.memorial_title'), desc: t('meta.memorial_desc') },
-    marketplace: { title: t('meta.marketplace_title'), desc: t('meta.marketplace_desc') }
+    home:      { title: t('meta.title', "Sophia Commons | Anthroposophical Community Directory"), desc: t('meta.og_description') },
+    news:      { title: t('meta.news_title', "News | Sophia Commons"), desc: t('meta.news_desc') },
+    events:    { title: t('meta.events_title', "Events & Calendar | Sophia Commons"), desc: t('meta.events_desc') },
+    browse:    { title: t('meta.browse_title', "Browse Categories | Sophia Commons"), desc: t('meta.browse_desc') },
+    directory: { title: t('meta.directory_title', "Global Directory | Sophia Commons"), desc: t('meta.directory_desc') },
+    books:     { title: t('meta.books_title', 'Books & Library | Sophia Commons'), desc: t('meta.books_desc', 'Rudolf Steiner catalog and the top 50 anthroposophical books.') },
+    podcasts:  { title: t('meta.podcasts_title', 'Podcasts & Media | Sophia Commons'), desc: t('meta.podcasts_desc', 'Anthroposophical podcasts, YouTube channels, archives and media.') },
+    memorial:  { title: t('meta.memorial_title', "In Memoriam | Sophia Commons"), desc: t('meta.memorial_desc') },
+    marketplace: { title: t('meta.marketplace_title', "Marketplace | Sophia Commons"), desc: t('meta.marketplace_desc') },
+    about:     { title: 'About | Sophia Commons', desc: 'Sophia Commons is a free, community-maintained directory for the anthroposophical world.' },
+    privacy:   { title: 'Privacy | Sophia Commons', desc: 'What Sophia Commons collects, why, and how to have your data corrected or deleted.' },
+    terms:     { title: 'Terms of use | Sophia Commons', desc: 'The simple terms for using and contributing to the Sophia Commons directory.' }
   };
 }
 var SEC_META = null;
@@ -558,6 +945,7 @@ function updateSEOMeta(title, desc, path) {
 }
 
 function showSec(id, skipPush) {
+  if (!document.getElementById('sec-' + id)) id = 'home';
   document.querySelectorAll('.pagesec').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('#mainnav button').forEach(b => b.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
@@ -565,6 +953,7 @@ function showSec(id, skipPush) {
   if (btn) btn.classList.add('active');
   window.scrollTo(0,0);
   if (id === 'directory' && !mapLoaded) loadMap();
+  if (id === 'eldercare') loadEldercareLive();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   const leftbar = document.getElementById('leftbar');
   const hamburger = document.getElementById('hamburger-btn');
@@ -643,15 +1032,41 @@ function routeFromPath(pathname, isPopstate) {
   // Category route: /category/:slug
   var catMatch = p.match(/^\/category\/([^\/]+)$/);
   if (catMatch) {
-    var catName = decodeURIComponent(catMatch[1]).replace(/-/g, ' ');
-    showCategory(catName, skip);
+    var catRaw = catMatch[1];
+    try { catRaw = decodeURIComponent(catRaw); } catch (e) {}
+    var catName = catRaw.replace(/-/g, ' ');
+    var qp = new URLSearchParams(window.location.search).get('q') || '';
+    showCategory(catName, skip, { q: qp });
     return;
   }
 
-  // Detail routes: /listing/:id, /event/:id, /article/:id
-  var detailMatch = p.match(/^\/(listing|event|article)\/([^\/]+)$/);
+  // Newsletter confirmation / unsubscribe links
+  var nlMatch = p.match(/^\/newsletter\/(confirm|unsubscribe)$/);
+  if (nlMatch) {
+    handleNewsletterLink(nlMatch[1], new URLSearchParams(window.location.search).get('t') || '');
+    return;
+  }
+
+  // Region route: /region/:key  (also /region/verified)
+  var regMatch = p.match(/^\/region\/([a-z-]+)$/);
+  if (regMatch) {
+    showRegion(regMatch[1], skip, { q: new URLSearchParams(window.location.search).get('q') || '' });
+    return;
+  }
+
+  // Memorial route: /memorial/:slug
+  var memMatch = p.match(/^\/memorial\/([^\/]+)$/);
+  if (memMatch) {
+    var slug = memMatch[1];
+    try { slug = decodeURIComponent(slug); } catch (e) {}
+    showMemorialDetail(_memorialNameFromSlug(slug), skip);
+    return;
+  }
+
+  // Detail routes: /listing/:id, /event/:id, /article/:id, /classified/:id
+  var detailMatch = p.match(/^\/(listing|event|article|classified)\/([^\/]+)$/);
   if (detailMatch) {
-    var typeMap = { listing: 'directory', event: 'event', article: 'news' };
+    var typeMap = { listing: 'directory', event: 'event', article: 'news', classified: 'listing' };
     showDetail(typeMap[detailMatch[1]], detailMatch[2], skip);
     return;
   }
@@ -668,9 +1083,13 @@ window.addEventListener('popstate', function(e) {
     } else if (e.state.type === 'detail') {
       showDetail(e.state.detailType, e.state.detailId, true);
     } else if (e.state.type === 'memorial') {
-      showMemorialDetail(e.state.name);
+      showMemorialDetail(e.state.name, true);
+    } else if (e.state.type === 'region') {
+      showRegion(e.state.key, true, { q: e.state.q || '' });
     } else if (e.state.type === 'category') {
-      showCategory(e.state.name, true);
+      showCategory(e.state.name, true, { q: e.state.q || '' });
+    } else {
+      routeFromPath(window.location.pathname, true);
     }
   } else {
     routeFromPath(window.location.pathname, true);
@@ -691,11 +1110,73 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── MODAL ──
+var _modalReturnFocus = null;
 function openModal() {
+  _modalReturnFocus = document.activeElement;
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(() => document.getElementById('login-email').focus(), 80);
 }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  if (_modalReturnFocus && _modalReturnFocus.focus) { try { _modalReturnFocus.focus(); } catch (e) {} }
+  _modalReturnFocus = null;
+}
+// Escape closes any open dialog / popup
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  var mo = document.getElementById('modal-overlay');
+  if (mo && mo.classList.contains('open')) { closeModal(); return; }
+  var dp = document.querySelector('.day-popup');
+  if (dp) { dp.remove(); var o = document.querySelector('.day-popup-overlay'); if (o) o.remove(); return; }
+  document.querySelectorAll('.modal-overlay.open, .overlay.open, [id$="-overlay"].open').forEach(function(el) { el.classList.remove('open'); });
+  var rm = document.getElementById('report-modal');
+  if (rm && rm.style.display && rm.style.display !== 'none') closeReportModal();
+  var so = document.getElementById('submit-overlay');
+  if (so && so.style.display && so.style.display !== 'none') so.style.display = 'none';
+  var lb = document.getElementById('leftbar');
+  if (lb && lb.classList.contains('mobile-open')) toggleMobileMenu();
+});
+// Keep Tab focus inside an open dialog (sign-in, report)
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Tab') return;
+  var dlg = null;
+  var mo = document.getElementById('modal-overlay');
+  if (mo && mo.classList.contains('open')) dlg = document.getElementById('modal-box');
+  var rm = document.getElementById('report-modal');
+  if (!dlg && rm && rm.style.display && rm.style.display !== 'none') dlg = rm.querySelector('.report-modal-content');
+  if (!dlg) return;
+  var f = Array.prototype.filter.call(dlg.querySelectorAll('a[href], button:not([disabled]), input:not([type="hidden"]), select, textarea'),
+    function(el) { return el.offsetParent !== null; });
+  if (!f.length) return;
+  var first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  else if (!dlg.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+});
+
+// Keyboard access for clickable rows/cards rendered as <div onclick>
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  var el = e.target;
+  if (!el || !el.matches || !el.matches('[data-kbd-click]')) return;
+  e.preventDefault();
+  el.click();
+});
+function _enhanceClickables(root) {
+  (root || document).querySelectorAll('.lrow[onclick], .evrow[onclick], .detail-related-card[onclick], .memorial-card[onclick], .mp-card[onclick], .mc-d.has-event[onclick]').forEach(function(el) {
+    if (el.hasAttribute('data-kbd-click')) return;
+    el.setAttribute('data-kbd-click', '');
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+  });
+}
+if (window.MutationObserver) {
+  var _kbdPending = false;
+  new MutationObserver(function() {
+    if (_kbdPending) return; _kbdPending = true;
+    requestAnimationFrame(function() { _kbdPending = false; _enhanceClickables(document); });
+  }).observe(document.body, { childList: true, subtree: true });
+}
 document.getElementById('modal-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('modal-overlay')) closeModal();
 });
@@ -824,11 +1305,16 @@ async function doPasswordReset(e) {
 }
 
 // Auto-restore session on page load
-window.addEventListener('supabase-auth-ready', function(e) {
-  username = e.detail.username;
+function _applyAuthDetail(detail) {
+  if (!detail || signedIn) return;
+  username = detail.username;
   signedIn = true;
   applySignedInState();
-});
+}
+window.addEventListener('supabase-auth-ready', function(e) { _applyAuthDetail(e.detail); });
+// The session check in index.html can finish before this (large) script has loaded,
+// in which case the event above was missed. Apply the stored session now.
+if (window._scAuthDetail) _applyAuthDetail(window._scAuthDetail);
 
 // ── CHAT ──
 let currentRoom = 'general';
@@ -838,9 +1324,10 @@ let typingTimeout = null;
 let typingUsers = {};
 
 function _renderMsg(m, isMine, msgId) {
-  var deleteBtn = isMine && msgId ? '<button class="msg-delete" onclick="deleteMsg(\'' + msgId + '\',this)" title="Delete">&times;</button>' : '';
+  var deleteBtn = isMine && msgId && String(msgId).indexOf('tmp-') !== 0 ? '<button class="msg-delete" onclick="deleteMsg(\'' + escJs(msgId) + '\',this)" title="Delete message" aria-label="Delete message">&times;</button>' : '';
   var cls = isMine ? 'msg mine' : 'msg';
-  return '<div class="' + cls + '" data-msg-id="' + (msgId || '') + '"><div class="av">' + m.av + '</div><div class="bub"><div class="bmeta"><span class="nm">' + esc(m.nm) + '</span>' + m.t + deleteBtn + '</div><div class="btxt">' + esc(m.txt) + '</div></div></div>';
+  var av = String(m.av || '').replace(/&[a-z#0-9]+;/gi, '').charAt(0) || '?';
+  return '<div class="' + cls + '" data-msg-id="' + esc(msgId || '') + '"><div class="av" aria-hidden="true">' + esc(av) + '</div><div class="bub"><div class="bmeta"><span class="nm">' + esc(m.nm) + '</span>' + esc(m.t) + deleteBtn + '</div><div class="btxt">' + esc(m.txt) + '</div></div></div>';
 }
 
 async function switchRoom(el, name, desc, count) {
@@ -881,7 +1368,8 @@ async function switchRoom(el, name, desc, count) {
     hist = (roomHistory[name] || []).map(m => Object.assign({}, m, {id: null, mine: false}));
   }
 
-  msgs.innerHTML = hist.map(m => _renderMsg(m, m.mine, m.id)).join('')
+  msgs.innerHTML = (hist.length ? '' : '<div class="chat-empty">' + esc(t('chat.empty_room', 'No messages here yet. Say hello and start the conversation.')) + '</div>')
+    + hist.map(m => _renderMsg(m, m.mine, m.id)).join('')
     + '<div class="msg sys"><div class="av">&middot;</div><div class="bub"><div class="btxt">' + t('chat.you_joined').replace('{room}', name) + '</div></div></div>';
   scrollMsgs();
 
@@ -907,7 +1395,8 @@ async function switchRoom(el, name, desc, count) {
         t: new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
         txt: m.content
       };
-      document.getElementById('messages').innerHTML += _renderMsg(msg, false, m.id);
+      var ce1 = document.querySelector('#messages .chat-empty'); if (ce1) ce1.remove();
+      document.getElementById('messages').insertAdjacentHTML('beforeend', _renderMsg(msg, false, m.id));
       scrollMsgs();
     })
     .on('postgres_changes', {
@@ -963,7 +1452,11 @@ function broadcastTyping() {
 async function deleteMsg(msgId, btn) {
   if (!msgId || !sbReady()) return;
   try {
-    await _sb.from('chat_messages').delete().eq('id', msgId);
+    var res = await _sb.from('chat_messages').delete().eq('id', msgId).select('id');
+    if (res.error || !res.data || !res.data.length) {
+      alert('This message could not be deleted.');
+      return;
+    }
     var row = btn.closest('.msg');
     if (row) row.remove();
   } catch(e) { console.warn('Delete failed:', e); }
@@ -976,26 +1469,57 @@ async function sendMsg() {
   const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
   var uid = window._supabaseUser ? window._supabaseUser.id : null;
 
-  var tmpMsg = {av: username[0].toUpperCase(), nm: username, t: time, txt: txt};
-  msgs.innerHTML += _renderMsg(tmpMsg, true, 'pending');
+  var tmpId = 'tmp-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+  var tmpMsg = {av: (username[0] || '?').toUpperCase(), nm: username, t: time, txt: txt};
+  var ce0 = msgs.querySelector('.chat-empty'); if (ce0) ce0.remove();
+  msgs.insertAdjacentHTML('beforeend', _renderMsg(tmpMsg, true, tmpId));
   inp.value = ''; scrollMsgs();
+  var pending = msgs.querySelector('[data-msg-id="' + tmpId + '"]');
 
   try {
-    var { data } = await _sb.from('chat_messages').insert({
+    if (!sbReady()) throw new Error('offline');
+    var { data, error } = await _sb.from('chat_messages').insert({
       room: currentRoom,
       username: username,
       user_id: uid,
       content: txt
     }).select().single();
-    // Update pending message with real ID
-    var pending = document.querySelector('[data-msg-id="pending"]');
-    if (pending && data) pending.setAttribute('data-msg-id', data.id);
+    if (error) throw error;
+    // Update this message's placeholder id with the real one (unique per send)
+    if (pending && data) {
+      pending.setAttribute('data-msg-id', data.id);
+      var bm = pending.querySelector('.bmeta');
+      if (bm && !bm.querySelector('.msg-delete')) bm.insertAdjacentHTML('beforeend', '<button class="msg-delete" onclick="deleteMsg(\'' + escJs(data.id) + '\',this)" title="Delete message" aria-label="Delete message">&times;</button>');
+    }
   } catch(e) {
     console.warn('Chat insert failed:', e);
+    if (pending) {
+      pending.classList.add('failed');
+      var meta = pending.querySelector('.bmeta');
+      if (meta) meta.insertAdjacentHTML('beforeend', ' <span class="msg-failed" role="status">not sent</span>');
+    }
   }
 }
 function scrollMsgs() { const m = document.getElementById('messages'); m.scrollTop = m.scrollHeight; }
-function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+// Escape text for safe use in HTML content AND attribute values (quotes included).
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/`/g,'&#96;');
+}
+// Only allow http(s), mailto and tel links; anything else (javascript:, data:) becomes '#'.
+function safeUrl(u) {
+  if (!u) return '#';
+  try {
+    var parsed = new URL(String(u).trim(), window.location.origin);
+    return /^(https?|mailto|tel):$/.test(parsed.protocol) ? parsed.href : '#';
+  } catch (e) { return '#'; }
+}
+function escUrl(u) { return esc(safeUrl(u)); }
+// Escape a value for use inside a single-quoted JS string within an HTML attribute.
+function escJs(s) {
+  return esc(String(s === null || s === undefined ? '' : s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' '));
+}
 
 // ── MEMORIAL SEARCH & DIRECTORY ──
 function filterMemorials() {
@@ -1106,17 +1630,41 @@ var MEMORIAL_PROFILES = {
   }
 };
 
-function showMemorialDetail(name) {
+// Stable UUID-shaped id derived from a name, so each built-in memorial gets its own
+// comment thread (comments.post_id is a uuid; the literal 'memorial' was rejected).
+function _nameToUuid(name) {
+  var h1 = 1779033703, h2 = 3144134277, h3 = 1013904242, h4 = 2773480762, str = 'memorial:' + name;
+  for (var i = 0, k; i < str.length; i++) {
+    k = str.charCodeAt(i);
+    h1 = h2 ^ Math.imul(h1 ^ k, 597399067); h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+    h3 = h4 ^ Math.imul(h3 ^ k, 951274213); h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+  }
+  var hex = [h1, h2, h3, h4].map(function(x) { return ('00000000' + (x >>> 0).toString(16)).slice(-8); }).join('');
+  return hex.slice(0, 8) + '-' + hex.slice(8, 12) + '-5' + hex.slice(13, 16) + '-8' + hex.slice(17, 20) + '-' + hex.slice(20, 32);
+}
+function _memorialSlug(name) { return String(name).replace(/\s+/g, '-').toLowerCase(); }
+function _memorialNameFromSlug(slug) {
+  var names = Object.keys(MEMORIAL_PROFILES);
+  for (var i = 0; i < names.length; i++) { if (_memorialSlug(names[i]) === slug) return names[i]; }
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+}
+
+function showMemorialDetail(name, skipPush) {
   captureCurrentSection('detail');
   var container = document.getElementById('detail-content');
+  var memPath = '/memorial/' + encodeURIComponent(_memorialSlug(name));
+  // Only push when navigating forward; pushing from popstate trapped the Back button.
+  if (!skipPush && window.location.pathname !== memPath) {
+    history.pushState({ type: 'memorial', name: name }, '', memPath);
+  }
 
   // Check hardcoded profiles first
   var profile = MEMORIAL_PROFILES[name];
   if (profile) {
     container.innerHTML = renderMemorialDetail(profile);
     showSec('detail', true);
-    history.pushState({ type: 'memorial', name: name }, '', '/memorial/' + encodeURIComponent(name.replace(/\s+/g, '-').toLowerCase()));
     loadMemorialPhotos(name);
+    loadComments('memorial', _nameToUuid(name));
     return;
   }
 
@@ -1124,13 +1672,17 @@ function showMemorialDetail(name) {
   if (sbReady()) {
     container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
     showSec('detail', true);
-    _sb.from('memorials').select('*').eq('name', name).eq('status', 'approved').single().then(function(result) {
+    // Names rebuilt from a URL slug lose hyphens/case, so match case-insensitively with '_' wildcards.
+    var nameQ = _sb.from('memorials').select('*').eq('status', 'approved');
+    nameQ = skipPush ? nameQ.ilike('name', String(name).replace(/[%_]/g, '').replace(/[\s-]+/g, '_')) : nameQ.eq('name', name);
+    nameQ.limit(1).maybeSingle().then(function(result) {
       if (result.error || !result.data) {
         container.innerHTML = renderNotFound();
         return;
       }
       var d = result.data;
       container.innerHTML = renderMemorialDetail({
+        id: d.id,
         name: d.name,
         years: d.years || '',
         born: '',
@@ -1142,6 +1694,7 @@ function showMemorialDetail(name) {
         works: []
       });
       loadMemorialPhotos(d.name);
+      loadComments('memorial', d.id);
     });
   } else {
     container.innerHTML = renderNotFound();
@@ -1179,7 +1732,7 @@ function renderMemorialDetail(d) {
       + '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:8px;">Share a Photo</h3>'
       + '<p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Upload a photo of ' + esc(d.name) + ' to share with the community.</p>'
       + '<input type="file" id="memorial-photo-upload" accept="image/*" style="font-size:12px;margin-bottom:8px;">'
-      + '<br><button onclick="uploadMemorialPhoto(\'' + esc(d.name).replace(/'/g, "\\'") + '\')" style="padding:8px 18px;background:var(--gold);color:var(--text-inverse,#fff);border:none;border-radius:50px;font-family:Nunito Sans,sans-serif;font-size:12px;font-weight:600;cursor:pointer;">Upload Photo</button>'
+      + '<br><button onclick="uploadMemorialPhoto(\'' + escJs(d.name) + '\')" style="padding:8px 18px;background:var(--gold);color:var(--on-gold);border:none;border-radius:50px;font-family:Nunito Sans,sans-serif;font-size:12px;font-weight:600;cursor:pointer;">Upload Photo</button>'
       + '<div id="memorial-upload-status" style="font-size:12px;margin-top:8px;color:var(--text-muted);"></div>'
       + '</div>';
   }
@@ -1212,6 +1765,7 @@ function renderMemorialDetail(d) {
     + '</div>'
     // Upload section (members only)
     + uploadSection
+    + renderCommentsSection('memorial', d.id || _nameToUuid(d.name))
     + '</div>';
 }
 
@@ -1240,7 +1794,7 @@ async function loadMemorialPhotos(name) {
 
     grid.innerHTML = data.map(function(p) {
       return '<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">'
-        + '<img src="' + esc(p.photo_url) + '" alt="' + esc(name) + '" style="width:100%;height:100px;object-fit:cover;">'
+        + '<img src="' + escUrl(p.photo_url) + '" alt="' + esc(name) + '" style="width:100%;height:100px;object-fit:cover;">'
         + (p.caption ? '<div style="padding:4px 6px;font-size:10px;color:var(--text-muted);">' + esc(p.caption) + '</div>' : '')
         + '</div>';
     }).join('');
@@ -1362,12 +1916,12 @@ async function loadCommunityMemorials() {
     const cards = filtered.map(m => {
       const initials = m.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
       const avatar = m.photo_url
-        ? '<img src="' + esc(m.photo_url) + '" alt="' + esc(m.name) + '" style="width:100%;height:100%;object-fit:cover;">'
+        ? '<img src="' + escUrl(m.photo_url) + '" alt="' + esc(m.name) + '" style="width:100%;height:100%;object-fit:cover;">'
         : '<span style="font-family:Lora,serif;font-size:2rem;color:var(--text-muted);">' + initials + '</span>';
       return '<div class="catblock reveal memorial-card visible" data-name="' + esc(m.name) + '" style="text-align:center;padding:20px 16px;">'
         + '<div style="width:90px;height:90px;border-radius:50%;background:var(--surface);border:2px solid var(--border);margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;">' + avatar + '</div>'
         + '<h3 style="font-family:Lora,Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">' + esc(m.name) + '</h3>'
-        + (m.years ? '<div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:4px;">' + esc(m.years) + '</div>' : '')
+        + (m.years ? '<div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">' + esc(m.years) + '</div>' : '')
         + (m.location ? '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">' + esc(m.location) + '</div>' : '')
         + '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;">' + esc(m.bio) + '</p>'
         + '</div>';
@@ -1413,6 +1967,11 @@ async function submitMemorial() {
     alert(t('error.fill_name_tribute'));
     return;
   }
+  var memEmail = (document.getElementById('mem-email').value || '').trim();
+  if (memEmail && !_isEmail(memEmail)) {   // validate before uploading the photo (avoids orphaned uploads)
+    alert('Please enter a valid email address.');
+    return;
+  }
 
   var photoUrl = null;
   var statusEl = document.getElementById('mem-photo-status');
@@ -1421,6 +1980,11 @@ async function submitMemorial() {
   // Upload photo if one was selected
   if (fileInput && fileInput.files && fileInput.files[0]) {
     var file = fileInput.files[0];
+    if (!/^image\/(jpeg|png|webp|gif)$/.test(file.type)) {
+      statusEl.textContent = 'Please choose a JPG, PNG, WebP or GIF image.';
+      statusEl.style.color = 'var(--error,#c0392b)';
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
       statusEl.textContent = 'Photo too large. Max 5MB.';
       statusEl.style.color = 'var(--error,#c0392b)';
@@ -1461,11 +2025,18 @@ async function submitMemorial() {
     contact_email: document.getElementById('mem-email').value.trim() || null
   };
 
+  var memOk = false;
   try {
     const { error } = await _sb.from('memorials_pending').insert(memorial);
     if (error) console.warn('Memorial submit error:', error);
+    else memOk = true;
   } catch(e) {
     console.warn('Memorial submit failed:', e);
+  }
+  if (!memOk) {
+    // Previously the success message showed even when nothing was saved.
+    alert('Sorry, the tribute could not be submitted. Please try again, or email hello@sophiacommons.org.');
+    return;
   }
 
   document.getElementById('mem-ok').style.display = 'block';
@@ -1514,11 +2085,36 @@ async function handleNewsletterSignup(emailId, btnSelector, confirmId) {
   if (btn) { btn.disabled = true; btn.textContent = t('newsletter.subscribing'); }
 
   try {
-    var { error } = await _sb.from('newsletter_subscribers').insert({ email: v, confirmed: true });
-    if (error && error.code === '23505') {
-      // Already subscribed (duplicate)
-    } else if (error) {
-      throw error;
+    // Double opt-in: the newsletter function stores the address as unconfirmed and emails a
+    // confirmation link. (Previously addresses were saved as confirmed with no email check, so
+    // anyone could sign up someone else.)
+    var fnRes = await fetch(SUPABASE_URL + '/functions/v1/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+      body: JSON.stringify({ action: 'subscribe', email: v })
+    }).catch(function() { return null; });
+    if (!fnRes || fnRes.status === 404) {
+      // Function not deployed yet: store as unconfirmed; nobody is emailed until they confirm.
+      var { error } = await _sb.from('newsletter_subscribers').insert({ email: v, confirmed: false });
+      if (error && error.code !== '23505') throw error;
+    } else if (!fnRes.ok) {
+      var body = await fnRes.json().catch(function() { return {}; });
+      if (body.error === 'email_not_configured' || body.error === 'send_failed') {
+        // The address was saved (unconfirmed) but the confirmation email couldn't be sent yet.
+        inp.style.display = 'none';
+        if (btn) btn.style.display = 'none';
+        var okEl = document.getElementById(confirmId);
+        okEl.textContent = t('newsletter.saved_later', "✓ Thank you, you're on the list. We'll email you to confirm soon.");
+        okEl.style.display = 'block';
+        return;
+      }
+      if (body.error === 'invalid_email') {
+        inp.classList.add('input-error');
+        if (errEl) { errEl.textContent = t('newsletter.error_invalid'); errEl.style.display = 'block'; }
+        if (btn) { btn.disabled = false; btn.textContent = t('newsletter.subscribe_btn'); }
+        return;
+      }
+      throw new Error(body.error || ('HTTP ' + fnRes.status));
     }
     inp.style.display = 'none';
     if (btn) btn.style.display = 'none';
@@ -1529,6 +2125,30 @@ async function handleNewsletterSignup(emailId, btnSelector, confirmId) {
     console.warn('Newsletter signup error:', e);
   }
 }
+// Links from the confirmation email and from every newsletter land here:
+//   /newsletter/confirm?t=<token>   /newsletter/unsubscribe?t=<token>
+async function handleNewsletterLink(action, token) {
+  var box = document.getElementById('detail-content');
+  showSec('detail', true);
+  var msg = function(title, text) {
+    box.innerHTML = '<div class="detail-hero newsletter-result"><h1>' + esc(title) + '</h1><p>' + esc(text) + '</p>'
+      + '<p><a href="/" onclick="showSec(\'home\');return false;">' + esc(t('newsletter.back_home', 'Back to Sophia Commons')) + '</a></p></div>';
+  };
+  msg(t('common.loading', 'Loading...'), '');
+  try {
+    var r = await fetch(SUPABASE_URL + '/functions/v1/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+      body: JSON.stringify({ action: action, token: token })
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    if (action === 'confirm') msg(t('newsletter.confirmed_title', 'You are subscribed'), t('newsletter.confirmed_text', 'Thank you. The weekly Sophia Commons digest will arrive in your inbox.'));
+    else msg(t('newsletter.unsubscribed_title', 'You have been unsubscribed'), t('newsletter.unsubscribed_text', 'You will not receive further newsletters. You can subscribe again at any time from the footer.'));
+  } catch (e) {
+    msg(t('newsletter.link_error_title', 'This link did not work'), t('newsletter.link_error_text', 'It may have expired or already been used. Write to hello@sophiacommons.org and we will sort it out.'));
+  }
+}
+
 function doSignup() { handleNewsletterSignup('signup-email', '.signup-box button', 'rsignup-ok'); }
 function doFtSignup() { handleNewsletterSignup('ft-email', '.ftnl button', 'ft-ok'); }
 
@@ -1669,6 +2289,16 @@ const catColors = {societies:'#b04522',waldorf:'#8c3a28',biodynamic:'#5a7a3a',me
 let map, markers=[], infoWin, mapLoaded=false;
 var GMAPS_KEY = ['AIza','SyDP','gdBP','ghok','ctex','iuHE','mx1E','GlDD','a6wN','yh8'].join('');
 
+function _mapFallback() {
+  var el = document.getElementById('dir-map');
+  if (!el) return;
+  // height:auto so the fallback list never spills over the legend below it
+  el.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px;height:auto;min-height:160px;';
+  el.innerHTML = '<div style="font-family:Lora,serif;font-size:14px;color:var(--text-muted);">' + esc(t('directory.map_unavailable')) + '</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:6px;max-width:580px;">' +
+    mapLocs.slice(0, 16).map(function(l) { return '<span style="font-size:12px;background:#fff;border:1px solid var(--border-subtle);padding:4px 10px;border-radius:50px;color:var(--text-secondary);">' + esc(l.name) + '<span style="color:var(--text-muted);font-size:11px;"> · ' + esc(l.city) + '</span></span>'; }).join('') + '</div>';
+}
+
 function loadMap() {
   mapLoaded = true;
   if (window.google && window.google.maps) { initMap(); return; }
@@ -1676,13 +2306,9 @@ function loadMap() {
   script.src = 'https://maps.googleapis.com/maps/api/js?key=' + GMAPS_KEY + '&callback=initMap';
   script.async = true;
   script.defer = true;
-  script.onerror = function() {
-    var el = document.getElementById('dir-map');
-    el.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px;';
-    el.innerHTML = '<div style="font-family:Lora,serif;font-size:14px;color:var(--text-muted);">' + t('directory.map_unavailable') + '</div>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:6px;max-width:580px;">' +
-      mapLocs.slice(0,16).map(function(l){return '<span style="font-size:12px;background:#fff;border:1px solid var(--border-subtle);padding:4px 10px;border-radius:50px;color:var(--text-secondary);">'+l.name+'<span style="color:var(--text-muted);font-size:11px;"> · '+l.city+'</span></span>';}).join('') + '</div>';
-  };
+  script.onerror = _mapFallback;
+  // Google calls this when the key is rejected (e.g. referrer restrictions); onerror doesn't fire then
+  window.gm_authFailure = _mapFallback;
   document.head.appendChild(script);
 }
 function initMap() {
@@ -1746,44 +2372,58 @@ function showSubmitForm() {
   document.getElementById('submit-overlay').style.display = 'flex';
   setTimeout(() => document.getElementById('sl-name').focus(), 80);
 }
-async function submitListing() {
+// Shared helpers for form feedback
+function _isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+function _normalizeUrl(v) {
+  if (!v) return null;
+  if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+  try { var u = new URL(v); return /^https?:$/.test(u.protocol) && u.hostname.indexOf('.') > 0 ? u.href : ''; } catch (e) { return ''; }
+}
+function _formMsg(id, msg, ok) {
+  var el = document.getElementById(id);
+  if (!el) { if (msg && !ok) alert(msg); return; }
+  el.textContent = msg || '';
+  el.style.display = msg ? 'block' : 'none';
+  el.style.color = ok ? 'var(--verified)' : 'var(--error)';
+}
+
+async function submitListing(btn) {
+  btn = btn || document.querySelector('[onclick^="submitListing"]');
   const name = document.getElementById('sl-name').value.trim();
   const cat  = document.getElementById('sl-cat').value;
-  if (!name || !cat) {
-    alert(t('error.fill_name_category'));
-    return;
-  }
+  document.getElementById('sl-ok').style.display = 'none';
+  _formMsg('sl-err', '');
+  if (!name || !cat) { _formMsg('sl-err', t('error.fill_name_category')); return; }
 
-  const url = document.getElementById('sl-url').value.trim() || null;
+  const rawUrl = document.getElementById('sl-url').value.trim();
+  const url = _normalizeUrl(rawUrl);
+  if (rawUrl && !url) { _formMsg('sl-err', 'Please enter a valid website address (for example https://example.org).'); return; }
   const loc = document.getElementById('sl-loc').value.trim() || null;
   const description = document.getElementById('sl-desc').value.trim() || null;
   const contact_email = document.getElementById('sl-email').value.trim() || null;
+  if (contact_email && !_isEmail(contact_email)) { _formMsg('sl-err', 'Please enter a valid email address.'); return; }
+  if (!sbReady()) { _formMsg('sl-err', 'We could not reach the server. Please check your connection and try again.'); return; }
 
+  if (btn) { btn.disabled = true; btn.setAttribute('aria-busy', 'true'); }
   try {
-    // Auto-approve: add to directory immediately
-    var { data: dirEntry } = await _sb.from('directory_entries').insert({
-      organization_name: name,
-      category: cat,
-      location: loc,
-      website_url: url,
-      description: description,
-      email: contact_email,
-      status: 'approved'
-    }).select('id').single();
-
-    // Track in pending table for admin review (can still reject/remove)
-    await _sb.from('listings_pending').insert({
+    // Submissions go to the moderation queue. (The previous "auto-approve" insert into
+    // directory_entries never succeeded: it omitted the required user_id, and anonymous
+    // visitors cannot insert there, so every submission was silently lost.)
+    var res = await _sb.from('listings_pending').insert({
       name: name, url: url, category: cat, location: loc,
       description: description, contact_email: contact_email,
-      status: 'approved',
-      directory_entry_id: dirEntry ? dirEntry.id : null
+      status: 'pending'
     });
+    if (res.error) throw res.error;
+    document.getElementById('sl-ok').style.display = 'block';
+    ['sl-name','sl-url','sl-loc','sl-desc','sl-email'].forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
+    setTimeout(() => { document.getElementById('submit-overlay').style.display = 'none'; document.getElementById('sl-ok').style.display = 'none'; }, 2800);
   } catch(e) {
     console.warn('Listing submit failed:', e);
+    _formMsg('sl-err', 'Sorry, your listing could not be submitted. Please try again, or email hello@sophiacommons.org.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
   }
-
-  document.getElementById('sl-ok').style.display = 'block';
-  setTimeout(() => { document.getElementById('submit-overlay').style.display = 'none'; }, 2800);
 }
 document.getElementById('submit-overlay').addEventListener('click', function(e) {
   if (e.target === this) this.style.display = 'none';
@@ -1805,14 +2445,16 @@ function doSearch() {
   if (menuOverlay) menuOverlay.classList.remove('active');
 
   if (sbReady()) {
-    _doSupabaseSearchV2(q);
+    // The search_all RPC (V2) does not match the live function signature and does not
+    // cover the directory, so it always failed over to this path. Call it directly.
+    _doSupabaseSearch(q);
   } else {
     _doLocalSearch(q.toLowerCase());
   }
 }
 
 async function _doSupabaseSearch(q) {
-  var tsQuery = q.trim().split(/\s+/).map(function(w) { return w.replace(/[^a-zA-Z0-9]/g, ''); }).filter(Boolean).join(' & ');
+  var tsQuery = q.trim().split(/\s+/).map(function(w) { return w.replace(/[^\p{L}\p{N}]/gu, ''); }).filter(Boolean).join(' & ');  // keep accented letters (König, Dornach)
   if (!tsQuery) { _doLocalSearch(q.toLowerCase()); return; }
 
   showSec('browse');
@@ -1851,7 +2493,7 @@ async function _doSupabaseSearch(q) {
 
     if (dirResults.length > 0) {
       html += '<div style="margin-bottom:16px;">';
-      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + t('search_results.directory') + ' (' + dirResults.length + ')</div>';
+      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold-text);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + t('search_results.directory') + ' (' + dirResults.length + ')</div>';
       dirResults.forEach(function(d) {
         html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">';
         html += '<a href="#" onclick="showDetail(\'directory\',\'' + d.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(d.organization_name) + '</a>';
@@ -1865,7 +2507,7 @@ async function _doSupabaseSearch(q) {
 
     if (evResults.length > 0) {
       html += '<div style="margin-bottom:16px;">';
-      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + t('search_results.events') + ' (' + evResults.length + ')</div>';
+      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold-text);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + t('search_results.events') + ' (' + evResults.length + ')</div>';
       evResults.forEach(function(ev) {
         var loc = [ev.city, ev.country].filter(Boolean).join(', ');
         html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">';
@@ -1883,7 +2525,7 @@ async function _doSupabaseSearch(q) {
 
     if (newsResults.length > 0) {
       html += '<div style="margin-bottom:16px;">';
-      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + t('search_results.news') + ' (' + newsResults.length + ')</div>';
+      html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold-text);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + t('search_results.news') + ' (' + newsResults.length + ')</div>';
       newsResults.forEach(function(n) {
         html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">';
         html += '<a href="#" onclick="showDetail(\'news\',\'' + n.id + '\');return false;" style="font-family:Lora,serif;font-weight:700;font-size:14px;color:var(--text-primary);text-decoration:none;">' + esc(n.title) + '</a>';
@@ -2007,7 +2649,7 @@ async function loadEventsFromSupabase() {
         '</div>' +
         '<div class="evinfo">' +
           '<div class="etag">' + esc(tag) + '</div>' +
-          '<h5><a href="#" onclick="showDetail(\'event\',\'' + ev.id + '\');return false;">' + esc(ev.title) + '</a></h5>' +
+          '<h5><a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a></h5>' +
           '<div class="emeta">' + esc(loc) + (org ? ' &middot; ' + esc(org) : '') + (ev.is_free ? ' &middot; ' + t('common.free') : '') + '</div>' +
         '</div>' +
       '</div>';
@@ -2031,19 +2673,23 @@ async function loadEventsFromSupabase() {
 function _mergeSupabaseEventsIntoCalendar(sbEvents) {
   var merged = 0;
   sbEvents.forEach(function(ev) {
-    // Build a dedup key from title to avoid duplicates across runs
-    var dedupKey = (ev.title || '').toLowerCase().trim();
-    if (_sbMergedEventTitles[dedupKey]) return;
-
-    // Also check if an identical title already exists in calEvents (from hardcoded data)
+    // Build the date first so recurring events (same title, different dates) are all kept
     var dateStr = '';
     if (ev.start_date) {
       var d = new Date(ev.start_date);
       dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
+    var titleKey = (ev.title || '').toLowerCase().trim();
+    var dedupKey = ev.id ? 'id:' + ev.id : titleKey + '|' + dateStr;
+    if (_sbMergedEventTitles[dedupKey]) return;
 
+    // Skip if the same title on the same date already exists in calEvents (from hardcoded data)
+    // (±1 day tolerance: UTC-midnight start dates can land on the previous local day)
+    var evTime = dateStr ? new Date(dateStr + 'T12:00:00').getTime() : 0;
     var alreadyExists = calEvents.some(function(existing) {
-      return existing.title.toLowerCase().trim() === dedupKey;
+      if ((existing.title || '').toLowerCase().trim() !== titleKey) return false;
+      if (!existing.date || !evTime) return true;
+      return Math.abs(new Date(existing.date + 'T12:00:00').getTime() - evTime) <= 86400000;
     });
     if (alreadyExists) {
       _sbMergedEventTitles[dedupKey] = true;
@@ -2065,6 +2711,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
     }
 
     calEvents.push({
+      id: ev.id || null,
       date: dateStr,
       title: ev.title || '',
       cat: cat,
@@ -2150,6 +2797,15 @@ async function loadNewsFromSupabase() {
       else container.prepend(newsList);
     }
     newsList.innerHTML = html;
+    // Real articles replace the static placeholder headlines on the News page and the home page
+    document.querySelectorAll('.static-news').forEach(function(el) { el.style.display = 'none'; });
+    var hc = document.getElementById('home-current-events');
+    if (hc) {
+      var top3 = data.slice(0, 3);
+      hc.innerHTML = '<div class="trend-story"><h4><a href="/article/' + esc(top3[0].id) + '" onclick="showDetail(\'news\',\'' + escJs(top3[0].id) + '\');return false;">' + esc(top3[0].title) + '</a></h4></div>'
+        + top3.slice(1).map(function(n) { return '<a class="trend-more" href="/article/' + esc(n.id) + '" onclick="showDetail(\'news\',\'' + escJs(n.id) + '\');return false;">' + esc(n.title) + '</a>'; }).join('')
+        + '<a class="trend-all" href="/news" onclick="showSec(\'news\');return false;">' + esc(t('home.all_news', 'all news')) + '</a>';
+    }
 
     // Update count
     const label = container.querySelector('.seclabel');
@@ -2217,7 +2873,7 @@ async function loadDirectoryFromSupabase() {
       tagsHtml += '<h4>Popular Tags</h4>';
       tagsHtml += '<div class="tag-cloud">';
       popularTags.forEach(function(pair) {
-        tagsHtml += '<a class="dir-tag" href="#" onclick="filterByTag(\'' + esc(pair[0]).replace(/'/g, "\\'") + '\');return false;">' + esc(pair[0]) + '<span class="dir-tag-count">' + pair[1] + '</span></a>';
+        tagsHtml += '<a class="dir-tag" href="#" onclick="filterByTag(\'' + escJs(pair[0]) + '\');return false;">' + esc(pair[0]) + '<span class="dir-tag-count">' + pair[1] + '</span></a>';
       });
       tagsHtml += '</div></div>';
     }
@@ -2244,7 +2900,7 @@ async function loadDirectoryFromSupabase() {
         <ul>${entries.map(e => {
           const v = e.is_verified ? '<sup>&#10003;</sup>' : '';
           const loc = e.location || '';
-          const entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
+          const entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + escJs(tg) + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
           return `<li><a href="#" onclick="showDetail('directory','${e.id}');return false;">${esc(e.organization_name)}${v}</a> <span style="font-size:11px;color:var(--text-muted);">${esc(loc)}</span>${entryTags}</li>`;
         }).join('')}</ul>
       </div>`;
@@ -2342,7 +2998,7 @@ function _renderTagFilterResults(tag, filtered) {
       + '<ul>' + entries.map(function(e) {
           var v = e.is_verified ? '<sup>&#10003;</sup>' : '';
           var loc = e.location || '';
-          var entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag' + (tg === _activeTag ? ' active' : '') + '" href="#" onclick="filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
+          var entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag' + (tg === _activeTag ? ' active' : '') + '" href="#" onclick="filterByTag(\'' + escJs(tg) + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
           return '<li><a href="#" onclick="showDetail(\'directory\',\'' + e.id + '\');return false;">' + esc(e.organization_name) + v + '</a> <span style="font-size:11px;color:var(--text-muted);">' + esc(loc) + '</span>' + entryTags + '</li>';
         }).join('')
       + '</ul></div>';
@@ -2404,7 +3060,7 @@ function clearTagFilter() {
         + '<ul>' + entries.map(function(e) {
             var v = e.is_verified ? '<sup>&#10003;</sup>' : '';
             var loc = e.location || '';
-            var entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + esc(tg).replace(/'/g, "\\'") + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
+            var entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + escJs(tg) + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
             return '<li><a href="#" onclick="showDetail(\'directory\',\'' + e.id + '\');return false;">' + esc(e.organization_name) + v + '</a> <span style="font-size:11px;color:var(--text-muted);">' + esc(loc) + '</span>' + entryTags + '</li>';
           }).join('')
         + '</ul></div>';
@@ -2417,9 +3073,12 @@ function clearTagFilter() {
 
 // ── HELPER: time ago ──
 function timeAgo(dateStr) {
+  if (!dateStr) return '';
   const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
   const now = new Date();
   const diff = Math.floor((now - d) / 86400000);
+  if (diff < 0) return localDate(dateStr, { month: 'short', day: 'numeric' });
   if (diff === 0) return t('common.today');
   if (diff === 1) return t('common.yesterday');
   if (diff < 7) return t('common.days_ago').replace('{count}', diff);
@@ -2454,6 +3113,114 @@ var seminarData = [
   { title:'Eurythmy for Educators', dates:'Aug 4-8, 2026', loc:'Dornach, Switzerland', tag:'training' },
   { title:'Inner Development Path Seminar', dates:'Sep 12-14, 2026', loc:'Ann Arbor, MI', tag:'seminar' }
 ];
+
+// Memorial commemorative dates (recurring annually)
+var MEMORIAL_DATES = [
+  { month: 2, day: 27, name: 'Rudolf Steiner', type: 'birth', year: 1861 },
+  { month: 3, day: 30, name: 'Rudolf Steiner', type: 'death', year: 1925 },
+  { month: 3, day: 14, name: 'Marie Steiner-von Sivers', type: 'birth', year: 1867 },
+  { month: 12, day: 27, name: 'Marie Steiner-von Sivers', type: 'death', year: 1948 },
+  { month: 2, day: 22, name: 'Ita Wegman', type: 'birth', year: 1876 },
+  { month: 3, day: 4, name: 'Ita Wegman', type: 'death', year: 1943 },
+  { month: 2, day: 19, name: 'Ehrenfried Pfeiffer', type: 'birth', year: 1899 },
+  { month: 11, day: 30, name: 'Ehrenfried Pfeiffer', type: 'death', year: 1961 },
+  { month: 9, day: 25, name: 'Karl Konig', type: 'birth', year: 1902 },
+  { month: 3, day: 27, name: 'Karl Konig', type: 'death', year: 1966 },
+  { month: 12, day: 10, name: 'Albert Steffen', type: 'birth', year: 1884 },
+  { month: 7, day: 13, name: 'Albert Steffen', type: 'death', year: 1963 }
+];
+
+// Anthroposophical Holidays & Festivals
+var ANTHRO_HOLIDAYS = [
+  // Fixed dates
+  { month: 12, day: 24, title: '12 Holy Nights Begin', cat: 'festival' },
+  { month: 12, day: 25, title: 'Christmas - Birth of Light', cat: 'festival' },
+  { month: 1, day: 6, title: '12 Holy Nights End (Epiphany)', cat: 'festival' },
+  { month: 9, day: 29, title: 'Michaelmas - Festival of Courage', cat: 'festival' },
+  // Advent Sundays + Easter + Pentecost are moveable — computed per year
+];
+
+function _computeEaster(yr) {
+  // Anonymous Gregorian algorithm
+  var a = yr % 19, b = Math.floor(yr / 100), c = yr % 100;
+  var d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+  var g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+  var i = Math.floor(c / 4), k = c % 4;
+  var l = (32 + 2 * e + 2 * i - h - k) % 7;
+  var m = Math.floor((a + 11 * h + 22 * l) / 451);
+  var month = Math.floor((h + l - 7 * m + 114) / 31);
+  var day = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(yr, month - 1, day);
+}
+
+function _dateStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function _addDays(d, n) { var r = new Date(d); r.setDate(r.getDate() + n); return r; }
+
+function _injectAnthroHolidays(yr) {
+  // Fixed holidays
+  ANTHRO_HOLIDAYS.forEach(function(h) {
+    var dateStr = yr + '-' + String(h.month).padStart(2, '0') + '-' + String(h.day).padStart(2, '0');
+    var exists = calEvents.some(function(e) { return e.date === dateStr && e.cat === 'festival'; });
+    if (!exists) calEvents.push({ date: dateStr, title: h.title, cat: 'festival', loc: '', org: '', time: '' });
+  });
+
+  // Advent Sundays (4 Sundays before Dec 25)
+  var xmas = new Date(yr, 11, 25);
+  var xmasDay = xmas.getDay();
+  var advent4 = _addDays(xmas, -(xmasDay === 0 ? 7 : xmasDay)); // Sunday before Christmas
+  for (var a = 0; a < 4; a++) {
+    var advDate = _addDays(advent4, -7 * a);
+    var advStr = _dateStr(advDate);
+    var advNum = 4 - a;
+    var exists = calEvents.some(function(e) { return e.date === advStr && e.cat === 'festival'; });
+    if (!exists) calEvents.push({ date: advStr, title: 'Advent Sunday ' + advNum, cat: 'festival', loc: '', org: '', time: '' });
+  }
+
+  // Easter and Pentecost
+  var easter = _computeEaster(yr);
+  var easterStr = _dateStr(easter);
+  var exists = calEvents.some(function(e) { return e.date === easterStr && e.cat === 'festival'; });
+  if (!exists) calEvents.push({ date: easterStr, title: 'Easter - Festival of Resurrection', cat: 'festival', loc: '', org: '', time: '' });
+
+  // Good Friday (2 days before Easter)
+  var goodFri = _addDays(easter, -2);
+  var gfStr = _dateStr(goodFri);
+  exists = calEvents.some(function(e) { return e.date === gfStr && e.cat === 'festival'; });
+  if (!exists) calEvents.push({ date: gfStr, title: 'Good Friday', cat: 'festival', loc: '', org: '', time: '' });
+
+  // Pentecost/Whitsun (49 days after Easter)
+  var pentecost = _addDays(easter, 49);
+  var pentStr = _dateStr(pentecost);
+  exists = calEvents.some(function(e) { return e.date === pentStr && e.cat === 'festival'; });
+  if (!exists) calEvents.push({ date: pentStr, title: 'Pentecost (Whitsun) - Awakening of Spirit', cat: 'festival', loc: '', org: '', time: '' });
+
+  // Ascension (39 days after Easter)
+  var ascension = _addDays(easter, 39);
+  var ascStr = _dateStr(ascension);
+  exists = calEvents.some(function(e) { return e.date === ascStr && e.cat === 'festival'; });
+  if (!exists) calEvents.push({ date: ascStr, title: 'Ascension', cat: 'festival', loc: '', org: '', time: '' });
+}
+
+function _injectMemorialDates(yr) {
+  MEMORIAL_DATES.forEach(function(m) {
+    var dateStr = yr + '-' + String(m.month).padStart(2, '0') + '-' + String(m.day).padStart(2, '0');
+    var age = yr - m.year;
+    var label = m.type === 'birth'
+      ? 'Born ' + age + ' yrs ago: ' + m.name
+      : 'Remembering ' + m.name + ' (' + age + ' yrs)';
+    // Avoid duplicates
+    var exists = calEvents.some(function(e) { return e.date === dateStr && e.cat === 'memorial'; });
+    if (!exists) {
+      calEvents.push({ date: dateStr, title: label, cat: 'memorial', loc: '', org: '', time: '' });
+    }
+  });
+}
+
+var _curYear = new Date().getFullYear();
+for (var _y = _curYear - 1; _y <= _curYear + 5; _y++) { _injectMemorialDates(_y); _injectAnthroHolidays(_y); }
 
 var _calNow = new Date();
 var calMonth = _calNow.getMonth();
@@ -2490,11 +3257,13 @@ function renderCalendar() {
     var dateStr = calYear + '-' + String(calMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
     var isToday = (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear());
     var dayEvents = calEvents.filter(function(e) { return e.date === dateStr; });
+    var hasMemorial = dayEvents.some(function(e) { return e.cat === 'memorial'; });
+    var hasFestival = dayEvents.some(function(e) { return e.cat === 'festival'; });
 
-    html += '<div class="cal-day' + (isToday ? ' today' : '') + '" onclick="showDayEvents(\'' + dateStr + '\')">';
+    html += '<div class="cal-day' + (isToday ? ' today' : '') + (hasFestival ? ' festival-day' : '') + (hasMemorial ? ' memorial-day' : '') + '" onclick="showDayEvents(\'' + dateStr + '\')">';
     html += '<div class="d-num">' + d + '</div>';
     dayEvents.forEach(function(ev) {
-      html += '<div class="cal-ev ' + ev.cat + '" title="' + ev.title + '">' + ev.title + '</div>';
+      html += '<div class="cal-ev ' + esc(ev.cat) + '" title="' + esc(ev.title) + '">' + esc(ev.title) + '</div>';
     });
     html += '</div>';
   }
@@ -2511,8 +3280,8 @@ function renderCalendar() {
 
 function calNavMonth(dir) {
   calMonth += dir;
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; _injectMemorialDates(calYear); _injectAnthroHolidays(calYear); }
+  if (calMonth < 0) { calMonth = 11; calYear--; _injectMemorialDates(calYear); _injectAnthroHolidays(calYear); }
   renderCalendar();
 }
 
@@ -2536,13 +3305,20 @@ function showDayEvents(dateStr) {
 
   var popup = document.createElement('div');
   popup.className = 'day-popup';
-  var html = '<button class="dp-close" onclick="this.parentElement.remove();document.querySelector(\'.day-popup-overlay\').remove();">&times;</button>';
-  html += '<h4>' + label + '</h4>';
+  var html = '<button class="dp-close" aria-label="Close" onclick="this.parentElement.remove();var o=document.querySelector(\'.day-popup-overlay\');if(o)o.remove();">&times;</button>';
+  html += '<h4 id="day-popup-title">' + esc(label) + '</h4>';
   dayEvs.forEach(function(ev) {
-    html += '<div class="dp-event"><h5>' + ev.title + '</h5><div class="dp-meta">' + ev.time + ' &middot; ' + ev.loc + ' &middot; ' + ev.org + '</div></div>';
+    var dpMeta = _evMeta(ev);
+    var dpTitle = ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="document.querySelectorAll(\'.day-popup,.day-popup-overlay\').forEach(function(x){x.remove();});showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title);
+    html += '<div class="dp-event"><h5>' + dpTitle + '</h5>' + (dpMeta ? '<div class="dp-meta">' + dpMeta + '</div>' : '') + '</div>';
   });
   popup.innerHTML = html;
   document.body.appendChild(popup);
+}
+
+// Join an event's time / location / organizer, skipping empty parts (avoids ' · · ').
+function _evMeta(ev) {
+  return [ev.time, ev.loc, ev.org].filter(function(x) { return x && String(x).trim(); }).map(esc).join(' &middot; ');
 }
 
 function renderEventList() {
@@ -2564,9 +3340,12 @@ function renderEventList() {
     var isToday = (d.toDateString() === todayStr);
     html += '<div class="evrow reveal">';
     html += '<div class="evdate' + (isToday ? ' today' : '') + '"><div class="mo">' + mo + '</div><div class="dy">' + dy + '</div></div>';
-    html += '<div class="evinfo"><div class="etag">' + ev.cat.charAt(0).toUpperCase() + ev.cat.slice(1) + '</div>';
-    html += '<h5>' + ev.title + '</h5>';
-    html += '<div class="emeta">' + ev.time + ' &middot; ' + ev.loc + ' &middot; ' + ev.org + '</div></div></div>';
+    var cat = String(ev.cat || 'event');
+    var meta = _evMeta(ev);
+    html += '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div>';
+    html += '<h5>' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title)) + '</h5>';
+    if (meta) html += '<div class="emeta">' + meta + '</div>';
+    html += '</div></div>';
   });
   container.innerHTML = html;
 
@@ -2588,9 +3367,9 @@ function renderSeminars() {
   var html = '';
   seminarData.forEach(function(s) {
     html += '<div class="seminar-card">';
-    html += '<h5>' + s.title + '</h5>';
-    html += '<div class="sem-meta">' + s.dates + '<br>' + s.loc + '</div>';
-    html += '<span class="sem-tag ' + s.tag + '">' + s.tag + '</span>';
+    html += '<h5>' + esc(s.title) + '</h5>';
+    html += '<div class="sem-meta">' + esc(s.dates) + '<br>' + esc(s.loc) + '</div>';
+    html += '<span class="sem-tag ' + esc(s.tag) + '">' + esc(s.tag) + '</span>';
     html += '</div>';
   });
   container.innerHTML = html;
@@ -2610,9 +3389,9 @@ function renderMiniCal() {
   calEvents.forEach(function(e) { eventDates[e.date] = true; });
 
   var html = '<div class="mc-head">';
-  html += '<button onclick="mcNav(-1)">&lsaquo;</button>';
+  html += '<button onclick="mcNav(-1)" aria-label="Previous month">&lsaquo;</button>';
   html += '<span>' + MONTHS[mcMonth].substring(0, 3) + ' ' + mcYear + '</span>';
-  html += '<button onclick="mcNav(1)">&rsaquo;</button>';
+  html += '<button onclick="mcNav(1)" aria-label="Next month">&rsaquo;</button>';
   html += '</div><div class="mc-grid">';
 
   ['S','M','T','W','T','F','S'].forEach(function(l) {
@@ -2630,7 +3409,7 @@ function renderMiniCal() {
     var cls = 'mc-d';
     if (isToday) cls += ' today';
     if (hasEvent) cls += ' has-event';
-    html += '<div class="' + cls + '" onclick="showDayEvents(\'' + dateStr + '\')">' + d + '</div>';
+    html += '<div class="' + cls + '"' + (hasEvent ? ' role="button" tabindex="0" aria-label="' + esc(localDate(dateStr, {month:'long', day:'numeric'})) + ' events"' : '') + (isToday ? ' aria-current="date"' : '') + ' onclick="showDayEvents(\'' + dateStr + '\')">' + d + '</div>';
   }
 
   html += '</div>';
@@ -2662,10 +3441,37 @@ function renderSidebarUpcoming() {
     var dy = d.getDate();
     html += '<div class="sb-ev">';
     html += '<div class="sb-ev-date">' + mo + '<br>' + dy + '</div>';
-    html += '<div class="sb-ev-info"><h6>' + ev.title + '</h6><span>' + ev.loc + '</span></div>';
+    html += '<div class="sb-ev-info"><h6>' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title)) + '</h6>' + (ev.loc ? '<span>' + esc(ev.loc) + '</span>' : '') + '</div>';
     html += '</div>';
   });
-  container.innerHTML = html;
+  container.innerHTML = html || '<div class="sb-empty">' + esc(t('events.none_yet', 'No upcoming events yet.')) + '</div>';
+  renderHomeUpcoming(upcoming);
+}
+
+// Home page "Upcoming Events" card: previously three hard-coded spring 2026 events, all
+// auto-hidden once past, which left an empty box. Render from the live calendar instead.
+function renderHomeUpcoming(upcoming) {
+  var box = document.getElementById('home-upcoming');
+  if (!box) return;
+  var today0 = new Date(); today0.setHours(0, 0, 0, 0);
+  upcoming = calEvents.filter(function(e) { return e.cat !== 'memorial' && new Date(e.date + 'T23:59:59') >= today0; })
+    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }).slice(0, 4);
+  if (!upcoming || !upcoming.length) {
+    box.innerHTML = '<div class="empty-note">' + esc(t('events.none_yet', 'No upcoming events yet.')) + ' <a href="#" onclick="showSec(\'events\');showEventForm();return false;">' + esc(t('events.submit_one', 'Submit one')) + '</a></div>';
+    return;
+  }
+  box.innerHTML = upcoming.map(function(ev) {
+    var d = new Date(ev.date + 'T12:00:00');
+    var cat = String(ev.cat || 'event');
+    var titleHtml = ev.id
+      ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>'
+      : '<a href="#" onclick="showSec(\'events\');return false;">' + esc(ev.title) + '</a>';
+    var meta = _evMeta(ev);
+    return '<div class="evrow">'
+      + '<div class="evdate"><div class="mo">' + esc(localDate(ev.date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
+      + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5>' + titleHtml + '</h5>'
+      + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
+  }).join('');
 }
 
 // ── HEADER CALENDAR WIDGET ──
@@ -2679,9 +3485,15 @@ function updateHeaderCalendar() {
   dayEl.textContent = localDate(now, { weekday: 'long' });
   dateEl.textContent = localDate(now, { month: 'long', day: 'numeric', year: 'numeric' });
 
-  var todayStr = now.toISOString().split('T')[0];
-  var futureCount = calEvents.filter(function(e) { return e.date >= todayStr; }).length;
+  // Local date (toISOString() is UTC and flips to tomorrow in the evening in the Americas).
+  var todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+  // Count real events only (birthday/anniversary markers are calendar decorations, not events).
+  var futureCount = calEvents.filter(function(e) { return e.date >= todayStr && e.cat !== 'memorial'; }).length;
   upEl.textContent = t('header.upcoming_events').replace('{count}', futureCount);
+  var evLabel = document.getElementById('events-seclabel');
+  if (evLabel && !document.getElementById('sb-events-list')) {
+    evLabel.innerHTML = esc(t('events.section_label', 'Events & Calendar')) + ' &nbsp;&middot;&nbsp; ' + esc(t('events.upcoming_count', '{count} upcoming').replace('{count}', futureCount));
+  }
 }
 
 // ── EVENT FORM ──
@@ -2692,58 +3504,93 @@ function closeEventForm() {
   document.getElementById('event-submit-overlay').classList.remove('open');
 }
 
-function submitEvent() {
+// Parse the free-text time field ("9:00 AM - 5:00 PM", "14:30") into HH:MM (24h), or '' if unclear.
+function _parseStartTime(txt) {
+  var m = String(txt || '').trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a\.m\.|p\.m\.)?/i);
+  if (!m) return '';
+  var h = parseInt(m[1], 10), min = m[2] ? parseInt(m[2], 10) : 0, ap = (m[3] || '').toLowerCase().replace(/\./g, '');
+  if (!m[2] && !ap) return '';
+  if (ap === 'pm' && h < 12) h += 12;
+  if (ap === 'am' && h === 12) h = 0;
+  if (h > 23 || min > 59) return '';
+  return String(h).padStart(2, '0') + ':' + String(min).padStart(2, '0');
+}
+
+async function submitEvent(btn) {
   var title = document.getElementById('esm-title').value.trim();
   var date = document.getElementById('esm-date').value;
   if (!title || !date) { alert(t('error.fill_title_date')); return; }
 
+  if (!sbReady()) { alert('We could not reach the server. Please try again in a moment.'); return; }
+  var userId = window._supabaseUser ? window._supabaseUser.id : null;
+  if (!userId) {
+    // events.user_id is required, so anonymous submissions always failed silently before.
+    closeEventForm();
+    openModal();
+    var desc = document.getElementById('modal-desc');
+    if (desc) desc.textContent = 'Please sign in (free) to submit an event. Your form entries are kept.';
+    return;
+  }
+
   var description = document.getElementById('esm-desc').value.trim();
   var endDate = document.getElementById('esm-end').value;
-  var time = document.getElementById('esm-time').value || '';
+  if (endDate && endDate < date) { alert('The end date is before the start date.'); return; }
+  var time = document.getElementById('esm-time').value.trim();
   var cat = document.getElementById('esm-cat').value;
-  var loc = document.getElementById('esm-loc').value || 'TBD';
-  var org = document.getElementById('esm-org').value || '';
-  var url = document.getElementById('esm-url').value.trim();
+  var loc = document.getElementById('esm-loc').value.trim() || 'TBD';
+  var org = document.getElementById('esm-org').value.trim();
+  var rawUrl = document.getElementById('esm-url').value.trim();
+  var url = _normalizeUrl(rawUrl);
+  if (rawUrl && !url) { alert('Please enter a valid event link (for example https://example.org).'); return; }
 
   var catToEventType = {
     'study': 'study_group', 'conference': 'conference', 'community': 'other',
     'eurythmy': 'workshop', 'biodynamic': 'workshop', 'medicine': 'workshop'
   };
 
-  var ev = { date: date, title: title, cat: cat, loc: loc, org: org, time: time };
-  calEvents.push(ev);
-  renderCalendar();
-  renderEventList();
-  renderMiniCal();
-  renderSidebarUpcoming();
-  updateHeaderCalendar();
-  closeEventForm();
+  var hhmm = _parseStartTime(time);
+  var startDate = hhmm ? date + 'T' + hhmm + ':00' : date + 'T00:00:00';
+  var fullDesc = (description || 'No description provided.') + (time ? '\n\nTime: ' + time : '');
+  var row = {
+    title: title,
+    description: fullDesc,
+    event_type: catToEventType[cat] || 'other',
+    start_date: startDate,
+    location_name: loc,
+    organizer_name: org,
+    status: 'pending',
+    is_free: true,
+    user_id: userId
+  };
+  if (endDate) row.end_date = endDate + 'T23:59:59';
+  if (url) row.organizer_url = url;
 
-  ['esm-title','esm-date','esm-end','esm-time','esm-loc','esm-org','esm-desc','esm-url'].forEach(function(id) {
-    document.getElementById(id).value = '';
-  });
+  if (btn) btn.disabled = true;
+  try {
+    var res = await _sb.from('events').insert([row]);
+    // Until the moderation migration adds 'pending' to the status CHECK, fall back to publishing.
+    if (res.error && res.error.code === '23514') {
+      row.status = 'upcoming';
+      res = await _sb.from('events').insert([row]);
+    }
+    if (res.error) throw res.error;
 
-  if (sbReady()) {
-    var userId = window._supabaseUser ? window._supabaseUser.id : null;
-    var startDate = time ? date + 'T' + time + ':00' : date + 'T00:00:00';
-    var row = {
-      title: title,
-      description: description || 'No description provided.',
-      event_type: catToEventType[cat] || 'other',
-      start_date: startDate,
-      location_name: loc,
-      organizer_name: org,
-      status: 'upcoming',
-      is_free: true
-    };
-    if (userId) row.user_id = userId;
-    if (endDate) row.end_date = endDate + 'T23:59:59';
-    if (url) row.organizer_url = url;
-
-    _sb.from('events').insert([row]).then(function(res) {
-      if (res.error) console.warn('Event submit error:', res.error.message);
-      else console.log('Event saved to Supabase');
+    if (row.status === 'upcoming') {
+      calEvents.push({ date: date, title: title, cat: cat, loc: loc, org: org, time: time });
+      renderCalendar(); renderEventList(); renderMiniCal(); renderSidebarUpcoming(); updateHeaderCalendar();
+      alert('Thank you! Your event has been added to the calendar.');
+    } else {
+      alert('Thank you! Your event was submitted and will appear once it has been reviewed.');
+    }
+    closeEventForm();
+    ['esm-title','esm-date','esm-end','esm-time','esm-loc','esm-org','esm-desc','esm-url'].forEach(function(id) {
+      document.getElementById(id).value = '';
     });
+  } catch (e) {
+    console.warn('Event submit error:', e);
+    alert('Sorry, the event could not be saved (' + (e.message || 'unknown error') + '). Please try again.');
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
@@ -2795,7 +3642,7 @@ async function loadBooksFromSupabase() {
     if (!sbBooksList) {
       sbBooksList = document.createElement('div');
       sbBooksList.id = 'sb-books-list';
-      var label = container.querySelector('.seclabel');
+      var label = document.getElementById('top50-books') || container.querySelector('.seclabel');
       if (label) label.insertAdjacentElement('afterend', sbBooksList);
       else container.prepend(sbBooksList);
     }
@@ -2813,10 +3660,10 @@ async function loadBooksFromSupabase() {
         var ga = b.ga_number ? '<span class="ltag">' + esc(b.ga_number) + '</span>' : '';
         var authorTag = (b.author && b.author !== 'Rudolf Steiner') ? '<span style="font-size:11px;color:var(--text-muted);"> - ' + esc(b.author) + '</span>' : '';
         var links = '';
-        if (b.amazon_url) links += '<a href="' + esc(b.amazon_url) + '" target="_blank" rel="noopener">Amazon</a>';
-        if (b.steinerbooks_url) links += (links ? ' &middot; ' : '') + '<a href="' + esc(b.steinerbooks_url) + '" target="_blank" rel="noopener">' + (b.price ? esc(b.price) + ' SteinerBooks' : 'SteinerBooks') + '</a>';
-        if (b.archive_url) links += (links ? ' &middot; ' : '') + '<span class="lv"><a href="' + esc(b.archive_url) + '" target="_blank" rel="noopener">free online</a></span>';
-        html += '<div class="lrow">' + ga + '<a class="ltitle" href="' + esc(b.amazon_url || b.archive_url || '#') + '" target="_blank">' + esc(b.title) + '</a>' + authorTag + '<span class="lmeta">' + links + '</span></div>';
+        if (b.amazon_url) links += '<a href="' + escUrl(b.amazon_url) + '" target="_blank" rel="noopener">Amazon</a>';
+        if (b.steinerbooks_url) links += (links ? ' &middot; ' : '') + '<a href="' + escUrl(b.steinerbooks_url) + '" target="_blank" rel="noopener">' + (b.price ? esc(b.price) + ' SteinerBooks' : 'SteinerBooks') + '</a>';
+        if (b.archive_url) links += (links ? ' &middot; ' : '') + '<span class="lv"><a href="' + escUrl(b.archive_url) + '" target="_blank" rel="noopener">free online</a></span>';
+        html += '<div class="lrow">' + ga + '<a class="ltitle" href="' + escUrl(b.amazon_url || b.archive_url || '#') + '" target="_blank">' + esc(b.title) + '</a>' + authorTag + '<span class="lmeta">' + links + '</span></div>';
       });
       html += '</div></div>';
     });
@@ -2839,7 +3686,8 @@ function rerenderForLang() {
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
   if (id === 'marketplace') { renderMarketplace(); }
-  if (id === 'podcasts') { renderPodcastSection(); }
+  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); }
+  if (id === 'books') { renderTop50Books(); }
   if (id === 'directory') { _loadAllSupabaseData(); }
   if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
   if (typeof SC_I18N !== 'undefined') SC_I18N.applyTranslations();
@@ -2856,18 +3704,72 @@ function _loadAllSupabaseData() {
     loadMarketplace()
   ]).catch(function(e) { console.warn('Data load error:', e); });
   renderPodcastSection();
+  _applyLiveCounts().then(_markEmptyClassifieds);
+}
+
+// Replace the hard-coded category counts (e.g. "312" for Waldorf when the directory holds ~140)
+// with live counts from the directory. Categories with no live data source lose their number
+// rather than showing an invented one.
+async function _applyLiveCounts() {
+  if (!sbReady() || typeof catMeta === 'undefined') return;
+  try {
+    // Page through results: PostgREST caps each response at 1,000 rows.
+    var rowsAll = [], from = 0, PAGE = 1000, res;
+    for (var guard = 0; guard < 20; guard++) {
+      res = await _sb.from('directory_entries').select('category, country').eq('status', 'approved').range(from, from + PAGE - 1);
+      if (res.error || !res.data) break;
+      rowsAll = rowsAll.concat(res.data);
+      if (res.data.length < PAGE) break;
+      from += PAGE;
+    }
+    res = { data: rowsAll };
+    if (!rowsAll.length) return;   // keep the page as-is if the query fails
+    var counts = {}, total = 0;
+    var countries = {};
+    res.data.forEach(function(r) {
+      counts[r.category] = (counts[r.category] || 0) + 1; total++;
+      if (r.country) countries[String(r.country).trim().toLowerCase()] = true;
+    });
+    var dl = document.getElementById('directory-seclabel');
+    var nCountries = Object.keys(countries).length;
+    if (dl) dl.innerHTML = esc(t('directory.label', 'World Directory')) + ' &nbsp;&middot;&nbsp; ' + esc((nCountries > 1 ? t('directory.org_count_live', '{count} organizations & resources in {countries} countries') : t('directory.org_count_live_nocountry', '{count} organizations & resources')).replace('{count}', total).replace('{countries}', nCountries));
+    var re = /showCategory\('([^']+)'/;
+    document.querySelectorAll('[onclick*="showCategory("]').forEach(function(el) {
+      var m = (el.getAttribute('onclick') || '').match(re);
+      if (!m) return;
+      var badge = el.nextElementSibling;
+      if (!badge || !(badge.classList.contains('cbadge') || badge.classList.contains('alllink'))) return;
+      var bm = badge.textContent.trim().match(/^[\d,+]+(\s*\u2192)?$/);   // only numeric badges ("312" or "312 →")
+      if (!bm) return;
+      var meta = catMeta[m[1].toLowerCase()];
+      if (!meta) return;   // e.g. Books & Library: count comes from elsewhere, leave it
+      var n = meta.dirCat ? counts[meta.dirCat] : undefined;
+      if (n) { badge.textContent = n + (bm[1] ? ' \u2192' : ''); badge.hidden = false; }
+      else if (bm[1]) { badge.textContent = '\u2192'; }   // keep the arrow link affordance
+      else { badge.textContent = ''; badge.hidden = true; }
+    });
+    // Badges not tied to showCategory() declare their source with data-live-count ("" = no live source)
+    document.querySelectorAll('[data-live-count]').forEach(function(b) {
+      var n = counts[b.getAttribute('data-live-count')];
+      if (n) { b.textContent = n; b.hidden = false; } else { b.textContent = ''; b.hidden = true; }
+    });
+    var bl = document.getElementById('browse-seclabel');
+    if (bl && total) bl.innerHTML = esc(t('browse.section_label', 'Browse Listings')) + ' &nbsp;&middot;&nbsp; ' + total + ' ' + esc(t('browse.listings_word', 'listings'));
+  } catch (e) { console.warn('Live counts failed:', e); }
 }
 
 // Defer data load until i18n is ready so t() calls resolve properly
 (function initSupabaseData() {
+  var loaded = false;
+  function loadOnce() { if (loaded) return; loaded = true; _loadAllSupabaseData(); }
   function tryLoad() {
     if (typeof SC_I18N !== 'undefined' && SC_I18N._ready) {
-      _loadAllSupabaseData();
+      loadOnce();
     } else {
-      // i18n not ready yet, wait for it
-      window.addEventListener('i18n-ready', function() { _loadAllSupabaseData(); });
-      // Fallback: if i18n never fires (e.g. offline), load after 500ms anyway
-      setTimeout(function() { _loadAllSupabaseData(); }, 500);
+      // i18n not ready yet, wait for it (previously this loaded everything twice)
+      window.addEventListener('i18n-ready', loadOnce);
+      // Fallback: if i18n never fires (e.g. offline), load after 1.5s anyway
+      setTimeout(loadOnce, 1500);
     }
   }
   if (sbReady()) { tryLoad(); }
@@ -2948,9 +3850,13 @@ document.addEventListener('click', function(e) {
 
 var ADMIN_EMAILS = ['cameron.nazeri@gmail.com', 'cameron@sophiacommons.org', 'admin@sophiacommons.org'];
 
+// Admin = app_metadata.role "admin" (the rule the database enforces), or a listed, confirmed address.
+// This only decides what the UI shows; the database policies are what actually protect data.
 function isAdmin() {
-  return signedIn && window._supabaseUser && window._supabaseUser.email &&
-    ADMIN_EMAILS.indexOf(window._supabaseUser.email.toLowerCase()) !== -1;
+  var u = window._supabaseUser;
+  if (!signedIn || !u) return false;
+  if (u.app_metadata && u.app_metadata.role === 'admin') return true;
+  return !!(u.email && u.email_confirmed_at && ADMIN_EMAILS.indexOf(u.email.toLowerCase()) !== -1);
 }
 
 function updateAdminVisibility() {
@@ -2971,26 +3877,32 @@ function adminSwitchTab(tab) {
   else if (tab === 'events') loadAdminEvents();
   else if (tab === 'memorials') loadAdminMemorials();
   else if (tab === 'newsletter') loadNewsletterSubscriberCount();
+  else if (tab === 'reports') loadAdminReports('pending');
   else if (tab === 'traffic') refreshDashboard();
   else if (tab === 'digest') { loadDigestDrafts(); loadDigestHistory(); }
 }
 
-function adminEsc(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function adminEsc(s) { return esc(s); }
 
 async function loadAdminListings() {
   var el = document.getElementById('admin-listings-list');
   if (!sbReady()) { el.innerHTML = '<div class="admin-empty">' + t('error.supabase_not_connected') + '</div>'; return; }
   try {
-    var { data, error } = await _sb.from('listings_pending').select('*').or('status.eq.pending,status.eq.approved').order('submitted_at', { ascending: false });
+    var { data, error } = await _sb.from('listings_pending').select('*').or('status.is.null,status.eq.pending').order('submitted_at', { ascending: false });
     if (error) { el.innerHTML = '<div class="admin-empty">' + t('error.loading_listings') + '</div>'; return; }
     if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">' + t('admin.no_pending_listings') + '</div>'; return; }
     el.innerHTML = data.map(function(d) {
       var isApproved = d.status === 'approved';
       var statusBadge = isApproved ? '<span style="background:#27ae60;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px;">LIVE</span>' : '<span style="background:#e67e22;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px;">PENDING</span>';
+      var submitDate = d.submitted_at || d.created_at;
+      var dateStr = submitDate ? localDate(submitDate, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
       return '<div class="admin-card" id="admin-listing-' + d.id + '">'
-        + '<h4>' + adminEsc(d.name) + statusBadge + '</h4>'
-        + '<div class="admin-meta">'
-        + (d.category ? '<span><strong>' + t('admin.category_label') + '</strong> ' + adminEsc(d.category) + '</span>' : '')
+        + '<div style="display:flex;justify-content:space-between;align-items:start;">'
+        + '<h4 style="margin:0;">' + adminEsc(d.name) + statusBadge + '</h4>'
+        + (dateStr ? '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + dateStr + '</span>' : '')
+        + '</div>'
+        + '<div class="admin-meta" style="margin-top:6px;">'
+        + (d.category ? '<span style="background:var(--gold-light);color:var(--gold-text);padding:2px 8px;border-radius:50px;font-size:10px;font-weight:700;">Section: ' + adminEsc(d.category) + '</span>' : '')
         + (d.location ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(d.location) + '</span>' : '')
         + (d.url ? '<span><strong>' + t('admin.url_label') + '</strong> ' + adminEsc(d.url) + '</span>' : '')
         + (d.contact_email ? '<span><strong>' + t('admin.email_label') + '</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
@@ -3001,7 +3913,21 @@ async function loadAdminListings() {
         + '<button class="admin-btn-reject" onclick="adminRejectListing(\'' + d.id + '\')">' + t('admin.reject') + '</button>'
         + '</div></div>';
     }).join('');
-  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
+  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + esc(e.message) + '</div>'; }
+}
+
+// Submission form uses display labels; the directory stores short slugs.
+function _categorySlug(label) {
+  var cm = (typeof catMeta !== 'undefined') && catMeta[String(label || '').toLowerCase().trim()];
+  if (cm && cm.dirCat) return cm.dirCat;
+  var map = {
+    'waldorf & education': 'waldorf', 'biodynamic agriculture': 'biodynamic', 'esoteric studies': 'societies',
+    'arts & eurythmy': 'eurythmy', 'anthroposophic medicine': 'medicine', 'community & camphill': 'camphill',
+    'eldercare': 'eldercare', 'online resources': 'online', 'social media': 'social_media',
+    'groups & circles': 'community', 'christian community': 'community', 'podcasts & media': 'online'
+  };
+  var k = String(label || '').toLowerCase().trim();
+  return map[k] || k || 'community';
 }
 
 async function adminApproveListing(id) {
@@ -3013,17 +3939,19 @@ async function adminApproveListing(id) {
     // Insert into directory_entries
     var entry = {
       organization_name: data.name,
-      category: data.category || 'Other',
+      category: _categorySlug(data.category),
       location: data.location || null,
       website_url: data.url || null,
       description: data.description || null,
       email: data.contact_email || null,
-      status: 'approved'
+      status: 'approved',
+      user_id: window._supabaseUser ? window._supabaseUser.id : null  // required (NOT NULL + RLS)
     };
     var { data: dirEntry, error: insertErr } = await _sb.from('directory_entries').insert(entry).select('id').single();
     if (insertErr) { alert('Error adding to directory: ' + insertErr.message); return; }
     // Update status and link directory entry
-    await _sb.from('listings_pending').update({ status: 'approved', directory_entry_id: dirEntry ? dirEntry.id : null }).eq('id', id);
+    var upd = await _sb.from('listings_pending').update({ status: 'approved', directory_entry_id: dirEntry ? dirEntry.id : null }).eq('id', id);
+    if (upd.error) { alert('Added to directory, but could not update the queue: ' + upd.error.message); }
     var card = document.getElementById('admin-listing-' + id);
     if (card) card.remove();
     // Check if empty
@@ -3040,9 +3968,11 @@ async function adminRejectListing(id) {
     // Check if there's a linked directory entry to remove
     var { data: pending } = await _sb.from('listings_pending').select('directory_entry_id').eq('id', id).single();
     if (pending && pending.directory_entry_id) {
-      await _sb.from('directory_entries').delete().eq('id', pending.directory_entry_id);
+      var del4 = await _sb.from('directory_entries').delete().eq('id', pending.directory_entry_id);
+      if (del4.error) { alert('Error removing the directory entry: ' + del4.error.message); return; }
     }
-    await _sb.from('listings_pending').update({ status: 'rejected' }).eq('id', id);
+    var rej = await _sb.from('listings_pending').update({ status: 'rejected' }).eq('id', id);
+    if (rej.error) { alert('Error: ' + rej.error.message); return; }
     var card = document.getElementById('admin-listing-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-listings-list .admin-card')) {
@@ -3059,10 +3989,14 @@ async function loadAdminEvents() {
     if (error) { el.innerHTML = '<div class="admin-empty">' + t('error.loading_events') + '</div>'; return; }
     if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">' + t('admin.no_pending_events') + '</div>'; return; }
     el.innerHTML = data.map(function(d) {
+      var submitDate = d.created_at ? localDate(d.created_at, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
       return '<div class="admin-card" id="admin-event-' + d.id + '">'
-        + '<h4>' + adminEsc(d.title) + '</h4>'
-        + '<div class="admin-meta">'
-        + (d.event_type ? '<span><strong>' + t('admin.type_label') + '</strong> ' + adminEsc(d.event_type) + '</span>' : '')
+        + '<div style="display:flex;justify-content:space-between;align-items:start;">'
+        + '<h4 style="margin:0;">' + adminEsc(d.title) + '</h4>'
+        + (submitDate ? '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + submitDate + '</span>' : '')
+        + '</div>'
+        + '<div class="admin-meta" style="margin-top:6px;">'
+        + (d.event_type ? '<span style="background:var(--gold-light);color:var(--gold-text);padding:2px 8px;border-radius:50px;font-size:10px;font-weight:700;">Section: ' + adminEsc(d.event_type) + '</span>' : '')
         + (d.start_date ? '<span><strong>' + t('admin.date_label') + '</strong> ' + adminEsc(d.start_date.substring(0,10)) + '</span>' : '')
         + (d.location_name ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(d.location_name) + '</span>' : '')
         + (d.organizer_name ? '<span><strong>' + t('admin.organizer_label') + '</strong> ' + adminEsc(d.organizer_name) + '</span>' : '')
@@ -3073,13 +4007,14 @@ async function loadAdminEvents() {
         + '<button class="admin-btn-reject" onclick="adminRejectEvent(\'' + d.id + '\')">' + t('admin.reject') + '</button>'
         + '</div></div>';
     }).join('');
-  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
+  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + esc(e.message) + '</div>'; }
 }
 
 async function adminApproveEvent(id) {
   if (!sbReady()) return;
   try {
-    await _sb.from('events').update({ status: 'upcoming' }).eq('id', id);
+    var ap = await _sb.from('events').update({ status: 'upcoming' }).eq('id', id);
+    if (ap.error) { alert('Error: ' + ap.error.message); return; }
     var card = document.getElementById('admin-event-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-events-list .admin-card')) {
@@ -3092,7 +4027,9 @@ async function adminRejectEvent(id) {
   if (!sbReady()) return;
   if (!confirm(t('admin.confirm_reject_event'))) return;
   try {
-    await _sb.from('events').update({ status: 'rejected' }).eq('id', id);
+    // 'rejected' is not an allowed events.status value; 'cancelled' hides it from the public calendar.
+    var rj = await _sb.from('events').update({ status: 'cancelled' }).eq('id', id);
+    if (rj.error) { alert('Error: ' + rj.error.message); return; }
     var card = document.getElementById('admin-event-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-events-list .admin-card')) {
@@ -3113,9 +4050,14 @@ async function loadAdminMemorials() {
       if (d.photo_url) {
         photoHtml = '<div style="margin-bottom:10px;"><img src="' + adminEsc(d.photo_url) + '" alt="' + adminEsc(d.name) + '" style="max-width:140px;max-height:140px;border-radius:8px;border:1px solid var(--border);object-fit:cover;"></div>';
       }
+      var submitDate = d.created_at ? localDate(d.created_at, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
       return '<div class="admin-card" id="admin-memorial-' + d.id + '">'
-        + '<h4>' + adminEsc(d.name) + '</h4>'
-        + '<div class="admin-meta">'
+        + '<div style="display:flex;justify-content:space-between;align-items:start;">'
+        + '<h4 style="margin:0;">' + adminEsc(d.name) + '</h4>'
+        + (submitDate ? '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + submitDate + '</span>' : '')
+        + '</div>'
+        + '<div class="admin-meta" style="margin-top:6px;">'
+        + '<span style="background:var(--gold-light);color:var(--gold-text);padding:2px 8px;border-radius:50px;font-size:10px;font-weight:700;">Section: In Memoriam</span>'
         + (d.years ? '<span><strong>' + t('admin.years_label') + '</strong> ' + adminEsc(d.years) + '</span>' : '')
         + (d.location ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(d.location) + '</span>' : '')
         + (d.contact_email ? '<span><strong>' + t('admin.email_label') + '</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
@@ -3127,7 +4069,7 @@ async function loadAdminMemorials() {
         + '<button class="admin-btn-reject" onclick="adminRejectMemorial(\'' + d.id + '\')">' + t('admin.reject') + '</button>'
         + '</div></div>';
     }).join('');
-  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + e.message + '</div>'; }
+  } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + esc(e.message) + '</div>'; }
 }
 
 async function adminApproveMemorial(id) {
@@ -3143,7 +4085,8 @@ async function adminApproveMemorial(id) {
     });
     if (insertErr) { alert('Error approving: ' + insertErr.message); return; }
     // Remove from pending
-    await _sb.from('memorials_pending').delete().eq('id', id);
+    var del1 = await _sb.from('memorials_pending').delete().eq('id', id);
+    if (del1.error) { alert('Approved, but could not clear it from the queue: ' + del1.error.message); }
     var card = document.getElementById('admin-memorial-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-memorials-list .admin-card')) {
@@ -3165,7 +4108,8 @@ async function adminRejectMemorial(id) {
       if (path) await _sb.storage.from('memorial-photos').remove([decodeURIComponent(path)]);
     }
     // Delete from pending table
-    await _sb.from('memorials_pending').delete().eq('id', id);
+    var del2 = await _sb.from('memorials_pending').delete().eq('id', id);
+    if (del2.error) { alert('Error: ' + del2.error.message); return; }
     var card = document.getElementById('admin-memorial-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-memorials-list .admin-card')) {
@@ -3188,13 +4132,13 @@ async function checkAdminPendingCounts() {
     // Check pending/approved listings for admin review
     var { count: listingsCount } = await _sb.from('listings_pending')
       .select('id', { count: 'exact', head: true })
-      .or('status.is.null,status.eq.pending,status.eq.approved');
+      .or('status.is.null,status.eq.pending');
     highlightAdminTab('listings', listingsCount || 0);
 
     // Check pending events
-    var { count: eventsCount } = await _sb.from('events_pending')
+    var { count: eventsCount } = await _sb.from('events')
       .select('id', { count: 'exact', head: true })
-      .or('status.is.null,status.eq.pending');
+      .eq('status', 'pending');
     highlightAdminTab('events', eventsCount || 0);
 
     // Check pending memorials
@@ -3243,6 +4187,86 @@ function highlightAdminTab(tabName, count) {
     btn.style.color = '';
     btn.style.fontWeight = '';
   }
+}
+
+// ── REPORTS / MODERATION ──
+
+var _currentReportFilter = 'pending';
+
+async function loadAdminReports(statusFilter) {
+  _currentReportFilter = statusFilter || 'pending';
+  var el = document.getElementById('admin-reports-list');
+  if (!sbReady()) { el.innerHTML = '<div class="admin-empty">Supabase not connected.</div>'; return; }
+
+  // Update filter button active state
+  document.querySelectorAll('.admin-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  var activeBtn = document.querySelector('.admin-filter-btn[onclick*="' + _currentReportFilter + '"]');
+  if (activeBtn) activeBtn.classList.add('active');
+
+  try {
+    var query = _sb.from('reports').select('*').order('created_at', { ascending: false });
+    if (_currentReportFilter !== 'all') {
+      query = query.eq('status', _currentReportFilter);
+    }
+    var { data, error } = await query;
+    if (error) { el.innerHTML = '<div class="admin-empty">Error loading reports.</div>'; return; }
+    if (!data || data.length === 0) {
+      el.innerHTML = '<div class="admin-empty">No ' + (_currentReportFilter === 'all' ? '' : _currentReportFilter + ' ') + 'reports.</div>';
+      return;
+    }
+    el.innerHTML = data.map(function(r) {
+      var typeIcon = { listing: '&#128230;', event: '&#128197;', news: '&#128240;', directory: '&#128205;' };
+      var statusColor = { pending: 'var(--gold)', reviewed: 'var(--info)', resolved: 'var(--sage)' };
+      var statusBadge = '<span style="display:inline-block;padding:2px 8px;border-radius:50px;font-size:10px;font-weight:700;background:' + (statusColor[r.status] || 'var(--text-muted)') + ';color:#fff;">' + (r.status || 'pending') + '</span>';
+      var date = localDate(r.created_at, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      var actions = '';
+      if (r.status === 'pending') {
+        actions = '<button class="admin-btn-approve" onclick="updateReportStatus(\'' + r.id + '\', \'reviewed\')">Mark Reviewed</button>'
+          + '<button class="admin-btn-reject" onclick="updateReportStatus(\'' + r.id + '\', \'resolved\')">Resolve</button>'
+          + '<button class="admin-btn-reject" onclick="dismissReport(\'' + r.id + '\')" style="background:var(--muted-bg);color:var(--text-secondary);">Dismiss</button>';
+      } else if (r.status === 'reviewed') {
+        actions = '<button class="admin-btn-approve" onclick="updateReportStatus(\'' + r.id + '\', \'resolved\')">Resolve</button>';
+      }
+
+      return '<div class="admin-card" id="report-' + r.id + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">'
+        + '<div>'
+        + '<span style="font-size:16px;">' + (typeIcon[r.item_type] || '') + '</span> '
+        + '<strong style="font-size:13px;">' + adminEsc(r.item_type) + '</strong> '
+        + statusBadge
+        + '</div>'
+        + '<span style="font-size:11px;color:var(--text-muted);">' + date + '</span>'
+        + '</div>'
+        + '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:6px;"><strong>Reason:</strong> ' + adminEsc(r.reason) + '</p>'
+        + (r.details ? '<p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">' + adminEsc(r.details) + '</p>' : '')
+        + '<div style="display:flex;gap:6px;align-items:center;">'
+        + '<button style="font-size:11px;padding:3px 10px;background:var(--surface);border:1px solid var(--border);border-radius:50px;cursor:pointer;color:var(--gold-text);font-weight:600;" onclick="viewReportedItem(\'' + escJs(r.item_type) + '\', \'' + escJs(r.item_id) + '\')">View Item</button>'
+        + actions
+        + '</div>'
+        + '</div>';
+    }).join('');
+  } catch (e) { el.innerHTML = '<div class="admin-empty">Error: ' + esc(e.message) + '</div>'; }
+}
+
+function filterReports(status) { loadAdminReports(status); }
+
+async function updateReportStatus(reportId, newStatus) {
+  if (!sbReady()) return;
+  try {
+    var { error } = await _sb.from('reports').update({ status: newStatus }).eq('id', reportId);
+    if (error) { alert('Error updating report: ' + error.message); return; }
+    loadAdminReports(_currentReportFilter);
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function dismissReport(reportId) {
+  if (!confirm('Dismiss this report? It will be marked as resolved.')) return;
+  await updateReportStatus(reportId, 'resolved');
+}
+
+function viewReportedItem(itemType, itemId) {
+  showDetail(itemType, itemId);
 }
 
 // ── NEWSLETTER SEND ──
@@ -3334,6 +4358,316 @@ async function sendNewsletter() {
   }
 }
 
+// ══════════════════════════════════════════
+//  COMMENTS SYSTEM
+//  Threaded comments with upvotes/downvotes
+// ══════════════════════════════════════════
+
+var _activeReplyForm = null;
+
+function _timeAgo(dateStr) {
+  var diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+  return localDate(dateStr, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function _buildCommentTree(comments) {
+  var map = {}, roots = [];
+  comments.forEach(function(c) { c.children = []; map[c.id] = c; });
+  comments.forEach(function(c) {
+    if (c.parent_id && map[c.parent_id]) {
+      map[c.parent_id].children.push(c);
+    } else {
+      roots.push(c);
+    }
+  });
+  return roots;
+}
+
+function _renderComment(c, depth, postType, postId) {
+  var depthClass = depth > 0 ? ' depth-' + Math.min(depth, 2) : '';
+  var isOwn = window._supabaseUser && window._supabaseUser.id === c.user_id;
+
+  if (c.is_deleted) {
+    return '<div class="comment comment-deleted' + depthClass + '" id="comment-' + c.id + '">'
+      + '<div class="comment-body">[comment deleted]</div>'
+      + _renderChildren(c.children, depth + 1, postType, postId)
+      + '</div>';
+  }
+
+  var upClass = c.user_vote === 1 ? ' active-up' : '';
+  var downClass = c.user_vote === -1 ? ' active-down' : '';
+
+  var actions = '<div class="comment-actions">'
+    + '<button class="comment-vote-btn' + upClass + '" onclick="voteComment(\'' + c.id + '\', 1, \'' + postType + '\', \'' + postId + '\')" title="Upvote">&#9650;</button>'
+    + '<span class="comment-score" id="score-' + c.id + '">' + (c.vote_score || 0) + '</span>'
+    + '<button class="comment-vote-btn' + downClass + '" onclick="voteComment(\'' + c.id + '\', -1, \'' + postType + '\', \'' + postId + '\')" title="Downvote">&#9660;</button>';
+
+  if (signedIn) {
+    actions += '<button onclick="showReplyForm(\'' + c.id + '\', \'' + postType + '\', \'' + postId + '\')">Reply</button>';
+  }
+  if (isOwn) {
+    actions += '<button onclick="editComment(\'' + c.id + '\')">Edit</button>';
+    actions += '<button onclick="deleteComment(\'' + c.id + '\', \'' + postType + '\', \'' + postId + '\')">Delete</button>';
+  } else if (isAdmin()) {
+    actions += '<button onclick="deleteComment(\'' + c.id + '\', \'' + postType + '\', \'' + postId + '\')" style="color:var(--error);">Delete</button>';
+  }
+  actions += '</div>';
+
+  return '<div class="comment' + depthClass + '" id="comment-' + c.id + '">'
+    + '<div class="comment-header">'
+    + '<span class="comment-username">' + esc(c.username) + '</span>'
+    + '<span>' + _timeAgo(c.created_at) + '</span>'
+    + (c.is_edited ? '<span class="comment-edited">(edited)</span>' : '')
+    + '</div>'
+    + '<div class="comment-body" id="comment-body-' + c.id + '">' + esc(c.content) + '</div>'
+    + actions
+    + '<div id="reply-slot-' + c.id + '"></div>'
+    + _renderChildren(c.children, depth + 1, postType, postId)
+    + '</div>';
+}
+
+function _renderChildren(children, depth, postType, postId) {
+  if (!children || !children.length) return '';
+  return children.map(function(child) {
+    return _renderComment(child, depth, postType, postId);
+  }).join('');
+}
+
+function renderCommentsSection(postType, postId) {
+  return '<div class="comments-section" id="comments-section">'
+    + '<h3 id="comments-heading">Comments</h3>'
+    + '<div id="comments-list"><div style="color:var(--text-muted);font-size:13px;">Loading comments...</div></div>'
+    + '<div id="comment-compose-root"></div>'
+    + '</div>';
+}
+
+async function _loadCommentsFallback(postType, postId) {
+  try {
+    var res = await _sb.from('comments')
+      .select('id, parent_id, user_id, content, is_edited, is_deleted, created_at, updated_at')
+      .eq('post_type', postType).eq('post_id', postId)
+      .order('created_at', { ascending: true });
+    if (res.error) return null;
+    var rows = res.data || [];
+    var ids = rows.map(function(r) { return r.user_id; }).filter(function(v, i, a) { return v && a.indexOf(v) === i; });
+    var names = {};
+    if (ids.length) {
+      var pr = await _sb.from('profiles').select('id, username, full_name').in('id', ids);
+      (pr.data || []).forEach(function(p) { names[p.id] = p.username || p.full_name || 'member'; });
+    }
+    return rows.map(function(r) {
+      return Object.assign({}, r, { username: names[r.user_id] || 'member', vote_score: 0, user_vote: null });
+    });
+  } catch (e) { return null; }
+}
+
+async function loadComments(postType, postId) {
+  var listEl = document.getElementById('comments-list');
+  var composeEl = document.getElementById('comment-compose-root');
+  if (!listEl) return;
+
+  var section = document.getElementById('comments-section');
+  if (section) { section.dataset.postType = postType; section.dataset.postId = postId; }
+
+  if (!sbReady()) {
+    listEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Comments unavailable.</div>';
+    return;
+  }
+
+  var userId = window._supabaseUser ? window._supabaseUser.id : null;
+
+  try {
+    var { data, error } = await _sb.rpc('get_comments_with_votes', {
+      p_post_type: postType,
+      p_post_id: postId,
+      p_user_id: userId
+    });
+
+    if (error) {
+      // Live DB: the RPC fails with "permission denied for table users" (it joins auth.users
+      // without SECURITY DEFINER). Read the comments table directly so threads still work.
+      console.warn('get_comments_with_votes failed, using fallback:', error.message);
+      data = await _loadCommentsFallback(postType, postId);
+    }
+
+    var heading = document.getElementById('comments-heading');
+    if (heading) heading.textContent = 'Comments (' + (data ? data.length : 0) + ')';
+
+    if (data === null) {
+      listEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Comments are temporarily unavailable.</div>';
+    } else if (data.length === 0) {
+      listEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">No comments yet. Be the first to share your thoughts.</div>';
+    } else {
+      var tree = _buildCommentTree(data);
+      listEl.innerHTML = '<div class="comment-thread">'
+        + tree.map(function(c) { return _renderComment(c, 0, postType, postId); }).join('')
+        + '</div>';
+    }
+
+    if (composeEl) {
+      if (signedIn) {
+        composeEl.innerHTML = '<div class="comment-compose">'
+          + '<textarea id="comment-new-text" placeholder="Share your thoughts..." maxlength="2000" oninput="_updateCharCount(this, \'comment-new-chars\')"></textarea>'
+          + '<div class="comment-char-count" id="comment-new-chars">0 / 2000</div>'
+          + '<div class="comment-compose-actions">'
+          + '<button class="comment-btn-submit" id="comment-submit-btn" onclick="submitComment(\'' + postType + '\', \'' + postId + '\', null)">Comment</button>'
+          + '</div></div>';
+      } else {
+        composeEl.innerHTML = '<div class="comment-signin-prompt"><a href="#" onclick="openModal();return false;">Sign in</a> to join the discussion.</div>';
+      }
+    }
+  } catch (e) {
+    console.warn('Comments load error:', e);
+    listEl.innerHTML = '';
+  }
+}
+
+function _updateCharCount(textarea, countId) {
+  var el = document.getElementById(countId);
+  if (!el) return;
+  var len = textarea.value.length;
+  el.textContent = len + ' / 2000';
+  el.className = 'comment-char-count' + (len > 2000 ? ' over' : '');
+}
+
+async function submitComment(postType, postId, parentId) {
+  if (!signedIn) { openModal(); return; }
+  if (!sbReady()) return;
+
+  var textareaId = parentId ? 'reply-text-' + parentId : 'comment-new-text';
+  var textarea = document.getElementById(textareaId);
+  if (!textarea) return;
+  var content = textarea.value.trim();
+  if (!content || content.length > 2000) return;
+
+  var btnId = parentId ? 'reply-submit-' + parentId : 'comment-submit-btn';
+  var btn = document.getElementById(btnId);
+  if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; }
+
+  try {
+    var row = {
+      post_type: postType,
+      post_id: postId,
+      user_id: window._supabaseUser.id,
+      content: content
+    };
+    if (parentId) row.parent_id = parentId;
+
+    var { error } = await _sb.from('comments').insert(row);
+    if (error) { alert('Error posting comment: ' + error.message); return; }
+
+    await loadComments(postType, postId);
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = parentId ? 'Reply' : 'Comment'; }
+  }
+}
+
+function showReplyForm(commentId, postType, postId) {
+  if (_activeReplyForm) {
+    var old = document.getElementById('reply-slot-' + _activeReplyForm);
+    if (old) old.innerHTML = '';
+  }
+  _activeReplyForm = commentId;
+
+  var slot = document.getElementById('reply-slot-' + commentId);
+  if (!slot) return;
+  slot.innerHTML = '<div class="comment-inline-form comment-compose">'
+    + '<textarea id="reply-text-' + commentId + '" placeholder="Write a reply..." maxlength="2000" oninput="_updateCharCount(this, \'reply-chars-' + commentId + '\')"></textarea>'
+    + '<div class="comment-char-count" id="reply-chars-' + commentId + '">0 / 2000</div>'
+    + '<div class="comment-compose-actions">'
+    + '<button class="comment-btn-cancel" onclick="cancelReply(\'' + commentId + '\')">Cancel</button>'
+    + '<button class="comment-btn-submit" id="reply-submit-' + commentId + '" onclick="submitComment(\'' + postType + '\', \'' + postId + '\', \'' + commentId + '\')">Reply</button>'
+    + '</div></div>';
+  setTimeout(function() { var t = document.getElementById('reply-text-' + commentId); if (t) t.focus(); }, 50);
+}
+
+function cancelReply(commentId) {
+  var slot = document.getElementById('reply-slot-' + commentId);
+  if (slot) slot.innerHTML = '';
+  _activeReplyForm = null;
+}
+
+function editComment(commentId) {
+  var bodyEl = document.getElementById('comment-body-' + commentId);
+  if (!bodyEl) return;
+  var currentText = bodyEl.textContent;
+
+  bodyEl.innerHTML = '<div class="comment-compose comment-inline-form">'
+    + '<textarea id="edit-text-' + commentId + '" maxlength="2000" oninput="_updateCharCount(this, \'edit-chars-' + commentId + '\')">' + esc(currentText) + '</textarea>'
+    + '<div class="comment-char-count" id="edit-chars-' + commentId + '">' + currentText.length + ' / 2000</div>'
+    + '<div class="comment-compose-actions">'
+    + '<button class="comment-btn-cancel" onclick="cancelEdit(\'' + commentId + '\')">Cancel</button>'
+    + '<button class="comment-btn-submit" onclick="saveEdit(\'' + commentId + '\')">Save</button>'
+    + '</div></div>';
+  setTimeout(function() { var t = document.getElementById('edit-text-' + commentId); if (t) t.focus(); }, 50);
+}
+
+function cancelEdit(commentId) {
+  var section = document.getElementById('comments-section');
+  if (section && section.dataset.postType && section.dataset.postId) {
+    loadComments(section.dataset.postType, section.dataset.postId);
+  }
+}
+
+async function saveEdit(commentId) {
+  if (!sbReady()) return;
+  var textarea = document.getElementById('edit-text-' + commentId);
+  if (!textarea) return;
+  var content = textarea.value.trim();
+  if (!content || content.length > 2000) return;
+
+  try {
+    var { error } = await _sb.from('comments').update({ content: content, is_edited: true }).eq('id', commentId);
+    if (error) { alert('Error saving edit: ' + error.message); return; }
+
+    var section = document.getElementById('comments-section');
+    if (section && section.dataset.postType && section.dataset.postId) {
+      await loadComments(section.dataset.postType, section.dataset.postId);
+    }
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function deleteComment(commentId, postType, postId) {
+  if (!confirm('Delete this comment?')) return;
+  if (!sbReady()) return;
+
+  try {
+    var { error } = await _sb.from('comments').update({ is_deleted: true, content: '' }).eq('id', commentId);
+    if (error) { alert('Error deleting comment: ' + error.message); return; }
+    await loadComments(postType, postId);
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function voteComment(commentId, vote, postType, postId) {
+  if (!signedIn) { openModal(); return; }
+  if (!sbReady()) return;
+
+  var userId = window._supabaseUser.id;
+
+  try {
+    var { data: existing } = await _sb.from('comment_votes')
+      .select('id, vote').eq('comment_id', commentId).eq('user_id', userId).single();
+
+    if (existing) {
+      if (existing.vote === vote) {
+        await _sb.from('comment_votes').delete().eq('id', existing.id);
+      } else {
+        await _sb.from('comment_votes').update({ vote: vote }).eq('id', existing.id);
+      }
+    } else {
+      await _sb.from('comment_votes').insert({ comment_id: commentId, user_id: userId, vote: vote });
+    }
+
+    await loadComments(postType, postId);
+  } catch (e) { console.warn('Vote error:', e); }
+}
+
 // ── VIEW TRACKING ──
 var _viewedItems = {};
 function _trackView(type, id) {
@@ -3341,11 +4675,16 @@ function _trackView(type, id) {
   var key = type + ':' + id;
   if (_viewedItems[key]) return; // only once per session
   _viewedItems[key] = true;
-  if (type === 'listing') {
-    _sb.rpc('increment_view_count', { listing_id: id }).catch(function() {});
-  }
-  // For directory, events, news - log to analytics table if it exists
-  _sb.from('view_logs').insert({ item_type: type, item_id: id }).catch(function() {});
+  // Supabase query builders are thenables without .catch(); calling .catch() threw and
+  // turned every first detail view into "Not Found". Use .then(ok, fail) and never throw.
+  function noop() {}
+  try {
+    if (type === 'listing') {
+      _sb.rpc('increment_view_count', { listing_id: id }).then(noop, noop);
+    }
+    // For directory, events, news - log to analytics table if it exists
+    _sb.from('view_logs').insert({ item_type: type, item_id: id }).then(noop, noop);
+  } catch (e) {}
 }
 
 // ── CONTENT REPORTING / FLAGGING ──
@@ -3354,6 +4693,7 @@ function openReportModal(itemType, itemId) {
   var modal = document.getElementById('report-modal');
   if (!modal) return;
   modal.style.display = 'flex';
+  setTimeout(function() { var r = document.getElementById('report-reason'); if (r) r.focus(); }, 50);
   document.getElementById('report-item-type').value = itemType;
   document.getElementById('report-item-id').value = itemId;
   document.getElementById('report-reason').value = '';
@@ -3482,7 +4822,7 @@ function renderListingDetail(d) {
   var tags = (d.tags || []).map(function(tg) { return '<span class="detail-badge category">' + esc(tg) + '</span>'; }).join('');
 
   var actions = '';
-  if (d.website_url) actions += '<a class="btn-primary-detail" href="' + esc(d.website_url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
+  if (d.website_url) actions += '<a class="btn-primary-detail" href="' + escUrl(d.website_url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
   if (d.contact_email) actions += '<a class="btn-secondary-detail" href="mailto:' + esc(d.contact_email) + '">' + t('detail.contact') + ' &#9993;</a>';
   if (d.contact_phone) actions += '<a class="btn-secondary-detail" href="tel:' + esc(d.contact_phone) + '">' + t('detail.call') + ' &#9742;</a>';
 
@@ -3493,7 +4833,7 @@ function renderListingDetail(d) {
     + '<h1>' + esc(d.title) + '</h1>'
     + '<div class="detail-badges">'
     + '<span class="detail-badge mp-type mp-type-' + d.listing_type + '">' + (typeLabel[d.listing_type] || d.listing_type) + '</span>'
-    + (price ? '<span class="detail-badge" style="background:var(--gold);color:#fff;">' + esc(price) + '</span>' : '')
+    + (price ? '<span class="detail-badge" style="background:var(--gold);color:var(--on-gold);">' + esc(price) + '</span>' : '')
     + tags + '</div>'
     + (actions ? '<div class="detail-actions">' + actions + '</div>' : '')
     + '</div>'
@@ -3506,7 +4846,9 @@ function renderListingDetail(d) {
     + '<p><strong>' + t('marketplace.posted') + ':</strong> ' + localDate(d.created_at, {month:'short',day:'numeric',year:'numeric'}) + '</p>'
     + '<p><strong>' + t('marketplace.expires') + ':</strong> ' + localDate(d.expires_at, {month:'short',day:'numeric',year:'numeric'}) + '</p>'
     + reportBtn
-    + '</div></div>';
+    + '</div>'
+    + renderCommentsSection('listing', d.id)
+    + '</div>';
 }
 
 function showSubmitListingForm() {
@@ -3601,7 +4943,7 @@ function renderPodcastSection() {
     items.forEach(function(p) {
       html += '<div class="lrow podcast-row">'
         + '<div class="podcast-info">'
-        + '<a class="ltitle" href="' + esc(p.url) + '" target="_blank">' + esc(p.title) + '</a>'
+        + '<a class="ltitle" href="' + escUrl(p.url) + '" target="_blank">' + esc(p.title) + '</a>'
         + (p.verified ? '<span class="lv">&#10003;</span>' : '')
         + '<span class="lmeta">' + esc(p.platform) + (p.lang ? ' &middot; ' + esc(p.lang) : '') + '</span>'
         + '<div class="podcast-desc">' + esc(p.desc) + '</div>'
@@ -3679,7 +5021,7 @@ async function _doSupabaseSearchV2(q) {
 
 function _renderSearchGroup(label, items, renderItem) {
   var html = '<div style="margin-bottom:16px;">';
-  html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + label + ' (' + items.length + ')</div>';
+  html += '<div style="font-size:11px;text-transform:uppercase;color:var(--gold-text);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border-subtle);">' + label + ' (' + items.length + ')</div>';
   items.forEach(function(d) {
     html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);">' + renderItem(d) + '</div>';
   });
@@ -3688,16 +5030,7 @@ function _renderSearchGroup(label, items, renderItem) {
 }
 
 // ── HELPER: Time ago ──
-function _timeAgo(dateStr) {
-  var now = Date.now();
-  var then = new Date(dateStr).getTime();
-  var diff = Math.floor((now - then) / 1000);
-  if (diff < 60) return t('time.just_now');
-  if (diff < 3600) return Math.floor(diff / 60) + t('time.minutes_ago');
-  if (diff < 86400) return Math.floor(diff / 3600) + t('time.hours_ago');
-  if (diff < 2592000) return Math.floor(diff / 86400) + t('time.days_ago');
-  return localDate(dateStr, {month:'short', day:'numeric'});
-}
+// (Duplicate _timeAgo removed: it shadowed the earlier one and used i18n keys that don't exist.)
 
 // ── Directory alllink scroll ──
 document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
@@ -3747,7 +5080,7 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
   }
 
   function trackView(page) {
-    if (typeof _sb === 'undefined') return;
+    if (!sbReady()) return;
     _sb.from('page_views').insert({
       session_id: sessionId,
       page: page || 'home',
@@ -3767,14 +5100,14 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
 
   // Track section navigations by hooking into showSec
   var _origShowSecTracker = window.showSec;
-  window.showSec = function(id) {
-    _origShowSecTracker(id);
+  window.showSec = function(id, skipPush) {
+    _origShowSecTracker(id, skipPush);   // pass skipPush through (it was dropped, so Back/Forward could push duplicate entries)
     trackView(id);
   };
 
   // Heartbeat for live visitor count (ping every 30s)
   function heartbeat() {
-    if (typeof _sb === 'undefined') return;
+    if (!sbReady()) return;
     _sb.from('page_views_heartbeat').upsert({
       session_id: sessionId,
       last_seen: new Date().toISOString()
@@ -3800,6 +5133,20 @@ function daysFromRange(range) {
   return 90;
 }
 
+async function _fetchAllRows(makeQuery, maxRows) {
+  var out = [], from = 0, PAGE = 1000;
+  maxRows = maxRows || 50000;
+  while (from < maxRows) {
+    var res = await makeQuery(from, from + PAGE - 1);
+    if (res.error) throw res.error;
+    var rows = res.data || [];
+    out = out.concat(rows);
+    if (rows.length < PAGE) break;
+    from += PAGE;
+  }
+  return out;
+}
+
 async function refreshDashboard() {
   if (!isAdmin()) return;
   var days = daysFromRange(_dashRange);
@@ -3812,22 +5159,17 @@ async function refreshDashboard() {
   var prevSinceISO = prevSince.toISOString();
 
   try {
-    var { data: views, error: vErr } = await _sb
-      .from('page_views')
-      .select('*')
-      .gte('timestamp', sinceISO)
-      .order('timestamp', { ascending: true });
-
-    if (vErr) throw vErr;
-    if (!views) views = [];
-
-    var { data: prevViews } = await _sb
-      .from('page_views')
-      .select('session_id, page, timestamp')
-      .gte('timestamp', prevSinceISO)
-      .lt('timestamp', sinceISO);
-
-    if (!prevViews) prevViews = [];
+    // Read every row in pages of 1,000 (a single select is silently capped at 1,000 rows,
+    // so every KPI was wrong once the site passed 1,000 views in the selected range).
+    var views = await _fetchAllRows(function(from, to) {
+      return _sb.from('page_views').select('*').gte('timestamp', sinceISO)
+        .order('timestamp', { ascending: true }).range(from, to);
+    });
+    var prevViews = await _fetchAllRows(function(from, to) {
+      return _sb.from('page_views').select('session_id, page, timestamp')
+        .gte('timestamp', prevSinceISO).lt('timestamp', sinceISO)
+        .order('timestamp', { ascending: true }).range(from, to);
+    });
 
     var liveThreshold = new Date(Date.now() - 60000).toISOString();
     var { data: liveData } = await _sb
@@ -3953,12 +5295,7 @@ function setChangeEl(elId, current, previous) {
   }
 }
 
-function escHtml(str) {
-  if (!str) return '';
-  var d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
+function escHtml(str) { return esc(str); }
 
 function fillDashTable(tableId, countsObj, limit) {
   var sorted = Object.entries(countsObj).sort(function(a, b) { return b[1] - a[1]; }).slice(0, limit);
@@ -3997,19 +5334,24 @@ async function gatherDigestData() {
     // New directory listings this week
     var { data: listings } = await _sb.from('directory_entries')
       .select('id, organization_name, category, location, country')
+      .eq('status', 'approved')
       .gte('created_at', weekAgoISO)
       .order('created_at', { ascending: false })
       .limit(10);
     if (listings) digest.newListings = listings;
 
     // Upcoming events (next 14 days)
+    // (events has start_date / location_name; event_date / location do not exist)
     var { data: events } = await _sb.from('events')
-      .select('id, title, event_date, location, category_id')
-      .gte('event_date', now.toISOString().slice(0, 10))
-      .lte('event_date', twoWeeksOut.slice(0, 10))
-      .order('event_date', { ascending: true })
+      .select('id, title, start_date, location_name, city, country')
+      .in('status', ['upcoming', 'ongoing'])
+      .gte('start_date', now.toISOString().slice(0, 10))
+      .lte('start_date', twoWeeksOut)
+      .order('start_date', { ascending: true })
       .limit(10);
-    if (events) digest.upcomingEvents = events;
+    if (events) digest.upcomingEvents = events.map(function(e) {
+      return { id: e.id, title: e.title, event_date: e.start_date, location: e.location_name || [e.city, e.country].filter(Boolean).join(', ') };
+    });
 
     // Recent news
     var { data: news } = await _sb.from('news')
@@ -4038,10 +5380,10 @@ async function gatherDigestData() {
       .gte('timestamp', weekAgoISO);
     digest.stats.pageViews = pageViews || 0;
 
-    var { data: visitors } = await _sb.from('page_views')
-      .select('session_id')
-      .gte('timestamp', weekAgoISO);
-    digest.stats.newVisitors = visitors ? new Set(visitors.map(function(v) { return v.session_id; })).size : 0;
+    var visitors = await _fetchAllRows(function(from, to) {
+      return _sb.from('page_views').select('session_id').gte('timestamp', weekAgoISO).range(from, to);
+    });
+    digest.stats.newVisitors = new Set(visitors.map(function(v) { return v.session_id; })).size;
 
   } catch(e) {
     console.warn('Digest data error:', e);
@@ -4084,7 +5426,7 @@ function buildDigestHTML(d) {
     d.upcomingEvents.forEach(function(e) {
       var dateStr = e.event_date ? new Date(e.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
       html += '<li style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">';
-      html += '<span style="font-weight:700;color:var(--gold);margin-right:8px;">' + dateStr + '</span>';
+      html += '<span style="font-weight:700;color:var(--gold-text);margin-right:8px;">' + dateStr + '</span>';
       html += '<a href="#" onclick="showDetail(\'event\',\'' + e.id + '\');return false;" style="font-weight:600;">' + esc(e.title) + '</a>';
       html += (e.location ? '<span style="color:var(--text-muted);margin-left:8px;">' + esc(e.location) + '</span>' : '');
       html += '</li>';
@@ -4112,7 +5454,7 @@ function buildDigestHTML(d) {
     d.newMemorials.forEach(function(m) {
       html += '<li style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">';
       html += '<strong>' + esc(m.name) + '</strong>';
-      html += (m.years ? ' <span style="color:var(--gold);">(' + esc(m.years) + ')</span>' : '');
+      html += (m.years ? ' <span style="color:var(--gold-text);">(' + esc(m.years) + ')</span>' : '');
       html += '</li>';
     });
     html += '</ul>';
@@ -4163,7 +5505,9 @@ async function generateWeeklyDigest(asDraft) {
       source_name: 'Sophia Commons Staff',
       tags: ['weekly-digest'],
       featured: true,
-      status: isDraft ? 'draft' : 'published',
+      user_id: window._supabaseUser ? window._supabaseUser.id : null,   // required column
+      // news.status only allows pending | published | rejected; a draft is 'pending' + the weekly-digest tag
+      status: isDraft ? 'pending' : 'published',
       published_at: isDraft ? null : new Date().toISOString()
     });
 
@@ -4207,7 +5551,8 @@ async function deleteDigest(id) {
   if (!isAdmin()) return;
   if (!confirm('Delete this draft digest?')) return;
   try {
-    await _sb.from('news').delete().eq('id', id);
+    var del3 = await _sb.from('news').delete().eq('id', id);
+    if (del3.error) throw del3.error;
     loadDigestDrafts();
   } catch(e) {
     alert('Error: ' + (e.message || 'Unknown'));
@@ -4221,7 +5566,7 @@ async function loadDigestDrafts() {
   try {
     var { data, error } = await _sb.from('news')
       .select('id, title, body, created_at')
-      .eq('status', 'draft')
+      .eq('status', 'pending')
       .contains('tags', ['weekly-digest'])
       .order('created_at', { ascending: false })
       .limit(5);
@@ -4255,6 +5600,7 @@ async function loadDigestHistory() {
   try {
     var { data, error } = await _sb.from('news')
       .select('id, title, published_at')
+      .eq('status', 'published')
       .contains('tags', ['weekly-digest'])
       .order('published_at', { ascending: false })
       .limit(8);
@@ -4362,16 +5708,21 @@ async function loadDigestHistory() {
     ctx.fillRect(0, 0, w, h);
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = '#2a2a3a'; ctx.fill();
     ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+    // Lit region traced row by row: between the limb and the terminator.
+    // fraction: 0 = new, 0.25 = first quarter, 0.5 = full, 0.75 = last quarter.
+    // Waxing lights the right side, waning the left (northern hemisphere view).
+    var c = Math.cos(2 * Math.PI * fraction), waxing = fraction <= 0.5, steps = 64, k, y, sx;
     ctx.beginPath();
-    var phase = fraction;
-    if (phase <= 0.5) {
-      ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2, false);
-      ctx.ellipse(cx, cy, Math.abs(r * (1 - phase * 4)) < r ? Math.abs(r * (1 - phase * 4)) : r, r, 0, Math.PI / 2, -Math.PI / 2, phase < 0.25);
-    } else {
-      var wp = phase - 0.5;
-      ctx.arc(cx, cy, r, Math.PI / 2, -Math.PI / 2, false);
-      ctx.ellipse(cx, cy, Math.abs(r * (1 - wp * 4)) < r ? Math.abs(r * (1 - wp * 4)) : r, r, 0, -Math.PI / 2, Math.PI / 2, wp < 0.25);
+    for (k = 0; k <= steps; k++) {            // limb, top to bottom
+      y = -r + (2 * r * k) / steps; sx = Math.sqrt(Math.max(0, r * r - y * y));
+      var xl = waxing ? sx : -sx;
+      if (k === 0) ctx.moveTo(cx + xl, cy + y); else ctx.lineTo(cx + xl, cy + y);
     }
+    for (k = steps; k >= 0; k--) {            // terminator, bottom to top
+      y = -r + (2 * r * k) / steps; sx = Math.sqrt(Math.max(0, r * r - y * y));
+      ctx.lineTo(cx + (waxing ? c * sx : -c * sx), cy + y);
+    }
+    ctx.closePath();
     ctx.fillStyle = '#e8e4d4'; ctx.fill();
     [[0.3,0.35,0.08],[0.55,0.6,0.06],[0.4,0.7,0.05],[0.65,0.35,0.04],[0.5,0.45,0.07],[0.35,0.55,0.03]].forEach(function(c) {
       ctx.beginPath(); ctx.arc(cx + (c[0] - 0.5) * r * 2, cy + (c[1] - 0.5) * r * 2, c[2] * r, 0, Math.PI * 2);
@@ -4390,6 +5741,8 @@ async function loadDigestHistory() {
     var distance = getMoonDistance(age);
     var upcoming = getUpcomingPhases(age);
     drawMoon(canvas, info.fraction);
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', info.name + ', ' + info.illumination + '% illuminated');
     document.getElementById('moon-phase-name').textContent = info.name;
     document.getElementById('moon-illumination').textContent = info.illumination + '% illuminated';
     document.getElementById('moon-age').textContent = age.toFixed(1) + ' days';
@@ -4414,3 +5767,159 @@ async function loadDigestHistory() {
 
 // ── INIT I18N ──
 if (typeof SC_I18N !== 'undefined') SC_I18N.init();
+
+
+// ═══════════════════════ v1.10: VIDEO OF THE WEEK + YOUTUBE CHANNELS + TOP 50 BOOKS ═══════════════════════
+var YT_CATEGORIES = {"goetheanum": "Goetheanum & Sections", "society": "Anthroposophical Societies & Branches", "steiner-lectures": "Rudolf Steiner Lectures & Readings", "lecturer": "Lecturers & Teachers", "study-group": "Study, Meditation & Training", "waldorf": "Waldorf / Steiner Education", "biodynamic": "Biodynamic Agriculture", "eurythmy": "Eurythmy & Performing Arts", "medicine": "Anthroposophic Medicine", "camphill": "Camphill & Social Therapy", "christian-community": "The Christian Community", "publisher": "Publishers", "other": "Other"};
+var YT_CHANNELS_SEED = [{"slug":"goetheanum","name":"Goetheanum","url":"https://www.youtube.com/channel/UCHd8RnL9WYIqCwH_SkPo8DQ","language":"DE/EN","category":"goetheanum","description":"Official channel of the Goetheanum in Dornach: lectures, conference recordings, Goetheanum TV excerpts.","verified":true},{"slug":"goetheanum-deutsch","name":"Goetheanum (deutsch)","url":"https://www.youtube.com/c/goetheanumdeutsch","language":"DE","category":"goetheanum","description":"German-language Goetheanum channel with talks and event documentation.","verified":true},{"slug":"goetheanum-studium","name":"Goetheanum Studium","url":"https://www.youtube.com/channel/UC6fRCIOT7f3UrtQrnwtiPJg","language":"DE/EN","category":"goetheanum","description":"The Goetheanum study programme: introductory courses and student projects.","verified":true},{"slug":"sektion-landwirtschaft","name":"Section for Agriculture at the Goetheanum","url":"https://www.youtube.com/@sektionfurlandwirtschaft7242","language":"DE/EN","category":"biodynamic","description":"Agriculture conference lectures and biodynamic research talks from the Goetheanum.","verified":true},{"slug":"medical-section-goetheanum","name":"Medical Section at the Goetheanum","url":"https://www.youtube.com/@medicalsectiongoetheanum","language":"EN/DE","category":"medicine","description":"Anthroposophic medicine lectures and conference recordings from the School of Spiritual Science.","verified":true},{"slug":"anthroposophy-usa","name":"Anthroposophical Society in America","url":"https://www.youtube.com/@AnthroposophyUSA","language":"EN","category":"society","description":"Video lectures, conferences and community events from the ASA.","verified":true},{"slug":"asa-faust-branch","name":"ASA Faust Branch, Sacramento","url":"https://www.youtube.com/@asafaustbranchsacramento","language":"EN","category":"society","description":"Recorded branch lectures and study evenings from Sacramento.","verified":true},{"slug":"ag-stuttgart","name":"Anthroposophische Gesellschaft Stuttgart","url":"https://www.youtube.com/c/AnthroposophischeGesellschaftStuttgart","language":"DE","category":"society","description":"Lectures from the Rudolf Steiner Haus Stuttgart.","verified":true},{"slug":"center-for-anthroposophy","name":"Center for Anthroposophy","url":"https://www.youtube.com/channel/UC3OoQXqjUVLOfvqP9blyKBA","language":"EN","category":"study-group","description":"Wilton, NH: Waldorf teacher education and anthroposophy foundation courses.","verified":true},{"slug":"anthroworld","name":"AnthroWorld","url":"https://www.youtube.com/@anthroworld_anthroposophie","language":"DE","category":"other","description":"Anthroposophy made accessible: interviews and explainer videos.","verified":true},{"slug":"rsp-audio","name":"Rudolf Steiner Press Audio","url":"https://www.youtube.com/@RudolfSteinerPressAudio","language":"EN","category":"steiner-lectures","description":"Full audiobook readings of Steiner's lectures and books in English.","verified":true},{"slug":"rudolf-steiner-press","name":"Rudolf Steiner Press","url":"https://www.youtube.com/channel/UC9vJp_fc4eEpQCo7g70MYxA","language":"EN","category":"publisher","description":"Book presentations and author talks from the UK publisher.","verified":true},{"slug":"steinerbooks","name":"SteinerBooks / Anthroposophic Press","url":"https://www.youtube.com/c/SteinerBooksAnthroposophicPress","language":"EN","category":"publisher","description":"Book launches, author interviews and lecture recordings.","verified":true},{"slug":"word-of-rudolf-steiner","name":"Word of Rudolf Steiner","url":"https://www.youtube.com/channel/UCOwvwoBewlGL69WmM2LxUFQ","language":"EN","category":"steiner-lectures","description":"English readings of Rudolf Steiner lectures and texts.","verified":true},{"slug":"rudolf-steiner-official","name":"Rudolf Steiner Official","url":"https://www.youtube.com/@RudolfSteinerOfficial","language":"EN","category":"steiner-lectures","description":"Narrated presentations of Steiner's lectures and ideas.","verified":false},{"slug":"rudolf-joseph-lorenz-steiner","name":"Rudolf Steiner ~ Anthroposophy","url":"https://www.youtube.com/@RudolfJosephLorenzSteiner","language":"EN","category":"steiner-lectures","description":"Lecture readings and anthroposophical topics in English.","verified":true},{"slug":"rs-anthroposophy-waldorf","name":"Rudolf Steiner Anthroposophy Waldorf","url":"https://www.youtube.com/c/RudolfSteinerAnthroposophyWaldorf","language":"EN","category":"steiner-lectures","description":"Steiner, anthroposophy and Waldorf education through readings and talks.","verified":true},{"slug":"rs-anthroposophie-de","name":"Rudolf Steiner und die Anthroposophie","url":"https://www.youtube.com/@Rudolf-Steiner-Anthroposophie","language":"DE","category":"steiner-lectures","description":"German readings of Steiner lectures and explanatory videos.","verified":true},{"slug":"rs-audiobuecher","name":"Rudolf Steiner Audiobücher","url":"https://www.youtube.com/channel/UCjeAmyLK5V2w3xUV8GCnULg","language":"DE","category":"steiner-lectures","description":"German audiobook readings of the Gesamtausgabe.","verified":true},{"slug":"angelina-liest","name":"Angelina liest Rudolf Steiner","url":"https://www.youtube.com/@AngelinaliestRudolfSteiner","language":"DE","category":"steiner-lectures","description":"German readings of Steiner lectures by a single narrator.","verified":true},{"slug":"anthro-meditation","name":"Anthroposophische Meditation","url":"https://www.youtube.com/channel/UCv8u5DA8SknblsW3j6Cg_7w","language":"DE","category":"study-group","description":"Anthroposophical meditation practice based on Steiner's exercises.","verified":true},{"slug":"soi-esprit","name":"Soi-esprit Info (Rudolf Steiner, Anthroposophie)","url":"https://www.youtube.com/channel/UCv-8cGJpbPdU1W8gYAaCk_A","language":"FR","category":"steiner-lectures","description":"French readings and presentations of Steiner's anthroposophy.","verified":true},{"slug":"editorial-antroposofica","name":"Editorial Antroposófica","url":"https://www.youtube.com/@editorialantroposofica","language":"ES","category":"publisher","description":"Spanish-language publisher (Argentina): book presentations and lectures.","verified":true},{"slug":"editora-antroposofica-br","name":"Editora e Livraria Antroposófica","url":"https://www.youtube.com/editoraelivrariaantroposofica","language":"PT","category":"publisher","description":"Brazilian publisher and bookshop: talks and book launches.","verified":true},{"slug":"escola-waldorf-rs","name":"Escola Waldorf Rudolf Steiner (São Paulo)","url":"https://www.youtube.com/c/EscolaWaldorfRudolfSteiner","language":"PT","category":"waldorf","description":"Pedagogy talks and school life from Brazil's oldest Waldorf school.","verified":true},{"slug":"waldorftv-ru","name":"WaldorfTV (ВальдорфТВ)","url":"https://www.youtube.com/channel/UClnXhHfpuHyN032RRihX4RQ","language":"RU","category":"waldorf","description":"Russian talks on Waldorf pedagogy and anthroposophy.","verified":true},{"slug":"gaad","name":"GAÄD: Anthroposophic Physicians in Germany","url":"https://www.youtube.com/@gaad-gesellschaftanthropos4600","language":"DE","category":"medicine","description":"Medical lectures and patient information from the German physicians' association.","verified":true},{"slug":"eurythmy4you","name":"eurythmy4you","url":"https://www.youtube.com/@eurythmy","language":"EN","category":"eurythmy","description":"Guided online eurythmy exercises.","verified":true},{"slug":"cynthia-hoven","name":"Cynthia Hoven Eurythmy","url":"https://www.youtube.com/channel/UCA9ix0QIxW3_ZB5s6FyXkPg","language":"EN","category":"eurythmy","description":"Eurythmy demonstrations and teaching videos.","verified":true},{"slug":"eurythmy-in-progress","name":"Eurythmy in Progress","url":"https://www.youtube.com/channel/UCSvBO4LhxDfzrfGdxuK-IiA","language":"EN","category":"eurythmy","description":"Contemporary eurythmy performance and training.","verified":true},{"slug":"sound-circle-eurythmy","name":"Sound Circle Eurythmy","url":"https://www.youtube.com/@soundcircleeurythmy2735","language":"EN","category":"eurythmy","description":"Seattle-area eurythmy training: performances and courses.","verified":true},{"slug":"eurythmeum-ch","name":"Eurythmeum CH","url":"https://www.youtube.com/channel/UCQJCFt8f3yUEF1xQiIDoprg","language":"DE","category":"eurythmy","description":"Swiss eurythmy training school: performances and training insights.","verified":true},{"slug":"logos-eurythmie","name":"Logos Eurythmie","url":"https://www.youtube.com/logoseurythmie","language":"DE","category":"eurythmy","description":"German eurythmy ensemble stage performances.","verified":true},{"slug":"septim-eurythmy","name":"SEPTIM Eurythmy","url":"https://www.youtube.com/channel/UCaWcyj14f2Pp39d8sb5eNsA","language":"EN","category":"eurythmy","description":"Eurythmy ensemble performance pieces.","verified":true},{"slug":"creative-eurythmy","name":"Creative Eurythmy","url":"https://www.youtube.com/channel/UCSs73zfN03jqsKpiNK80j4Q","language":"EN","category":"eurythmy","description":"Eurythmy exercises and creative movement.","verified":true},{"slug":"dedae","name":"DeDae: Dutch Eurythmy Dance Ensemble","url":"https://www.youtube.com/channel/UCYm5lwQl959gUVLcCblpkRw","language":"NL","category":"eurythmy","description":"Dutch eurythmy ensemble stage performances.","verified":true},{"slug":"demeter-international","name":"Biodynamic Federation Demeter International","url":"https://www.youtube.com/channel/UCX0s2VZR8Ksc8eDsIh8nlaw","language":"EN","category":"biodynamic","description":"Films on biodynamic farms, standards and Demeter worldwide.","verified":true},{"slug":"demeter-france","name":"Demeter France","url":"https://www.youtube.com/channel/UCogeXJIOkO0R-40T8u7S5Xg","language":"FR","category":"biodynamic","description":"Biodynamic farming and certification in French.","verified":true},{"slug":"bda-uk","name":"Biodynamic Association UK","url":"https://www.youtube.com/channel/UCCt0Mvn8JyNcvZRHJvJDMOw","language":"EN","category":"biodynamic","description":"Introductory biodynamic gardening videos and farm case studies.","verified":true},{"slug":"bda-usa","name":"Biodynamic Demeter Alliance (USA)","url":"https://www.youtube.com/channel/UCGtcLHBlDbqwxLc1DSJZoaw","language":"EN","category":"biodynamic","description":"North American conference talks and webinars.","verified":true},{"slug":"dennis-klocek","name":"Soil, Soul and Spirit with Dennis Klocek","url":"https://www.youtube.com/channel/UCORbXs0BkyvGF2K38n6ouzQ","language":"EN","category":"lecturer","description":"Goethean science, alchemy, biodynamics and meditation.","verified":true},{"slug":"ecswe","name":"European Council for Steiner Waldorf Education","url":"https://www.youtube.com/channel/UCnBqS6GTl2n9tM3OLrB2Yrw","language":"EN","category":"waldorf","description":"Policy and pedagogy videos from the European umbrella body.","verified":true},{"slug":"waldorf-training-lectures","name":"Waldorf Training Lectures","url":"https://www.youtube.com/channel/UCfUJilIaWlOXWidrnBuKtgA","language":"EN","category":"waldorf","description":"Recorded Waldorf teacher-training lectures.","verified":true},{"slug":"waldorfish","name":"Waldorfish","url":"https://www.youtube.com/channel/UCo3XaQeuf276rtXMOJKgViQ","language":"EN","category":"waldorf","description":"Online courses for Waldorf teachers and homeschoolers, especially the arts.","verified":true},{"slug":"simply-waldorf","name":"Simply Waldorf","url":"https://www.youtube.com/channel/UCxh8dy78xEX78ek7q8feQVg","language":"EN","category":"waldorf","description":"Waldorf homeschooling and family rhythm.","verified":true},{"slug":"waldorf-essentials","name":"Waldorf Essentials with Melisa Nielsen","url":"https://www.youtube.com/channel/UC4uSpWWVigJIFd6cfwJkUSA","language":"EN","category":"waldorf","description":"Waldorf homeschool curriculum and parenting.","verified":true},{"slug":"acorn-hill","name":"Acorn Hill Waldorf Kindergarten and Nursery","url":"https://www.youtube.com/channel/UC6O4ve2M4T1DOspqvMR3ELA","language":"EN","category":"waldorf","description":"Circle songs, stories and puppet plays for early childhood.","verified":true},{"slug":"green-meadow","name":"Green Meadow Waldorf School","url":"https://www.youtube.com/channel/UCUVnXW0y7nHXxphldjsML9A","language":"EN","category":"waldorf","description":"School events, talks and student performances (Chestnut Ridge, NY).","verified":true},{"slug":"washington-waldorf","name":"Washington Waldorf School","url":"https://www.youtube.com/channel/UCFZftRlR8uxQq8JDW8awxhA","language":"EN","category":"waldorf","description":"School life and education talks (Bethesda, MD).","verified":true},{"slug":"pedagogie-steiner-waldorf","name":"Pédagogie Steiner Waldorf","url":"https://www.youtube.com/channel/UC0L1GmfLpYkikBzDxE0U8Lw","language":"FR","category":"waldorf","description":"French federation of Steiner-Waldorf schools.","verified":true},{"slug":"camphill-scotland","name":"Camphill Scotland","url":"https://www.youtube.com/channel/UCaeV5f5hQgcvm8AwGXUbORw","language":"EN","category":"camphill","description":"Films about community life and social therapy in Scotland.","verified":true},{"slug":"camphill-village-trust","name":"Camphill Village Trust","url":"https://www.youtube.com/channel/UCSiZ3lBj8xuv65Ca2v1NJlQ","language":"EN","category":"camphill","description":"UK Camphill communities: resident stories and news.","verified":true},{"slug":"camphill-school-aberdeen","name":"Camphill School Aberdeen","url":"https://www.youtube.com/channel/UCl3oUdWPwayC2lvQ_4gt5EA","language":"EN","category":"camphill","description":"The original Camphill school: curative education and school life.","verified":true},{"slug":"triform-camphill","name":"Triform Camphill Community","url":"https://www.youtube.com/channel/UCG3s8p8XAfu171NxbR_yZvQ","language":"EN","category":"camphill","description":"Camphill community in Hudson, NY.","verified":true},{"slug":"camphill-soltane","name":"Camphill Soltane","url":"https://www.youtube.com/channel/UCSxGY984_jzbwMERL3I9RPg","language":"EN","category":"camphill","description":"Community life, craft and farm videos (Pennsylvania).","verified":true},{"slug":"camphill-west-coast","name":"Camphill Village West Coast","url":"https://www.youtube.com/channel/UC-n63icUnjCVb5bW9rDZTcQ","language":"EN","category":"camphill","description":"Camphill community and biodynamic farm near Cape Town.","verified":true},{"slug":"camphill-mourne-grange","name":"Camphill Community Mourne Grange","url":"https://www.youtube.com/channel/UCn5xn_O7rDyLDGVvsCd6OWw","language":"EN","category":"camphill","description":"Community and craft workshop films (Northern Ireland).","verified":true},{"slug":"camphill-devon","name":"Camphill Devon","url":"https://www.youtube.com/channel/UCU9gNp82rBurbcpy81PgPaA","language":"EN","category":"camphill","description":"Camphill Devon community news and resident stories.","verified":true},{"slug":"camphill-school-beaver-run","name":"The Camphill School (Beaver Run)","url":"https://www.youtube.com/channel/UCNDKV2ZtrA9XwhANrVJR84Q","language":"EN","category":"camphill","description":"Camphill school for children in Pennsylvania.","verified":true}];
+var TOP50_BOOKS = [{"rank":1,"title":"How to Know Higher Worlds","author":"Rudolf Steiner","ga_number":"GA 10","category":"Inner Development","isbn13":"9780880103725","blurb":"Steiner's core handbook for the meditative path and the moral conditions of spiritual training.","free_online_url":"https://rsarchive.org/Books/GA010/"},{"rank":2,"title":"Theosophy: An Introduction to the Spiritual Processes in Human Life and in the Cosmos","author":"Rudolf Steiner","ga_number":"GA 9","category":"Foundational","isbn13":"9780880103732","blurb":"The clearest systematic account of body, soul and spirit, reincarnation and karma, and the soul and spirit worlds.","free_online_url":"https://rsarchive.org/Books/GA009/"},{"rank":3,"title":"The Philosophy of Freedom (The Philosophy of Spiritual Activity)","author":"Rudolf Steiner","ga_number":"GA 4","category":"Foundational","isbn13":"9781855842564","blurb":"Steiner's epistemological and ethical cornerstone: spiritual knowledge grounded in the free activity of thinking.","free_online_url":"https://rsarchive.org/Books/GA004/"},{"rank":4,"title":"An Outline of Esoteric Science","author":"Rudolf Steiner","ga_number":"GA 13","category":"Foundational","isbn13":"9780880104098","blurb":"The comprehensive cosmology: human constitution, sleep and death, cosmic evolution, and the path of knowledge.","free_online_url":"https://rsarchive.org/Books/GA013/"},{"rank":5,"title":"Christianity as Mystical Fact","author":"Rudolf Steiner","ga_number":"GA 8","category":"Christology","isbn13":"9780880104364","blurb":"The Mystery of Golgotha as the fulfilment of the ancient mystery schools; the seed of anthroposophical Christology.","free_online_url":"https://rsarchive.org/Books/GA008/"},{"rank":6,"title":"Autobiography: Chapters in the Course of My Life","author":"Rudolf Steiner","ga_number":"GA 28","category":"Biography & History","isbn13":"9780880106009","blurb":"Steiner's own account of his development from Austrian childhood to the founding of anthroposophy.","free_online_url":"https://rsarchive.org/Books/GA028/"},{"rank":7,"title":"The Foundations of Human Experience (Study of Man)","author":"Rudolf Steiner","ga_number":"GA 293","category":"Education & Parenting","isbn13":"9780880103923","blurb":"The 1919 teacher-training lectures that remain the pedagogical foundation of every Waldorf school.","free_online_url":"https://wn.rsarchive.org/Education/_pdf/Foundations_of_Human_Experience.pdf"},{"rank":8,"title":"Agriculture Course: The Birth of the Biodynamic Method","author":"Rudolf Steiner","ga_number":"GA 327","category":"Biodynamic","isbn13":"9781855841482","blurb":"The eight Koberwitz lectures of 1924 from which the worldwide biodynamic movement grew.","free_online_url":null},{"rank":9,"title":"The Fifth Gospel: From the Akashic Record","author":"Rudolf Steiner","ga_number":"GA 148","category":"Christology","isbn13":"9781855846821","blurb":"Steiner's most intimate spiritual-research account of the life of Jesus of Nazareth.","free_online_url":null},{"rank":10,"title":"Manifestations of Karma","author":"Rudolf Steiner","ga_number":"GA 120","category":"Karma & Reincarnation","isbn13":"9781855840584","blurb":"The most accessible lecture cycle on how karma works through illness, accident, heredity and destiny.","free_online_url":"https://wn.rsarchive.org/Lectures/GA120/English/RSP1984/ManKar_index.html"},{"rank":11,"title":"The Calendar of the Soul","author":"Rudolf Steiner","ga_number":"GA 40","category":"Inner Development","isbn13":"9781621483304","blurb":"Fifty-two weekly verses uniting the soul's inner life with the rhythm of the seasons.","free_online_url":null},{"rank":12,"title":"Towards Social Renewal: Rethinking the Basis of Society","author":"Rudolf Steiner","ga_number":"GA 23","category":"Social Life","isbn13":"9781855840720","blurb":"The founding text of social threefolding: autonomous cultural, political and economic spheres.","free_online_url":"https://rsarchive.org/Books/GA023/"},{"rank":13,"title":"The Education of the Child in the Light of Spiritual Science","author":"Rudolf Steiner","ga_number":"GA 34","category":"Education & Parenting","isbn13":"9780880104142","blurb":"The seminal 1907 essay on the seven-year phases of childhood: the shortest introduction to Waldorf principles.","free_online_url":"https://wn.rsarchive.org/Articles/EduChild/EduChi_index.html"},{"rank":14,"title":"The Kingdom of Childhood","author":"Rudolf Steiner","ga_number":"GA 311","category":"Education & Parenting","isbn13":null,"blurb":"The warm, practical Torquay lectures of 1924, the favourite starting point for new Waldorf teachers and parents.","free_online_url":"https://wn.rsarchive.org/Education/_pdf/The_Kingdom_of_Childhood.pdf"},{"rank":15,"title":"Extending Practical Medicine (Fundamentals of Therapy)","author":"Rudolf Steiner and Ita Wegman","ga_number":"GA 27","category":"Medicine","isbn13":"9781855840805","blurb":"The founding text of anthroposophic medicine, co-written with Ita Wegman in Steiner's final year.","free_online_url":"https://rsarchive.org/Books/GA027/"},{"rank":16,"title":"The Spiritual Hierarchies and the Physical World","author":"Rudolf Steiner","ga_number":"GA 110","category":"Foundational","isbn13":"9780880106016","blurb":"The Düsseldorf lectures on the angelic hierarchies and their work in planetary evolution.","free_online_url":null},{"rank":17,"title":"Start Now! A Book of Soul and Spiritual Exercises","author":"Rudolf Steiner (ed. Christopher Bamford)","ga_number":null,"category":"Inner Development","isbn13":"9780880105262","blurb":"The best single anthology of Steiner's meditations and practical exercises for beginners.","free_online_url":null},{"rank":18,"title":"Verses and Meditations","author":"Rudolf Steiner","ga_number":null,"category":"Inner Development","isbn13":"9781855841970","blurb":"Steiner's mantric verses, including the Foundation Stone Meditation, in German and English.","free_online_url":null},{"rank":19,"title":"Practical Advice to Teachers","author":"Rudolf Steiner","ga_number":"GA 294","category":"Education & Parenting","isbn13":null,"blurb":"Companion course to Foundations of Human Experience, covering the actual teaching of each subject.","free_online_url":"https://wn.rsarchive.org/Education/_pdf/Practical_Advice_to_Teachers.pdf"},{"rank":20,"title":"Introducing Anthroposophical Medicine","author":"Rudolf Steiner","ga_number":"GA 312","category":"Medicine","isbn13":"9780880106429","blurb":"The first medical course for physicians: the threefold and fourfold human being in health and illness.","free_online_url":null},{"rank":21,"title":"Eurythmy as Visible Speech","author":"Rudolf Steiner","ga_number":"GA 279","category":"Arts & Eurythmy","isbn13":"9781855845688","blurb":"The speech-eurythmy course of 1924, the primary source for the art of movement Steiner created.","free_online_url":null},{"rank":22,"title":"Phases: The Spiritual Rhythms of Adult Life","author":"Bernard Lievegoed","ga_number":null,"category":"Biography & History","isbn13":"9781855840560","blurb":"The classic anthroposophical account of the seven-year phases of adult biography.","free_online_url":null},{"rank":23,"title":"Saving the Appearances: A Study in Idolatry","author":"Owen Barfield","ga_number":null,"category":"Goethean Science","isbn13":"9780819562050","blurb":"Barfield's masterwork on the evolution of consciousness, the most influential anthroposophical book in mainstream letters.","free_online_url":null},{"rank":24,"title":"The First Three Years of the Child","author":"Karl König","ga_number":null,"category":"Education & Parenting","isbn13":"9781782508472","blurb":"The Camphill founder's study of walking, speaking and thinking as the awakening of the human spirit.","free_online_url":null},{"rank":25,"title":"Rudolf Steiner and the Founding of the New Mysteries","author":"Sergei O. Prokofieff","ga_number":null,"category":"Biography & History","isbn13":"9781912230044","blurb":"The major esoteric study of Steiner's mission and the 1923 Christmas Foundation Meeting.","free_online_url":null},{"rank":26,"title":"Stages of Consciousness: Meditations on the Boundaries of the Soul","author":"Georg Kühlewind","ga_number":null,"category":"Inner Development","isbn13":"9781584208686","blurb":"A rigorous modern guide to attention, thinking and meditation in the tradition of The Philosophy of Freedom.","free_online_url":null},{"rank":27,"title":"The Three Years: The Life of Christ Between Baptism and Ascension","author":"Emil Bock","ga_number":null,"category":"Christology","isbn13":null,"blurb":"The Christian Community priest's widely read anthroposophical reading of the Gospels.","free_online_url":null},{"rank":28,"title":"You Are Your Child's First Teacher","author":"Rahima Baldwin Dancy","ga_number":null,"category":"Education & Parenting","isbn13":"9781607743026","blurb":"The best-selling Waldorf-inspired parenting guide for birth to age six.","free_online_url":null},{"rank":29,"title":"Pfeiffer's Introduction to Biodynamics","author":"Ehrenfried Pfeiffer","ga_number":null,"category":"Biodynamic","isbn13":"9780863158483","blurb":"Steiner's closest agricultural collaborator explains the preparations and soil fertility in plain language.","free_online_url":null},{"rank":30,"title":"A Life for the Spirit: Rudolf Steiner in the Crosscurrents of Our Time","author":"Henry Barnes","ga_number":null,"category":"Biography & History","isbn13":"9780880103954","blurb":"The standard concise English biography of Steiner by a long-time leader of the ASA.","free_online_url":null},{"rank":31,"title":"Meditation as Contemplative Inquiry: When Knowing Becomes Love","author":"Arthur Zajonc","ga_number":null,"category":"Inner Development","isbn13":"9781584200628","blurb":"A physicist's practical, non-sectarian path of meditation rooted in Steiner and Goethe.","free_online_url":null},{"rank":32,"title":"The Wholeness of Nature: Goethe's Way of Science","author":"Henri Bortoft","ga_number":null,"category":"Goethean Science","isbn13":"9780940262799","blurb":"The definitive modern exposition of Goethean phenomenology as a participatory science.","free_online_url":null},{"rank":33,"title":"The Nature of Substance: Spirit and Matter","author":"Rudolf Hauschka","ga_number":null,"category":"Goethean Science","isbn13":"9781855841222","blurb":"Hauschka's spiritual chemistry of the elements, bridging Goethean science and anthroposophic medicine.","free_online_url":null},{"rank":34,"title":"Understanding Waldorf Education: Teaching from the Inside Out","author":"Jack Petrash","ga_number":null,"category":"Education & Parenting","isbn13":"9780876592465","blurb":"The clearest short introduction to Waldorf pedagogy for parents and the general public.","free_online_url":null},{"rank":35,"title":"School as a Journey: The Eight-Year Odyssey of a Waldorf Teacher and His Class","author":"Torin M. Finser","ga_number":null,"category":"Education & Parenting","isbn13":"9780880103893","blurb":"A first-person narrative of taking one class from first through eighth grade.","free_online_url":null},{"rank":36,"title":"Christ and Sophia: Anthroposophic Meditations on the Old Testament, New Testament, and Apocalypse","author":"Valentin Tomberg","ga_number":null,"category":"Christology","isbn13":"9780880107358","blurb":"Tomberg's early anthroposophical studies on the Bible.","free_online_url":null},{"rank":37,"title":"Rudolf Steiner, Life and Work, Volume 1: 1861-1890","author":"Peter Selg","ga_number":null,"category":"Biography & History","isbn13":"9781621480822","blurb":"First volume of the most thorough modern scholarly biography of Steiner.","free_online_url":null},{"rank":38,"title":"Gardening for Life: The Biodynamic Way","author":"Maria Thun","ga_number":null,"category":"Biodynamic","isbn13":"9781869890322","blurb":"The originator of the biodynamic sowing calendar explains cosmic rhythms in the garden.","free_online_url":null},{"rank":39,"title":"Working with Anxious, Nervous and Depressed Children","author":"Henning Köhler","ga_number":null,"category":"Education & Parenting","isbn13":"9781888365283","blurb":"The curative-educational classic on meeting difficult children with understanding rather than diagnosis.","free_online_url":null},{"rank":40,"title":"Between Form and Freedom: A Practical Guide to the Teenage Years","author":"Betty Staley","ga_number":null,"category":"Education & Parenting","isbn13":"9781903458891","blurb":"The standard anthroposophical guide to adolescence for parents and high-school teachers.","free_online_url":null},{"rank":41,"title":"A Guide to Child Health: A Holistic Approach to Raising Healthy Children","author":"Michaela Glöckler and Wolfgang Goebel","ga_number":null,"category":"Medicine","isbn13":null,"blurb":"The anthroposophical family medical reference used in Waldorf households worldwide.","free_online_url":null},{"rank":42,"title":"Seeking Spirit Vision: Essays on Developing Imagination","author":"Dennis Klocek","ga_number":null,"category":"Inner Development","isbn13":"9780945803331","blurb":"Practical exercises for developing imaginative cognition through Goethean observation and alchemy.","free_online_url":null},{"rank":43,"title":"Stairway of Surprise: Six Steps to a Creative Life","author":"Michael Lipson","ga_number":null,"category":"Inner Development","isbn13":"9780880105071","blurb":"A contemporary, down-to-earth guide to Steiner's six basic exercises.","free_online_url":null},{"rank":44,"title":"Thinking Like a Plant: A Living Science for Life","author":"Craig Holdrege","ga_number":null,"category":"Goethean Science","isbn13":null,"blurb":"The Nature Institute director's living introduction to Goethean science for today.","free_online_url":null},{"rank":45,"title":"Shaping Globalization: Civil Society, Cultural Power and Threefolding","author":"Nicanor Perlas","ga_number":null,"category":"Social Life","isbn13":null,"blurb":"The Right Livelihood laureate's application of social threefolding to global civil society.","free_online_url":null},{"rank":46,"title":"Eurythmy: The Fundamental Elements of Movement","author":"Marjorie Spock","ga_number":null,"category":"Arts & Eurythmy","isbn13":null,"blurb":"The most-read English introduction to eurythmy by a pioneering American eurythmist.","free_online_url":null},{"rank":47,"title":"Meetings with Rudolf Steiner","author":"Albert Steffen","ga_number":null,"category":"Biography & History","isbn13":null,"blurb":"Personal recollections by the poet who succeeded Steiner as president of the General Anthroposophical Society.","free_online_url":null},{"rank":48,"title":"The Christmas Foundation: Beginning of a New Cosmic Age","author":"Rudolf Grosse","ga_number":null,"category":"Biography & History","isbn13":null,"blurb":"A former Goetheanum leader's account of the 1923 refounding of the Anthroposophical Society.","free_online_url":null},{"rank":49,"title":"And There Was Light: From the Creation to Noah","author":"Jakob Streit","ga_number":null,"category":"Children","isbn13":"9781888365740","blurb":"Beloved retelling of the Old Testament for Waldorf third grade.","free_online_url":null},{"rank":50,"title":"The Seven-Year-Old Wonder Book","author":"Isabel Wyatt","ga_number":null,"category":"Children","isbn13":null,"blurb":"Seasonal tales for the young child, a staple of anthroposophical family libraries.","free_online_url":null}];
+
+var AMAZON_TAG = 'sophiacom-20';
+function amazonSearchUrl(q) { return 'https://www.amazon.com/s?k=' + encodeURIComponent(q) + '&i=stripbooks&tag=' + AMAZON_TAG; }
+
+// ISO-8601 week number: the rotation key. Same week => same channel for every visitor.
+function isoWeekKey(d) {
+  d = d ? new Date(d) : new Date();
+  var u = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  var day = u.getUTCDay() || 7;
+  u.setUTCDate(u.getUTCDate() + 4 - day);
+  var y = u.getUTCFullYear();
+  var week = Math.ceil(((u - Date.UTC(y, 0, 1)) / 864e5 + 1) / 7);
+  return y * 100 + week;
+}
+function ytAgo(iso) {
+  if (!iso) return '';
+  var days = Math.floor((Date.now() - new Date(iso).getTime()) / 864e5);
+  if (days < 1) return t('video.today', 'today');
+  if (days < 30) return days + ' ' + t('video.days_ago', 'days ago');
+  if (days < 365) return Math.floor(days / 30) + ' ' + t('video.months_ago', 'months ago');
+  return Math.floor(days / 365) + ' ' + t('video.years_ago', 'years ago');
+}
+
+var _ytLatest = null;      // rows from the youtube_channel_latest view (or the seed)
+var _ytOffset = 0;         // "another one" nudges within the same week
+
+async function _ytFetchLatest() {
+  if (_ytLatest) return _ytLatest;
+  if (sbReady()) {
+    try {
+      var r = await _sb.from('youtube_channel_latest').select('*').order('name');
+      if (!r.error && r.data && r.data.length) { _ytLatest = r.data; return _ytLatest; }
+    } catch (e) { console.warn('youtube feed unavailable, using seed list', e); }
+  }
+  _ytLatest = YT_CHANNELS_SEED.map(function (c) { return { slug: c.slug, name: c.name, channel_url: c.url, language: c.language, category: c.category, description: c.description, verified: c.verified }; });
+  return _ytLatest;
+}
+
+function weeklyChannel(rows, offset) {
+  // prefer channels that actually have a video; rotate by ISO week so it changes every Monday
+  var pool = rows.filter(function (r) { return r.video_id; });
+  if (!pool.length) pool = rows;
+  var i = (isoWeekKey() + (offset || 0)) % pool.length;
+  return pool[(i + pool.length) % pool.length];
+}
+
+function renderVideoCard(ch) {
+  var isVideo = !!ch.video_id;
+  var href = isVideo ? ch.video_url : ch.channel_url;
+  var thumb = ch.video_thumbnail || ch.channel_thumbnail;
+  var html = '<div class="video-card">';
+  if (thumb) html += '<a class="video-thumb" href="' + escUrl(href) + '" target="_blank" rel="noopener"><img src="' + escUrl(thumb) + '" alt="" loading="lazy"></a>';
+  html += '<div class="video-body">'
+    + '<div class="video-kicker">' + t('video.kicker', 'This week') + ' &middot; ' + esc(YT_CATEGORIES[ch.category] || ch.category || '') + '</div>'
+    + '<a class="video-title" href="' + escUrl(href) + '" target="_blank" rel="noopener">' + esc(isVideo ? ch.video_title : ch.name) + '</a>'
+    + '<div class="video-channel">' + [isVideo ? '<b>' + esc(ch.name) + '</b>' : esc(ch.description || ''), ch.language ? esc(ch.language) : ''].filter(Boolean).join(' &middot; ') + '</div>'
+    + (isVideo && ch.published_at ? '<div class="video-meta">' + esc(ytAgo(ch.published_at)) + '</div>' : '')
+    + '<div class="video-actions">'
+    + '<a href="' + escUrl(ch.channel_url) + '" target="_blank" rel="noopener">' + t('video.channel', 'Channel') + ' &rarr;</a>'
+    + '<a href="/podcasts" onclick="showSec(\'podcasts\');return false;">' + t('video.all_channels', 'All channels') + '</a>'
+    + '<a href="#" class="quiet" onclick="_ytOffset++;renderVideoSpotlight();return false;">' + t('video.another', 'another') + ' &#8635;</a>'
+    + '</div></div></div>';
+  return html;
+}
+
+async function renderVideoSpotlight() {
+  var targets = [document.getElementById('video-spotlight'), document.getElementById('home-video-spotlight')].filter(Boolean);
+  if (!targets.length) return;
+  var rows = await _ytFetchLatest();
+  var ch = weeklyChannel(rows, _ytOffset);
+  var html = renderVideoCard(ch)
+    + '<div class="video-actions" style="padding:0 2px;"><a href="#" class="quiet" onclick="suggestYouTubeChannel();return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>';
+  targets.forEach(function (el) { el.innerHTML = html; });
+}
+
+async function renderYouTubeChannels() {
+  var el = document.getElementById('yt-channels-block');
+  if (!el) return;
+  var rows = await _ytFetchLatest();
+  var week = weeklyChannel(rows, 0);
+  var groups = {};
+  rows.forEach(function (r) { (groups[r.category] = groups[r.category] || []).push(r); });
+  var order = Object.keys(YT_CATEGORIES).filter(function (k) { return groups[k]; }).concat(Object.keys(groups).filter(function (k) { return !YT_CATEGORIES[k]; }));
+  var html = '<div class="listblock"><div class="listblock-head"><h3>' + t('podcasts.youtube_heading', 'YouTube Channels') + '</h3>'
+    + '<span class="podcast-count">' + rows.length + ' ' + t('podcasts.channels', 'channels') + '</span></div><div class="listblock-body">'
+    + '<div class="yt-toolbar"><span>' + t('podcasts.youtube_note', 'Curated anthroposophical channels, refreshed weekly. &#9733; = this week\'s featured channel.') + '</span>'
+    + '<a href="#" onclick="suggestYouTubeChannel();return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>'
+    + '<div class="yt-grid">';
+  order.forEach(function (cat) {
+    html += '<div class="yt-cat"><h4>' + esc(YT_CATEGORIES[cat] || cat) + ' <span>' + groups[cat].length + '</span></h4>';
+    groups[cat].sort(function (a, b) { return (b.published_at || '').localeCompare(a.published_at || '') || a.name.localeCompare(b.name); });
+    groups[cat].forEach(function (r) {
+      html += '<div class="yt-row' + (week && r.slug === week.slug ? ' is-week' : '') + '">'
+        + '<a class="ltitle" href="' + escUrl(r.channel_url) + '" target="_blank" rel="noopener" title="' + esc(r.description || '') + '">' + esc(r.name) + '</a>'
+        + (r.verified ? '<span class="lv">&#10003;</span>' : '')
+        + '<span class="lmeta">' + esc(r.language || '') + (r.published_at ? ' &middot; ' + esc(ytAgo(r.published_at)) : '') + '</span></div>';
+    });
+    html += '</div>';
+  });
+  html += '</div></div></div>';
+  el.innerHTML = html;
+}
+
+async function suggestYouTubeChannel() {
+  var url = prompt(t('video.suggest_prompt', 'Paste the YouTube channel link (youtube.com/@...):'));
+  if (!url) return;
+  url = url.trim();
+  if (!/^https:\/\/(www\.|m\.)?youtube\.com\//i.test(url)) { alert(t('video.suggest_invalid', 'Please paste a youtube.com channel link.')); return; }
+  if (!sbReady()) { location.href = 'mailto:hello@sophiacommons.org?subject=' + encodeURIComponent('YouTube channel suggestion') + '&body=' + encodeURIComponent(url); return; }
+  var note = prompt(t('video.suggest_note', 'Anything we should know? (optional)')) || null;
+  var r = await _sb.from('youtube_channels_pending').insert({ url: url, note: note, source: 'visitor' });
+  alert(r.error ? t('video.suggest_dupe', 'Thanks! That channel is already on our list to review.') : t('video.suggest_ok', 'Thank you! We review suggestions within a week.'));
+}
+
+// ── Top 50 books ──
+var _top50Filter = 'all';
+function renderTop50Books() {
+  var el = document.getElementById('top50-books');
+  if (!el) return;
+  var cats = [];
+  TOP50_BOOKS.forEach(function (b) { if (cats.indexOf(b.category) < 0) cats.push(b.category); });
+  var html = '<div class="listblock" style="margin-bottom:16px;"><div class="listblock-head"><h3>' + t('books.top50_heading', 'Top 50 Anthroposophical Books') + '</h3>'
+    + '<span style="font-size:10.5px;color:var(--text-muted);">' + t('books.top50_sub', 'a reading canon for newcomers and old hands') + '</span></div><div class="listblock-body">'
+    + '<p class="top50-intro">' + t('books.top50_intro', 'Rudolf Steiner\'s essential works plus the most-read books by the anthroposophists who built on them: education, farming, medicine, meditation, the arts and social life. Amazon links support Sophia Commons; where a free edition exists we link that too.') + '</p>'
+    + '<div class="top50-chips" role="tablist">'
+    + '<button class="' + (_top50Filter === 'all' ? 'active' : '') + '" onclick="_top50Filter=\'all\';renderTop50Books()">' + t('books.all', 'All 50') + '</button>'
+    + '<button class="' + (_top50Filter === 'steiner' ? 'active' : '') + '" onclick="_top50Filter=\'steiner\';renderTop50Books()">Rudolf Steiner</button>';
+  cats.forEach(function (c) { html += '<button class="' + (_top50Filter === c ? 'active' : '') + '" onclick="_top50Filter=' + JSON.stringify(c).replace(/"/g, '&quot;') + ';renderTop50Books()">' + esc(c) + '</button>'; });
+  html += '</div><div class="top50-list">';
+  TOP50_BOOKS.forEach(function (b) {
+    var show = _top50Filter === 'all' || (_top50Filter === 'steiner' ? /^Rudolf Steiner/.test(b.author) : b.category === _top50Filter);
+    var q = b.isbn13 || (b.title.replace(/:.*$/, '') + ' ' + b.author.replace(/\s*\(.*\)$/, ''));
+    html += '<div class="top50-item' + (show ? '' : ' hidden') + '"><div class="top50-rank">' + b.rank + '</div><div>'
+      + '<div class="top50-title"><a href="' + escUrl(amazonSearchUrl(q)) + '" target="_blank" rel="sponsored noopener">' + esc(b.title) + '</a></div>'
+      + '<div class="top50-author">' + esc(b.author) + (b.ga_number ? ' &middot; ' + esc(b.ga_number) : '') + '</div>'
+      + '<div class="top50-blurb">' + esc(b.blurb) + '</div>'
+      + '<div class="top50-links"><a class="top50-amz" href="' + escUrl(amazonSearchUrl(q)) + '" target="_blank" rel="sponsored noopener">' + t('books.buy_amazon', 'Amazon') + ' &rarr;</a>'
+      + (b.free_online_url ? '<a href="' + escUrl(b.free_online_url) + '" target="_blank" rel="noopener">' + t('books.free_online', 'free online') + '</a>' : '')
+      + '<span class="ltag">' + esc(b.category) + '</span></div>'
+      + '</div></div>';
+  });
+  html += '</div></div></div>';
+  el.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  renderTop50Books();
+  renderVideoSpotlight();
+  renderYouTubeChannels();
+});

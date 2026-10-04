@@ -1,0 +1,66 @@
+name: Weekly YouTube sync + link check
+
+on:
+  schedule:
+    - cron: "17 13 * * 0"        # Sundays 13:17 UTC (06:17 Pacific)
+  workflow_dispatch:             # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write                # commit youtube_feed.json + crawl_reports/
+  issues: write                  # open a "broken links" issue
+
+concurrency:
+  group: weekly
+  cancel-in-progress: false
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install --quiet requests
+
+      - name: Sync YouTube channels and videos into Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}   # optional: enables new-channel discovery
+        run: python3 automation/youtube_sync.py
+
+      - name: Check every outbound link and resource
+        run: python3 automation/link_check.py
+
+      - name: Commit feed snapshot and report
+        run: |
+          git config user.name  "sophia-commons-bot"
+          git config user.email "bot@sophiacommons.org"
+          git add automation/youtube_channels.json automation/youtube_feed.json crawl_reports/
+          git diff --cached --quiet || git commit -m "weekly: youtube feed + link report $(date -u +%F)"
+          git push
+
+      - name: Open or update the broken-links issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const rep = JSON.parse(fs.readFileSync('crawl_reports/link_report_latest.json', 'utf8'));
+            const title = 'Weekly link report: broken links';
+            const {data: open} = await github.rest.issues.listForRepo({owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'link-check'});
+            const existing = open.find(i => i.title === title);
+            if (rep.broken === 0 && rep.redirected === 0) {
+              if (existing) await github.rest.issues.update({owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, state: 'closed'});
+              return;
+            }
+            const md = fs.readFileSync(`crawl_reports/link_report_${rep.date}.md`, 'utf8');
+            const body = md + `\n_Report: crawl_reports/link_report_${rep.date}.md_`;
+            if (existing) {
+              await github.rest.issues.update({owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body});
+            } else {
+              await github.rest.issues.create({owner: context.repo.owner, repo: context.repo.repo, title, body, labels: ['link-check']});
+            }

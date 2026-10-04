@@ -48,3 +48,15 @@ docs/
 Directory/enriched_directory.json
 scripts/
 backend/enrich_updates.sql
+
+# Local backups made before updates (do not commit or deploy)
+_backup_*/
+
+# Built by deploy.sh; never commit
+_deploy/
+
+# Supabase CLI link state
+supabase/.temp/
+
+# Outreach contact lists: never commit
+outreach/

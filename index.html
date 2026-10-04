@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://maps.googleapis.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://maps.googleapis.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://maps.googleapis.com https://maps.gstatic.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sophia Commons | Anthroposophical Community Directory</title>
 
@@ -18,7 +18,7 @@
 <meta name="google-site-verification" content="V9wJcJ4P-JvjGFQCgPrzrNL3EsZykdKuEc9fRx_Fots">
 <meta name="author" content="Sophia Commons">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-<meta name="theme-color" content="#B8923A">
+<meta name="theme-color" content="#FDFBF7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sophia Commons">
@@ -192,7 +192,7 @@
 </script>
 
 <!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script>
   const SUPABASE_URL = 'https://bnrvgitzbpocratvszgk.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_Quj2NdNaaDKJOe4UT5Y5nw_1Sog2yjI';
@@ -205,7 +205,8 @@
       if (session) {
         window._supabaseUser = session.user;
         const uname = session.user.email ? session.user.email.split('@')[0] : 'user';
-        window.dispatchEvent(new CustomEvent('supabase-auth-ready', { detail: { username: uname, user: session.user } }));
+        window._scAuthDetail = { username: uname, user: session.user };
+        window.dispatchEvent(new CustomEvent('supabase-auth-ready', { detail: window._scAuthDetail }));
       }
     });
 
@@ -225,16 +226,16 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lora:wght@400;600;700&family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="sophia_commons_v9.css">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.9.1">
 </head>
 <body>
-<a href="#maincontent" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;">Skip to main content</a>
+<a href="#center" class="skip-link">Skip to main content</a>
 <div id="menu-overlay" class="menu-overlay" onclick="toggleMobileMenu()"></div>
 
 <!-- SIGN-IN MODAL -->
-<div id="modal-overlay" role="dialog" aria-modal="true">
+<div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div id="modal-box">
-    <button id="modal-close" aria-label="Close" data-i18n="modal.close_aria" onclick="closeModal()">×</button>
+    <button id="modal-close" aria-label="Close" data-i18n-aria="modal.close_aria" onclick="closeModal()">×</button>
     <h2 id="modal-title" data-i18n="modal.title_signin">Sign in</h2>
     <p id="modal-desc" data-i18n="modal.desc_signin">Access community chat and member features.</p>
     <div id="auth-error" style="display:none;color:#c0392b;font-size:12px;margin-bottom:8px;padding:6px 10px;background:#fdf0ef;border:1px solid #f5c6cb;"></div>
@@ -254,7 +255,7 @@
 <!-- SUBMIT LISTING MODAL -->
 <div id="submit-overlay">
   <div id="submit-box">
-    <button class="submit-close-btn" onclick="document.getElementById('submit-overlay').style.display='none';">×</button>
+    <button class="submit-close-btn" aria-label="Close" onclick="document.getElementById('submit-overlay').style.display='none';">×</button>
     <h2 data-i18n="submit.title">Submit a Listing</h2>
     <p data-i18n="submit.description">Add your organization, farm, school, or initiative to the Sophia Commons directory.</p>
     <label for="sl-name" data-i18n="submit.name_label">Organization name *</label>
@@ -288,8 +289,34 @@
     <textarea id="sl-desc" rows="3" placeholder="Describe this organization in 1-2 sentences…" data-i18n-placeholder="submit.desc_placeholder"></textarea>
     <label for="sl-email" data-i18n="submit.email_label">Your email (for follow-up)</label>
     <input type="email" id="sl-email" placeholder="you@example.com" data-i18n-placeholder="submit.email_placeholder">
-    <button class="btn-primary" onclick="submitListing()" data-i18n="submit.btn">Submit for Review</button>
-    <div id="sl-ok" style="display:none;text-align:center;font-size:13px;color:var(--verified);font-weight:600;margin-top:12px;">✓ Submitted! We'll review and add it within 48 hours.</div>
+    <div id="sl-err" role="alert" style="display:none;font-size:13px;font-weight:600;margin:8px 0;"></div>
+    <button class="btn-primary" onclick="submitListing(this)" data-i18n="submit.btn">Submit for Review</button>
+    <div id="sl-ok" role="status" style="display:none;text-align:center;font-size:13px;color:var(--verified);font-weight:600;margin-top:12px;">✓ Submitted! We'll review and add it within 48 hours.</div>
+  </div>
+</div>
+
+<!-- REPORT / FLAG CONTENT MODAL (used by openReportModal / submitReport) -->
+<div id="report-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="report-title" style="display:none;" onclick="if(event.target===this)closeReportModal()">
+  <div class="report-modal-content">
+    <button class="modal-close-btn" aria-label="Close" onclick="closeReportModal()">×</button>
+    <h3 id="report-title" data-i18n="report.title">Report a problem</h3>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;" data-i18n="report.intro">Tell our volunteer moderators what's wrong with this item. Reports are private.</p>
+    <input type="hidden" id="report-item-type">
+    <input type="hidden" id="report-item-id">
+    <label for="report-reason" class="form-label" data-i18n="report.reason_label">Reason *</label>
+    <select id="report-reason" class="form-input">
+      <option value="" data-i18n="report.reason_choose">Choose a reason…</option>
+      <option value="spam" data-i18n="report.reason_spam">Spam or advertising</option>
+      <option value="inaccurate" data-i18n="report.reason_inaccurate">Inaccurate or outdated information</option>
+      <option value="closed" data-i18n="report.reason_closed">Organization has closed or moved</option>
+      <option value="inappropriate" data-i18n="report.reason_inappropriate">Inappropriate or offensive</option>
+      <option value="duplicate" data-i18n="report.reason_duplicate">Duplicate entry</option>
+      <option value="other" data-i18n="report.reason_other">Other</option>
+    </select>
+    <label for="report-details" class="form-label" data-i18n="report.details_label">Details (optional)</label>
+    <textarea id="report-details" class="form-input" rows="3" maxlength="1000" placeholder="Anything that helps us fix it…" data-i18n-placeholder="report.details_placeholder"></textarea>
+    <div id="report-status" class="report-status" role="status" style="display:none;"></div>
+    <button id="report-submit-btn" class="btn-primary" style="margin-top:12px;width:100%;" onclick="submitReport()" data-i18n="report.submit_btn">Send report</button>
   </div>
 </div>
 
@@ -299,7 +326,7 @@
 <!-- TOP BAR -->
 <div id="topbar">
   <span class="nav-links">
-    <a href="#" data-i18n="topbar.about" onclick="showSec('home');return false;">about</a>
+    <a href="/about" data-i18n="topbar.about" onclick="showSec('about');return false;">about</a>
     <a href="#" data-i18n="topbar.submit_listing" onclick="showSubmitForm();return false;">submit listing</a>
     <a href="#" id="adminlink" onclick="showSec('admin');return false;" style="display:none;color:#c0392b;font-weight:600;">admin</a>
     <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
@@ -346,13 +373,12 @@
 </div><!-- end #site-header -->
 
 <!-- 3-COL PAGE -->
-<div id="maincontent"></div>
 <div id="page">
 
 <!-- LEFT SIDEBAR -->
 <div id="leftbar">
   <div id="searchwrap">
-    <input type="text" id="searchinput" placeholder="search…" data-i18n-placeholder="search.placeholder">
+    <input type="search" id="searchinput" aria-label="Search the directory" placeholder="search…" data-i18n-placeholder="search.placeholder">
     <button onclick="doSearch()" data-i18n="search.button">search</button>
   </div>
   <h5 data-i18n="sidebar.categories">categories</h5>
@@ -370,7 +396,7 @@
     <li><a href="#" onclick="showCategory('Groups & Circles');return false;" data-i18n="sidebar.category_groups">groups, seminars &amp; retreats</a><span class="cbadge">111</span></li>
     <li><a href="#" onclick="showSec('podcasts');return false;" data-i18n="sidebar.category_podcasts">podcasts &amp; media</a><span class="cbadge">23</span></li>
     <li><a href="#" onclick="showSec('books');return false;" data-i18n="sidebar.category_books">books &amp; library</a><span class="cbadge">350+</span></li>
-    <li><a href="#" onclick="showSec('eldercare');return false;" data-i18n="sidebar.category_eldercare">eldercare</a><span class="cbadge">42</span></li>
+    <li><a href="#" onclick="showSec('eldercare');return false;" data-i18n="sidebar.category_eldercare">eldercare</a><span class="cbadge" data-live-count="eldercare">42</span></li>
     <li><a href="#" onclick="showCategory('Online Resources');return false;" data-i18n="sidebar.category_online">online resources</a><span class="cbadge">280</span></li>
     <li><a href="#" onclick="showCategory('Social Media');return false;" data-i18n="sidebar.category_social_media">social media</a><span class="cbadge">25</span></li>
   </ul>
@@ -380,6 +406,9 @@
     <li><a href="#" onclick="document.getElementById('searchinput').value='europe';doSearch();return false;" data-i18n="sidebar.region_europe">europe</a></li>
     <li><a href="#" onclick="document.getElementById('searchinput').value='uk  ireland';doSearch();return false;" data-i18n="sidebar.region_uk_ireland">uk &amp; ireland</a></li>
     <li><a href="#" onclick="document.getElementById('searchinput').value='australia / nz';doSearch();return false;" data-i18n="sidebar.region_australia_nz">australia / nz</a></li>
+    <li><a href="#" data-i18n="sidebar.region_latin_america">latin america</a></li>
+    <li><a href="#" data-i18n="sidebar.region_africa">africa</a></li>
+    <li><a href="#" data-i18n="sidebar.region_asia">asia</a></li>
     <li><a href="#" onclick="document.getElementById('searchinput').value='international';doSearch();return false;" data-i18n="sidebar.region_international">international</a></li>
   </ul>
   <h5 data-i18n="sidebar.status">status</h5>
@@ -398,10 +427,11 @@
 </div>
 
 <!-- CENTER -->
-<div id="center">
+<main id="center" tabindex="-1">
 
 <!-- ═══ HOME ═══ -->
 <div class="pagesec active" id="sec-home">
+  <h1 class="sr-only" data-i18n="home.h1">Sophia Commons: the free global directory for the anthroposophical community</h1>
 
   <!-- ROW 1: Trending + News + Calendar -->
   <div class="twocol" style="margin-bottom:12px;">
@@ -412,7 +442,7 @@
         <h3 data-i18n="home.current_events">Current Events</h3>
         <span class="tlabel" data-i18n="home.current_events_today">today</span>
       </div>
-      <div class="trendblock-body">
+      <div class="trendblock-body" id="home-current-events">
         <div class="trend-story">
           <h4><a href="#" onclick="showSec('news');return false;">Goetheanum Launches New Global Online Study Program for 2026</a></h4>
         </div>
@@ -428,7 +458,7 @@
         <h3 data-i18n="home.upcoming_events">Upcoming Events</h3>
         <a href="#" onclick="showSec('events');return false;" data-i18n="home.full_calendar">full calendar →</a>
       </div>
-      <div class="listblock-body" style="padding:4px 10px 6px;">
+      <div class="listblock-body" id="home-upcoming" style="padding:4px 10px 6px;">
         <div class="evrow reveal" data-event-date="2026-03-22">
           <div class="evdate"><div class="mo">Mar</div><div class="dy">22</div></div>
           <div class="evinfo"><div class="etag">Study</div><h5><a href="#" onclick="document.getElementById('searchinput').value='Goetheanum Online - Spring Weekend Session';doSearch();return false;">Goetheanum Online - Spring Weekend Session</a></h5><div class="emeta">Online · Free for members</div></div>
@@ -447,6 +477,8 @@
   </div><!-- end row 1 -->
 
   <hr class="soft">
+  <div id="home-video-spotlight" class="video-spotlight mobile-only"></div>
+
   <div class="seclabel" data-i18n="home.main_sections">Main Sections</div>
 
   <!-- ROW 2: Core categories 3-col -->
@@ -507,7 +539,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 data-i18n="catmeta.online_name">Online Resources</h3><span class="alllink">280</span></div>
+      <div class="catblock-head"><h3 data-i18n="catmeta.online_name">Online Resources</h3><span class="alllink" data-live-count="online">280</span></div>
       <ul>
         <li><a href="https://rsarchive.org" target="_blank">Rudolf Steiner Archive<sup>✓</sup></a></li>
         <li><a href="https://www.rudolfsteinerweb.com" target="_blank">Rudolf Steiner Web<sup>✓</sup></a></li>
@@ -544,7 +576,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 data-i18n="catmeta.housing_name">Housing &amp; Room Rent</h3><span class="alllink">54</span></div>
+      <div class="catblock-head"><h3 data-i18n="catmeta.housing_name">Housing &amp; Room Rent</h3><span class="alllink" data-live-count="">54</span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Rooms for rent';doSearch();return false;">Rooms for rent</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Shared housing';doSearch();return false;">Shared housing</a></li>
@@ -592,7 +624,7 @@
       <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink);margin:0 0 4px;" data-i18n="home.add_organization_title">Add Your Organization to the Directory</h3>
       <p style="font-size:12.5px;color:var(--muted);margin:0;line-height:1.5;" data-i18n="home.add_organization_desc">Schools, farms, practices, communities, and initiatives - share your work with the global anthroposophical community.</p>
     </div>
-    <button onclick="showSubmitForm();event.stopPropagation();" style="flex-shrink:0;padding:10px 22px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;" data-i18n="home.submit_listing_btn">+ Submit a Listing</button>
+    <button onclick="showSubmitForm();event.stopPropagation();" style="flex-shrink:0;padding:10px 22px;background:var(--gold);color:var(--on-gold);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;" data-i18n="home.submit_listing_btn">+ Submit a Listing</button>
   </div>
 
   <!-- Community Chat teaser + Podcasts teaser -->
@@ -609,11 +641,11 @@
         <li style="margin-bottom:6px;font-size:11.5px;color:var(--muted);"># meetups &nbsp;·&nbsp; # christian-community</li>
       </ul>
       <div style="padding:0 10px 8px;">
-        <a href="#" onclick="handleChat();return false;" style="display:block;background:var(--warm);color:#fff;text-align:center;padding:5px;font-size:11.5px;font-weight:500;" data-i18n="home.sign_in_to_join">sign in to join chat →</a>
+        <a href="#" class="chat-join-btn" onclick="handleChat();return false;" data-i18n="home.sign_in_to_join">sign in to join chat →</a>
       </div>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 data-i18n="catmeta.online_name">Podcasts &amp; Media</h3><span class="alllink">23</span></div>
+      <div class="catblock-head"><h3 data-i18n="home.podcasts_media">Podcasts &amp; Media</h3><span class="alllink">23</span></div>
       <ul>
         <li><a href="#" onclick="showSec('podcasts');return false;">ASA Official Podcast<sup>✓</sup></a></li>
         <li><a href="#" onclick="showSec('podcasts');return false;">Goetheanum Podcast<sup>✓</sup></a></li>
@@ -639,10 +671,10 @@
 
 <!-- ═══ NEWS ═══ -->
 <div class="pagesec" id="sec-news">
-  <div class="seclabel" style="margin-bottom:10px;">News &amp; Announcements &nbsp;·&nbsp; 241 articles</div>
-  <!-- featured -->
-  <div class="trendblock reveal" style="margin-bottom:14px;">
-    <div class="trendblock-head"><h3 data-i18n="news.most_read_today">Current Events: Most Read Today</h3><span class="tlabel">3,847 readers</span></div>
+  <div class="seclabel" style="margin-bottom:10px;">News &amp; Announcements</div>
+  <!-- featured (static placeholder content; hidden automatically once the news table has published articles) -->
+  <div class="trendblock reveal static-news" style="margin-bottom:14px;">
+    <div class="trendblock-head"><h3 data-i18n="news.most_read_today">Current Events: Most Read Today</h3><span class="tlabel">featured</span></div>
     <div class="trendblock-body">
       <div class="trend-story">
         <h4 style="font-family:'Lora',serif;font-size:15px;font-weight:700;margin-bottom:6px;"><a href="#" onclick="document.getElementById('searchinput').value='Goetheanum Launches New Global Online Study Program for 2026';doSearch();return false;">Goetheanum Launches New Global Online Study Program for 2026</a></h4>
@@ -651,7 +683,7 @@
       </div>
     </div>
   </div>
-  <div class="twocol">
+  <div class="twocol static-news">
     <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="news.latest_stories">Latest Stories</h3></div>
       <div class="listblock-body">
         <div class="lrow"><span class="ltag">Biodynamic</span><a class="ltitle" href="#" onclick="document.getElementById('searchinput').value='Demeter Reports Record Farm Certification Growth';doSearch();return false;">Demeter Reports Record Farm Certification Growth</a><span class="lmeta">Mar 20</span></div>
@@ -676,14 +708,14 @@
 
 <!-- ═══ EVENTS ═══ -->
 <div class="pagesec" id="sec-events">
-  <div class="seclabel" style="margin-bottom:10px;">Events &amp; Calendar &nbsp;·&nbsp; 620 upcoming events worldwide</div>
+  <div class="seclabel" id="events-seclabel" style="margin-bottom:10px;">Events &amp; Calendar</div>
 
   <!-- Visual Calendar -->
   <div class="calendar-full reveal">
     <div class="cal-header">
-      <button onclick="calNavMonth(-1)">&larr;</button>
-      <h3 id="cal-month-label"></h3>
-      <button onclick="calNavMonth(1)">&rarr;</button>
+      <button onclick="calNavMonth(-1)" aria-label="Previous month">&larr;</button>
+      <h3 id="cal-month-label" aria-live="polite"></h3>
+      <button onclick="calNavMonth(1)" aria-label="Next month">&rarr;</button>
     </div>
     <div class="cal-grid" id="cal-grid"></div>
   </div>
@@ -739,13 +771,13 @@
     <textarea id="esm-desc" rows="3" placeholder="Brief description..." data-i18n-placeholder="submit_event.desc_placeholder"></textarea>
     <label data-i18n="submit_event.url_label">Website / Link</label>
     <input type="text" id="esm-url" placeholder="https://..." data-i18n-placeholder="submit_event.url_placeholder">
-    <button class="esm-btn" onclick="submitEvent();" data-i18n="submit_event.btn">Submit Event</button>
+    <button class="esm-btn" onclick="submitEvent(this);" data-i18n="submit_event.btn">Submit Event</button>
   </div>
 </div>
 
 <!-- ═══ BROWSE ═══ -->
 <div class="pagesec" id="sec-browse">
-  <div class="seclabel" style="margin-bottom:10px;">Browse Listings &nbsp;·&nbsp; 2,840+ listings</div>
+  <div class="seclabel" id="browse-seclabel" style="margin-bottom:10px;">Browse Listings</div>
   <div class="catgrid">
     <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Waldorf & Education');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.waldorf_name">Waldorf &amp; Education</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">312 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Schools directory';doSearch();return false;">Schools directory</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Teacher training';doSearch();return false;">Teacher training</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Curriculum resources';doSearch();return false;">Curriculum resources</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Tutoring services';doSearch();return false;">Tutoring services</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Homeschool support';doSearch();return false;">Homeschool support</a></li></ul></div>
     <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Biodynamic Agriculture');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.biodynamic_name">Biodynamic Agriculture</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">198 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='CSA farm shares';doSearch();return false;">CSA farm shares</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Farm apprenticeships';doSearch();return false;">Farm apprenticeships</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Demeter farms';doSearch();return false;">Demeter farms</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Seed suppliers';doSearch();return false;">Seed suppliers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Training programs';doSearch();return false;">Training programs</a></li></ul></div>
@@ -759,8 +791,9 @@
 <!-- ═══ PODCASTS ═══ -->
 <div class="pagesec" id="sec-podcasts">
   <div class="seclabel" style="margin-bottom:10px;">Podcasts &amp; Media &nbsp;·&nbsp; 23 shows, channels, and platforms</div>
+  <div id="yt-channels-block"></div>
   <div class="twocol">
-    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="podcasts.podcasts_heading">Podcasts</h3><a href="#" onclick="document.getElementById('searchinput').value='all 6';doSearch();return false;">all 6 →</a></div>
+    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="podcasts.podcasts_heading">Podcasts</h3><a href="/category/podcasts-%26-media?q=podcast" onclick="showCategory('Podcasts & Media',false,{q:'podcast'});return false;">all podcasts →</a></div>
       <div class="listblock-body">
         <div class="lrow"><a class="ltitle" href="https://anthroposophy.org/podcast/" target="_blank">ASA Official Podcast</a><span class="lmeta">Spotify / RSS</span><span class="lv">✓</span></div>
         <div class="lrow"><a class="ltitle" href="https://goetheanum.transistor.fm/" target="_blank">Goetheanum Podcast</a><span class="lmeta">Transistor</span><span class="lv">✓</span></div>
@@ -770,7 +803,7 @@
         <div class="lrow"><a class="ltitle" href="https://open.spotify.com/show/0M4QfnyYevp54XnlERAPTf" target="_blank">Anthroposophy on Spotify</a><span class="lmeta">Global</span><span class="lv">✓</span></div>
       </div>
     </div>
-    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="podcasts.video_social_heading">Video &amp; Social</h3><a href="#" onclick="document.getElementById('searchinput').value='all 8';doSearch();return false;">all 8 →</a></div>
+    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="podcasts.video_social_heading">Video &amp; Social</h3><a href="/category/social-media" onclick="showCategory('Social Media');return false;">all channels →</a></div>
       <div class="listblock-body">
         <div class="lrow"><a class="ltitle" href="https://goetheanum.tv" target="_blank">Goetheanum TV</a><span class="lmeta">Dornach, CH</span><span class="lv">✓</span></div>
         <div class="lrow"><a class="ltitle" href="https://dasgoetheanum.com/en" target="_blank">Das Goetheanum Weekly</a><span class="lmeta">Online</span><span class="lv">✓</span></div>
@@ -787,13 +820,13 @@
 
 <!-- ═══ DIRECTORY ═══ -->
 <div class="pagesec" id="sec-directory">
-  <div class="seclabel" style="margin-bottom:10px;">World Directory &nbsp;·&nbsp; 380+ verified organizations &amp; resources across 11 countries</div>
+  <div class="seclabel" id="directory-seclabel" style="margin-bottom:10px;">World Directory &nbsp;·&nbsp; 380+ verified organizations &amp; resources across 11 countries</div>
 
   <!-- MAP -->
   <div class="mapwrap">
     <div class="mapwrap-head">
       <h3 data-i18n="directory.map_heading">Organizations on the Map</h3>
-      <select id="map-filter" onchange="filterMap()">
+      <select id="map-filter" aria-label="Filter the map" onchange="filterMap()">
         <option value="all" data-i18n="directory.filter_all">All categories</option>
         <option value="societies" data-i18n="directory.filter_societies">Societies &amp; Orgs</option>
         <option value="waldorf" data-i18n="directory.filter_waldorf">Waldorf</option>
@@ -938,6 +971,7 @@
 <!-- ═══ BOOKS & LIBRARY ═══ -->
 <div class="pagesec" id="sec-books">
   <div class="seclabel">Books &amp; Library &middot; Complete Rudolf Steiner Catalog &middot; 350+ volumes</div>
+  <div id="top50-books"></div>
 
   <p style="font-size:14px;color:var(--text-secondary);margin-bottom:6px;line-height:1.7;">
     Rudolf Steiner authored 28 written works and delivered over 6,000 lectures, published in the German
@@ -955,16 +989,16 @@
       <div class="lrow"><span class="ltag">GA 1</span><a class="ltitle" href="https://rsarchive.org/Books/GA001/" target="_blank">Goethean Science</a><span class="lmeta"><a href="https://steinerbooks.org/products/9781957569321-goethean-science" target="_blank">$24.95 SteinerBooks</a> &middot; <a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Goethean+Science" target="_blank">Amazon</a></span></div>
       <div class="lrow"><span class="ltag">GA 2</span><a class="ltitle" href="https://rsarchive.org/Books/GA002/" target="_blank">Theory of Knowledge Based on Goethe's Worldview</a><span class="lmeta"><a href="https://steinerbooks.org/products/9780880106238-goethes-theory-of-knowledge" target="_blank">$20.00 SteinerBooks</a> &middot; <a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Theory+Knowledge+Goethe" target="_blank">Amazon</a></span></div>
       <div class="lrow"><span class="ltag">GA 3</span><a class="ltitle" href="https://rsarchive.org/Books/GA003/" target="_blank">Truth and Knowledge</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Truth+and+Knowledge" target="_blank">Amazon</a> &middot; <span class="lv">free online</span></span></div>
-      <div class="lrow" style="background:var(--gold-light);"><span class="ltag" style="background:var(--gold);color:#fff;">GA 4</span><a class="ltitle" href="https://rsarchive.org/Books/GA004/" target="_blank" style="font-weight:700;">The Philosophy of Freedom</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Philosophy+of+Freedom" target="_blank">Amazon</a> &middot; <span class="lv">free online</span> &middot; Essential</span></div>
+      <div class="lrow" style="background:var(--gold-light);"><span class="ltag" style="background:var(--gold);color:var(--on-gold);">GA 4</span><a class="ltitle" href="https://rsarchive.org/Books/GA004/" target="_blank" style="font-weight:700;">The Philosophy of Freedom</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Philosophy+of+Freedom" target="_blank">Amazon</a> &middot; <span class="lv">free online</span> &middot; Essential</span></div>
       <div class="lrow"><span class="ltag">GA 5</span><a class="ltitle" href="https://rsarchive.org/Books/GA005/" target="_blank">Friedrich Nietzsche, Fighter for Freedom</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Nietzsche+Fighter" target="_blank">Amazon</a></span></div>
       <div class="lrow"><span class="ltag">GA 6</span><a class="ltitle" href="https://rsarchive.org/Books/GA006/" target="_blank">Goethe's Conception of the World</a><span class="lmeta"><a href="https://steinerbooks.org/products/9781957569246-goethes-world-view" target="_blank">$18.00 SteinerBooks</a> &middot; <a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Goethe+Conception+World" target="_blank">Amazon</a></span></div>
       <div class="lrow"><span class="ltag">GA 7</span><a class="ltitle" href="https://rsarchive.org/Books/GA007/" target="_blank">Mysticism at the Dawn of the Modern Age</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Mysticism+Dawn+Modern" target="_blank">Amazon</a> &middot; <span class="lv">free online</span></span></div>
       <div class="lrow"><span class="ltag">GA 8</span><a class="ltitle" href="https://rsarchive.org/Books/GA008/" target="_blank">Christianity as Mystical Fact</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Christianity+Mystical+Fact" target="_blank">Amazon</a> &middot; <span class="lv">free online</span></span></div>
-      <div class="lrow" style="background:var(--gold-light);"><span class="ltag" style="background:var(--gold);color:#fff;">GA 9</span><a class="ltitle" href="https://rsarchive.org/Books/GA009/" target="_blank" style="font-weight:700;">Theosophy</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Theosophy" target="_blank">Amazon</a> &middot; <span class="lv">free online</span> &middot; Essential</span></div>
-      <div class="lrow" style="background:var(--gold-light);"><span class="ltag" style="background:var(--gold);color:#fff;">GA 10</span><a class="ltitle" href="https://rsarchive.org/Books/GA010/" target="_blank" style="font-weight:700;">How to Know Higher Worlds</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+How+to+Know+Higher+Worlds" target="_blank">Amazon</a> &middot; <span class="lv">free online</span> &middot; Essential</span></div>
+      <div class="lrow" style="background:var(--gold-light);"><span class="ltag" style="background:var(--gold);color:var(--on-gold);">GA 9</span><a class="ltitle" href="https://rsarchive.org/Books/GA009/" target="_blank" style="font-weight:700;">Theosophy</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Theosophy" target="_blank">Amazon</a> &middot; <span class="lv">free online</span> &middot; Essential</span></div>
+      <div class="lrow" style="background:var(--gold-light);"><span class="ltag" style="background:var(--gold);color:var(--on-gold);">GA 10</span><a class="ltitle" href="https://rsarchive.org/Books/GA010/" target="_blank" style="font-weight:700;">How to Know Higher Worlds</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+How+to+Know+Higher+Worlds" target="_blank">Amazon</a> &middot; <span class="lv">free online</span> &middot; Essential</span></div>
       <div class="lrow"><span class="ltag">GA 11</span><a class="ltitle" href="https://rsarchive.org/Books/GA011/" target="_blank">Cosmic Memory (From the Akashic Chronicle)</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Cosmic+Memory" target="_blank">Amazon</a> &middot; <span class="lv">free online</span></span></div>
       <div class="lrow"><span class="ltag">GA 12</span><a class="ltitle" href="https://rsarchive.org/Books/GA012/" target="_blank">The Stages of Higher Knowledge</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Stages+Higher+Knowledge" target="_blank">Amazon</a> &middot; <span class="lv">free online</span></span></div>
-      <div class="lrow" style="background:var(--gold-light);"><span class="ltag" style="background:var(--gold);color:#fff;">GA 13</span><a class="ltitle" href="https://rsarchive.org/Books/GA013/" target="_blank" style="font-weight:700;">An Outline of Esoteric Science</a><span class="lmeta"><a href="https://steinerbooks.org/products/9780880104098-an-outline-of-esoteric-science" target="_blank">$19.95 SteinerBooks</a> &middot; <a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Outline+Esoteric+Science" target="_blank">Amazon</a> &middot; <span class="lv">free online</span> &middot; Essential</span></div>
+      <div class="lrow" style="background:var(--gold-light);"><span class="ltag" style="background:var(--gold);color:var(--on-gold);">GA 13</span><a class="ltitle" href="https://rsarchive.org/Books/GA013/" target="_blank" style="font-weight:700;">An Outline of Esoteric Science</a><span class="lmeta"><a href="https://steinerbooks.org/products/9780880104098-an-outline-of-esoteric-science" target="_blank">$19.95 SteinerBooks</a> &middot; <a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Outline+Esoteric+Science" target="_blank">Amazon</a> &middot; <span class="lv">free online</span> &middot; Essential</span></div>
       <div class="lrow"><span class="ltag">GA 14</span><a class="ltitle" href="https://rsarchive.org/Books/GA014/" target="_blank">Four Mystery Dramas</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Four+Mystery+Dramas" target="_blank">Amazon</a></span></div>
       <div class="lrow"><span class="ltag">GA 15</span><a class="ltitle" href="https://rsarchive.org/Books/GA015/" target="_blank">The Spiritual Guidance of the Individual and Humanity</a><span class="lmeta"><a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Spiritual+Guidance+Individual" target="_blank">Amazon</a> &middot; <span class="lv">free online</span></span></div>
       <div class="lrow"><span class="ltag">GA 16</span><a class="ltitle" href="https://rsarchive.org/Books/GA016/" target="_blank">A Road to Self-Knowledge</a><span class="lmeta"><a href="https://steinerbooks.org/products/9781732461376-a-path-to-self-knowledge" target="_blank">$45.00 SteinerBooks</a> &middot; <a href="https://www.amazon.com/s?tag=sophiacom-20&k=Rudolf+Steiner+Road+Self+Knowledge" target="_blank">Amazon</a></span></div>
@@ -1138,7 +1172,7 @@
 
 <!-- ═══ ELDERCARE ═══ -->
 <div class="pagesec" id="sec-eldercare">
-  <div class="seclabel">Eldercare &nbsp;·&nbsp; Anthroposophical Senior Living &amp; Support &nbsp;·&nbsp; 42 listings</div>
+  <div class="seclabel" id="eldercare-seclabel">Eldercare &nbsp;·&nbsp; Anthroposophical Senior Living &amp; Support</div>
 
   <p style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;line-height:1.7;">
     Anthroposophical eldercare honors the full biography of the human being. These communities, homes,
@@ -1146,8 +1180,11 @@
     integrating artistic therapies, biography work, and meaningful social engagement alongside medical support.
   </p>
 
-  <!-- Eldercare feature grid -->
-  <div class="catgrid" style="margin-bottom:20px;">
+  <!-- Live eldercare listings from the directory (filled by loadEldercareLive) -->
+  <div id="eldercare-live"></div>
+
+  <!-- Curated examples (hidden once live listings load; several of these names are not in the directory yet) -->
+  <div class="catgrid" id="eldercare-curated" style="margin-bottom:20px;">
 
     <div class="catblock reveal">
       <div class="catblock-head"><h3 data-i18n="eldercare.senior_living">Senior Living Communities</h3><span class="alllink">14 listings</span></div>
@@ -1243,7 +1280,7 @@
     <div class="listblock-head"><h3 data-i18n="eldercare.submit_heading">Submit an Eldercare Listing</h3></div>
     <div class="listblock-body" style="padding:16px;">
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;" data-i18n="eldercare.submit_desc">Know of an anthroposophical eldercare community, service, or resource? Submit it for review using the main listing form.</p>
-      <button onclick="showSubmitForm()" style="padding:10px 24px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">+ Submit a Listing</button>
+      <button onclick="showSubmitForm()" style="padding:10px 24px;background:var(--gold);color:var(--on-gold);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">+ Submit a Listing</button>
     </div>
   </div>
 
@@ -1268,9 +1305,9 @@
   </p>
 
   <!-- Memorial search -->
-  <div style="margin-bottom:24px;display:flex;gap:10px;max-width:500px;">
-    <input type="text" id="memorial-search" placeholder="Search by name..." data-i18n-placeholder="memorial.search_placeholder" style="flex:1;padding:10px 18px;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;" onkeydown="if(event.key==='Enter')filterMemorials()">
-    <button onclick="filterMemorials()" style="padding:10px 22px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" data-i18n="memorial.search_btn">Search</button>
+  <div class="memorial-searchbar" style="margin-bottom:24px;display:flex;flex-wrap:wrap;gap:10px;max-width:500px;">
+    <input type="text" id="memorial-search" aria-label="Search memorials by name" placeholder="Search by name..." data-i18n-placeholder="memorial.search_placeholder" style="flex:1 1 180px;min-width:0;padding:10px 18px;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;" onkeydown="if(event.key==='Enter')filterMemorials()">
+    <button onclick="filterMemorials()" style="padding:10px 22px;background:var(--gold);color:var(--on-gold);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" data-i18n="memorial.search_btn">Search</button>
     <button onclick="document.getElementById('memorial-search').value='';filterMemorials()" style="padding:10px 16px;background:var(--surface);color:var(--text-secondary);border:1px solid var(--border);border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" data-i18n="memorial.all_btn">All</button>
   </div>
 
@@ -1285,7 +1322,7 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Steiner_um_1905.jpg" alt="Rudolf Steiner portrait, 1905" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Rudolf Steiner</h3>
-      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:4px;">1861 - 1925</div>
+      <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1861 - 1925</div>
       <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Kraljevec, Austria-Hungary / Dornach, Switzerland</div>
       <p style="font-size:13px;color:var(--text-secondary);line-height:1.55;">Founder of anthroposophy, Waldorf education, biodynamic agriculture, and anthroposophic medicine. His legacy continues through thousands of initiatives worldwide.</p>
     </div>
@@ -1295,7 +1332,7 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Marie_Steiner.jpg" alt="Marie Steiner-von Sivers portrait" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Marie Steiner-von Sivers</h3>
-      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:4px;">1867 - 1948</div>
+      <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1867 - 1948</div>
       <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Wloclawek, Poland / Beatenberg, Switzerland</div>
       <p style="font-size:13px;color:var(--text-secondary);line-height:1.55;">Co-worker of Rudolf Steiner and guardian of his literary estate. Developed speech formation and dramatic arts as a path of spiritual practice.</p>
     </div>
@@ -1305,7 +1342,7 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Ita_Wegman_1899.jpg" alt="Ita Wegman portrait, 1899" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Ita Wegman</h3>
-      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:4px;">1876 - 1943</div>
+      <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1876 - 1943</div>
       <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Karawang, Dutch East Indies / Arlesheim, Switzerland</div>
       <p style="font-size:13px;color:var(--text-secondary);line-height:1.55;">Co-founder of anthroposophic medicine alongside Rudolf Steiner. Established the first anthroposophic clinic in Arlesheim, Switzerland in 1921.</p>
     </div>
@@ -1315,7 +1352,7 @@
         <span style="font-family:'Lora',serif;font-size:2rem;color:var(--text-muted);">EP</span>
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Ehrenfried Pfeiffer</h3>
-      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:4px;">1899 - 1961</div>
+      <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1899 - 1961</div>
       <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Munich, Germany / Spring Valley, NY, USA</div>
       <p style="font-size:13px;color:var(--text-secondary);line-height:1.55;">Pioneer of biodynamic agriculture in North America. Founded the Threefold Farm and developed soil testing methods used worldwide.</p>
     </div>
@@ -1325,7 +1362,7 @@
         <span style="font-family:'Lora',serif;font-size:2rem;color:var(--text-muted);">KK</span>
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Karl K&ouml;nig</h3>
-      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:4px;">1902 - 1966</div>
+      <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1902 - 1966</div>
       <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Vienna, Austria / Brachenreuthe, Germany</div>
       <p style="font-size:13px;color:var(--text-secondary);line-height:1.55;">Founder of the Camphill movement in 1940, creating inclusive communities for people with developmental disabilities across the world.</p>
     </div>
@@ -1335,7 +1372,7 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Albert_Steffen_-_1916.jpg" alt="Albert Steffen portrait, 1916" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Albert Steffen</h3>
-      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:4px;">1884 - 1963</div>
+      <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1884 - 1963</div>
       <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Wynau, Switzerland / Dornach, Switzerland</div>
       <p style="font-size:13px;color:var(--text-secondary);line-height:1.55;">Swiss poet, playwright, and president of the General Anthroposophical Society from 1925 to 1963. Carried forward Steiner's artistic impulse.</p>
     </div>
@@ -1371,7 +1408,7 @@
       <input type="hidden" id="mem-photo" value="">
       <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;margin-top:12px;" data-i18n="submit_memorial.email_label">Your email (for follow-up)</label>
       <input type="email" id="mem-email" placeholder="you@example.com" data-i18n-placeholder="submit_memorial.email_placeholder" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;">
-      <button onclick="submitMemorial()" style="margin-top:16px;padding:11px 28px;background:var(--gold);color:var(--text-inverse);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" data-i18n="submit_memorial.btn">Submit Memorial</button>
+      <button onclick="submitMemorial()" style="margin-top:16px;padding:11px 28px;background:var(--gold);color:var(--on-gold);border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" data-i18n="submit_memorial.btn">Submit Memorial</button>
       <div id="mem-ok" style="display:none;font-size:13px;color:var(--verified);font-weight:600;margin-top:12px;">Submitted with gratitude. We will review and publish within 48 hours.</div>
     </div>
   </div>
@@ -1402,9 +1439,9 @@
     <div class="rooms-sb">
       <div class="rooms-sb-head" data-i18n="chat.rooms_heading">Rooms</div>
       <div class="ritem active" onclick="switchRoom(this,'general','Open conversation for all members',12)"><span class="rname"># general</span><span class="rsub">open discussion</span></div>
-      <div class="ritem" onclick="switchRoom(this,'waldorf-education','Teachers, parents, and students',7)"><span class="rname"># waldorf-education</span><span class="rsub">teachers &amp; parents</span><span class="unread">3</span></div>
+      <div class="ritem" onclick="switchRoom(this,'waldorf-education','Teachers, parents, and students',7)"><span class="rname"># waldorf-education</span><span class="rsub">teachers &amp; parents</span></div>
       <div class="ritem" onclick="switchRoom(this,'biodynamic','Farms, CSAs, and growers',5)"><span class="rname"># biodynamic</span><span class="rsub">farms &amp; growers</span></div>
-      <div class="ritem" onclick="switchRoom(this,'study-groups','Reading circles and branches',9)"><span class="rname"># study-groups</span><span class="rsub">reading circles</span><span class="unread">1</span></div>
+      <div class="ritem" onclick="switchRoom(this,'study-groups','Reading circles and branches',9)"><span class="rname"># study-groups</span><span class="rsub">reading circles</span></div>
       <div class="ritem" onclick="switchRoom(this,'eurythmy-arts','Practitioners and students',4)"><span class="rname"># eurythmy-arts</span><span class="rsub">practitioners</span></div>
       <div class="ritem" onclick="switchRoom(this,'medicine','Practitioners and patients',6)"><span class="rname"># medicine</span><span class="rsub">practitioners</span></div>
       <div class="ritem" onclick="switchRoom(this,'christian-community','Congregations worldwide',3)"><span class="rname"># christian-community</span><span class="rsub">congregations</span></div>
@@ -1415,16 +1452,13 @@
       <div class="chat-ph">
         <h4 id="room-title"># general</h4>
         <span class="rdesc" id="room-desc">Open conversation for all members</span>
-        <span class="onl" id="online-ct">● 12 online</span>
+        <span class="onl" id="online-ct"></span>
       </div>
-      <div id="messages">
-        <div class="msg"><div class="av">M</div><div class="bub"><div class="bmeta"><span class="nm">Maren H.</span>9:14 AM</div><div class="btxt">Good morning, has anyone attended any of the Goetheanum online study weekends? Considering the spring session.</div></div></div>
-        <div class="msg"><div class="av">T</div><div class="bub"><div class="bmeta"><span class="nm">Thomas R.</span>9:22 AM</div><div class="btxt">Yes! I did the October session last year. Recorded lectures plus live discussion groups, format worked really well.</div></div></div>
-        <div class="msg"><div class="av">A</div><div class="bub"><div class="bmeta"><span class="nm">Aria S.</span>9:31 AM</div><div class="btxt">The Rudolf Steiner Archive just released new translations. Worth checking if you're studying the agriculture lectures.</div></div></div>
+      <div id="messages" role="log" aria-live="polite">
         <div class="msg sys"><div class="av">·</div><div class="bub"><div class="btxt">You joined # general</div></div></div>
       </div>
       <div class="chat-irow">
-        <input type="text" id="chat-input" placeholder="message # general…" onkeydown="if(event.key==='Enter')sendMsg()">
+        <input type="text" id="chat-input" aria-label="Message" placeholder="message # general…" onkeydown="if(event.key==='Enter')sendMsg()">
         <button onclick="sendMsg()" data-i18n="chat.send_btn">send</button>
       </div>
     </div>
@@ -1434,18 +1468,86 @@
 <!-- ═══ CATEGORY PAGE (dynamic) ═══ -->
 <div class="pagesec" id="sec-category">
   <div style="margin-bottom:12px;">
-    <a href="#" id="cat-back" onclick="goBack();return false;" style="font-size:13px;color:var(--gold);font-weight:600;text-decoration:none;" data-i18n="catpage.back">&larr; Back</a>
+    <a href="#" id="cat-back" onclick="goBack();return false;" style="font-size:13px;color:var(--gold-text);font-weight:600;text-decoration:none;" data-i18n="catpage.back">&larr; Back</a>
   </div>
-  <div class="seclabel" id="cat-page-label" data-i18n="catpage.default_label">Category</div>
+  <div class="seclabel" id="cat-page-label">Category</div>
   <p id="cat-page-desc" style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;line-height:1.7;"></p>
   <div id="cat-page-content">
   </div>
 </div>
 
+<!-- ═══ ABOUT ═══ -->
+<div class="pagesec legal-page" id="sec-about">
+  <div class="seclabel" data-i18n="about.label">About</div>
+  <h1 data-i18n="about.title">About Sophia Commons</h1>
+  <p class="legal-lead" data-i18n="about.lead">Sophia Commons is a free, community-maintained directory for the anthroposophical world: Waldorf schools, biodynamic farms, Camphill communities, anthroposophic medicine, eurythmy, study groups and more, in one place.</p>
+  <h2 data-i18n="about.what_h">What you'll find</h2>
+  <ul>
+    <li><a href="/directory" onclick="showSec('directory');return false;" data-i18n="about.what_directory">The world directory</a> <span data-i18n="about.what_directory_note">of organizations, searchable by category and region</span></li>
+    <li><a href="/events" onclick="showSec('events');return false;" data-i18n="about.what_events">An events calendar</a> <span data-i18n="about.what_events_note">with festivals, conferences and courses</span></li>
+    <li><a href="/books" onclick="showSec('books');return false;" data-i18n="about.what_books">The Rudolf Steiner library</a> <span data-i18n="about.what_books_note">with links to free and printed editions</span></li>
+    <li><a href="/memorial" onclick="showSec('memorial');return false;" data-i18n="about.what_memorial">In Memoriam</a> <span data-i18n="about.what_memorial_note">honoring members of the community</span></li>
+  </ul>
+  <h2 data-i18n="about.help_h">How you can help</h2>
+  <ul>
+    <li><a href="#" onclick="showSubmitForm();return false;" data-i18n="about.help_submit">Submit a listing</a> <span data-i18n="about.help_submit_note">for an organization we're missing (reviewed within 48 hours)</span></li>
+    <li><span data-i18n="about.help_report">Use "Report a problem" on any listing that is out of date</span></li>
+    <li><a href="mailto:hello@sophiacommons.org" data-i18n="about.help_volunteer">Volunteer as an editor</a></li>
+  </ul>
+  <p class="legal-note"><span data-i18n="about.contact">Contact:</span> <a href="mailto:hello@sophiacommons.org">hello@sophiacommons.org</a> &nbsp;·&nbsp; <a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a> &nbsp;·&nbsp; <a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a></p>
+</div>
+
+<!-- ═══ PRIVACY ═══ -->
+<div class="pagesec legal-page" id="sec-privacy">
+  <div class="seclabel">Privacy</div>
+  <h1>Privacy at Sophia Commons</h1>
+  <p class="legal-lead">Sophia Commons is a free community directory. We collect as little as we can, never sell data, and use it only to run the site. Last updated September 27, 2026.</p>
+  <h2>What we collect</h2>
+  <ul>
+    <li><strong>Account details</strong> if you sign up: your email address and a password (stored securely by our database provider, Supabase). Your username is shown on chat messages and comments you post.</li>
+    <li><strong>What you submit</strong>: listings, events, memorial tributes and photos, comments, chat messages and reports. Submissions are reviewed before they appear.</li>
+    <li><strong>Newsletter</strong>: your email address, if you subscribe.</li>
+    <li><strong>Usage statistics</strong>: pages viewed, a random session id, the referring page, browser, operating system, device type, screen size and language. We use this to see which parts of the site are useful. It does not include your name or email.</li>
+    <li><strong>Google Analytics</strong> collects similar anonymous usage statistics. Google Maps loads on the Directory page to show the map.</li>
+  </ul>
+  <h2>Stored on your device</h2>
+  <p>Your language choice and, if you sign in, a login token are kept in your browser's local storage. We do not use advertising cookies.</p>
+  <h2>Who we share it with</h2>
+  <p>Only the services that run the site: Supabase (database and accounts), Netlify (hosting), Google (Analytics and Maps) and our email provider for the newsletter. We do not sell or rent personal data.</p>
+  <h2>Your choices</h2>
+  <ul>
+    <li>Unsubscribe from the newsletter at any time.</li>
+    <li>Ask us to correct or delete your account, your submissions or your newsletter subscription by emailing <a href="mailto:hello@sophiacommons.org">hello@sophiacommons.org</a>.</li>
+  </ul>
+  <p class="legal-note">Questions? Write to <a href="mailto:hello@sophiacommons.org">hello@sophiacommons.org</a>.</p>
+</div>
+
+<!-- ═══ TERMS ═══ -->
+<div class="pagesec legal-page" id="sec-terms">
+  <div class="seclabel">Terms</div>
+  <h1>Terms of use</h1>
+  <p class="legal-lead">By using Sophia Commons you agree to these simple terms. Last updated September 27, 2026.</p>
+  <h2>A free, community-maintained directory</h2>
+  <p>Listings are gathered from public sources and community submissions. We check them, but details can change. Please confirm important information (dates, prices, admissions, medical services) directly with the organization.</p>
+  <h2>What you post</h2>
+  <ul>
+    <li>Only submit information you have the right to share, and photos you took or have permission to use.</li>
+    <li>Be respectful in chat and comments. No spam, advertising unrelated to the community, harassment or hateful content.</li>
+    <li>You keep ownership of what you post and allow Sophia Commons to display it on the site and in the newsletter.</li>
+  </ul>
+  <h2>Moderation</h2>
+  <p>We review submissions and may edit, decline or remove any content, or close accounts that break these terms. Use "Report a problem" on any listing to flag something.</p>
+  <h2>External links</h2>
+  <p>Links to other websites and shops (including Amazon affiliate links, which support the site) are provided for convenience. We are not responsible for their content.</p>
+  <h2>No warranty</h2>
+  <p>Sophia Commons is provided as is, without guarantees of accuracy or availability.</p>
+  <p class="legal-note">Contact: <a href="mailto:hello@sophiacommons.org">hello@sophiacommons.org</a></p>
+</div>
+
 <!-- ═══ DETAIL VIEW ═══ -->
 <div class="pagesec" id="sec-detail">
   <div style="margin-bottom:16px;">
-    <a href="#" id="detail-back" onclick="goBack();return false;" style="font-size:13px;color:var(--gold);font-weight:600;text-decoration:none;" data-i18n="detail.back">&larr; Back</a>
+    <a href="#" id="detail-back" onclick="goBack();return false;" style="font-size:13px;color:var(--gold-text);font-weight:600;text-decoration:none;" data-i18n="detail.back">&larr; Back</a>
   </div>
   <div id="detail-content">
     <!-- Dynamically populated by showDetail() -->
@@ -1460,6 +1562,7 @@
     <button class="admin-tab" onclick="adminSwitchTab('events')" data-i18n="admin.tab_events">Pending Events</button>
     <button class="admin-tab" onclick="adminSwitchTab('memorials')" data-i18n="admin.tab_memorials">Pending Memorials</button>
     <button class="admin-tab" onclick="adminSwitchTab('newsletter')" data-i18n="admin.tab_newsletter">Send Newsletter</button>
+    <button class="admin-tab" onclick="adminSwitchTab('reports')">Reports</button>
     <button class="admin-tab" onclick="adminSwitchTab('traffic')">Traffic Dashboard</button>
     <button class="admin-tab" onclick="adminSwitchTab('digest')">Weekly Digest</button>
   </div>
@@ -1490,6 +1593,24 @@
         <span id="newsletter-status" style="font-size:13px;color:var(--text-muted);"></span>
       </div>
       <div id="newsletter-result" style="display:none;margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <!-- REPORTS / MODERATION PANEL -->
+  <div id="admin-reports" class="admin-tab-content">
+    <div style="margin-top:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="font-family:Lora,serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin:0;">Flagged Content</h3>
+        <div style="display:flex;gap:8px;">
+          <button class="admin-filter-btn active" onclick="filterReports('pending')">Pending</button>
+          <button class="admin-filter-btn" onclick="filterReports('reviewed')">Reviewed</button>
+          <button class="admin-filter-btn" onclick="filterReports('resolved')">Resolved</button>
+          <button class="admin-filter-btn" onclick="filterReports('all')">All</button>
+        </div>
+      </div>
+      <div id="admin-reports-list">
+        <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">Loading reports...</div>
+      </div>
     </div>
   </div>
 
@@ -1636,17 +1757,25 @@
 
 </div>
 
-</div><!-- end center -->
+</main><!-- end center -->
 
 <!-- RIGHT SIDEBAR -->
-<div id="rightbar">
+<aside id="rightbar" aria-label="Calendar and community">
 
+  <section class="rb-sec rb-cal">
   <h5 data-i18n="rightbar.calendar">calendar</h5>
   <div id="sidebar-mini-cal" class="mini-cal"></div>
 
   <h5 data-i18n="rightbar.upcoming_events">upcoming events</h5>
   <div id="sidebar-upcoming" class="sb-upcoming"></div>
+  </section>
 
+  <section class="rb-sec rb-video">
+  <h5 data-i18n="rightbar.video_of_week">video of the week</h5>
+  <div id="video-spotlight" class="video-spotlight" aria-live="polite"></div>
+  </section>
+
+  <section class="rb-sec rb-moon">
   <h5>cycle of the moon</h5>
   <div id="moon-widget-sidebar" style="text-align:center;margin-bottom:12px;">
     <canvas id="moon-canvas" width="180" height="180" style="width:90px;height:90px;"></canvas>
@@ -1671,7 +1800,9 @@
       <div id="moon-upcoming"></div>
     </div>
   </div>
+  </section>
 
+  <section class="rb-sec rb-links">
   <h5 data-i18n="rightbar.related_directories">related directories</h5>
   <ul>
     <li><a href="https://biodynamicfood.org/" target="_blank">Demeter Farm Directory</a></li>
@@ -1689,22 +1820,23 @@
   </ul>
 
   <h5 data-i18n="rightbar.community_spotlight">community spotlight</h5>
-  <div id="spotlight-block" style="font-size:11.5px;">
-    <div style="background:var(--glt);border:1px solid var(--blt);padding:8px 9px;margin-bottom:6px;">
-      <div style="font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--warm);margin-bottom:4px;">Most visited this week</div>
-      <a href="#" onclick="showSec('directory');return false;" style="font-family:'Nunito Sans',sans-serif;font-weight:600;font-size:12px;color:var(--ink);line-height:1.35;display:block;margin-bottom:3px;">Goetheanum: World Center of Anthroposophy</a>
-      <div style="font-size:11px;color:var(--muted);">4,312 visits this week</div>
+  <div id="spotlight-block">
+    <div class="spotlight-card">
+      <div class="spotlight-kicker" data-i18n="spotlight.featured">Featured organization</div>
+      <a href="https://goetheanum.ch" target="_blank" rel="noopener" class="spotlight-title">Goetheanum: World Center of Anthroposophy</a>
+      <div class="spotlight-note">Dornach, Switzerland</div>
     </div>
-    <div style="background:var(--cream);border:1px solid var(--blt);padding:8px 9px;margin-bottom:6px;">
-      <div style="font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Trending listing</div>
-      <a href="#" onclick="showSec('browse');return false;" style="font-family:'Nunito Sans',sans-serif;font-size:12px;color:var(--link);display:block;margin-bottom:2px;">Waldorf Teacher Training: Bay Area</a>
-      <div style="font-size:11px;color:var(--muted);">62% more views this month</div>
+    <div class="spotlight-card alt">
+      <div class="spotlight-kicker" data-i18n="spotlight.grow">Grow the directory</div>
+      <a href="#" onclick="showSubmitForm();return false;" class="spotlight-title" data-i18n="spotlight.missing">Know a school, farm or clinic we're missing?</a>
+      <div class="spotlight-note" data-i18n="spotlight.reviewed">Submissions are reviewed within 48 hours.</div>
     </div>
   </div>
   <h5 style="margin-top:12px;" data-i18n="rightbar.about">about</h5>
   <p style="font-size:11px;color:var(--muted);line-height:1.6;" data-i18n="rightbar.about_text">Free, community-maintained directory.</p>
+  </section>
 
-</div><!-- end rightbar -->
+</aside><!-- end rightbar -->
 
 </div><!-- end #page -->
 
@@ -1737,19 +1869,19 @@
     <div class="ftcol reveal ftnl">
       <div class="ftcol-h" data-i18n="footer.col_newsletter">Newsletter</div>
       <p style="font-size:11.5px;color:rgba(255,255,255,.45);margin-bottom:8px;line-height:1.6;" data-i18n="footer.newsletter_desc">Weekly digest of listings, events, and community news.</p>
-      <input type="email" id="ft-email" placeholder="your@email.com" data-i18n-placeholder="footer.newsletter_placeholder">
+      <input type="email" id="ft-email" aria-label="Email address for the newsletter" placeholder="your@email.com" data-i18n-placeholder="footer.newsletter_placeholder">
       <button onclick="doFtSignup()" data-i18n="footer.newsletter_btn">subscribe</button>
-      <div id="ft-ok">✓ you're subscribed!</div>
+      <div id="ft-ok" role="status" data-i18n="newsletter.check_inbox">✓ Almost done: check your inbox and click the link to confirm.</div>
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.7.2</span>
-    <span><a href="#" onclick="return false;" data-i18n="footer.privacy">privacy</a><a href="#" onclick="return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.10.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
+    <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
-<script src="i18n.js"></script>
-<script src="sophia_commons_v9.js"></script>
+<script src="/i18n.js?v=1.9.1"></script>
+<script src="/sophia_commons_v9.js?v=1.9.1"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

@@ -1,0 +1,502 @@
+[
+ {
+  "rank": 1,
+  "title": "How to Know Higher Worlds",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 10",
+  "category": "Inner Development",
+  "isbn13": "9780880103725",
+  "blurb": "Steiner's core handbook for the meditative path and the moral conditions of spiritual training.",
+  "free_online_url": "https://rsarchive.org/Books/GA010/"
+ },
+ {
+  "rank": 2,
+  "title": "Theosophy: An Introduction to the Spiritual Processes in Human Life and in the Cosmos",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 9",
+  "category": "Foundational",
+  "isbn13": "9780880103732",
+  "blurb": "The clearest systematic account of body, soul and spirit, reincarnation and karma, and the soul and spirit worlds.",
+  "free_online_url": "https://rsarchive.org/Books/GA009/"
+ },
+ {
+  "rank": 3,
+  "title": "The Philosophy of Freedom (The Philosophy of Spiritual Activity)",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 4",
+  "category": "Foundational",
+  "isbn13": "9781855842564",
+  "blurb": "Steiner's epistemological and ethical cornerstone: spiritual knowledge grounded in the free activity of thinking.",
+  "free_online_url": "https://rsarchive.org/Books/GA004/"
+ },
+ {
+  "rank": 4,
+  "title": "An Outline of Esoteric Science",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 13",
+  "category": "Foundational",
+  "isbn13": "9780880104098",
+  "blurb": "The comprehensive cosmology: human constitution, sleep and death, cosmic evolution, and the path of knowledge.",
+  "free_online_url": "https://rsarchive.org/Books/GA013/"
+ },
+ {
+  "rank": 5,
+  "title": "Christianity as Mystical Fact",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 8",
+  "category": "Christology",
+  "isbn13": "9780880104364",
+  "blurb": "The Mystery of Golgotha as the fulfilment of the ancient mystery schools; the seed of anthroposophical Christology.",
+  "free_online_url": "https://rsarchive.org/Books/GA008/"
+ },
+ {
+  "rank": 6,
+  "title": "Autobiography: Chapters in the Course of My Life",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 28",
+  "category": "Biography & History",
+  "isbn13": "9780880106009",
+  "blurb": "Steiner's own account of his development from Austrian childhood to the founding of anthroposophy.",
+  "free_online_url": "https://rsarchive.org/Books/GA028/"
+ },
+ {
+  "rank": 7,
+  "title": "The Foundations of Human Experience (Study of Man)",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 293",
+  "category": "Education & Parenting",
+  "isbn13": "9780880103923",
+  "blurb": "The 1919 teacher-training lectures that remain the pedagogical foundation of every Waldorf school.",
+  "free_online_url": "https://wn.rsarchive.org/Education/_pdf/Foundations_of_Human_Experience.pdf"
+ },
+ {
+  "rank": 8,
+  "title": "Agriculture Course: The Birth of the Biodynamic Method",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 327",
+  "category": "Biodynamic",
+  "isbn13": "9781855841482",
+  "blurb": "The eight Koberwitz lectures of 1924 from which the worldwide biodynamic movement grew.",
+  "free_online_url": null
+ },
+ {
+  "rank": 9,
+  "title": "The Fifth Gospel: From the Akashic Record",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 148",
+  "category": "Christology",
+  "isbn13": "9781855846821",
+  "blurb": "Steiner's most intimate spiritual-research account of the life of Jesus of Nazareth.",
+  "free_online_url": null
+ },
+ {
+  "rank": 10,
+  "title": "Manifestations of Karma",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 120",
+  "category": "Karma & Reincarnation",
+  "isbn13": "9781855840584",
+  "blurb": "The most accessible lecture cycle on how karma works through illness, accident, heredity and destiny.",
+  "free_online_url": "https://wn.rsarchive.org/Lectures/GA120/English/RSP1984/ManKar_index.html"
+ },
+ {
+  "rank": 11,
+  "title": "The Calendar of the Soul",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 40",
+  "category": "Inner Development",
+  "isbn13": "9781621483304",
+  "blurb": "Fifty-two weekly verses uniting the soul's inner life with the rhythm of the seasons.",
+  "free_online_url": null
+ },
+ {
+  "rank": 12,
+  "title": "Towards Social Renewal: Rethinking the Basis of Society",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 23",
+  "category": "Social Life",
+  "isbn13": "9781855840720",
+  "blurb": "The founding text of social threefolding: autonomous cultural, political and economic spheres.",
+  "free_online_url": "https://rsarchive.org/Books/GA023/"
+ },
+ {
+  "rank": 13,
+  "title": "The Education of the Child in the Light of Spiritual Science",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 34",
+  "category": "Education & Parenting",
+  "isbn13": "9780880104142",
+  "blurb": "The seminal 1907 essay on the seven-year phases of childhood: the shortest introduction to Waldorf principles.",
+  "free_online_url": "https://wn.rsarchive.org/Articles/EduChild/EduChi_index.html"
+ },
+ {
+  "rank": 14,
+  "title": "The Kingdom of Childhood",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 311",
+  "category": "Education & Parenting",
+  "isbn13": null,
+  "blurb": "The warm, practical Torquay lectures of 1924, the favourite starting point for new Waldorf teachers and parents.",
+  "free_online_url": "https://wn.rsarchive.org/Education/_pdf/The_Kingdom_of_Childhood.pdf"
+ },
+ {
+  "rank": 15,
+  "title": "Extending Practical Medicine (Fundamentals of Therapy)",
+  "author": "Rudolf Steiner and Ita Wegman",
+  "ga_number": "GA 27",
+  "category": "Medicine",
+  "isbn13": "9781855840805",
+  "blurb": "The founding text of anthroposophic medicine, co-written with Ita Wegman in Steiner's final year.",
+  "free_online_url": "https://rsarchive.org/Books/GA027/"
+ },
+ {
+  "rank": 16,
+  "title": "The Spiritual Hierarchies and the Physical World",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 110",
+  "category": "Foundational",
+  "isbn13": "9780880106016",
+  "blurb": "The Düsseldorf lectures on the angelic hierarchies and their work in planetary evolution.",
+  "free_online_url": null
+ },
+ {
+  "rank": 17,
+  "title": "Start Now! A Book of Soul and Spiritual Exercises",
+  "author": "Rudolf Steiner (ed. Christopher Bamford)",
+  "ga_number": null,
+  "category": "Inner Development",
+  "isbn13": "9780880105262",
+  "blurb": "The best single anthology of Steiner's meditations and practical exercises for beginners.",
+  "free_online_url": null
+ },
+ {
+  "rank": 18,
+  "title": "Verses and Meditations",
+  "author": "Rudolf Steiner",
+  "ga_number": null,
+  "category": "Inner Development",
+  "isbn13": "9781855841970",
+  "blurb": "Steiner's mantric verses, including the Foundation Stone Meditation, in German and English.",
+  "free_online_url": null
+ },
+ {
+  "rank": 19,
+  "title": "Practical Advice to Teachers",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 294",
+  "category": "Education & Parenting",
+  "isbn13": null,
+  "blurb": "Companion course to Foundations of Human Experience, covering the actual teaching of each subject.",
+  "free_online_url": "https://wn.rsarchive.org/Education/_pdf/Practical_Advice_to_Teachers.pdf"
+ },
+ {
+  "rank": 20,
+  "title": "Introducing Anthroposophical Medicine",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 312",
+  "category": "Medicine",
+  "isbn13": "9780880106429",
+  "blurb": "The first medical course for physicians: the threefold and fourfold human being in health and illness.",
+  "free_online_url": null
+ },
+ {
+  "rank": 21,
+  "title": "Eurythmy as Visible Speech",
+  "author": "Rudolf Steiner",
+  "ga_number": "GA 279",
+  "category": "Arts & Eurythmy",
+  "isbn13": "9781855845688",
+  "blurb": "The speech-eurythmy course of 1924, the primary source for the art of movement Steiner created.",
+  "free_online_url": null
+ },
+ {
+  "rank": 22,
+  "title": "Phases: The Spiritual Rhythms of Adult Life",
+  "author": "Bernard Lievegoed",
+  "ga_number": null,
+  "category": "Biography & History",
+  "isbn13": "9781855840560",
+  "blurb": "The classic anthroposophical account of the seven-year phases of adult biography.",
+  "free_online_url": null
+ },
+ {
+  "rank": 23,
+  "title": "Saving the Appearances: A Study in Idolatry",
+  "author": "Owen Barfield",
+  "ga_number": null,
+  "category": "Goethean Science",
+  "isbn13": "9780819562050",
+  "blurb": "Barfield's masterwork on the evolution of consciousness, the most influential anthroposophical book in mainstream letters.",
+  "free_online_url": null
+ },
+ {
+  "rank": 24,
+  "title": "The First Three Years of the Child",
+  "author": "Karl König",
+  "ga_number": null,
+  "category": "Education & Parenting",
+  "isbn13": "9781782508472",
+  "blurb": "The Camphill founder's study of walking, speaking and thinking as the awakening of the human spirit.",
+  "free_online_url": null
+ },
+ {
+  "rank": 25,
+  "title": "Rudolf Steiner and the Founding of the New Mysteries",
+  "author": "Sergei O. Prokofieff",
+  "ga_number": null,
+  "category": "Biography & History",
+  "isbn13": "9781912230044",
+  "blurb": "The major esoteric study of Steiner's mission and the 1923 Christmas Foundation Meeting.",
+  "free_online_url": null
+ },
+ {
+  "rank": 26,
+  "title": "Stages of Consciousness: Meditations on the Boundaries of the Soul",
+  "author": "Georg Kühlewind",
+  "ga_number": null,
+  "category": "Inner Development",
+  "isbn13": "9781584208686",
+  "blurb": "A rigorous modern guide to attention, thinking and meditation in the tradition of The Philosophy of Freedom.",
+  "free_online_url": null
+ },
+ {
+  "rank": 27,
+  "title": "The Three Years: The Life of Christ Between Baptism and Ascension",
+  "author": "Emil Bock",
+  "ga_number": null,
+  "category": "Christology",
+  "isbn13": null,
+  "blurb": "The Christian Community priest's widely read anthroposophical reading of the Gospels.",
+  "free_online_url": null
+ },
+ {
+  "rank": 28,
+  "title": "You Are Your Child's First Teacher",
+  "author": "Rahima Baldwin Dancy",
+  "ga_number": null,
+  "category": "Education & Parenting",
+  "isbn13": "9781607743026",
+  "blurb": "The best-selling Waldorf-inspired parenting guide for birth to age six.",
+  "free_online_url": null
+ },
+ {
+  "rank": 29,
+  "title": "Pfeiffer's Introduction to Biodynamics",
+  "author": "Ehrenfried Pfeiffer",
+  "ga_number": null,
+  "category": "Biodynamic",
+  "isbn13": "9780863158483",
+  "blurb": "Steiner's closest agricultural collaborator explains the preparations and soil fertility in plain language.",
+  "free_online_url": null
+ },
+ {
+  "rank": 30,
+  "title": "A Life for the Spirit: Rudolf Steiner in the Crosscurrents of Our Time",
+  "author": "Henry Barnes",
+  "ga_number": null,
+  "category": "Biography & History",
+  "isbn13": "9780880103954",
+  "blurb": "The standard concise English biography of Steiner by a long-time leader of the ASA.",
+  "free_online_url": null
+ },
+ {
+  "rank": 31,
+  "title": "Meditation as Contemplative Inquiry: When Knowing Becomes Love",
+  "author": "Arthur Zajonc",
+  "ga_number": null,
+  "category": "Inner Development",
+  "isbn13": "9781584200628",
+  "blurb": "A physicist's practical, non-sectarian path of meditation rooted in Steiner and Goethe.",
+  "free_online_url": null
+ },
+ {
+  "rank": 32,
+  "title": "The Wholeness of Nature: Goethe's Way of Science",
+  "author": "Henri Bortoft",
+  "ga_number": null,
+  "category": "Goethean Science",
+  "isbn13": "9780940262799",
+  "blurb": "The definitive modern exposition of Goethean phenomenology as a participatory science.",
+  "free_online_url": null
+ },
+ {
+  "rank": 33,
+  "title": "The Nature of Substance: Spirit and Matter",
+  "author": "Rudolf Hauschka",
+  "ga_number": null,
+  "category": "Goethean Science",
+  "isbn13": "9781855841222",
+  "blurb": "Hauschka's spiritual chemistry of the elements, bridging Goethean science and anthroposophic medicine.",
+  "free_online_url": null
+ },
+ {
+  "rank": 34,
+  "title": "Understanding Waldorf Education: Teaching from the Inside Out",
+  "author": "Jack Petrash",
+  "ga_number": null,
+  "category": "Education & Parenting",
+  "isbn13": "9780876592465",
+  "blurb": "The clearest short introduction to Waldorf pedagogy for parents and the general public.",
+  "free_online_url": null
+ },
+ {
+  "rank": 35,
+  "title": "School as a Journey: The Eight-Year Odyssey of a Waldorf Teacher and His Class",
+  "author": "Torin M. Finser",
+  "ga_number": null,
+  "category": "Education & Parenting",
+  "isbn13": "9780880103893",
+  "blurb": "A first-person narrative of taking one class from first through eighth grade.",
+  "free_online_url": null
+ },
+ {
+  "rank": 36,
+  "title": "Christ and Sophia: Anthroposophic Meditations on the Old Testament, New Testament, and Apocalypse",
+  "author": "Valentin Tomberg",
+  "ga_number": null,
+  "category": "Christology",
+  "isbn13": "9780880107358",
+  "blurb": "Tomberg's early anthroposophical studies on the Bible.",
+  "free_online_url": null
+ },
+ {
+  "rank": 37,
+  "title": "Rudolf Steiner, Life and Work, Volume 1: 1861-1890",
+  "author": "Peter Selg",
+  "ga_number": null,
+  "category": "Biography & History",
+  "isbn13": "9781621480822",
+  "blurb": "First volume of the most thorough modern scholarly biography of Steiner.",
+  "free_online_url": null
+ },
+ {
+  "rank": 38,
+  "title": "Gardening for Life: The Biodynamic Way",
+  "author": "Maria Thun",
+  "ga_number": null,
+  "category": "Biodynamic",
+  "isbn13": "9781869890322",
+  "blurb": "The originator of the biodynamic sowing calendar explains cosmic rhythms in the garden.",
+  "free_online_url": null
+ },
+ {
+  "rank": 39,
+  "title": "Working with Anxious, Nervous and Depressed Children",
+  "author": "Henning Köhler",
+  "ga_number": null,
+  "category": "Education & Parenting",
+  "isbn13": "9781888365283",
+  "blurb": "The curative-educational classic on meeting difficult children with understanding rather than diagnosis.",
+  "free_online_url": null
+ },
+ {
+  "rank": 40,
+  "title": "Between Form and Freedom: A Practical Guide to the Teenage Years",
+  "author": "Betty Staley",
+  "ga_number": null,
+  "category": "Education & Parenting",
+  "isbn13": "9781903458891",
+  "blurb": "The standard anthroposophical guide to adolescence for parents and high-school teachers.",
+  "free_online_url": null
+ },
+ {
+  "rank": 41,
+  "title": "A Guide to Child Health: A Holistic Approach to Raising Healthy Children",
+  "author": "Michaela Glöckler and Wolfgang Goebel",
+  "ga_number": null,
+  "category": "Medicine",
+  "isbn13": null,
+  "blurb": "The anthroposophical family medical reference used in Waldorf households worldwide.",
+  "free_online_url": null
+ },
+ {
+  "rank": 42,
+  "title": "Seeking Spirit Vision: Essays on Developing Imagination",
+  "author": "Dennis Klocek",
+  "ga_number": null,
+  "category": "Inner Development",
+  "isbn13": "9780945803331",
+  "blurb": "Practical exercises for developing imaginative cognition through Goethean observation and alchemy.",
+  "free_online_url": null
+ },
+ {
+  "rank": 43,
+  "title": "Stairway of Surprise: Six Steps to a Creative Life",
+  "author": "Michael Lipson",
+  "ga_number": null,
+  "category": "Inner Development",
+  "isbn13": "9780880105071",
+  "blurb": "A contemporary, down-to-earth guide to Steiner's six basic exercises.",
+  "free_online_url": null
+ },
+ {
+  "rank": 44,
+  "title": "Thinking Like a Plant: A Living Science for Life",
+  "author": "Craig Holdrege",
+  "ga_number": null,
+  "category": "Goethean Science",
+  "isbn13": null,
+  "blurb": "The Nature Institute director's living introduction to Goethean science for today.",
+  "free_online_url": null
+ },
+ {
+  "rank": 45,
+  "title": "Shaping Globalization: Civil Society, Cultural Power and Threefolding",
+  "author": "Nicanor Perlas",
+  "ga_number": null,
+  "category": "Social Life",
+  "isbn13": null,
+  "blurb": "The Right Livelihood laureate's application of social threefolding to global civil society.",
+  "free_online_url": null
+ },
+ {
+  "rank": 46,
+  "title": "Eurythmy: The Fundamental Elements of Movement",
+  "author": "Marjorie Spock",
+  "ga_number": null,
+  "category": "Arts & Eurythmy",
+  "isbn13": null,
+  "blurb": "The most-read English introduction to eurythmy by a pioneering American eurythmist.",
+  "free_online_url": null
+ },
+ {
+  "rank": 47,
+  "title": "Meetings with Rudolf Steiner",
+  "author": "Albert Steffen",
+  "ga_number": null,
+  "category": "Biography & History",
+  "isbn13": null,
+  "blurb": "Personal recollections by the poet who succeeded Steiner as president of the General Anthroposophical Society.",
+  "free_online_url": null
+ },
+ {
+  "rank": 48,
+  "title": "The Christmas Foundation: Beginning of a New Cosmic Age",
+  "author": "Rudolf Grosse",
+  "ga_number": null,
+  "category": "Biography & History",
+  "isbn13": null,
+  "blurb": "A former Goetheanum leader's account of the 1923 refounding of the Anthroposophical Society.",
+  "free_online_url": null
+ },
+ {
+  "rank": 49,
+  "title": "And There Was Light: From the Creation to Noah",
+  "author": "Jakob Streit",
+  "ga_number": null,
+  "category": "Children",
+  "isbn13": "9781888365740",
+  "blurb": "Beloved retelling of the Old Testament for Waldorf third grade.",
+  "free_online_url": null
+ },
+ {
+  "rank": 50,
+  "title": "The Seven-Year-Old Wonder Book",
+  "author": "Isabel Wyatt",
+  "ga_number": null,
+  "category": "Children",
+  "isbn13": null,
+  "blurb": "Seasonal tales for the young child, a staple of anthroposophical family libraries.",
+  "free_online_url": null
+ }
+]
