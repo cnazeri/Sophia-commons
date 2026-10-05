@@ -66,12 +66,12 @@ def resolve_channel_id(url):
     return None
 
 
-# ── RSS ─────────────────────────────────────────────────────────────────────
-def fetch_feed(channel_id):
-    r = requests.get(RSS.format(channel_id), headers=UA, timeout=20)
-    if r.status_code != 200:
-        return None, r.status_code
-    root = ET.fromstring(r.content)
+# ── RSS (with retries) + channel-page fallback ──────────────────────────────
+BROWSER_UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+              "Accept-Language": "en-US,en;q=0.8", "Cookie": "CONSENT=YES+1; SOCS=CAI; PREF=hl=en"}
+
+def _parse_feed(content):
+    root = ET.fromstring(content)
     title = root.findtext("a:title", default="", namespaces=NS)
     videos = []
     for e in root.findall("a:entry", NS):
@@ -87,6 +87,67 @@ def fetch_feed(channel_id):
             "published_at": e.findtext("a:published", default=None, namespaces=NS),
         })
     return title, videos
+
+
+def fetch_feed(channel_id):
+    """YouTube's feed endpoint is flaky from datacenter IPs (random 404/500). Retry, then scrape."""
+    last = None
+    for attempt in range(3):
+        try:
+            r = requests.get(RSS.format(channel_id), headers=BROWSER_UA, timeout=20)
+            last = r.status_code
+            if r.status_code == 200 and b"<feed" in r.content[:600]:
+                return _parse_feed(r.content)
+        except Exception as e:
+            last = "ERR %s" % type(e).__name__
+        time.sleep(1.5 * (attempt + 1))
+    title, vids = scrape_channel_videos(channel_id)
+    if title is not None:
+        return title, vids
+    return None, last
+
+
+_REL = {"second": 1, "minute": 60, "hour": 3600, "day": 86400, "week": 604800, "month": 2629800, "year": 31557600}
+
+def _relative_to_iso(txt):
+    m = re.search(r"(\d+)\s+(second|minute|hour|day|week|month|year)", txt or "")
+    if not m:
+        return None
+    secs = int(m.group(1)) * _REL[m.group(2)]
+    return datetime.fromtimestamp(time.time() - secs, timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
+
+
+def scrape_channel_videos(channel_id):
+    """Fallback: read the public /videos page (ytInitialData) for the newest uploads."""
+    try:
+        r = requests.get("https://www.youtube.com/channel/%s/videos?hl=en" % channel_id, headers=BROWSER_UA, timeout=25)
+        if r.status_code != 200:
+            return None, []
+    except Exception:
+        return None, []
+    html = r.text
+    tm = re.search(r'<meta property="og:title" content="([^"]*)"', html)
+    title = tm.group(1) if tm else ""
+    vids, seen = [], set()
+    for chunk in html.split('"videoRenderer":{')[1:] + html.split('"richItemRenderer":{')[1:]:
+        vm = re.match(r'"videoId":"([\w-]{11})"', chunk) or re.search(r'"videoId":"([\w-]{11})"', chunk[:200])
+        if not vm or vm.group(1) in seen:
+            continue
+        vid = vm.group(1)
+        tt = re.search(r'"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"', chunk) or re.search(r'"title":\{"accessibility".{0,400}?"simpleText":"((?:[^"\\]|\\.)*)"', chunk)
+        pt = re.search(r'"publishedTimeText":\{"simpleText":"([^"]*)"', chunk)
+        if not tt:
+            continue
+        seen.add(vid)
+        vids.append({"video_id": vid, "title": json.loads('"' + tt.group(1) + '"')[:300],
+                     "url": "https://www.youtube.com/watch?v=" + vid,
+                     "thumbnail_url": "https://i.ytimg.com/vi/%s/hqdefault.jpg" % vid,
+                     "published_at": _relative_to_iso(pt.group(1) if pt else None)})
+        if len(vids) >= 15:
+            break
+    if not vids and '"videoId"' not in html:
+        return (title or None), []
+    return title, vids
 
 
 # ── Supabase REST ───────────────────────────────────────────────────────────
