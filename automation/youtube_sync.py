@@ -43,18 +43,23 @@ def log(*a):
 
 # ── channel id resolution ───────────────────────────────────────────────────
 def resolve_channel_id(url):
-    """Return the UC... id for a /@handle, /c/name, /user/name or /channel/UC... URL."""
+    """Return the UC... id for a /@handle, /c/name, /user/name or /channel/UC... URL.
+    Only trusts the page's own canonical id (a bare "channelId" match is often a *featured* channel)."""
     m = re.search(r"/channel/(UC[\w-]{22})", url)
     if m:
         return m.group(1)
     try:
-        r = requests.get(url, headers={**UA, "Cookie": "CONSENT=YES+1"}, timeout=20)
-        r.raise_for_status()
+        r = requests.get(url, headers={**UA, "Cookie": "CONSENT=YES+1; SOCS=CAI"}, timeout=20)
+        if r.status_code != 200:
+            log("  ! %s -> HTTP %s" % (url, r.status_code))
+            return None
     except Exception as e:
         log("  ! could not fetch", url, e)
         return None
-    for pat in (r'"channelId":"(UC[\w-]{22})"', r'<meta itemprop="identifier" content="(UC[\w-]{22})"',
-                r'channel_id=(UC[\w-]{22})', r'"externalId":"(UC[\w-]{22})"'):
+    for pat in (r'<link rel="canonical" href="https://www\.youtube\.com/channel/(UC[\w-]{22})"',
+                r'"externalId":"(UC[\w-]{22})"',
+                r'<meta itemprop="identifier" content="(UC[\w-]{22})"',
+                r'"browseId":"(UC[\w-]{22})"'):
         m = re.search(pat, r.text)
         if m:
             return m.group(1)
@@ -65,7 +70,7 @@ def resolve_channel_id(url):
 def fetch_feed(channel_id):
     r = requests.get(RSS.format(channel_id), headers=UA, timeout=20)
     if r.status_code != 200:
-        return None, []
+        return None, r.status_code
     root = ET.fromstring(r.content)
     title = root.findtext("a:title", default="", namespaces=NS)
     videos = []
@@ -152,47 +157,59 @@ def main():
             sys.exit("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set (use --dry-run to test)")
         supa = Supa(url, key)
 
-    # 1. resolve ids, persist them back into the JSON so we only do this once
-    changed = False
+    # 1+2. for each channel: make sure the id works (feed answers 200), else re-resolve from the page
+    all_videos, channel_rows, feed_out, failures, changed = [], [], [], [], False
+    seen_ids = {}
     for c in channels:
-        if not c.get("channel_id"):
-            cid = resolve_channel_id(c["url"])
-            log("resolve", c["slug"], "->", cid)
+        row = {"slug": c["slug"], "channel_id": None, "name": c["name"], "url": c["url"],
+               "language": c.get("language"), "category": c.get("category", "other"),
+               "description": c.get("description"), "verified": bool(c.get("verified")),
+               "active": c.get("active", True), "video_count": 0, "last_video_at": None, "thumbnail_url": None}
+        if not row["active"]:
+            channel_rows.append(row); continue
+        cid, title, vids = c.get("channel_id"), None, []
+        for attempt in (1, 2):
             if cid:
-                c["channel_id"] = cid
-                changed = True
+                try:
+                    title, vids = fetch_feed(cid)
+                except Exception as e:
+                    title, vids = None, "ERR %s" % e
+                if title is not None:
+                    break
+                log("  ! feed %s id=%s -> %s" % (c["slug"], cid, vids))
+            if attempt == 1:
+                new_id = resolve_channel_id(c["url"])
+                if new_id and new_id != cid:
+                    log("resolve", c["slug"], "->", new_id)
+                    cid = new_id
+                elif not new_id:
+                    break
             time.sleep(0.5)
+        if title is None:
+            failures.append(c["slug"]); vids = []; cid = None if not c.get("channel_id") else c["channel_id"]
+        if cid and cid in seen_ids:
+            log("  ! %s resolves to the same channel as %s; skipping id" % (c["slug"], seen_ids[cid]))
+            cid, vids = None, []
+        if cid:
+            seen_ids[cid] = c["slug"]
+        if cid != c.get("channel_id"):
+            c["channel_id"] = cid; changed = True
+        row["channel_id"] = cid
+        for v in vids:
+            v["channel_slug"] = c["slug"]
+        all_videos.extend(vids)
+        row["video_count"] = len(vids)
+        if vids:
+            row["last_video_at"] = max(v["published_at"] or "" for v in vids) or None
+            row["thumbnail_url"] = vids[0]["thumbnail_url"]
+            feed_out.append({"slug": c["slug"], "name": c["name"], "latest": vids[:3]})
+        channel_rows.append(row)
+        time.sleep(0.4)
+    log("channels: %d, videos: %d, feed failures: %s" % (len(channel_rows), len(all_videos), failures or "none"))
     if changed:
         with open(CHANNELS_FILE, "w", encoding="utf-8") as f:
             json.dump(cfg, f, ensure_ascii=False, indent=2)
             f.write("\n")
-
-    # 2. feeds
-    all_videos, channel_rows, feed_out, failures = [], [], [], []
-    for c in channels:
-        row = {k: c.get(k) for k in ("slug", "channel_id", "name", "url", "language", "category", "description")}
-        row["verified"] = bool(c.get("verified"))
-        row["active"] = c.get("active", True)
-        if c.get("channel_id"):
-            try:
-                title, vids = fetch_feed(c["channel_id"])
-            except Exception as e:
-                title, vids = None, []
-                log("  ! feed error", c["slug"], e)
-            if title is None:
-                failures.append(c["slug"])
-            else:
-                for v in vids:
-                    v["channel_slug"] = c["slug"]
-                all_videos.extend(vids)
-                row["video_count"] = len(vids)
-                if vids:
-                    row["last_video_at"] = max(v["published_at"] or "" for v in vids) or None
-                    row["thumbnail_url"] = vids[0]["thumbnail_url"]
-                feed_out.append({"slug": c["slug"], "name": c["name"], "latest": vids[:3]})
-            time.sleep(0.4)
-        channel_rows.append(row)
-    log("channels: %d, videos: %d, feed failures: %s" % (len(channel_rows), len(all_videos), failures or "none"))
 
     # 3. write snapshot
     with open(FEED_FILE, "w", encoding="utf-8") as f:
