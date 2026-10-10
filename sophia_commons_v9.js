@@ -4244,7 +4244,7 @@ async function loadBooksFromSupabase() {
     var { data, error } = await _sb.from('steiner_books')
       .select('ga_number, title, category, author, archive_url, steinerbooks_url, amazon_url, price')
       .order('title')
-      .limit(400);
+      .limit(1000);
     if (error || !data || data.length === 0) return;
 
     var container = document.getElementById('sec-books');
@@ -4289,7 +4289,8 @@ async function loadBooksFromSupabase() {
         var authorTag = (b.author && b.author !== 'Rudolf Steiner') ? '<span style="font-size:11px;color:var(--text-muted);"> - ' + esc(b.author) + '</span>' : '';
         var links = '';
         if (b.amazon_url) links += '<a href="' + escUrl(b.amazon_url) + '" target="_blank" rel="noopener">Amazon</a>';
-        if (b.steinerbooks_url) links += (links ? ' &middot; ' : '') + '<a href="' + escUrl(b.steinerbooks_url) + '" target="_blank" rel="noopener">' + (b.price ? esc(b.price) + ' SteinerBooks' : 'SteinerBooks') + '</a>';
+        var store = /rudolfsteinerbookstore\.com/.test(b.steinerbooks_url || '') ? 'Rudolf Steiner Bookstore' : 'SteinerBooks';
+        if (b.steinerbooks_url) links += (links ? ' &middot; ' : '') + '<a href="' + escUrl(b.steinerbooks_url) + '" target="_blank" rel="noopener">' + (b.price ? esc(b.price) + ' ' + store : store) + '</a>';
         if (b.archive_url) links += (links ? ' &middot; ' : '') + '<span class="lv"><a href="' + escUrl(b.archive_url) + '" target="_blank" rel="noopener">free online</a></span>';
         html += '<div class="lrow">' + ga + '<a class="ltitle" href="' + escUrl(b.amazon_url || b.archive_url || '#') + '" target="_blank">' + esc(b.title) + '</a>' + authorTag + '<span class="lmeta">' + links + '</span></div>';
       });
