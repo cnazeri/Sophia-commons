@@ -3402,3 +3402,16 @@ footer li a { display: inline-block; padding: 10px 0; }
 .nv-ch { flex-wrap: wrap; }
 .nv-subs { white-space: nowrap; color: var(--text-muted); }
 .nv-subs::before { content: '\00B7'; margin-right: 6px; }
+
+/* ══════════════════ v1.20: Calendar of the Soul (right sidebar) ══════════════════ */
+.cots { font-size: 12.5px; margin-bottom: 12px; }
+.cots-week { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.cots-num { flex: 0 0 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px; font-weight: 700; background: var(--gold-light, #f6efdc); color: var(--gold-text); }
+.cots-week b { display: block; font-size: 13px; color: var(--text-primary); }
+.cots-week span { font-size: 11.5px; color: var(--text-muted); }
+.cots-read { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 8px; background: var(--gold); color: var(--ink, #2c2418); font-weight: 700; font-size: 12px; text-decoration: none; }
+.cots-read:hover { filter: brightness(0.95); }
+.cots-meta { margin-top: 8px; color: var(--text-secondary); font-size: 11.5px; }
+.cots-meta a { color: var(--gold-text); font-weight: 600; }
+.cots-note { margin-top: 4px; color: var(--text-muted); font-size: 10.5px; }

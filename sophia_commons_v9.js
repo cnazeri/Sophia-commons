@@ -4032,6 +4032,39 @@ function _secVisible(id) {
   return !!(el && el.classList.contains('active'));
 }
 
+// ── CALENDAR OF THE SOUL (GA 40) ──
+// Steiner's 52 weekly verses start at Easter. As on rsarchive.org, the days from one Easter to the
+// next are split into 52 equal periods, one per verse; each verse mirrors verse (53 - n).
+// The verses themselves open on rsarchive.org (German original plus several English translations).
+function cotsWeek(date) {
+  var d = date ? new Date(date) : new Date();
+  d.setHours(12, 0, 0, 0);
+  var start = _computeEaster(d.getFullYear());
+  if (d < start) start = _computeEaster(d.getFullYear() - 1);
+  var end = _computeEaster(start.getFullYear() + 1);
+  var period = (end - start) / 52;
+  var week = Math.min(52, Math.floor((d - start) / period) + 1);
+  var from = new Date(start.getTime() + (week - 1) * period);
+  var to = new Date(start.getTime() + week * period - 864e5);
+  return { week: week, mirror: 53 - week, southern: ((week + 25) % 52) + 1, from: from, to: to };
+}
+
+function renderCotsWidget() {
+  var el = document.getElementById('cots-widget');
+  if (!el) return;
+  var w = cotsWeek();
+  var fmt = { month: 'short', day: 'numeric' };
+  var url = function (n) { return 'https://rsarchive.org/COTS/index.php?northern_week=' + n + '&hemisphere=northern#hemisphere'; };
+  el.innerHTML = '<div class="cots-week"><span class="cots-num">' + w.week + '</span><div><b>' + esc(t('cots.week', 'Week')) + ' ' + w.week + '</b>'
+    + '<span>' + esc(localDate(w.from, fmt)) + ' - ' + esc(localDate(w.to, fmt)) + '</span></div></div>'
+    + '<a class="cots-read" href="' + escUrl(url(w.week)) + '" target="_blank" rel="noopener">' + esc(t('cots.read', "Read this week's verse")) + ' &rarr;</a>'
+    + '<div class="cots-meta">' + esc(t('cots.mirror', 'Mirror verse')) + ': <a href="' + escUrl(url(w.mirror)) + '" target="_blank" rel="noopener">' + esc(t('cots.week', 'Week')) + ' ' + w.mirror + '</a>'
+    + ' &middot; ' + esc(t('cots.southern', 'Southern Hemisphere')) + ': ' + esc(t('cots.week', 'Week')) + ' ' + w.southern + '</div>'
+    + '<div class="cots-note">' + esc(t('cots.note', 'German original and English translations at the Rudolf Steiner Archive.')) + '</div>';
+}
+
+document.addEventListener('DOMContentLoaded', renderCotsWidget);
+
 // ── INIT CALENDAR ON PAGE LOAD ──
 document.addEventListener('DOMContentLoaded', function() {
   _loadCachedEvents();

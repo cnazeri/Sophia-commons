@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.19.1",
+  "footer.version": "v1.20.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -776,5 +776,11 @@
   "home.coming_up": "Coming up",
   "video.new_video": "New video",
   "video.watch": "Watch",
-  "video.next_new": "next new video"
+  "video.next_new": "next new video",
+  "cots.heading": "calendar of the soul",
+  "cots.week": "Week",
+  "cots.read": "Read this week's verse",
+  "cots.mirror": "Mirror verse",
+  "cots.southern": "Southern Hemisphere",
+  "cots.note": "German original and English translations at the Rudolf Steiner Archive."
 }

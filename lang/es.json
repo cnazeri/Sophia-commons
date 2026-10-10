@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.19.1",
+  "footer.version": "v1.20.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -747,5 +747,11 @@
   "home.coming_up": "Próximamente",
   "video.new_video": "Vídeo nuevo",
   "video.watch": "Ver",
-  "video.next_new": "siguiente vídeo nuevo"
+  "video.next_new": "siguiente vídeo nuevo",
+  "cots.heading": "calendario del alma",
+  "cots.week": "Semana",
+  "cots.read": "Leer el verso de esta semana",
+  "cots.mirror": "Verso espejo",
+  "cots.southern": "Hemisferio sur",
+  "cots.note": "Original alemán y traducciones al inglés en el Rudolf Steiner Archive."
 }
