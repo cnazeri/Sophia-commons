@@ -1,0 +1,1647 @@
+{
+ "generated_at": "2026-10-10T04:41:53.403728+00:00",
+ "channels": [
+  {
+   "slug": "goetheanum",
+   "name": "Goetheanum",
+   "latest": [
+    {
+     "video_id": "nNKBbNB4AQw",
+     "title": "What is school for?",
+     "url": "https://www.youtube.com/watch?v=nNKBbNB4AQw",
+     "thumbnail_url": "https://i.ytimg.com/vi/nNKBbNB4AQw/hqdefault.jpg",
+     "published_at": "2026-10-09T04:32:00+00:00",
+     "channel_slug": "goetheanum"
+    },
+    {
+     "video_id": "5NRT2BHviFc",
+     "title": "Urkräfte, haltet mich! – Trauma, Heilung und Resilienz heute",
+     "url": "https://www.youtube.com/watch?v=5NRT2BHviFc",
+     "thumbnail_url": "https://i.ytimg.com/vi/5NRT2BHviFc/hqdefault.jpg",
+     "published_at": "2026-08-10T07:32:00+00:00",
+     "channel_slug": "goetheanum"
+    },
+    {
+     "video_id": "TBHRFr55bjY",
+     "title": "TRAILER · Festakt zum Abschluss der Rudolf-Steiner-Gesamtausgabe",
+     "url": "https://www.youtube.com/watch?v=TBHRFr55bjY",
+     "thumbnail_url": "https://i.ytimg.com/vi/TBHRFr55bjY/hqdefault.jpg",
+     "published_at": "2026-08-10T07:32:00+00:00",
+     "channel_slug": "goetheanum"
+    }
+   ]
+  },
+  {
+   "slug": "goetheanum-studium",
+   "name": "Goetheanum Studium",
+   "latest": [
+    {
+     "video_id": "fL4xj_Lz0T4",
+     "title": "Kunststudienjahr am Goetheanum",
+     "url": "https://www.youtube.com/watch?v=fL4xj_Lz0T4",
+     "thumbnail_url": "https://i.ytimg.com/vi/fL4xj_Lz0T4/hqdefault.jpg",
+     "published_at": "2025-10-09T22:32:21+00:00",
+     "channel_slug": "goetheanum-studium"
+    },
+    {
+     "video_id": "xs1XHUN6MNE",
+     "title": "Studies at the Goetheanum",
+     "url": "https://www.youtube.com/watch?v=xs1XHUN6MNE",
+     "thumbnail_url": "https://i.ytimg.com/vi/xs1XHUN6MNE/hqdefault.jpg",
+     "published_at": "2018-10-10T04:32:21+00:00",
+     "channel_slug": "goetheanum-studium"
+    }
+   ]
+  },
+  {
+   "slug": "sektion-landwirtschaft",
+   "name": "Section for Agriculture at the Goetheanum",
+   "latest": [
+    {
+     "video_id": "RjzZn1yHVZU",
+     "title": "Agriculture Conference 2027 – Call for Contributions",
+     "url": "https://www.youtube.com/watch?v=RjzZn1yHVZU",
+     "thumbnail_url": "https://i.ytimg.com/vi/RjzZn1yHVZU/hqdefault.jpg",
+     "published_at": "2026-08-10T07:32:32+00:00",
+     "channel_slug": "sektion-landwirtschaft"
+    },
+    {
+     "video_id": "ZbNgnp_pDHk",
+     "title": "#34 Growing the Future: Young Voices in Biodynamic Farming",
+     "url": "https://www.youtube.com/watch?v=ZbNgnp_pDHk",
+     "thumbnail_url": "https://i.ytimg.com/vi/ZbNgnp_pDHk/hqdefault.jpg",
+     "published_at": "2026-08-10T07:32:32+00:00",
+     "channel_slug": "sektion-landwirtschaft"
+    },
+    {
+     "video_id": "4G5G-8xzmYQ",
+     "title": "#33 Transforming Farms with Holistic Design",
+     "url": "https://www.youtube.com/watch?v=4G5G-8xzmYQ",
+     "thumbnail_url": "https://i.ytimg.com/vi/4G5G-8xzmYQ/hqdefault.jpg",
+     "published_at": "2026-07-10T21:02:32+00:00",
+     "channel_slug": "sektion-landwirtschaft"
+    }
+   ]
+  },
+  {
+   "slug": "medical-section-goetheanum",
+   "name": "Medical Section at the Goetheanum",
+   "latest": [
+    {
+     "video_id": "QbDb5tRHQSU",
+     "title": "Die Bedeutung von Dunkelheit und Sonnenlicht",
+     "url": "https://www.youtube.com/watch?v=QbDb5tRHQSU",
+     "thumbnail_url": "https://i.ytimg.com/vi/QbDb5tRHQSU/hqdefault.jpg",
+     "published_at": "2026-05-11T00:02:42+00:00",
+     "channel_slug": "medical-section-goetheanum"
+    },
+    {
+     "video_id": "oJmXYIF3bU8",
+     "title": "TRAILER: What Does the Renewal of the Mysteries Mean from the Perspective of Nursing?",
+     "url": "https://www.youtube.com/watch?v=oJmXYIF3bU8",
+     "thumbnail_url": "https://i.ytimg.com/vi/oJmXYIF3bU8/hqdefault.jpg",
+     "published_at": "2026-04-10T13:32:42+00:00",
+     "channel_slug": "medical-section-goetheanum"
+    },
+    {
+     "video_id": "ht4J--oW_I8",
+     "title": "ADHS, Pornos, Ängste - Generation Smartphone mit Dr. Karin Michael",
+     "url": "https://www.youtube.com/watch?v=ht4J--oW_I8",
+     "thumbnail_url": "https://i.ytimg.com/vi/ht4J--oW_I8/hqdefault.jpg",
+     "published_at": "2026-03-11T03:02:42+00:00",
+     "channel_slug": "medical-section-goetheanum"
+    }
+   ]
+  },
+  {
+   "slug": "asa-faust-branch",
+   "name": "ASA Faust Branch, Sacramento",
+   "latest": [
+    {
+     "video_id": "LtLb8jhUKjs",
+     "title": "The Planets: Our Cosmic Family with Howard Smith",
+     "url": "https://www.youtube.com/watch?v=LtLb8jhUKjs",
+     "thumbnail_url": "https://i.ytimg.com/vi/LtLb8jhUKjs/hqdefault.jpg",
+     "published_at": "2026-06-10T10:32:53+00:00",
+     "channel_slug": "asa-faust-branch"
+    },
+    {
+     "video_id": "gLH7J3Le1bs",
+     "title": "The Manichean Path in the Consciousness Soul Age  with Andrew Sullivan HB",
+     "url": "https://www.youtube.com/watch?v=gLH7J3Le1bs",
+     "thumbnail_url": "https://i.ytimg.com/vi/gLH7J3Le1bs/hqdefault.jpg",
+     "published_at": "2026-06-10T10:32:53+00:00",
+     "channel_slug": "asa-faust-branch"
+    },
+    {
+     "video_id": "pxTmALGGS6c",
+     "title": "Preparing for the Year 2033, with Robert Karp",
+     "url": "https://www.youtube.com/watch?v=pxTmALGGS6c",
+     "thumbnail_url": "https://i.ytimg.com/vi/pxTmALGGS6c/hqdefault.jpg",
+     "published_at": "2026-04-10T13:32:53+00:00",
+     "channel_slug": "asa-faust-branch"
+    }
+   ]
+  },
+  {
+   "slug": "ag-stuttgart",
+   "name": "Anthroposophische Gesellschaft Stuttgart",
+   "latest": [
+    {
+     "video_id": "opOKh4OJPkU",
+     "title": "09/28/26 Murswiek",
+     "url": "https://www.youtube.com/watch?v=opOKh4OJPkU",
+     "thumbnail_url": "https://i.ytimg.com/vi/opOKh4OJPkU/hqdefault.jpg",
+     "published_at": "2026-10-09T16:33:03+00:00",
+     "channel_slug": "ag-stuttgart"
+    },
+    {
+     "video_id": "qqxi8RuJBDs",
+     "title": "08/26/19 Eisenhut",
+     "url": "https://www.youtube.com/watch?v=qqxi8RuJBDs",
+     "thumbnail_url": "https://i.ytimg.com/vi/qqxi8RuJBDs/hqdefault.jpg",
+     "published_at": "2026-09-09T18:03:03+00:00",
+     "channel_slug": "ag-stuttgart"
+    },
+    {
+     "video_id": "_vX4wcugX4M",
+     "title": "Womit verbindet sich das Herz? – Sivan Karnieli",
+     "url": "https://www.youtube.com/watch?v=_vX4wcugX4M",
+     "thumbnail_url": "https://i.ytimg.com/vi/_vX4wcugX4M/hqdefault.jpg",
+     "published_at": "2026-07-10T21:03:03+00:00",
+     "channel_slug": "ag-stuttgart"
+    }
+   ]
+  },
+  {
+   "slug": "center-for-anthroposophy",
+   "name": "Center for Anthroposophy",
+   "latest": [
+    {
+     "video_id": "sBfnL--qRDg",
+     "title": "Bernd Ruf: Emergency Pedagogy, Trauma, and Resilience | Wilton 2026",
+     "url": "https://www.youtube.com/watch?v=sBfnL--qRDg",
+     "thumbnail_url": "https://i.ytimg.com/vi/sBfnL--qRDg/hqdefault.jpg",
+     "published_at": "2026-05-11T00:03:14+00:00",
+     "channel_slug": "center-for-anthroposophy"
+    },
+    {
+     "video_id": "9gttsYvvS1o",
+     "title": "CFA Teacher Training 2023 1",
+     "url": "https://www.youtube.com/watch?v=9gttsYvvS1o",
+     "thumbnail_url": "https://i.ytimg.com/vi/9gttsYvvS1o/hqdefault.jpg",
+     "published_at": "2024-10-09T16:33:14+00:00",
+     "channel_slug": "center-for-anthroposophy"
+    },
+    {
+     "video_id": "VzAQoLRz_iQ",
+     "title": "Kairos 2023 Traumatology II",
+     "url": "https://www.youtube.com/watch?v=VzAQoLRz_iQ",
+     "thumbnail_url": "https://i.ytimg.com/vi/VzAQoLRz_iQ/hqdefault.jpg",
+     "published_at": "2024-10-09T16:33:14+00:00",
+     "channel_slug": "center-for-anthroposophy"
+    }
+   ]
+  },
+  {
+   "slug": "anthroworld",
+   "name": "AnthroWorld",
+   "latest": [
+    {
+     "video_id": "1bsOW6LB358",
+     "title": "Episode 29 | Reading Circle | The Influence of Spiritual Beings upon Man | Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=1bsOW6LB358",
+     "thumbnail_url": "https://i.ytimg.com/vi/1bsOW6LB358/hqdefault.jpg",
+     "published_at": "2026-10-09T04:33:24+00:00",
+     "channel_slug": "anthroworld"
+    },
+    {
+     "video_id": "91UCRC_T8uM",
+     "title": "Episode 6/Season 11 | The Subsidiary Exercises in Group Work | Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=91UCRC_T8uM",
+     "thumbnail_url": "https://i.ytimg.com/vi/91UCRC_T8uM/hqdefault.jpg",
+     "published_at": "2026-10-09T04:33:24+00:00",
+     "channel_slug": "anthroworld"
+    },
+    {
+     "video_id": "9-kRoUt4pEk",
+     "title": "335. Folge | Die Apokalypse des Johannes | Dr. Wolfgang Peter | Anthroposophie | Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=9-kRoUt4pEk",
+     "thumbnail_url": "https://i.ytimg.com/vi/9-kRoUt4pEk/hqdefault.jpg",
+     "published_at": "2026-10-07T04:33:24+00:00",
+     "channel_slug": "anthroworld"
+    }
+   ]
+  },
+  {
+   "slug": "rsp-audio",
+   "name": "Rudolf Steiner Press Audio",
+   "latest": [
+    {
+     "video_id": "K_naxpH4m5Q",
+     "title": "Past and Future Impulses in Social Events by Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=K_naxpH4m5Q",
+     "thumbnail_url": "https://i.ytimg.com/vi/K_naxpH4m5Q/hqdefault.jpg",
+     "published_at": "2026-10-09T04:33:35+00:00",
+     "channel_slug": "rsp-audio"
+    },
+    {
+     "video_id": "v8DSYC4zC0Q",
+     "title": "Earth and Human Development by Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=v8DSYC4zC0Q",
+     "thumbnail_url": "https://i.ytimg.com/vi/v8DSYC4zC0Q/hqdefault.jpg",
+     "published_at": "2026-10-02T04:33:35+00:00",
+     "channel_slug": "rsp-audio"
+    },
+    {
+     "video_id": "b2eOSCK8mG8",
+     "title": "Influences from Other Worlds on the Earth by Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=b2eOSCK8mG8",
+     "thumbnail_url": "https://i.ytimg.com/vi/b2eOSCK8mG8/hqdefault.jpg",
+     "published_at": "2026-09-26T04:33:35+00:00",
+     "channel_slug": "rsp-audio"
+    }
+   ]
+  },
+  {
+   "slug": "rudolf-steiner-press",
+   "name": "Rudolf Steiner Press",
+   "latest": [
+    {
+     "video_id": "l0vjwF7rlD8",
+     "title": "How to Cure Nervousness by Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=l0vjwF7rlD8",
+     "thumbnail_url": "https://i.ytimg.com/vi/l0vjwF7rlD8/hqdefault.jpg",
+     "published_at": "2018-10-10T04:33:45+00:00",
+     "channel_slug": "rudolf-steiner-press"
+    },
+    {
+     "video_id": "XL325Sxx38M",
+     "title": "The Dead are With Us by Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=XL325Sxx38M",
+     "thumbnail_url": "https://i.ytimg.com/vi/XL325Sxx38M/hqdefault.jpg",
+     "published_at": "2018-10-10T04:33:45+00:00",
+     "channel_slug": "rudolf-steiner-press"
+    },
+    {
+     "video_id": "N4D1z80GgqU",
+     "title": "Knowledge of the Higher Worlds by Rudolf Steiner – a reader gives her view",
+     "url": "https://www.youtube.com/watch?v=N4D1z80GgqU",
+     "thumbnail_url": "https://i.ytimg.com/vi/N4D1z80GgqU/hqdefault.jpg",
+     "published_at": "2017-10-09T22:33:45+00:00",
+     "channel_slug": "rudolf-steiner-press"
+    }
+   ]
+  },
+  {
+   "slug": "steinerbooks",
+   "name": "SteinerBooks / Anthroposophic Press",
+   "latest": [
+    {
+     "video_id": "6QPE5ddBG-o",
+     "title": "Man with a Mission-NEW BOOK-Lutters on Lievegoed:SteinerBooks interview",
+     "url": "https://www.youtube.com/watch?v=6QPE5ddBG-o",
+     "thumbnail_url": "https://i.ytimg.com/vi/6QPE5ddBG-o/hqdefault.jpg",
+     "published_at": "2025-12-09T19:33:56+00:00",
+     "channel_slug": "steinerbooks"
+    },
+    {
+     "video_id": "zsqBQNPmhOI",
+     "title": "Everyday Alchemy w/ Patrick Doyle",
+     "url": "https://www.youtube.com/watch?v=zsqBQNPmhOI",
+     "thumbnail_url": "https://i.ytimg.com/vi/zsqBQNPmhOI/hqdefault.jpg",
+     "published_at": "2025-10-09T22:33:56+00:00",
+     "channel_slug": "steinerbooks"
+    },
+    {
+     "video_id": "9hacFtOHdO8",
+     "title": "Swing Wide the Gates w/ Cesari Ciaglo",
+     "url": "https://www.youtube.com/watch?v=9hacFtOHdO8",
+     "thumbnail_url": "https://i.ytimg.com/vi/9hacFtOHdO8/hqdefault.jpg",
+     "published_at": "2025-10-09T22:33:56+00:00",
+     "channel_slug": "steinerbooks"
+    }
+   ]
+  },
+  {
+   "slug": "word-of-rudolf-steiner",
+   "name": "Word of Rudolf Steiner",
+   "latest": [
+    {
+     "video_id": "qYxGblaUz9E",
+     "title": "Pressel Massage: Why are the legs worked on first and the back second?",
+     "url": "https://www.youtube.com/watch?v=qYxGblaUz9E",
+     "thumbnail_url": "https://i.ytimg.com/vi/qYxGblaUz9E/hqdefault.jpg",
+     "published_at": "2026-10-04T04:34:06+00:00",
+     "channel_slug": "word-of-rudolf-steiner"
+    },
+    {
+     "video_id": "Acj82g01k18",
+     "title": "JOSE CLIP 2",
+     "url": "https://www.youtube.com/watch?v=Acj82g01k18",
+     "thumbnail_url": "https://i.ytimg.com/vi/Acj82g01k18/hqdefault.jpg",
+     "published_at": "2026-09-30T04:34:06+00:00",
+     "channel_slug": "word-of-rudolf-steiner"
+    },
+    {
+     "video_id": "oc9E6dRHkxA",
+     "title": "JOSE CLIP 1",
+     "url": "https://www.youtube.com/watch?v=oc9E6dRHkxA",
+     "thumbnail_url": "https://i.ytimg.com/vi/oc9E6dRHkxA/hqdefault.jpg",
+     "published_at": "2026-09-27T04:34:06+00:00",
+     "channel_slug": "word-of-rudolf-steiner"
+    }
+   ]
+  },
+  {
+   "slug": "rudolf-steiner-official",
+   "name": "Rudolf Steiner Official",
+   "latest": [
+    {
+     "video_id": "neanmun8ToQ",
+     "title": "The Eternal and the Transient in the Human Being by Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=neanmun8ToQ",
+     "thumbnail_url": "https://i.ytimg.com/vi/neanmun8ToQ/hqdefault.jpg",
+     "published_at": "2025-10-09T22:34:17+00:00",
+     "channel_slug": "rudolf-steiner-official"
+    },
+    {
+     "video_id": "TlrozfQyxyA",
+     "title": "Theosophist And Rosicrucian by Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=TlrozfQyxyA",
+     "thumbnail_url": "https://i.ytimg.com/vi/TlrozfQyxyA/hqdefault.jpg",
+     "published_at": "2025-10-09T22:34:17+00:00",
+     "channel_slug": "rudolf-steiner-official"
+    },
+    {
+     "video_id": "d62mwCJeBFU",
+     "title": "The Foundation Stone Meditation by Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=d62mwCJeBFU",
+     "thumbnail_url": "https://i.ytimg.com/vi/d62mwCJeBFU/hqdefault.jpg",
+     "published_at": "2025-10-09T22:34:17+00:00",
+     "channel_slug": "rudolf-steiner-official"
+    }
+   ]
+  },
+  {
+   "slug": "rudolf-joseph-lorenz-steiner",
+   "name": "Rudolf Steiner ~ Anthroposophy",
+   "latest": [
+    {
+     "video_id": "7521wDBMooc",
+     "title": "Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=7521wDBMooc",
+     "thumbnail_url": "https://i.ytimg.com/vi/7521wDBMooc/hqdefault.jpg",
+     "published_at": "2019-10-10T10:34:27+00:00",
+     "channel_slug": "rudolf-joseph-lorenz-steiner"
+    },
+    {
+     "video_id": "SqJoSc1-1iM",
+     "title": "Recherchen auf dem Anthroposophenhügel 2/5",
+     "url": "https://www.youtube.com/watch?v=SqJoSc1-1iM",
+     "thumbnail_url": "https://i.ytimg.com/vi/SqJoSc1-1iM/hqdefault.jpg",
+     "published_at": "2014-10-10T04:34:27+00:00",
+     "channel_slug": "rudolf-joseph-lorenz-steiner"
+    },
+    {
+     "video_id": "jUwmBDHBIvU",
+     "title": "Recherchen auf dem Anthroposophenhügel 3/5",
+     "url": "https://www.youtube.com/watch?v=jUwmBDHBIvU",
+     "thumbnail_url": "https://i.ytimg.com/vi/jUwmBDHBIvU/hqdefault.jpg",
+     "published_at": "2014-10-10T04:34:27+00:00",
+     "channel_slug": "rudolf-joseph-lorenz-steiner"
+    }
+   ]
+  },
+  {
+   "slug": "rs-anthroposophie-de",
+   "name": "Rudolf Steiner und die Anthroposophie",
+   "latest": [
+    {
+     "video_id": "RDIBxqVty4o",
+     "title": "The Cosmic Cross: What the Four Archangels Have to Do With Us",
+     "url": "https://www.youtube.com/watch?v=RDIBxqVty4o",
+     "thumbnail_url": "https://i.ytimg.com/vi/RDIBxqVty4o/hqdefault.jpg",
+     "published_at": "2026-10-09T16:34:49+00:00",
+     "channel_slug": "rs-anthroposophie-de"
+    },
+    {
+     "video_id": "BZvLdAEzfrM",
+     "title": "Ahriman and AI – The Paradigm Shift Humanity is Sleeping Through",
+     "url": "https://www.youtube.com/watch?v=BZvLdAEzfrM",
+     "thumbnail_url": "https://i.ytimg.com/vi/BZvLdAEzfrM/hqdefault.jpg",
+     "published_at": "2026-10-08T04:34:49+00:00",
+     "channel_slug": "rs-anthroposophie-de"
+    },
+    {
+     "video_id": "328FFDcJtjs",
+     "title": "AI, Moral Technology, Paul Emberson, Strader Machine and Aether Energy (H.J. Schäuble)",
+     "url": "https://www.youtube.com/watch?v=328FFDcJtjs",
+     "thumbnail_url": "https://i.ytimg.com/vi/328FFDcJtjs/hqdefault.jpg",
+     "published_at": "2026-10-06T04:34:49+00:00",
+     "channel_slug": "rs-anthroposophie-de"
+    }
+   ]
+  },
+  {
+   "slug": "rs-audiobuecher",
+   "name": "Rudolf Steiner Audiobücher",
+   "latest": [
+    {
+     "video_id": "0DpZPmCZZmk",
+     "title": "Die Aura des Menschen",
+     "url": "https://www.youtube.com/watch?v=0DpZPmCZZmk",
+     "thumbnail_url": "https://i.ytimg.com/vi/0DpZPmCZZmk/hqdefault.jpg",
+     "published_at": "2017-10-09T22:35:00+00:00",
+     "channel_slug": "rs-audiobuecher"
+    },
+    {
+     "video_id": "p7JHAie8yFk",
+     "title": "Rudolf Steiner: Wirkungen der Einweihung (1)",
+     "url": "https://www.youtube.com/watch?v=p7JHAie8yFk",
+     "thumbnail_url": "https://i.ytimg.com/vi/p7JHAie8yFk/hqdefault.jpg",
+     "published_at": "2016-10-09T16:35:00+00:00",
+     "channel_slug": "rs-audiobuecher"
+    },
+    {
+     "video_id": "x2no0IDLZHc",
+     "title": "Rudolf Steiner - Der Pfad der Erkenntnis",
+     "url": "https://www.youtube.com/watch?v=x2no0IDLZHc",
+     "thumbnail_url": "https://i.ytimg.com/vi/x2no0IDLZHc/hqdefault.jpg",
+     "published_at": "2016-10-09T16:35:00+00:00",
+     "channel_slug": "rs-audiobuecher"
+    }
+   ]
+  },
+  {
+   "slug": "angelina-liest",
+   "name": "Angelina liest Rudolf Steiner",
+   "latest": [
+    {
+     "video_id": "hhsPbhsym5g",
+     "title": "Rudolf Steiner GA 143 Love and Its Meaning in the World",
+     "url": "https://www.youtube.com/watch?v=hhsPbhsym5g",
+     "thumbnail_url": "https://i.ytimg.com/vi/hhsPbhsym5g/hqdefault.jpg",
+     "published_at": "2026-09-27T04:35:10+00:00",
+     "channel_slug": "angelina-liest"
+    },
+    {
+     "video_id": "4O1QaPg77rA",
+     "title": "Rudolf Steiner GA 223 1 Vortrag Der Jahreskreislauf als Atmungsvorgang der Erde...",
+     "url": "https://www.youtube.com/watch?v=4O1QaPg77rA",
+     "thumbnail_url": "https://i.ytimg.com/vi/4O1QaPg77rA/hqdefault.jpg",
+     "published_at": "2026-04-10T13:35:10+00:00",
+     "channel_slug": "angelina-liest"
+    },
+    {
+     "video_id": "NArmaAaUFQY",
+     "title": "Rudolf Steiner GA 143  Die drei Wege der Seele zu Christus 2. Vortrag",
+     "url": "https://www.youtube.com/watch?v=NArmaAaUFQY",
+     "thumbnail_url": "https://i.ytimg.com/vi/NArmaAaUFQY/hqdefault.jpg",
+     "published_at": "2026-03-11T03:05:10+00:00",
+     "channel_slug": "angelina-liest"
+    }
+   ]
+  },
+  {
+   "slug": "anthro-meditation",
+   "name": "Anthroposophische Meditation",
+   "latest": [
+    {
+     "video_id": "gNFsoY3N_lk",
+     "title": "Christoph Hueck - Anthroposophische Meditation",
+     "url": "https://www.youtube.com/watch?v=gNFsoY3N_lk",
+     "thumbnail_url": "https://i.ytimg.com/vi/gNFsoY3N_lk/hqdefault.jpg",
+     "published_at": "2017-10-09T22:35:21+00:00",
+     "channel_slug": "anthro-meditation"
+    },
+    {
+     "video_id": "pT4o7kS0Jxw",
+     "title": "Andreas Neider - Anthroposophische Meditation",
+     "url": "https://www.youtube.com/watch?v=pT4o7kS0Jxw",
+     "thumbnail_url": "https://i.ytimg.com/vi/pT4o7kS0Jxw/hqdefault.jpg",
+     "published_at": "2017-10-09T22:35:21+00:00",
+     "channel_slug": "anthro-meditation"
+    },
+    {
+     "video_id": "UIwQeVk6Ps8",
+     "title": "Frank Burdich - Anthroposophische Meditation",
+     "url": "https://www.youtube.com/watch?v=UIwQeVk6Ps8",
+     "thumbnail_url": "https://i.ytimg.com/vi/UIwQeVk6Ps8/hqdefault.jpg",
+     "published_at": "2017-10-09T22:35:21+00:00",
+     "channel_slug": "anthro-meditation"
+    }
+   ]
+  },
+  {
+   "slug": "soi-esprit",
+   "name": "Soi-esprit Info (Rudolf Steiner, Anthroposophie)",
+   "latest": [
+    {
+     "video_id": "Ta_p7eWFwMk",
+     "title": "Anthroposophy - Rudolf Steiner - The Michael Impulse and the Mystery of Golgotha (2/2)",
+     "url": "https://www.youtube.com/watch?v=Ta_p7eWFwMk",
+     "thumbnail_url": "https://i.ytimg.com/vi/Ta_p7eWFwMk/hqdefault.jpg",
+     "published_at": "2026-09-26T04:35:31+00:00",
+     "channel_slug": "soi-esprit"
+    },
+    {
+     "video_id": "E_mdaRce9eg",
+     "title": "Anthroposophy - Rudolf Steiner - The Michael Impulse and the Mystery of Golgotha (1/2)",
+     "url": "https://www.youtube.com/watch?v=E_mdaRce9eg",
+     "thumbnail_url": "https://i.ytimg.com/vi/E_mdaRce9eg/hqdefault.jpg",
+     "published_at": "2026-09-26T04:35:31+00:00",
+     "channel_slug": "soi-esprit"
+    },
+    {
+     "video_id": "SDHKA-nCHqs",
+     "title": "Anthroposophy - Rudolf Steiner - The Mission of Michael - 11th Lecture",
+     "url": "https://www.youtube.com/watch?v=SDHKA-nCHqs",
+     "thumbnail_url": "https://i.ytimg.com/vi/SDHKA-nCHqs/hqdefault.jpg",
+     "published_at": "2026-09-12T04:35:31+00:00",
+     "channel_slug": "soi-esprit"
+    }
+   ]
+  },
+  {
+   "slug": "editorial-antroposofica",
+   "name": "Editorial Antroposófica",
+   "latest": [
+    {
+     "video_id": "YmwD5XbOp5c",
+     "title": "Observation Is Necessary, Practice Is Essential | Author Luiza Helena Tannuri Lameirão",
+     "url": "https://www.youtube.com/watch?v=YmwD5XbOp5c",
+     "thumbnail_url": "https://i.ytimg.com/vi/YmwD5XbOp5c/hqdefault.jpg",
+     "published_at": "2026-09-30T04:35:42+00:00",
+     "channel_slug": "editorial-antroposofica"
+    },
+    {
+     "video_id": "AmPTqc3KI7Q",
+     "title": "Sexuality, Aesthetics, and Beauty in Healthy Development | Andrés Cárdenas",
+     "url": "https://www.youtube.com/watch?v=AmPTqc3KI7Q",
+     "thumbnail_url": "https://i.ytimg.com/vi/AmPTqc3KI7Q/hqdefault.jpg",
+     "published_at": "2026-09-19T04:35:42+00:00",
+     "channel_slug": "editorial-antroposofica"
+    },
+    {
+     "video_id": "9ytgAmJh5sE",
+     "title": "Social Threefoldness | A guide to building a healthy society",
+     "url": "https://www.youtube.com/watch?v=9ytgAmJh5sE",
+     "thumbnail_url": "https://i.ytimg.com/vi/9ytgAmJh5sE/hqdefault.jpg",
+     "published_at": "2026-09-09T18:05:42+00:00",
+     "channel_slug": "editorial-antroposofica"
+    }
+   ]
+  },
+  {
+   "slug": "editora-antroposofica-br",
+   "name": "Editora e Livraria Antroposófica",
+   "latest": [
+    {
+     "video_id": "BbsOJ1dpTMc",
+     "title": "Deepening Anthroposophy | Study Group | Invitation from Valdemar Setzer",
+     "url": "https://www.youtube.com/watch?v=BbsOJ1dpTMc",
+     "thumbnail_url": "https://i.ytimg.com/vi/BbsOJ1dpTMc/hqdefault.jpg",
+     "published_at": "2026-08-10T07:35:52+00:00",
+     "channel_slug": "editora-antroposofica-br"
+    },
+    {
+     "video_id": "2nN5WfIo53s",
+     "title": "Antroposófica at the 7th Brazil Waldorf Education Congress",
+     "url": "https://www.youtube.com/watch?v=2nN5WfIo53s",
+     "thumbnail_url": "https://i.ytimg.com/vi/2nN5WfIo53s/hqdefault.jpg",
+     "published_at": "2026-08-10T07:35:52+00:00",
+     "channel_slug": "editora-antroposofica-br"
+    },
+    {
+     "video_id": "T1SXgCUkkps",
+     "title": "PERCEPÇÕES DE UM ESPIRITUALISTA - reminiscências e atuação no mundo | Valdemar W. Setzer",
+     "url": "https://www.youtube.com/watch?v=T1SXgCUkkps",
+     "thumbnail_url": "https://i.ytimg.com/vi/T1SXgCUkkps/hqdefault.jpg",
+     "published_at": "2026-05-11T00:05:52+00:00",
+     "channel_slug": "editora-antroposofica-br"
+    }
+   ]
+  },
+  {
+   "slug": "escola-waldorf-rs",
+   "name": "Escola Waldorf Rudolf Steiner (São Paulo)",
+   "latest": [
+    {
+     "video_id": "J9RJwo2CDtA",
+     "title": "Christmas Nativity Play 2025 001",
+     "url": "https://www.youtube.com/watch?v=J9RJwo2CDtA",
+     "thumbnail_url": "https://i.ytimg.com/vi/J9RJwo2CDtA/hqdefault.jpg",
+     "published_at": "2026-09-26T04:36:03+00:00",
+     "channel_slug": "escola-waldorf-rs"
+    },
+    {
+     "video_id": "CAweyN39_ic",
+     "title": "As Mil e Uma Noites - 8º ano B 2025 - Elenco 01",
+     "url": "https://www.youtube.com/watch?v=CAweyN39_ic",
+     "thumbnail_url": "https://i.ytimg.com/vi/CAweyN39_ic/hqdefault.jpg",
+     "published_at": "2026-09-12T04:36:03+00:00",
+     "channel_slug": "escola-waldorf-rs"
+    },
+    {
+     "video_id": "YtawMQmE764",
+     "title": "As Mil e Uma Noites - 8º ano B 2025 - Elenco 03",
+     "url": "https://www.youtube.com/watch?v=YtawMQmE764",
+     "thumbnail_url": "https://i.ytimg.com/vi/YtawMQmE764/hqdefault.jpg",
+     "published_at": "2026-09-12T04:36:03+00:00",
+     "channel_slug": "escola-waldorf-rs"
+    }
+   ]
+  },
+  {
+   "slug": "waldorftv-ru",
+   "name": "WaldorfTV (ВальдорфТВ)",
+   "latest": [
+    {
+     "video_id": "oeGrtmiprIY",
+     "title": "Что происходит, когда педагогическая воля встречается с волей ребёнка? Петер Гуттенхефер",
+     "url": "https://www.youtube.com/watch?v=oeGrtmiprIY",
+     "thumbnail_url": "https://i.ytimg.com/vi/oeGrtmiprIY/hqdefault.jpg",
+     "published_at": "2026-10-06T04:36:14+00:00",
+     "channel_slug": "waldorftv-ru"
+    },
+    {
+     "video_id": "tzeu2Po-l_c",
+     "title": "Искусство становящегося сообщества. Райнер Шнурре",
+     "url": "https://www.youtube.com/watch?v=tzeu2Po-l_c",
+     "thumbnail_url": "https://i.ytimg.com/vi/tzeu2Po-l_c/hqdefault.jpg",
+     "published_at": "2026-10-03T04:36:14+00:00",
+     "channel_slug": "waldorftv-ru"
+    },
+    {
+     "video_id": "6Um66yAqlFE",
+     "title": "On the Opportunities and Challenges of Spiritual Life Today. Nils Küper",
+     "url": "https://www.youtube.com/watch?v=6Um66yAqlFE",
+     "thumbnail_url": "https://i.ytimg.com/vi/6Um66yAqlFE/hqdefault.jpg",
+     "published_at": "2026-09-09T18:06:14+00:00",
+     "channel_slug": "waldorftv-ru"
+    }
+   ]
+  },
+  {
+   "slug": "gaad",
+   "name": "GAÄD: Anthroposophic Physicians in Germany",
+   "latest": [
+    {
+     "video_id": "uQBLBLIPWZI",
+     "title": "Medizin menschlicher machen",
+     "url": "https://www.youtube.com/watch?v=uQBLBLIPWZI",
+     "thumbnail_url": "https://i.ytimg.com/vi/uQBLBLIPWZI/hqdefault.jpg",
+     "published_at": "2019-10-10T10:36:25+00:00",
+     "channel_slug": "gaad"
+    },
+    {
+     "video_id": "cdDWet21u7c",
+     "title": "Integratives Haus der Gesundheit, Heidenheim",
+     "url": "https://www.youtube.com/watch?v=cdDWet21u7c",
+     "thumbnail_url": "https://i.ytimg.com/vi/cdDWet21u7c/hqdefault.jpg",
+     "published_at": "2018-10-10T04:36:25+00:00",
+     "channel_slug": "gaad"
+    },
+    {
+     "video_id": "SrhR1SUuEj4",
+     "title": "\"Die Öldispersionsbadetherapie nach Werner Junge\" - Trailer deutsch",
+     "url": "https://www.youtube.com/watch?v=SrhR1SUuEj4",
+     "thumbnail_url": "https://i.ytimg.com/vi/SrhR1SUuEj4/hqdefault.jpg",
+     "published_at": "2017-10-09T22:36:25+00:00",
+     "channel_slug": "gaad"
+    }
+   ]
+  },
+  {
+   "slug": "eurythmy4you",
+   "name": "eurythmy4you",
+   "latest": [
+    {
+     "video_id": "ikgnHN5JqQM",
+     "title": "ECC Winter Course - The 12 Constitutional Exercises of Eurythmy Therapy - The Secret of the Middle",
+     "url": "https://www.youtube.com/watch?v=ikgnHN5JqQM",
+     "thumbnail_url": "https://i2.ytimg.com/vi/ikgnHN5JqQM/hqdefault.jpg",
+     "published_at": "2025-11-23T17:53:38+00:00",
+     "channel_slug": "eurythmy4you"
+    },
+    {
+     "video_id": "oFHgujNyus8",
+     "title": "Sugdidi Peace Project Final Performance / КОНЦЕРТ МИРОТВОРЧЕСКОГО ПРОЕКТА ЭВРИТМИИДЛЯТЕБЯ В ЗУГДИДИ",
+     "url": "https://www.youtube.com/watch?v=oFHgujNyus8",
+     "thumbnail_url": "https://i4.ytimg.com/vi/oFHgujNyus8/hqdefault.jpg",
+     "published_at": "2025-09-21T14:00:29+00:00",
+     "channel_slug": "eurythmy4you"
+    },
+    {
+     "video_id": "yUEp4vMzQl8",
+     "title": "Eurythmy and Zodiac: H-G, G-H, H-K, K-H",
+     "url": "https://www.youtube.com/watch?v=yUEp4vMzQl8",
+     "thumbnail_url": "https://i2.ytimg.com/vi/yUEp4vMzQl8/hqdefault.jpg",
+     "published_at": "2025-06-02T16:01:38+00:00",
+     "channel_slug": "eurythmy4you"
+    }
+   ]
+  },
+  {
+   "slug": "cynthia-hoven",
+   "name": "Cynthia Hoven Eurythmy",
+   "latest": [
+    {
+     "video_id": "XmGed4LFmzI",
+     "title": "#4 Eurythmy, the Art of the Living Word LS34",
+     "url": "https://www.youtube.com/watch?v=XmGed4LFmzI",
+     "thumbnail_url": "https://i.ytimg.com/vi/XmGed4LFmzI/hqdefault.jpg",
+     "published_at": "2026-09-26T04:36:36+00:00",
+     "channel_slug": "cynthia-hoven"
+    },
+    {
+     "video_id": "yRXzxCTO_eA",
+     "title": "The Origin and Development of Eurythmy LS33 3HB",
+     "url": "https://www.youtube.com/watch?v=yRXzxCTO_eA",
+     "thumbnail_url": "https://i.ytimg.com/vi/yRXzxCTO_eA/hqdefault.jpg",
+     "published_at": "2026-09-26T04:36:36+00:00",
+     "channel_slug": "cynthia-hoven"
+    },
+    {
+     "video_id": "il3NmQpjRiA",
+     "title": "The Development of the Etheric Body through Eurythmy",
+     "url": "https://www.youtube.com/watch?v=il3NmQpjRiA",
+     "thumbnail_url": "https://i.ytimg.com/vi/il3NmQpjRiA/hqdefault.jpg",
+     "published_at": "2026-09-12T04:36:36+00:00",
+     "channel_slug": "cynthia-hoven"
+    }
+   ]
+  },
+  {
+   "slug": "eurythmy-in-progress",
+   "name": "Eurythmy in Progress",
+   "latest": [
+    {
+     "video_id": "Zk6_elKK_rE",
+     "title": "Eurythmy in Progress 2018 - Join us now!",
+     "url": "https://www.youtube.com/watch?v=Zk6_elKK_rE",
+     "thumbnail_url": "https://i.ytimg.com/vi/Zk6_elKK_rE/hqdefault.jpg",
+     "published_at": "2018-10-10T04:36:46+00:00",
+     "channel_slug": "eurythmy-in-progress"
+    },
+    {
+     "video_id": "Rl6XTTPE7Sw",
+     "title": "Clip 2",
+     "url": "https://www.youtube.com/watch?v=Rl6XTTPE7Sw",
+     "thumbnail_url": "https://i.ytimg.com/vi/Rl6XTTPE7Sw/hqdefault.jpg",
+     "published_at": "2017-10-09T22:36:46+00:00",
+     "channel_slug": "eurythmy-in-progress"
+    },
+    {
+     "video_id": "C9H7_W3v0s8",
+     "title": "Clip 1",
+     "url": "https://www.youtube.com/watch?v=C9H7_W3v0s8",
+     "thumbnail_url": "https://i.ytimg.com/vi/C9H7_W3v0s8/hqdefault.jpg",
+     "published_at": "2017-10-09T22:36:46+00:00",
+     "channel_slug": "eurythmy-in-progress"
+    }
+   ]
+  },
+  {
+   "slug": "sound-circle-eurythmy",
+   "name": "Sound Circle Eurythmy",
+   "latest": [
+    {
+     "video_id": "7bdYci3nzVI",
+     "title": "Sound Circle Eurythmy - 4 Year Training Program",
+     "url": "https://www.youtube.com/watch?v=7bdYci3nzVI",
+     "thumbnail_url": "https://i.ytimg.com/vi/7bdYci3nzVI/hqdefault.jpg",
+     "published_at": "2014-10-10T04:36:56+00:00",
+     "channel_slug": "sound-circle-eurythmy"
+    },
+    {
+     "video_id": "GDj2gBxevGY",
+     "title": "Sound Circle Eurythmy - Student Reflections",
+     "url": "https://www.youtube.com/watch?v=GDj2gBxevGY",
+     "thumbnail_url": "https://i.ytimg.com/vi/GDj2gBxevGY/hqdefault.jpg",
+     "published_at": "2014-10-10T04:36:56+00:00",
+     "channel_slug": "sound-circle-eurythmy"
+    },
+    {
+     "video_id": "v6pO7IOSr6U",
+     "title": "Sound Circle Eurythmy - Study with Sound Circle Eurythmy",
+     "url": "https://www.youtube.com/watch?v=v6pO7IOSr6U",
+     "thumbnail_url": "https://i.ytimg.com/vi/v6pO7IOSr6U/hqdefault.jpg",
+     "published_at": "2014-10-10T04:36:56+00:00",
+     "channel_slug": "sound-circle-eurythmy"
+    }
+   ]
+  },
+  {
+   "slug": "eurythmeum-ch",
+   "name": "Eurythmeum CH",
+   "latest": [
+    {
+     "video_id": "hwHtkQXLDBQ",
+     "title": "Einblicke in die Ausbildung am EURYTHMEUM CH",
+     "url": "https://www.youtube.com/watch?v=hwHtkQXLDBQ",
+     "thumbnail_url": "https://i.ytimg.com/vi/hwHtkQXLDBQ/hqdefault.jpg",
+     "published_at": "2025-10-09T22:37:07+00:00",
+     "channel_slug": "eurythmeum-ch"
+    },
+    {
+     "video_id": "5qxKIveuuQU",
+     "title": "Heitor Villa Lobos: Valsa da Dor",
+     "url": "https://www.youtube.com/watch?v=5qxKIveuuQU",
+     "thumbnail_url": "https://i.ytimg.com/vi/5qxKIveuuQU/hqdefault.jpg",
+     "published_at": "2024-10-09T16:37:07+00:00",
+     "channel_slug": "eurythmeum-ch"
+    },
+    {
+     "video_id": "GJz5mToLItA",
+     "title": "DIE MOLDAU - Sinfonische Dichtung in e-Moll von Bedrich Smetana",
+     "url": "https://www.youtube.com/watch?v=GJz5mToLItA",
+     "thumbnail_url": "https://i.ytimg.com/vi/GJz5mToLItA/hqdefault.jpg",
+     "published_at": "2023-10-10T10:37:07+00:00",
+     "channel_slug": "eurythmeum-ch"
+    }
+   ]
+  },
+  {
+   "slug": "logos-eurythmie",
+   "name": "Logos Eurythmie",
+   "latest": [
+    {
+     "video_id": "kXZ9qSBJY1w",
+     "title": "Eurythmy Alphabet - Consonant D",
+     "url": "https://www.youtube.com/watch?v=kXZ9qSBJY1w",
+     "thumbnail_url": "https://i.ytimg.com/vi/kXZ9qSBJY1w/hqdefault.jpg",
+     "published_at": "2026-09-09T18:07:18+00:00",
+     "channel_slug": "logos-eurythmie"
+    },
+    {
+     "video_id": "V4zKGdyFxXk",
+     "title": "Eurythmy Alphabet - Consonant D",
+     "url": "https://www.youtube.com/watch?v=V4zKGdyFxXk",
+     "thumbnail_url": "https://i.ytimg.com/vi/V4zKGdyFxXk/hqdefault.jpg",
+     "published_at": "2026-08-10T07:37:18+00:00",
+     "channel_slug": "logos-eurythmie"
+    },
+    {
+     "video_id": "dAaY3nWWpUE",
+     "title": "Eurythmy Alphabet - Consonant D",
+     "url": "https://www.youtube.com/watch?v=dAaY3nWWpUE",
+     "thumbnail_url": "https://i.ytimg.com/vi/dAaY3nWWpUE/hqdefault.jpg",
+     "published_at": "2026-08-10T07:37:18+00:00",
+     "channel_slug": "logos-eurythmie"
+    }
+   ]
+  },
+  {
+   "slug": "septim-eurythmy",
+   "name": "SEPTIM Eurythmy",
+   "latest": [
+    {
+     "video_id": "hDYslRPy4JE",
+     "title": "AM ST eurythmy — sound impro 12",
+     "url": "https://www.youtube.com/watch?v=hDYslRPy4JE",
+     "thumbnail_url": "https://i.ytimg.com/vi/hDYslRPy4JE/hqdefault.jpg",
+     "published_at": "2017-10-09T22:37:28+00:00",
+     "channel_slug": "septim-eurythmy"
+    },
+    {
+     "video_id": "cJO55SNpVoM",
+     "title": "Septim eurythmy performance - Caterpillars and Chopin (premiere 2015)",
+     "url": "https://www.youtube.com/watch?v=cJO55SNpVoM",
+     "thumbnail_url": "https://i.ytimg.com/vi/cJO55SNpVoM/hqdefault.jpg",
+     "published_at": "2017-10-09T22:37:28+00:00",
+     "channel_slug": "septim-eurythmy"
+    },
+    {
+     "video_id": "7-p5gYtdqH4",
+     "title": "Septim eurythmy performance - The Broken Tree of Life (\"Fratres\")",
+     "url": "https://www.youtube.com/watch?v=7-p5gYtdqH4",
+     "thumbnail_url": "https://i.ytimg.com/vi/7-p5gYtdqH4/hqdefault.jpg",
+     "published_at": "2017-10-09T22:37:28+00:00",
+     "channel_slug": "septim-eurythmy"
+    }
+   ]
+  },
+  {
+   "slug": "creative-eurythmy",
+   "name": "Creative Eurythmy",
+   "latest": [
+    {
+     "video_id": "6jGDBEQ3hdk",
+     "title": "Yes-No exercise example in a poem",
+     "url": "https://www.youtube.com/watch?v=6jGDBEQ3hdk",
+     "thumbnail_url": "https://i.ytimg.com/vi/6jGDBEQ3hdk/hqdefault.jpg",
+     "published_at": "2021-10-09T22:37:39+00:00",
+     "channel_slug": "creative-eurythmy"
+    },
+    {
+     "video_id": "tGB7NMq8TWM",
+     "title": "The Secret Song and Game",
+     "url": "https://www.youtube.com/watch?v=tGB7NMq8TWM",
+     "thumbnail_url": "https://i.ytimg.com/vi/tGB7NMq8TWM/hqdefault.jpg",
+     "published_at": "2021-10-09T22:37:39+00:00",
+     "channel_slug": "creative-eurythmy"
+    },
+    {
+     "video_id": "T0BqMihJvJQ",
+     "title": "Fun little rod exercises for little children",
+     "url": "https://www.youtube.com/watch?v=T0BqMihJvJQ",
+     "thumbnail_url": "https://i.ytimg.com/vi/T0BqMihJvJQ/hqdefault.jpg",
+     "published_at": "2021-10-09T22:37:39+00:00",
+     "channel_slug": "creative-eurythmy"
+    }
+   ]
+  },
+  {
+   "slug": "dedae",
+   "name": "DeDae: Dutch Eurythmy Dance Ensemble",
+   "latest": [
+    {
+     "video_id": "ZTcgQvN8oio",
+     "title": "Trailer familievoorstelling 'Pinokkio' DeDae",
+     "url": "https://www.youtube.com/watch?v=ZTcgQvN8oio",
+     "thumbnail_url": "https://i.ytimg.com/vi/ZTcgQvN8oio/hqdefault.jpg",
+     "published_at": "2026-01-09T06:07:49+00:00",
+     "channel_slug": "dedae"
+    },
+    {
+     "video_id": "qRejx5v8Mx8",
+     "title": "Trailer 'AardeDans' DeDae",
+     "url": "https://www.youtube.com/watch?v=qRejx5v8Mx8",
+     "thumbnail_url": "https://i.ytimg.com/vi/qRejx5v8Mx8/hqdefault.jpg",
+     "published_at": "2024-10-09T16:37:49+00:00",
+     "channel_slug": "dedae"
+    },
+    {
+     "video_id": "0TeYCWpnpy8",
+     "title": "Omroep Flevoland fragment 'Aardedans'",
+     "url": "https://www.youtube.com/watch?v=0TeYCWpnpy8",
+     "thumbnail_url": "https://i.ytimg.com/vi/0TeYCWpnpy8/hqdefault.jpg",
+     "published_at": "2023-10-10T10:37:49+00:00",
+     "channel_slug": "dedae"
+    }
+   ]
+  },
+  {
+   "slug": "demeter-international",
+   "name": "Biodynamic Federation Demeter International",
+   "latest": [
+    {
+     "video_id": "8uPUpUXowH0",
+     "title": "Biodynamic banana farming in Colombia - Demeter",
+     "url": "https://www.youtube.com/watch?v=8uPUpUXowH0",
+     "thumbnail_url": "https://i.ytimg.com/vi/8uPUpUXowH0/hqdefault.jpg",
+     "published_at": "2022-10-10T04:38:00+00:00",
+     "channel_slug": "demeter-international"
+    },
+    {
+     "video_id": "eG-E0YD6BT0",
+     "title": "Bananas from biodynamic farming",
+     "url": "https://www.youtube.com/watch?v=eG-E0YD6BT0",
+     "thumbnail_url": "https://i.ytimg.com/vi/eG-E0YD6BT0/hqdefault.jpg",
+     "published_at": "2022-10-10T04:38:00+00:00",
+     "channel_slug": "demeter-international"
+    },
+    {
+     "video_id": "iSyLiF6_QJM",
+     "title": "Demeter - Biodiversity",
+     "url": "https://www.youtube.com/watch?v=iSyLiF6_QJM",
+     "thumbnail_url": "https://i.ytimg.com/vi/iSyLiF6_QJM/hqdefault.jpg",
+     "published_at": "2021-10-09T22:38:00+00:00",
+     "channel_slug": "demeter-international"
+    }
+   ]
+  },
+  {
+   "slug": "demeter-france",
+   "name": "Demeter France",
+   "latest": [
+    {
+     "video_id": "-Az_VLOVwU0",
+     "title": "Gâteau de légumes, sauce \"faux jus de viande\" de Thierry Schwartz",
+     "url": "https://www.youtube.com/watch?v=-Az_VLOVwU0",
+     "thumbnail_url": "https://i.ytimg.com/vi/-Az_VLOVwU0/hqdefault.jpg",
+     "published_at": "2026-01-09T06:08:10+00:00",
+     "channel_slug": "demeter-france"
+    },
+    {
+     "video_id": "f2y1k9NqWqA",
+     "title": "Oeuf poché aux pleurotes et herbes fraîches de Thierry Schwartz",
+     "url": "https://www.youtube.com/watch?v=f2y1k9NqWqA",
+     "thumbnail_url": "https://i.ytimg.com/vi/f2y1k9NqWqA/hqdefault.jpg",
+     "published_at": "2025-12-09T19:38:10+00:00",
+     "channel_slug": "demeter-france"
+    },
+    {
+     "video_id": "GpuX98kMGnc",
+     "title": "Carottes fondantes, beurre de carotène et framboises de Thierry Schwartz",
+     "url": "https://www.youtube.com/watch?v=GpuX98kMGnc",
+     "thumbnail_url": "https://i.ytimg.com/vi/GpuX98kMGnc/hqdefault.jpg",
+     "published_at": "2025-12-09T19:38:10+00:00",
+     "channel_slug": "demeter-france"
+    }
+   ]
+  },
+  {
+   "slug": "bda-uk",
+   "name": "Biodynamic Association UK",
+   "latest": [
+    {
+     "video_id": "hGau5rasrz4",
+     "title": "October 2026:  🌙 How to Plant by the Moon | A Beginner's Guide to Moon Gardening",
+     "url": "https://www.youtube.com/watch?v=hGau5rasrz4",
+     "thumbnail_url": "https://i.ytimg.com/vi/hGau5rasrz4/hqdefault.jpg",
+     "published_at": "2026-10-02T04:38:21+00:00",
+     "channel_slug": "bda-uk"
+    },
+    {
+     "video_id": "ak7yrZisAZM",
+     "title": "September 2026:  🌙 How to Plant by the Moon | A Beginner's Guide to Moon Gardening",
+     "url": "https://www.youtube.com/watch?v=ak7yrZisAZM",
+     "thumbnail_url": "https://i.ytimg.com/vi/ak7yrZisAZM/hqdefault.jpg",
+     "published_at": "2026-09-09T18:08:21+00:00",
+     "channel_slug": "bda-uk"
+    },
+    {
+     "video_id": "nsUAUTDh9G4",
+     "title": "Grow Smarter: Bring the benefits of planting by the moon to your garden in June 2026",
+     "url": "https://www.youtube.com/watch?v=nsUAUTDh9G4",
+     "thumbnail_url": "https://i.ytimg.com/vi/nsUAUTDh9G4/hqdefault.jpg",
+     "published_at": "2026-06-10T10:38:21+00:00",
+     "channel_slug": "bda-uk"
+    }
+   ]
+  },
+  {
+   "slug": "bda-usa",
+   "name": "Biodynamic Demeter Alliance (USA)",
+   "latest": [
+    {
+     "video_id": "WLa2wWgL-f8",
+     "title": "2025 Online Biodynamic Conference",
+     "url": "https://www.youtube.com/watch?v=WLa2wWgL-f8",
+     "thumbnail_url": "https://i.ytimg.com/vi/WLa2wWgL-f8/hqdefault.jpg",
+     "published_at": "2025-12-09T19:38:31+00:00",
+     "channel_slug": "bda-usa"
+    },
+    {
+     "video_id": "JLobCxp227Q",
+     "title": "Biodynamic Scholarship Fund Crowdfunding Campaign 2023",
+     "url": "https://www.youtube.com/watch?v=JLobCxp227Q",
+     "thumbnail_url": "https://i.ytimg.com/vi/JLobCxp227Q/hqdefault.jpg",
+     "published_at": "2023-10-10T10:38:31+00:00",
+     "channel_slug": "bda-usa"
+    },
+    {
+     "video_id": "ntu3aIlLHnk",
+     "title": "IG Live on World Soil Day, December 5, 2022  -- Arizona Muse & Sheila Foster",
+     "url": "https://www.youtube.com/watch?v=ntu3aIlLHnk",
+     "thumbnail_url": "https://i.ytimg.com/vi/ntu3aIlLHnk/hqdefault.jpg",
+     "published_at": "2023-10-10T10:38:31+00:00",
+     "channel_slug": "bda-usa"
+    }
+   ]
+  },
+  {
+   "slug": "dennis-klocek",
+   "name": "Soil, Soul and Spirit with Dennis Klocek",
+   "latest": [
+    {
+     "video_id": "0NRqHNmC3n0",
+     "title": "Soph and the Liar Bird | A Poetic Battle Between Truth and Lies",
+     "url": "https://www.youtube.com/watch?v=0NRqHNmC3n0",
+     "thumbnail_url": "https://i.ytimg.com/vi/0NRqHNmC3n0/hqdefault.jpg",
+     "published_at": "2026-03-11T03:08:42+00:00",
+     "channel_slug": "dennis-klocek"
+    },
+    {
+     "video_id": "59KEv-Yi2pQ",
+     "title": "Alchemical Revival Symposium - Day One Panel",
+     "url": "https://www.youtube.com/watch?v=59KEv-Yi2pQ",
+     "thumbnail_url": "https://i.ytimg.com/vi/59KEv-Yi2pQ/hqdefault.jpg",
+     "published_at": "2026-02-08T16:38:42+00:00",
+     "channel_slug": "dennis-klocek"
+    },
+    {
+     "video_id": "ah0z8kCbrzE",
+     "title": "Day 2 Panel - Alchemical Revival Symposium: Exploring Timing and Rhythm in Holistic Health Practices",
+     "url": "https://www.youtube.com/watch?v=ah0z8kCbrzE",
+     "thumbnail_url": "https://i.ytimg.com/vi/ah0z8kCbrzE/hqdefault.jpg",
+     "published_at": "2026-02-08T16:38:42+00:00",
+     "channel_slug": "dennis-klocek"
+    }
+   ]
+  },
+  {
+   "slug": "ecswe",
+   "name": "European Council for Steiner Waldorf Education",
+   "latest": [
+    {
+     "video_id": "HUeBM7_PZpc",
+     "title": "Books or Tablets? Helping Children Navigate the Digital World - full recording",
+     "url": "https://www.youtube.com/watch?v=HUeBM7_PZpc",
+     "thumbnail_url": "https://i.ytimg.com/vi/HUeBM7_PZpc/hqdefault.jpg",
+     "published_at": "2025-10-09T22:38:53+00:00",
+     "channel_slug": "ecswe"
+    },
+    {
+     "video_id": "T4R5_5Z910w",
+     "title": "Books or Tablets? Mie Oehlenschläger Keynote Speech",
+     "url": "https://www.youtube.com/watch?v=T4R5_5Z910w",
+     "thumbnail_url": "https://i.ytimg.com/vi/T4R5_5Z910w/hqdefault.jpg",
+     "published_at": "2025-10-09T22:38:53+00:00",
+     "channel_slug": "ecswe"
+    },
+    {
+     "video_id": "u1jVWD2N-gU",
+     "title": "Books or Tablets? Helping Children Navigate the Digital World",
+     "url": "https://www.youtube.com/watch?v=u1jVWD2N-gU",
+     "thumbnail_url": "https://i.ytimg.com/vi/u1jVWD2N-gU/hqdefault.jpg",
+     "published_at": "2025-10-09T22:38:53+00:00",
+     "channel_slug": "ecswe"
+    }
+   ]
+  },
+  {
+   "slug": "waldorf-training-lectures",
+   "name": "Waldorf Training Lectures",
+   "latest": [
+    {
+     "video_id": "gyQ5pY0Y43o",
+     "title": "Hallelujah (Eurythmy) with eurythmist Rachel Ross at Prairie Moon Waldorf School in 2013",
+     "url": "https://www.youtube.com/watch?v=gyQ5pY0Y43o",
+     "thumbnail_url": "https://i.ytimg.com/vi/gyQ5pY0Y43o/hqdefault.jpg",
+     "published_at": "2023-10-10T10:39:04+00:00",
+     "channel_slug": "waldorf-training-lectures"
+    },
+    {
+     "video_id": "7WIPNcJ9GIM",
+     "title": "PM 13 Rachel Ross - Eurythmy Lecture 2 - 2013 at Prairie Moon Waldorf School",
+     "url": "https://www.youtube.com/watch?v=7WIPNcJ9GIM",
+     "thumbnail_url": "https://i.ytimg.com/vi/7WIPNcJ9GIM/hqdefault.jpg",
+     "published_at": "2023-10-10T10:39:04+00:00",
+     "channel_slug": "waldorf-training-lectures"
+    },
+    {
+     "video_id": "j1RJRea6bcc",
+     "title": "PM S14 Eurythmy Rachel Ross - Lecture 1 - 2014 at Prairie Moon Waldorf School",
+     "url": "https://www.youtube.com/watch?v=j1RJRea6bcc",
+     "thumbnail_url": "https://i.ytimg.com/vi/j1RJRea6bcc/hqdefault.jpg",
+     "published_at": "2023-10-10T10:39:04+00:00",
+     "channel_slug": "waldorf-training-lectures"
+    }
+   ]
+  },
+  {
+   "slug": "waldorfish",
+   "name": "Waldorfish",
+   "latest": [
+    {
+     "video_id": "s8hEdZn591Q",
+     "title": "Waldorfish.com Botany preview",
+     "url": "https://www.youtube.com/watch?v=s8hEdZn591Q",
+     "thumbnail_url": "https://i.ytimg.com/vi/s8hEdZn591Q/hqdefault.jpg",
+     "published_at": "2025-10-09T22:39:14+00:00",
+     "channel_slug": "waldorfish"
+    },
+    {
+     "video_id": "4uimdXknEd4",
+     "title": "Waldorfish Geology preview",
+     "url": "https://www.youtube.com/watch?v=4uimdXknEd4",
+     "thumbnail_url": "https://i.ytimg.com/vi/4uimdXknEd4/hqdefault.jpg",
+     "published_at": "2025-10-09T22:39:14+00:00",
+     "channel_slug": "waldorfish"
+    },
+    {
+     "video_id": "wluVuhofFRI",
+     "title": "Grade Two wet-on-wet watercoloring painting - from Waldorfish.com",
+     "url": "https://www.youtube.com/watch?v=wluVuhofFRI",
+     "thumbnail_url": "https://i.ytimg.com/vi/wluVuhofFRI/hqdefault.jpg",
+     "published_at": "2022-10-10T04:39:14+00:00",
+     "channel_slug": "waldorfish"
+    }
+   ]
+  },
+  {
+   "slug": "simply-waldorf",
+   "name": "Simply Waldorf",
+   "latest": [
+    {
+     "video_id": "JMKGdIcy3kk",
+     "title": "Simply Waldorf - Clay Modeling: Level 1 lesson samples",
+     "url": "https://www.youtube.com/watch?v=JMKGdIcy3kk",
+     "thumbnail_url": "https://i.ytimg.com/vi/JMKGdIcy3kk/hqdefault.jpg",
+     "published_at": "2024-10-09T16:39:25+00:00",
+     "channel_slug": "simply-waldorf"
+    },
+    {
+     "video_id": "Mtym_9O5p4k",
+     "title": "3rd Grade Stories--Simply Waldorf--Free Lesson",
+     "url": "https://www.youtube.com/watch?v=Mtym_9O5p4k",
+     "thumbnail_url": "https://i.ytimg.com/vi/Mtym_9O5p4k/hqdefault.jpg",
+     "published_at": "2023-10-10T10:39:25+00:00",
+     "channel_slug": "simply-waldorf"
+    },
+    {
+     "video_id": "mCchzqmQLYU",
+     "title": "Simply Waldorf Ad1",
+     "url": "https://www.youtube.com/watch?v=mCchzqmQLYU",
+     "thumbnail_url": "https://i.ytimg.com/vi/mCchzqmQLYU/hqdefault.jpg",
+     "published_at": "2023-10-10T10:39:25+00:00",
+     "channel_slug": "simply-waldorf"
+    }
+   ]
+  },
+  {
+   "slug": "waldorf-essentials",
+   "name": "Waldorf Essentials with Melisa Nielsen",
+   "latest": [
+    {
+     "video_id": "2B2JhBcM7qo",
+     "title": "How to Make Peace with Last Year",
+     "url": "https://www.youtube.com/watch?v=2B2JhBcM7qo",
+     "thumbnail_url": "https://i.ytimg.com/vi/2B2JhBcM7qo/hqdefault.jpg",
+     "published_at": "2026-09-09T18:09:35+00:00",
+     "channel_slug": "waldorf-essentials"
+    },
+    {
+     "video_id": "e_QMCcskaqg",
+     "title": "Block Planning",
+     "url": "https://www.youtube.com/watch?v=e_QMCcskaqg",
+     "thumbnail_url": "https://i.ytimg.com/vi/e_QMCcskaqg/hqdefault.jpg",
+     "published_at": "2026-09-09T18:09:35+00:00",
+     "channel_slug": "waldorf-essentials"
+    },
+    {
+     "video_id": "HFPCQmnQ7OM",
+     "title": "Rhythm During the Summer",
+     "url": "https://www.youtube.com/watch?v=HFPCQmnQ7OM",
+     "thumbnail_url": "https://i.ytimg.com/vi/HFPCQmnQ7OM/hqdefault.jpg",
+     "published_at": "2026-08-10T07:39:35+00:00",
+     "channel_slug": "waldorf-essentials"
+    }
+   ]
+  },
+  {
+   "slug": "acorn-hill",
+   "name": "Acorn Hill Waldorf Kindergarten and Nursery",
+   "latest": [
+    {
+     "video_id": "exMgOyNDB88",
+     "title": "Acorn Hill Tour 2023",
+     "url": "https://www.youtube.com/watch?v=exMgOyNDB88",
+     "thumbnail_url": "https://i.ytimg.com/vi/exMgOyNDB88/hqdefault.jpg",
+     "published_at": "2023-10-10T10:39:46+00:00",
+     "channel_slug": "acorn-hill"
+    },
+    {
+     "video_id": "uho2cbSXFeA",
+     "title": "Overview of Acorn Hill's Outdoor Programs",
+     "url": "https://www.youtube.com/watch?v=uho2cbSXFeA",
+     "thumbnail_url": "https://i.ytimg.com/vi/uho2cbSXFeA/hqdefault.jpg",
+     "published_at": "2021-10-09T22:39:46+00:00",
+     "channel_slug": "acorn-hill"
+    },
+    {
+     "video_id": "lT4PjPZvBgM",
+     "title": "Welcome to Acorn Hill's Outdoor Classrooms in Silver Spring, Maryland",
+     "url": "https://www.youtube.com/watch?v=lT4PjPZvBgM",
+     "thumbnail_url": "https://i.ytimg.com/vi/lT4PjPZvBgM/hqdefault.jpg",
+     "published_at": "2021-10-09T22:39:46+00:00",
+     "channel_slug": "acorn-hill"
+    }
+   ]
+  },
+  {
+   "slug": "green-meadow",
+   "name": "Green Meadow Waldorf School",
+   "latest": [
+    {
+     "video_id": "dP8ZRCe8WyY",
+     "title": "Tenth Grade Play | Almost Maine - 2025",
+     "url": "https://www.youtube.com/watch?v=dP8ZRCe8WyY",
+     "thumbnail_url": "https://i.ytimg.com/vi/dP8ZRCe8WyY/hqdefault.jpg",
+     "published_at": "2026-04-10T13:39:56+00:00",
+     "channel_slug": "green-meadow"
+    },
+    {
+     "video_id": "I9UGpZSybpA",
+     "title": "GMWS Senior Interviews | Explore Learning & Community Life 2025",
+     "url": "https://www.youtube.com/watch?v=I9UGpZSybpA",
+     "thumbnail_url": "https://i.ytimg.com/vi/I9UGpZSybpA/hqdefault.jpg",
+     "published_at": "2026-01-09T06:09:56+00:00",
+     "channel_slug": "green-meadow"
+    },
+    {
+     "video_id": "h_sWicvro8s",
+     "title": "GMWS Senior Projects | Experience Creativity & Student Innovation 2025",
+     "url": "https://www.youtube.com/watch?v=h_sWicvro8s",
+     "thumbnail_url": "https://i.ytimg.com/vi/h_sWicvro8s/hqdefault.jpg",
+     "published_at": "2026-01-09T06:09:56+00:00",
+     "channel_slug": "green-meadow"
+    }
+   ]
+  },
+  {
+   "slug": "washington-waldorf",
+   "name": "Washington Waldorf School",
+   "latest": [
+    {
+     "video_id": "CfzFhZGJePk",
+     "title": "WWS Virtual Sneak Peek  - High School - Fall 2025",
+     "url": "https://www.youtube.com/watch?v=CfzFhZGJePk",
+     "thumbnail_url": "https://i.ytimg.com/vi/CfzFhZGJePk/hqdefault.jpg",
+     "published_at": "2025-12-09T19:40:07+00:00",
+     "channel_slug": "washington-waldorf"
+    },
+    {
+     "video_id": "5zwAHo2gj6A",
+     "title": "Waldorf 101 Virtual Sneak Peek   Oct 2025",
+     "url": "https://www.youtube.com/watch?v=5zwAHo2gj6A",
+     "thumbnail_url": "https://i.ytimg.com/vi/5zwAHo2gj6A/hqdefault.jpg",
+     "published_at": "2025-12-09T19:40:07+00:00",
+     "channel_slug": "washington-waldorf"
+    },
+    {
+     "video_id": "Q7Co4IsQWb8",
+     "title": "School Overview Video",
+     "url": "https://www.youtube.com/watch?v=Q7Co4IsQWb8",
+     "thumbnail_url": "https://i.ytimg.com/vi/Q7Co4IsQWb8/hqdefault.jpg",
+     "published_at": "2025-10-09T22:40:07+00:00",
+     "channel_slug": "washington-waldorf"
+    }
+   ]
+  },
+  {
+   "slug": "pedagogie-steiner-waldorf",
+   "name": "Pédagogie Steiner Waldorf",
+   "latest": [
+    {
+     "video_id": "djWBLagJgms",
+     "title": "Un atelier d'écriture au collège/lycée Waldorf.",
+     "url": "https://www.youtube.com/watch?v=djWBLagJgms",
+     "thumbnail_url": "https://i.ytimg.com/vi/djWBLagJgms/hqdefault.jpg",
+     "published_at": "2025-10-09T22:40:17+00:00",
+     "channel_slug": "pedagogie-steiner-waldorf"
+    },
+    {
+     "video_id": "_AJEGu_jgcA",
+     "title": "Le cours de période en école primaire Waldorf",
+     "url": "https://www.youtube.com/watch?v=_AJEGu_jgcA",
+     "thumbnail_url": "https://i.ytimg.com/vi/_AJEGu_jgcA/hqdefault.jpg",
+     "published_at": "2025-10-09T22:40:17+00:00",
+     "channel_slug": "pedagogie-steiner-waldorf"
+    },
+    {
+     "video_id": "XbDVmJmN1jM",
+     "title": "Témoignages 3 anciens élèves Waldorf",
+     "url": "https://www.youtube.com/watch?v=XbDVmJmN1jM",
+     "thumbnail_url": "https://i.ytimg.com/vi/XbDVmJmN1jM/hqdefault.jpg",
+     "published_at": "2021-10-09T22:40:17+00:00",
+     "channel_slug": "pedagogie-steiner-waldorf"
+    }
+   ]
+  },
+  {
+   "slug": "camphill-village-trust",
+   "name": "Camphill Village Trust",
+   "latest": [
+    {
+     "video_id": "PD4X8sf3lnI",
+     "title": "Co-production in action - Autumn Appeal 2026 | Farris explains co-production",
+     "url": "https://www.youtube.com/watch?v=PD4X8sf3lnI",
+     "thumbnail_url": "https://i.ytimg.com/vi/PD4X8sf3lnI/hqdefault.jpg",
+     "published_at": "2026-09-19T04:40:38+00:00",
+     "channel_slug": "camphill-village-trust"
+    },
+    {
+     "video_id": "__8t-TASj7I",
+     "title": "Independent Lives: ESG in Action - Sophie, Andrew and Karen's Stories",
+     "url": "https://www.youtube.com/watch?v=__8t-TASj7I",
+     "thumbnail_url": "https://i.ytimg.com/vi/__8t-TASj7I/hqdefault.jpg",
+     "published_at": "2026-08-10T07:40:38+00:00",
+     "channel_slug": "camphill-village-trust"
+    },
+    {
+     "video_id": "p9m_-C1ntAI",
+     "title": "Keeping Safe with the Involve Me Group | Full Length",
+     "url": "https://www.youtube.com/watch?v=p9m_-C1ntAI",
+     "thumbnail_url": "https://i.ytimg.com/vi/p9m_-C1ntAI/hqdefault.jpg",
+     "published_at": "2026-07-10T21:10:38+00:00",
+     "channel_slug": "camphill-village-trust"
+    }
+   ]
+  },
+  {
+   "slug": "camphill-school-aberdeen",
+   "name": "Camphill School Aberdeen",
+   "latest": [
+    {
+     "video_id": "6fD6kVWflEI",
+     "title": "Camphill School Aberdeen – STV News Story Murtle Market Opening",
+     "url": "https://www.youtube.com/watch?v=6fD6kVWflEI",
+     "thumbnail_url": "https://i.ytimg.com/vi/6fD6kVWflEI/hqdefault.jpg",
+     "published_at": "2025-10-09T22:40:50+00:00",
+     "channel_slug": "camphill-school-aberdeen"
+    },
+    {
+     "video_id": "_w5WquG5RqA",
+     "title": "Camphill School Aberdeen – STV News Story Outdoor Sensory Adventure and Learning Playground",
+     "url": "https://www.youtube.com/watch?v=_w5WquG5RqA",
+     "thumbnail_url": "https://i.ytimg.com/vi/_w5WquG5RqA/hqdefault.jpg",
+     "published_at": "2025-10-09T22:40:50+00:00",
+     "channel_slug": "camphill-school-aberdeen"
+    },
+    {
+     "video_id": "d-rVqnu10GA",
+     "title": "Camphill School Aberdeen - About Us – Building Futures, Transforming Lives",
+     "url": "https://www.youtube.com/watch?v=d-rVqnu10GA",
+     "thumbnail_url": "https://i.ytimg.com/vi/d-rVqnu10GA/hqdefault.jpg",
+     "published_at": "2024-10-09T16:40:50+00:00",
+     "channel_slug": "camphill-school-aberdeen"
+    }
+   ]
+  },
+  {
+   "slug": "triform-camphill",
+   "name": "Triform Camphill Community",
+   "latest": [
+    {
+     "video_id": "bCPHxnqacpY",
+     "title": "Rhythm with Ryan",
+     "url": "https://www.youtube.com/watch?v=bCPHxnqacpY",
+     "thumbnail_url": "https://i.ytimg.com/vi/bCPHxnqacpY/hqdefault.jpg",
+     "published_at": "2021-10-09T22:41:00+00:00",
+     "channel_slug": "triform-camphill"
+    },
+    {
+     "video_id": "VKAQvz90UPw",
+     "title": "TRIFORM VIRTUAL EVENT",
+     "url": "https://www.youtube.com/watch?v=VKAQvz90UPw",
+     "thumbnail_url": "https://i.ytimg.com/vi/VKAQvz90UPw/hqdefault.jpg",
+     "published_at": "2021-10-09T22:41:00+00:00",
+     "channel_slug": "triform-camphill"
+    },
+    {
+     "video_id": "-soHh70Qujo",
+     "title": "Triform Camphill Community- A Gesture of Care",
+     "url": "https://www.youtube.com/watch?v=-soHh70Qujo",
+     "thumbnail_url": "https://i.ytimg.com/vi/-soHh70Qujo/hqdefault.jpg",
+     "published_at": "2018-10-10T04:41:00+00:00",
+     "channel_slug": "triform-camphill"
+    }
+   ]
+  },
+  {
+   "slug": "camphill-soltane",
+   "name": "Camphill Soltane",
+   "latest": [
+    {
+     "video_id": "PF-q2EFffTM",
+     "title": "Camphill Soltane - Find Your Joy!",
+     "url": "https://www.youtube.com/watch?v=PF-q2EFffTM",
+     "thumbnail_url": "https://i.ytimg.com/vi/PF-q2EFffTM/hqdefault.jpg",
+     "published_at": "2024-10-09T16:41:10+00:00",
+     "channel_slug": "camphill-soltane"
+    },
+    {
+     "video_id": "vOTvIjcYMas",
+     "title": "The Beauty of Opportunity",
+     "url": "https://www.youtube.com/watch?v=vOTvIjcYMas",
+     "thumbnail_url": "https://i.ytimg.com/vi/vOTvIjcYMas/hqdefault.jpg",
+     "published_at": "2024-10-09T16:41:10+00:00",
+     "channel_slug": "camphill-soltane"
+    },
+    {
+     "video_id": "YJTKH3bqolA",
+     "title": "Ryan, Soltane Café",
+     "url": "https://www.youtube.com/watch?v=YJTKH3bqolA",
+     "thumbnail_url": "https://i.ytimg.com/vi/YJTKH3bqolA/hqdefault.jpg",
+     "published_at": "2024-10-09T16:41:10+00:00",
+     "channel_slug": "camphill-soltane"
+    }
+   ]
+  },
+  {
+   "slug": "camphill-west-coast",
+   "name": "Camphill Village West Coast",
+   "latest": [
+    {
+     "video_id": "cGTh4o5Nj5E",
+     "title": "Camphill Dinner Dance 2025",
+     "url": "https://www.youtube.com/watch?v=cGTh4o5Nj5E",
+     "thumbnail_url": "https://i.ytimg.com/vi/cGTh4o5Nj5E/hqdefault.jpg",
+     "published_at": "2025-10-09T22:41:21+00:00",
+     "channel_slug": "camphill-west-coast"
+    },
+    {
+     "video_id": "KY0mjg9zwtw",
+     "title": "Camphill Village West Coast 60th Celebration",
+     "url": "https://www.youtube.com/watch?v=KY0mjg9zwtw",
+     "thumbnail_url": "https://i.ytimg.com/vi/KY0mjg9zwtw/hqdefault.jpg",
+     "published_at": "2025-10-09T22:41:21+00:00",
+     "channel_slug": "camphill-west-coast"
+    },
+    {
+     "video_id": "OuxU7u54xYg",
+     "title": "Camphill Monthly Farmers Market October 2024",
+     "url": "https://www.youtube.com/watch?v=OuxU7u54xYg",
+     "thumbnail_url": "https://i.ytimg.com/vi/OuxU7u54xYg/hqdefault.jpg",
+     "published_at": "2024-10-09T16:41:21+00:00",
+     "channel_slug": "camphill-west-coast"
+    }
+   ]
+  },
+  {
+   "slug": "camphill-mourne-grange",
+   "name": "Camphill Community Mourne Grange",
+   "latest": [
+    {
+     "video_id": "i3uEqte5T94",
+     "title": "Camphill Community Mourne Grange - Circus",
+     "url": "https://www.youtube.com/watch?v=i3uEqte5T94",
+     "thumbnail_url": "https://i.ytimg.com/vi/i3uEqte5T94/hqdefault.jpg",
+     "published_at": "2024-10-09T16:41:31+00:00",
+     "channel_slug": "camphill-mourne-grange"
+    },
+    {
+     "video_id": "ZYpsawA4P0M",
+     "title": "Camphill Youth Conference 2024",
+     "url": "https://www.youtube.com/watch?v=ZYpsawA4P0M",
+     "thumbnail_url": "https://i.ytimg.com/vi/ZYpsawA4P0M/hqdefault.jpg",
+     "published_at": "2024-10-09T16:41:31+00:00",
+     "channel_slug": "camphill-mourne-grange"
+    },
+    {
+     "video_id": "W6UFQF7ziqk",
+     "title": "A community and its environment",
+     "url": "https://www.youtube.com/watch?v=W6UFQF7ziqk",
+     "thumbnail_url": "https://i.ytimg.com/vi/W6UFQF7ziqk/hqdefault.jpg",
+     "published_at": "2023-10-10T10:41:31+00:00",
+     "channel_slug": "camphill-mourne-grange"
+    }
+   ]
+  },
+  {
+   "slug": "camphill-devon",
+   "name": "Camphill Devon",
+   "latest": [
+    {
+     "video_id": "lIsmbS3o3xI",
+     "title": "Volunteering at Camphill Devon - Isabela",
+     "url": "https://www.youtube.com/watch?v=lIsmbS3o3xI",
+     "thumbnail_url": "https://i.ytimg.com/vi/lIsmbS3o3xI/hqdefault.jpg",
+     "published_at": "2024-10-09T16:41:42+00:00",
+     "channel_slug": "camphill-devon"
+    },
+    {
+     "video_id": "PaqD6v-7IcY",
+     "title": "Working at Camphill Devon - Jane",
+     "url": "https://www.youtube.com/watch?v=PaqD6v-7IcY",
+     "thumbnail_url": "https://i.ytimg.com/vi/PaqD6v-7IcY/hqdefault.jpg",
+     "published_at": "2023-10-10T10:41:42+00:00",
+     "channel_slug": "camphill-devon"
+    },
+    {
+     "video_id": "_fSa_pinqBI",
+     "title": "Brian interview",
+     "url": "https://www.youtube.com/watch?v=_fSa_pinqBI",
+     "thumbnail_url": "https://i.ytimg.com/vi/_fSa_pinqBI/hqdefault.jpg",
+     "published_at": "2023-10-10T10:41:42+00:00",
+     "channel_slug": "camphill-devon"
+    }
+   ]
+  },
+  {
+   "slug": "camphill-school-beaver-run",
+   "name": "The Camphill School (Beaver Run)",
+   "latest": [
+    {
+     "video_id": "mt-gM9s6h5M",
+     "title": "The Bubble Song",
+     "url": "https://www.youtube.com/watch?v=mt-gM9s6h5M",
+     "thumbnail_url": "https://i.ytimg.com/vi/mt-gM9s6h5M/hqdefault.jpg",
+     "published_at": "2026-08-10T07:41:52+00:00",
+     "channel_slug": "camphill-school-beaver-run"
+    },
+    {
+     "video_id": "66DlJyx_5kc",
+     "title": "1,2, Hello!",
+     "url": "https://www.youtube.com/watch?v=66DlJyx_5kc",
+     "thumbnail_url": "https://i.ytimg.com/vi/66DlJyx_5kc/hqdefault.jpg",
+     "published_at": "2026-08-10T07:41:52+00:00",
+     "channel_slug": "camphill-school-beaver-run"
+    },
+    {
+     "video_id": "LofdG_N44uQ",
+     "title": "Beaver Farm Bop",
+     "url": "https://www.youtube.com/watch?v=LofdG_N44uQ",
+     "thumbnail_url": "https://i.ytimg.com/vi/LofdG_N44uQ/hqdefault.jpg",
+     "published_at": "2026-08-10T07:41:52+00:00",
+     "channel_slug": "camphill-school-beaver-run"
+    }
+   ]
+  }
+ ]
+}

@@ -108,13 +108,54 @@ def fetch_feed(channel_id):
 
 
 _REL = {"second": 1, "minute": 60, "hour": 3600, "day": 86400, "week": 604800, "month": 2629800, "year": 31557600}
+# YouTube now also uses short forms ("10mo ago", "1y ago", "3w ago").
+_SHORT = {"s": "second", "sec": "second", "m": "minute", "min": "minute", "h": "hour", "hr": "hour",
+          "d": "day", "w": "week", "wk": "week", "mo": "month", "y": "year", "yr": "year"}
 
 def _relative_to_iso(txt):
-    m = re.search(r"(\d+)\s+(second|minute|hour|day|week|month|year)", txt or "")
+    m = re.search(r"(\d+)\s*(second|minute|hour|day|week|month|year|mo|min|sec|hr|wk|yr|[smhdwy])s?\b", txt or "")
     if not m:
         return None
-    secs = int(m.group(1)) * _REL[m.group(2)]
+    unit = _SHORT.get(m.group(2), m.group(2))
+    secs = int(m.group(1)) * _REL[unit]
     return datetime.fromtimestamp(time.time() - secs, timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
+
+
+def _lockup_videos(html, limit=15):
+    """Read videos from ytInitialData in YouTube's 2025+ layout (lockupViewModel blocks)."""
+    m = re.search(r"var ytInitialData = (\{.*?\});</script>", html, re.S)
+    if not m:
+        return []
+    try:
+        data = json.loads(m.group(1))
+    except ValueError:
+        return []
+    found, seen = [], set()
+
+    def walk(o):
+        if len(found) >= limit:
+            return
+        if isinstance(o, dict):
+            lock = o.get("lockupViewModel")
+            if isinstance(lock, dict) and lock.get("contentType") == "LOCKUP_CONTENT_TYPE_VIDEO":
+                vid = lock.get("contentId")
+                meta = lock.get("metadata", {}).get("lockupMetadataViewModel", {})
+                title = (meta.get("title") or {}).get("content")
+                ago = re.search(r'"content": "([^"]*ago)"', json.dumps(meta.get("metadata", {})))
+                if vid and title and vid not in seen:
+                    seen.add(vid)
+                    found.append({"video_id": vid, "title": title[:300],
+                                  "url": "https://www.youtube.com/watch?v=" + vid,
+                                  "thumbnail_url": "https://i.ytimg.com/vi/%s/hqdefault.jpg" % vid,
+                                  "published_at": _relative_to_iso(ago.group(1) if ago else None)})
+            for v in o.values():
+                walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+
+    walk(data)
+    return found
 
 
 def scrape_channel_videos(channel_id):
@@ -128,6 +169,9 @@ def scrape_channel_videos(channel_id):
     html = r.text
     tm = re.search(r'<meta property="og:title" content="([^"]*)"', html)
     title = tm.group(1) if tm else ""
+    vids = _lockup_videos(html)
+    if vids:
+        return title, vids
     vids, seen = [], set()
     for chunk in html.split('"videoRenderer":{')[1:] + html.split('"richItemRenderer":{')[1:]:
         vm = re.match(r'"videoId":"([\w-]{11})"', chunk) or re.search(r'"videoId":"([\w-]{11})"', chunk[:200])
