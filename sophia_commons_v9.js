@@ -2921,7 +2921,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
     if (ev.start_time) {
       time = ev.start_time;
       if (ev.end_time) time += ' - ' + ev.end_time;
-    } else if (ev.start_date && ev.end_date && ev.start_date !== ev.end_date) {
+    } else if (ev.start_date && ev.end_date && _localDay(ev.start_date) !== _localDay(ev.end_date)) {
       var sd = new Date(ev.start_date);
       var ed = new Date(ev.end_date);
       time = localDate(ev.start_date, { month: 'short', day: 'numeric' }) + ' - ' + localDate(ev.end_date, { month: 'short', day: 'numeric' });
@@ -6501,13 +6501,18 @@ function _freshVideos(rows) {
 }
 
 // Home page: when a channel has just posted, feature that video (channel photo, name, thumbnail).
-function renderNewVideoCard(v, count, kicker) {
+function renderNewVideoCard(v, count, kicker, rating) {
   var ch = '<span class="nv-ch">' + (v.avatar_url ? '<img src="' + escUrl(v.avatar_url) + '" alt="" width="24" height="24" loading="lazy">' : '')
     + '<b>' + esc(v.name) + '</b>' + (v.subscriber_text ? '<span class="nv-subs">' + esc(v.subscriber_text) + ' ' + esc(t('channel.subscribers', 'subscribers')) + '</span>' : '') + '</span>';
+  // the channel's star rating (opens the channel's reviews, where members can rate it)
+  var rate = '<button type="button" class="nv-rate" onclick="openChannel(\'' + escJs(v.slug) + '\', this)">'
+    + (rating && rating.count ? _stars(rating.avg) + ' <span>' + rating.avg.toFixed(1) + ' (' + rating.count + ')</span>'
+       : '<span class="stars off-all" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span>' + esc(t('channel.rate_short', 'Rate')) + '</span>') + '</button>';
   return '<div class="new-video">'
     + '<a class="nv-thumb" href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(v.video_thumbnail) + '" alt="" loading="lazy" width="320" height="180"></a>'
-    + '<div class="nv-body"><div class="etag">' + esc(kicker || t('video.new_video', 'New video')) + (v.published_at ? ' &middot; ' + esc(ytAgo(v.published_at)) : '') + '</div>'
-    + '<h5><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(v.video_title) + '</a></h5>' + ch
+    + '<div class="nv-body"><h5><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(v.video_title) + '</a></h5>'
+    + '<div class="nv-meta"><span class="etag">' + esc(kicker || t('video.new_video', 'New video')) + (v.published_at ? ' &middot; ' + esc(ytAgo(v.published_at)) : '') + '</span>' + rate + '</div>'
+    + ch
     + '<div class="video-actions"><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(t('video.watch', 'Watch')) + ' &rarr;</a>'
     + '<a href="/podcasts" onclick="showSec(\'podcasts\');openChannel(\'' + escJs(v.slug) + '\');return false;">' + esc(t('channel.details', 'details, ratings and reviews')) + '</a>'
     + (count > 1 ? '<a href="#" class="quiet" onclick="_newVidOffset++;renderVideoSpotlight();return false;">' + esc(t('video.next_new', 'next new video')) + ' (' + count + ') &#8635;</a>' : '')
@@ -6520,14 +6525,16 @@ var _newVidOffset = 0;
 async function renderVideoSpotlight() {
   var home = document.getElementById('home-video-spotlight');
   if (!home) return;
-  var rows = await _ytFetchLatest();
+  var both = await Promise.all([_ytFetchLatest(), _loadChannelRatings()]);
+  var rows = both[0], ratings = both[1];
   var fresh = _freshVideos(rows);
   if (fresh.length) {
-    home.innerHTML = renderNewVideoCard(fresh[_newVidOffset % fresh.length], fresh.length);
+    var v = fresh[_newVidOffset % fresh.length];
+    home.innerHTML = renderNewVideoCard(v, fresh.length, null, ratings[v.slug]);
     return;
   }
   var ch = weeklyChannel(rows, _ytOffset);
-  home.innerHTML = ch && ch.video_id ? renderNewVideoCard(ch, 0, t('video.of_the_day', 'Video of the day')) : renderVideoCard(ch);
+  home.innerHTML = ch && ch.video_id ? renderNewVideoCard(ch, 0, t('video.of_the_day', 'Video of the day'), ratings[ch.slug]) : renderVideoCard(ch);
 }
 
 async function renderYouTubeChannels() {
@@ -6720,6 +6727,7 @@ async function _afterReviewChange(slug) {
   if (box) box.innerHTML = _ratingSummary(ratings[slug]);
   _loadChannelReviews(slug);
   renderYouTubeChannels();
+  renderVideoSpotlight();
 }
 
 async function suggestYouTubeChannel() {

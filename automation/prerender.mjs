@@ -175,7 +175,33 @@ if (feat) {
   const homeFile = path.join(OUT, 'index.html');
   const home = fs.readFileSync(homeFile, 'utf8');
   const placeholder = /(<div class="listblock-body" id="home-upcoming"[^>]*>)\s*<div class="empty-note">[^<]*<\/div>/;
-  if (placeholder.test(home)) fs.writeFileSync(homeFile, home.replace(placeholder, (m, open) => open + banner));
+  if (placeholder.test(home)) fs.writeFileSync(homeFile, home.replace(placeholder, (m, open) => open + banner + homeGrid(feat)));
+}
+
+// Same markup as renderHomeUpcoming() in the app, so the live redraw does not move the page.
+function homeGrid(feat) {
+  const tz = 'America/Los_Angeles';
+  const dayOf = iso => new Date(iso).toLocaleDateString('en-CA', { timeZone: tz });
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: tz });
+  const rest = events.filter(ev => ev !== feat && dayOf(ev.end_date || ev.start_date) >= today)
+    .sort((a, b) => a.start_date.localeCompare(b.start_date));
+  const now = rest.filter(ev => dayOf(ev.start_date) <= today).slice(0, 4);
+  const next = rest.filter(ev => dayOf(ev.start_date) > today).slice(0, now.length ? 4 : 6);
+  const fmt = (iso, o) => new Date(iso).toLocaleDateString('en-US', { timeZone: tz, ...o });
+  const row = ev => {
+    const multi = ev.end_date && dayOf(ev.end_date) !== dayOf(ev.start_date);
+    const time = multi ? fmt(ev.start_date, { month: 'short', day: 'numeric' }) + ' - ' + fmt(ev.end_date, { month: 'short', day: 'numeric' })
+      : ev.is_all_day ? '' : new Date(ev.start_date).toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    const loc = [ev.city, ev.country].filter(Boolean).join(', ') || (ev.is_online ? (ev.location_name || 'Online') : '');
+    const cat = ev.event_type === 'first_class' ? 'first class (blue card)' : String(ev.category_name || ev.event_type || 'community').toLowerCase();
+    const meta = [time, loc, ev.organizer_name].filter(x => x && String(x).trim()).map(esc).join(' &middot; ');
+    return '<div class="evrow"><div class="evdate"><div class="mo">' + esc(fmt(ev.start_date, { month: 'short' })) + '</div><div class="dy">' + fmt(ev.start_date, { day: 'numeric' }) + '</div></div>'
+      + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5><a href="/event/' + attr(ev.id) + '">' + esc(ev.title) + '</a></h5>'
+      + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
+  };
+  return '<div class="home-ev-grid' + (now.length ? '' : ' no-now') + '">'
+    + (now.length ? '<div class="home-ev-col"><h4 class="home-ev-sub"><span class="live-dot" aria-hidden="true"></span>Happening now</h4>' + now.map(row).join('') + '</div>' : '')
+    + '<div class="home-ev-col"><h4 class="home-ev-sub">Coming up</h4><div class="home-ev-rows">' + next.map(row).join('') + '</div></div></div>';
 }
 
 console.log(`prerender: ${written.length} pages, sitemap ${urls.length} URLs (${dir.length} listings, ${events.length} events)`);
