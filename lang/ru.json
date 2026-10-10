@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.21.0",
+  "footer.version": "v1.21.1",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -768,5 +768,6 @@
   "firstclass.tag": "Вход по синей карте",
   "firstclass.intro": "Уроки и встречи Класса для членов Школы духовной науки. Вход только по синей карте. Мантрическое содержание здесь не публикуется; подробности у организаторов.",
   "firstclass.none": "Пока нет предстоящих встреч Класса.",
-  "firstclass.add": "Добавить встречу Класса"
+  "firstclass.add": "Добавить встречу Класса",
+  "event_detail.sign_up": "Записаться на участие"
 }

@@ -193,7 +193,9 @@ function renderEventDetail(ev) {
   if (ev.organizer_name) meta += '<span>&#127915; ' + esc(ev.organizer_name) + '</span>';
 
   var actions = '';
-  if (ev.ticket_url) actions += '<a class="btn-primary-detail" href="' + escUrl(ev.ticket_url) + '" target="_blank">' + t('event_detail.get_tickets') + ' &#8599;</a>';
+  // Sign-up forms (Google Forms etc.) are not ticket shops
+  var isForm = /forms\.gle|docs\.google\.com\/forms|forms\.office\.com|typeform|jotform/i.test(ev.ticket_url || '');
+  if (ev.ticket_url) actions += '<a class="btn-primary-detail" href="' + escUrl(ev.ticket_url) + '" target="_blank" rel="noopener">' + (isForm ? t('event_detail.sign_up', 'Sign up to attend') : t('event_detail.get_tickets')) + ' &#8599;</a>';
   if (ev.online_url) actions += '<a class="btn-primary-detail" href="' + escUrl(ev.online_url) + '" target="_blank">' + t('event_detail.join_online') + ' &#8599;</a>';
   if (ev.organizer_url) actions += '<a class="btn-secondary-detail" href="' + escUrl(ev.organizer_url) + '" target="_blank">' + t('event_detail.organizer_website') + '</a>';
 
@@ -2909,7 +2911,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       time: time,
       desc: ev.description || '',
       src: [ev.online_url ? [ev.online_url.indexOf('zoom.us') !== -1 ? 'Join on Zoom' : 'Join online', ev.online_url] : null,
-            ev.ticket_url ? ['Event page', ev.ticket_url] : null].filter(Boolean),
+            ev.ticket_url ? [/forms\.gle|docs\.google\.com\/forms/i.test(ev.ticket_url) ? 'Sign up to attend' : 'Event page', ev.ticket_url] : null].filter(Boolean),
       featured: !!ev.featured,
       end: _localDay(ev.end_date) || dateStr,
       img: ev.image_url ? { src: ev.image_url, alt: ev.title || '', page: ev.ticket_url || ev.image_url, credit: ev.organizer_name || 'Event image' } : null
