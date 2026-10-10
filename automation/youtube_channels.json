@@ -657,6 +657,26 @@
       "category": "society",
       "description": "Talks and study programs from the Chicago branch of the Anthroposophical Society, introducing spiritual science to members and friends.",
       "verified": true
+    },
+    {
+      "slug": "dj-elliott",
+      "name": "D J Elliott",
+      "url": "https://www.youtube.com/@DJElliott142857",
+      "channel_id": "UCPPUxEeml6er4DFUwCgX1Rg",
+      "language": "EN",
+      "category": "steiner-lectures",
+      "description": "Readings of Rudolf Steiner lectures (such as The Michael Imagination) alongside films on Gurdjieff, Maurice Nicoll, art and esoteric philosophy, by author Debbie Elliott.",
+      "verified": true
+    },
+    {
+      "slug": "philosophy-of-freedom",
+      "name": "Philosophy Of Freedom",
+      "url": "https://www.youtube.com/@scienceoffreedom",
+      "channel_id": "UCFPtACroLTFcnzaWy8f9B2A",
+      "language": "EN",
+      "category": "study-group",
+      "description": "A chapter-by-chapter study of Rudolf Steiner's Philosophy of Freedom: free thinking as the foundation of ethical individualism and social life.",
+      "verified": true
     }
   ]
 }
