@@ -1,8 +1,8 @@
-name: Weekly YouTube sync + link check
+name: Daily YouTube sync + weekly link check
 
 on:
   schedule:
-    - cron: "17 13 * * 0"        # Sundays 13:17 UTC (06:17 Pacific)
+    - cron: "17 13 * * *"        # every day 13:17 UTC (06:17 Pacific); link check runs on Sundays only
   workflow_dispatch:             # "Run workflow" button in the Actions tab
 
 permissions:
@@ -26,6 +26,15 @@ jobs:
 
       - run: pip install --quiet requests
 
+      - name: Decide whether to run the weekly link check
+        id: when
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$(date -u +%u)" = "7" ]; then
+            echo "links=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "links=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Sync YouTube channels and videos into Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -34,17 +43,20 @@ jobs:
         run: python3 automation/youtube_sync.py
 
       - name: Check every outbound link and resource
+        if: steps.when.outputs.links == 'true'
         run: python3 automation/link_check.py
 
       - name: Commit feed snapshot and report
         run: |
           git config user.name  "sophia-commons-bot"
           git config user.email "bot@sophiacommons.org"
-          git add automation/youtube_channels.json automation/youtube_feed.json crawl_reports/
-          git diff --cached --quiet || git commit -m "weekly: youtube feed + link report $(date -u +%F)"
+          git add automation/youtube_channels.json automation/youtube_feed.json
+          [ -d crawl_reports ] && git add crawl_reports/
+          git diff --cached --quiet || git commit -m "daily: youtube feed $(date -u +%F)"
           git push
 
       - name: Open or update the broken-links issue
+        if: steps.when.outputs.links == 'true'
         uses: actions/github-script@v7
         with:
           script: |

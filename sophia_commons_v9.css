@@ -1363,6 +1363,30 @@ footer {
   font-size: 11px;
   color: var(--text-muted);
 }
+.day-popup { max-height: 85vh; overflow-y: auto; }
+.day-popup .dp-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 6px 0 0;
+}
+.day-popup .dp-src {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.day-popup .dp-src a { color: var(--gold-text); }
+.day-popup .dp-img { margin: 0 0 8px; }
+.day-popup .dp-img img {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+.day-popup .dp-img figcaption { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+.day-popup .dp-img figcaption a { color: inherit; }
 .day-popup .dp-close {
   position: absolute;
   top: 12px; right: 14px;
@@ -2594,3 +2618,19 @@ footer { color: rgba(250,247,242,0.78); }
 .top50-amz { display: inline-block; padding: 3px 9px; border-radius: 999px; background: var(--gold-light); border: 1px solid var(--border); }
 @media (max-width: 768px) { .top50-list { grid-template-columns: 1fr; } }
 @media (max-width: 540px) { #top50-books .listblock-head span { display: none; } }
+
+.sem-empty { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0; }
+.evthumb {
+  width: 72px; height: 54px; flex-shrink: 0;
+  object-fit: cover; border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+@media (max-width: 480px) { .evthumb { width: 56px; height: 44px; } }
+/* Home: featured event banner */
+.feat-ev { display: flex; gap: 12px; padding: 8px 0 10px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 4px; }
+.feat-ev-img { width: 96px; height: 116px; object-fit: cover; border-radius: 10px; flex-shrink: 0; border: 1px solid var(--border-subtle); }
+.feat-ev-body h5 { margin: 2px 0 4px; font-size: 14px; line-height: 1.35; }
+.feat-ev-desc { font-size: 12px; line-height: 1.45; color: var(--text-secondary); margin: 4px 0 6px; }
+.feat-ev-join { display: inline-block; font-size: 12px; font-weight: 600; padding: 6px 12px; min-height: 32px; border-radius: 8px; background: var(--gold); color: var(--ink); text-decoration: none; }
+.feat-ev-join:hover { filter: brightness(0.95); }
+@media (max-width: 480px) { .feat-ev-img { width: 76px; height: 92px; } }

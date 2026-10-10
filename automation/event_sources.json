@@ -1,0 +1,137 @@
+[
+  {
+    "name": "Goetheanum (all events)",
+    "url": "https://goetheanum.ch/en/events",
+    "fetch": "web"
+  },
+  {
+    "name": "Goetheanum Medical Section",
+    "url": "https://medicalsection.goetheanum.ch",
+    "fetch": "web"
+  },
+  {
+    "name": "Goetheanum Pedagogical Section",
+    "url": "https://www.goetheanum-paedagogik.ch",
+    "fetch": "web"
+  },
+  {
+    "name": "Goetheanum Section for Agriculture",
+    "url": "https://www.sektion-landwirtschaft.org",
+    "fetch": "web"
+  },
+  {
+    "name": "Goetheanum Section for Inclusive Social Development",
+    "url": "https://inclusivesocial.goetheanum.ch",
+    "fetch": "web"
+  },
+  {
+    "name": "Goetheanum Section for the Literary Arts and Humanities",
+    "url": "https://ssw.goetheanum.org",
+    "fetch": "web"
+  },
+  {
+    "name": "Goetheanum Section for the Performing Arts",
+    "url": "https://srmk.goetheanum.org",
+    "fetch": "web"
+  },
+  {
+    "name": "Anthroposophical Society in America",
+    "url": "https://anthroposophy.org",
+    "fetch": "web"
+  },
+  {
+    "name": "Santa Cruz Monterey Bay Branch (ASA)",
+    "url": "https://www.anthroposophysantacruz.com/",
+    "fetch": "browser"
+  },
+  {
+    "name": "Anthroposophical Society in Great Britain",
+    "url": "https://www.anthroposophy.org.uk",
+    "fetch": "web"
+  },
+  {
+    "name": "Rudolf Steiner House London (events feed)",
+    "url": "https://rsh.anth.org.uk/wp-json/tribe/events/v1/events",
+    "fetch": "feed"
+  },
+  {
+    "name": "Anthroposophical Society in Australia",
+    "url": "https://anthroposophy.org.au",
+    "fetch": "browser"
+  },
+  {
+    "name": "Sunbridge Institute",
+    "url": "https://www.sunbridge.edu",
+    "fetch": "web"
+  },
+  {
+    "name": "Eurythmy Spring Valley",
+    "url": "https://www.eurythmy.org",
+    "fetch": "web"
+  },
+  {
+    "name": "AWSNA (Waldorf Schools of North America)",
+    "url": "https://www.waldorfeducation.org",
+    "fetch": "browser"
+  },
+  {
+    "name": "WECAN (Waldorf Early Childhood Association of North America)",
+    "url": "https://waldorfearlychildhood.org",
+    "fetch": "web"
+  },
+  {
+    "name": "Waldorf UK",
+    "url": "https://waldorfeducation.uk",
+    "fetch": "web"
+  },
+  {
+    "name": "Freunde der Erziehungskunst Rudolf Steiners",
+    "url": "https://www.freunde-waldorf.de",
+    "fetch": "web"
+  },
+  {
+    "name": "Biodynamic Association (US)",
+    "url": "https://www.biodynamics.com",
+    "fetch": "web"
+  },
+  {
+    "name": "Biodynamic Association (UK)",
+    "url": "https://www.biodynamic.org.uk",
+    "fetch": "web"
+  },
+  {
+    "name": "Demeter International",
+    "url": "https://www.demeter.net",
+    "fetch": "web"
+  },
+  {
+    "name": "Physicians' Association for Anthroposophic Medicine (PAAM)",
+    "url": "https://paam.wildapricot.org",
+    "fetch": "web"
+  },
+  {
+    "name": "Camphill Village Trust",
+    "url": "https://www.camphillvillagetrust.org.uk",
+    "fetch": "web"
+  },
+  {
+    "name": "Camphill Association of North America",
+    "url": "https://camphill.org",
+    "fetch": "browser"
+  },
+  {
+    "name": "The Christian Community in North America",
+    "url": "https://thechristiancommunity.org",
+    "fetch": "web"
+  },
+  {
+    "name": "The Christian Community in Great Britain",
+    "url": "https://www.thechristiancommunity.co.uk",
+    "fetch": "web"
+  },
+  {
+    "name": "Sacramento Faust Branch (ASA, Fair Oaks CA)",
+    "url": "https://www.faustbranch.org/",
+    "fetch": "web"
+  }
+]

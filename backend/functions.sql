@@ -409,3 +409,50 @@ AS $$
 $$;
 
 GRANT EXECUTE ON FUNCTION public.get_directory_by_country(text, int, int) TO anon, authenticated;
+
+
+-- =============================================================================
+-- get_comments_with_votes
+-- Returns threaded comments for a post with vote scores and current user's vote.
+-- =============================================================================
+
+CREATE OR REPLACE FUNCTION public.get_comments_with_votes(
+  p_post_type text,
+  p_post_id   uuid,
+  p_user_id   uuid DEFAULT NULL
+)
+RETURNS TABLE (
+  id          uuid,
+  parent_id   uuid,
+  user_id     uuid,
+  username    text,
+  content     text,
+  is_edited   boolean,
+  is_deleted  boolean,
+  created_at  timestamptz,
+  updated_at  timestamptz,
+  vote_score  bigint,
+  user_vote   smallint
+)
+LANGUAGE sql STABLE AS $$
+  SELECT
+    c.id,
+    c.parent_id,
+    c.user_id,
+    split_part(u.email, '@', 1) AS username,
+    c.content,
+    c.is_edited,
+    c.is_deleted,
+    c.created_at,
+    c.updated_at,
+    COALESCE(SUM(cv.vote), 0)::bigint AS vote_score,
+    (SELECT v.vote FROM public.comment_votes v WHERE v.comment_id = c.id AND v.user_id = p_user_id) AS user_vote
+  FROM public.comments c
+  JOIN auth.users u ON u.id = c.user_id
+  LEFT JOIN public.comment_votes cv ON cv.comment_id = c.id
+  WHERE c.post_type = p_post_type AND c.post_id = p_post_id
+  GROUP BY c.id, c.parent_id, c.user_id, u.email, c.content, c.is_edited, c.is_deleted, c.created_at, c.updated_at
+  ORDER BY c.created_at ASC;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_comments_with_votes(text, uuid, uuid) TO anon, authenticated;

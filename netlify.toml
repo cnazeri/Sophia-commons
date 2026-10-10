@@ -1,6 +1,31 @@
 [build]
-  publish = "."
+  # Only the clean _deploy/ folder is ever published (built by ./deploy.sh).
+  # Publishing "." used to expose internal docs, spreadsheets and backend code.
+  publish = "_deploy"
 
+# Security headers (frame-ancestors only works as a real header, not in the <meta> CSP)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Content-Security-Policy = "frame-ancestors 'none'"
+
+# Always revalidate the HTML shell and service worker so deploys show up immediately
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# SPA fallback: unknown paths (e.g. /event/<id>, /category/waldorf) load the app shell.
+# Netlify serves real files first, so /sitemap.xml, /robots.txt and assets are unaffected.
 [[redirects]]
   from = "/*"
   to = "/index.html"

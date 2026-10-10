@@ -20,6 +20,9 @@ var SC_I18N = (function () {
   }
 
   function localDate(date, opts) {
+    // Date-only strings ('2026-09-29') are parsed as UTC midnight by JS, which shows the
+    // previous day in the Americas. Anchor them at local noon instead.
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) date = date + 'T12:00:00';
     try { return new Date(date).toLocaleDateString(LOCALES[currentLang] || 'en-US', opts); }
     catch (e) { return String(date); }
   }
@@ -61,7 +64,7 @@ var SC_I18N = (function () {
 
   function loadLang(code) {
     if (cache[code]) return Promise.resolve(cache[code]);
-    return fetch('lang/' + code + '.json')
+    return fetch('/lang/' + code + '.json')
       .then(function (r) { return r.json(); })
       .then(function (data) { cache[code] = data; return data; })
       .catch(function () { console.warn('i18n: could not load lang/' + code + '.json'); return {}; });
@@ -69,7 +72,7 @@ var SC_I18N = (function () {
 
   function setLang(code) {
     currentLang = code;
-    localStorage.setItem('sc-lang', code);
+    try { localStorage.setItem('sc-lang', code); } catch (e) {}
     return loadLang(code).then(function (data) {
       active = data;
       applyTranslations();
@@ -83,7 +86,9 @@ var SC_I18N = (function () {
     return loadLang('en').then(function (data) {
       fallback = data;
       cache.en = data;
-      var saved = localStorage.getItem('sc-lang') || 'en';
+      var saved = 'en';
+      try { saved = localStorage.getItem('sc-lang') || 'en'; } catch (e) {}
+      if (!LOCALES[saved]) saved = 'en';
       return setLang(saved);
     }).then(function () {
       _ready = true;

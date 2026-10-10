@@ -1,0 +1,43 @@
+# Sophia Commons
+
+> Sophia Commons (https://sophiacommons.org) is a free global directory and resource hub for the anthroposophical community founded on the work of Rudolf Steiner. It lists about 900 organizations in nearly 60 countries: Waldorf (Steiner) schools, biodynamic farms, Camphill communities, eurythmy and the arts, anthroposophic medicine, eldercare, societies and study groups. It also offers a festival calendar, news, a Rudolf Steiner book list, curated anthroposophical YouTube channels and podcasts, and memorials.
+
+The site is free to use. Listings can be suggested by anyone and are reviewed before publishing. Content is in English with interface translations in German, Spanish and Russian.
+
+## Directory
+
+- [Full directory](https://sophiacommons.org/directory): all approved organizations, searchable by name, tag, category and country
+- [Browse by category](https://sophiacommons.org/browse): overview of all categories and regions
+- [Waldorf and education](https://sophiacommons.org/category/waldorf-%26-education): Waldorf/Steiner schools, kindergartens and teacher trainings
+- [Biodynamic agriculture](https://sophiacommons.org/category/biodynamic-agriculture): biodynamic farms, Demeter associations, training
+- [Arts and eurythmy](https://sophiacommons.org/category/arts-%26-eurythmy): eurythmy schools and ensembles, speech, art therapy
+- [Anthroposophic medicine](https://sophiacommons.org/category/anthroposophic-medicine): clinics, practitioners, pharmacies, medical associations
+- [The Christian Community](https://sophiacommons.org/category/the-christian-community): congregations and centers of The Christian Community (Die Christengemeinschaft) worldwide, with addresses and a map
+- [Community and Camphill](https://sophiacommons.org/category/community-%26-camphill): Camphill villages and intentional communities
+- [Eldercare](https://sophiacommons.org/eldercare): anthroposophical care homes and senior communities
+- [Societies and organizations](https://sophiacommons.org/category/societies-%26-organizations): Anthroposophical Society branches and national societies
+- [Groups and circles](https://sophiacommons.org/category/groups-%26-circles) and [esoteric studies](https://sophiacommons.org/category/esoteric-studies): study groups and reading circles
+- [Online resources](https://sophiacommons.org/category/online-resources) and [social media](https://sophiacommons.org/category/social-media)
+
+## By region
+
+- [North America](https://sophiacommons.org/region/north-america), [Europe](https://sophiacommons.org/region/europe), [UK and Ireland](https://sophiacommons.org/region/uk-ireland), [Latin America](https://sophiacommons.org/region/latin-america), [Africa](https://sophiacommons.org/region/africa), [Asia](https://sophiacommons.org/region/asia), [Australia and New Zealand](https://sophiacommons.org/region/australia-nz)
+- [Verified organizations](https://sophiacommons.org/region/verified)
+
+## Calendar and festivals
+
+- [Events and festival calendar](https://sophiacommons.org/events): community events plus the anthroposophical festival year, computed for every year with sources for each entry: Christmas and the Twelve Holy Nights, Epiphany, Candlemas, the Easter cycle (Ash Wednesday through Trinity Sunday), the Parzival (Grail) Moon after Easter, Ascension, Whitsun, St. John's Tide, Michaelmas, Martinmas, St. Nicholas, Advent, the equinoxes and solstices, and anniversaries such as the founding of the first Waldorf school (1919) and the Christmas Conference (1923)
+
+## Learning and media
+
+- [News](https://sophiacommons.org/news): news from the anthroposophical movement
+- [Books](https://sophiacommons.org/books): Rudolf Steiner's works by GA (Gesamtausgabe) number, with links to free online texts and editions
+- [Podcasts and YouTube](https://sophiacommons.org/podcasts): curated anthroposophical YouTube channels (refreshed weekly) and podcasts
+- [Memorials](https://sophiacommons.org/memorial): remembering members of the community
+
+## About
+
+- [About Sophia Commons](https://sophiacommons.org/about)
+- [Privacy](https://sophiacommons.org/privacy) and [terms](https://sophiacommons.org/terms)
+- Contact: hello@sophiacommons.org
+- Newsletter: free email updates on new listings, events and videos (double opt-in, unsubscribe any time)

@@ -463,7 +463,8 @@ const catMeta = {
   'esoteric studies':        { dirCat: ['societies', 'online'],          desc: 'Study groups, lecture cycles, meditation practices, courses in spiritual science, and resources for the independent study of Rudolf Steiner\'s work.' },
   'arts & eurythmy':         { dirCat: 'eurythmy',   desc: 'Eurythmy schools and performances, visual arts, music, speech formation, drama, and artistic practices rooted in anthroposophical principles.' },
   'anthroposophic medicine': { dirCat: 'medicine',    desc: 'Anthroposophic physicians, clinics, hospitals, therapeutic eurythmy, art therapy, Weleda and WALA remedies, and nurse training programs.' },
-  'community & camphill':    { dirCat: 'camphill',    desc: 'Camphill communities, intentional living, co-worker positions, volunteer programs, and inclusive communities for people with disabilities.' },
+  'the christian community':  { dirCat: 'christian_community', label: 'The Christian Community', desc: 'Congregations and centers of The Christian Community (Die Christengemeinschaft), the Movement for Religious Renewal founded in 1922 with the help of Rudolf Steiner: Sunday services, sacraments, festivals and study.' },
+  'community & camphill':    { dirCat: ['camphill', 'community'],    desc: 'Camphill communities, intentional living, co-worker positions, volunteer programs, and inclusive communities for people with disabilities.' },
   'free & sharing':          { dirCat: null,          desc: 'Free items, giveaways, seed exchanges, skill shares, tool lending, and community barter within the anthroposophical world.' },
   'marketplace':             { dirCat: null,          desc: 'Buy, sell, and trade anthroposophical books, biodynamic products, handcrafts, musical instruments, art, and educational materials.' },
   'housing & room rent':     { dirCat: null,          desc: 'Rooms, apartments, and community housing near Waldorf schools, Camphill communities, and biodynamic farms. Land for intentional communities.' },
@@ -480,9 +481,9 @@ function showCategory(name, skipPush, opts) {
   opts = opts || {};
   captureCurrentSection('category');
 
-  var displayName = name.charAt(0).toUpperCase() + name.slice(1);
   var key = name.toLowerCase();
   var meta = catMeta[key] || {};
+  var displayName = meta.label || (name.charAt(0).toUpperCase() + name.slice(1));
 
   document.getElementById('cat-page-label').textContent = displayName;
   var catI18nKey = 'catmeta.' + key.replace(/[^a-z]/g, '_') + '_desc';
@@ -2332,12 +2333,42 @@ function initMap() {
     ]
   });
   infoWin = new google.maps.InfoWindow();
-  renderMarkers('all');
+  var mf = document.getElementById('map-filter');
+  renderMarkers(mf ? mf.value : 'all');
+  _loadDirectoryMapLocs();
 }
+
+// Directory entries with coordinates, added to the hand-picked mapLocs
+var _mapDbLocs = [];
+function _mapCatFor(e) {
+  var tags = (e.tags || []).join(' ').toLowerCase();
+  if (/christian community|christengemeinschaft|christengemeenschap|kristensamfund/i.test(e.organization_name + ' ' + tags)) return 'cc';
+  if (e.category === 'christian_community') return 'cc';
+  return e.category === 'community' ? 'societies' : e.category;
+}
+async function _loadDirectoryMapLocs() {
+  if (!sbReady()) return;
+  try {
+    var r = await _sb.from('directory_entries')
+      .select('organization_name, category, latitude, longitude, city, country, website_url, tags')
+      .eq('status', 'approved').not('latitude', 'is', null).limit(5000);
+    if (r.error || !r.data) return;
+    var known = {};
+    mapLocs.forEach(function(l) { known[l.name.toLowerCase()] = true; });
+    _mapDbLocs = r.data.filter(function(e) { return !known[e.organization_name.toLowerCase()]; }).map(function(e) {
+      return { name: e.organization_name, cat: _mapCatFor(e), lat: e.latitude, lng: e.longitude,
+        city: [e.city, e.country].filter(Boolean).join(', '), url: e.website_url || '' };
+    });
+    var f = document.getElementById('map-filter');
+    renderMarkers(f ? f.value : 'all');
+  } catch (e) { console.warn('map: directory locations unavailable', e); }
+}
+
 function renderMarkers(filter) {
   markers.forEach(function(m) { m.setMap(null); });
   markers = [];
-  var locs = filter === 'all' ? mapLocs : mapLocs.filter(function(l) { return l.cat === filter; });
+  var all = mapLocs.concat(_mapDbLocs);
+  var locs = filter === 'all' ? all : all.filter(function(l) { return l.cat === filter; });
   locs.forEach(function(loc) {
     var color = catColors[loc.cat] || '#888';
     var m = new google.maps.Marker({
@@ -2356,8 +2387,9 @@ function renderMarkers(filter) {
     m.addListener('click', function() {
       infoWin.setContent(
         '<div style="font-family:Nunito Sans,sans-serif;padding:6px;max-width:220px;">' +
-        '<div style="font-weight:700;font-size:13px;margin-bottom:3px;color:#2C2418;">' + loc.name + '</div>' +
-        '<div style="font-size:12px;color:#6B5E50;">' + loc.city + '</div>' +
+        '<div style="font-weight:700;font-size:13px;margin-bottom:3px;color:#2C2418;">' + esc(loc.name) + '</div>' +
+        '<div style="font-size:12px;color:#6B5E50;">' + esc(loc.city) + '</div>' +
+        (loc.url && /^https?:\/\//.test(loc.url) ? '<a href="' + esc(loc.url) + '" target="_blank" rel="noopener" style="font-size:12px;">Website</a>' : '') +
         '</div>'
       );
       infoWin.open(map, m);
@@ -2615,7 +2647,7 @@ var _sbMergedEventTitles = {};
 async function loadEventsFromSupabase() {
   if (!sbReady()) return;
   try {
-    var result = await _sb.rpc('get_upcoming_events', { days_ahead: 365, limit_n: 20 });
+    var result = await _sb.rpc('get_upcoming_events', { days_ahead: 365, limit_n: 200 });
     var data = result.data;
     var error = result.error;
     if (error || !data || data.length === 0) return;
@@ -2708,7 +2740,11 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       var sd = new Date(ev.start_date);
       var ed = new Date(ev.end_date);
       time = localDate(ev.start_date, { month: 'short', day: 'numeric' }) + ' - ' + localDate(ev.end_date, { month: 'short', day: 'numeric' });
+    } else if (ev.start_date && !ev.is_all_day) {
+      // Timed event: show the start time in the viewer's own time zone
+      time = new Date(ev.start_date).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
     }
+    if (ev.is_online && !loc) loc = ev.location_name || 'Online';
 
     calEvents.push({
       id: ev.id || null,
@@ -2717,7 +2753,12 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       cat: cat,
       loc: loc,
       org: org,
-      time: time
+      time: time,
+      desc: ev.description || '',
+      src: [ev.online_url ? [ev.online_url.indexOf('zoom.us') !== -1 ? 'Join on Zoom' : 'Join online', ev.online_url] : null,
+            ev.ticket_url ? ['Event page', ev.ticket_url] : null].filter(Boolean),
+      featured: !!ev.featured,
+      img: ev.image_url ? { src: ev.image_url, alt: ev.title || '', page: ev.ticket_url || ev.image_url, credit: ev.organizer_name || 'Event image' } : null
     });
 
     _sbMergedEventTitles[dedupKey] = true;
@@ -2729,6 +2770,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
     console.log('Merged ' + merged + ' Supabase events into calendar');
     renderCalendar();
     renderEventList();
+    renderSeminars();
     renderMiniCal();
     renderSidebarUpcoming();
     updateHeaderCalendar();
@@ -2887,6 +2929,7 @@ async function loadDirectoryFromSupabase() {
       eurythmy: t('dir_cat_labels.eurythmy'),
       eldercare: t('dir_cat_labels.eldercare'),
       community: t('dir_cat_labels.community'),
+      christian_community: t('dir_cat_labels.christian_community', 'The Christian Community'),
       online: t('dir_cat_labels.online'),
       other: t('dir_cat_labels.other')
     };
@@ -3092,27 +3135,9 @@ function timeAgo(dateStr) {
 //  sidebar calendar, event submission form.
 // ══════════════════════════════════════════
 
-var calEvents = [
-  { date:'2026-03-22', title:'Goetheanum Online - Spring Weekend Session', cat:'study', loc:'Online', org:'Goetheanum Studium', time:'10:00 AM - 4:00 PM CET' },
-  { date:'2026-04-05', title:'5 Weekends of Anthroposophy - Spring Cycle', cat:'study', loc:'Dornach / Online', org:'Goetheanum Studium', time:'Weekends Apr 5 - May 3' },
-  { date:'2026-04-18', title:'AWSNA Waldorf Education Conference 2026', cat:'conference', loc:'Chicago, IL', org:'AWSNA', time:'Apr 18-20, 9 AM - 6 PM' },
-  { date:'2026-05-02', title:'Biodynamic Farming Regional Forum', cat:'biodynamic', loc:'Fair Oaks, CA', org:'Demeter USA', time:'May 2-4, 9 AM - 5 PM' },
-  { date:'2026-05-17', title:'Anthroposophic Medicine Spring Symposium', cat:'medicine', loc:'Ann Arbor, MI', org:'PAAM', time:'9:00 AM - 4:00 PM' },
-  { date:'2026-06-14', title:'Camphill Village USA - Annual Open Days', cat:'community', loc:'Copake, NY', org:'Camphill Village USA', time:'10:00 AM - 4:00 PM' },
-  { date:'2026-06-21', title:'Summer Solstice Celebration', cat:'community', loc:'Multiple locations', org:'Various branches', time:'All day' },
-  { date:'2026-07-06', title:'Eurythmy Summer Intensive', cat:'eurythmy', loc:'Spring Valley, NY', org:'Eurythmy Spring Valley', time:'Jul 6 - Aug 1, daily 9 AM' },
-  { date:'2026-08-15', title:'Biodynamic Harvest Festival', cat:'biodynamic', loc:'Kimberton, PA', org:'Kimberton CSA', time:'10:00 AM - 4:00 PM' },
-  { date:'2026-09-27', title:'Goetheanum Medicine Week 2026', cat:'medicine', loc:'Dornach, Switzerland', org:'Medical Section', time:'Sep 27 - Oct 1' }
-];
+// Community events come from Supabase (get_upcoming_events); festivals are computed below.
+var calEvents = [];
 
-var seminarData = [
-  { title:'Goethean Science Retreat', dates:'Apr 11-13, 2026', loc:'Spring Valley, NY', tag:'retreat' },
-  { title:'Foundations of Anthroposophy', dates:'May 9-10, 2026', loc:'Sacramento, CA', tag:'seminar' },
-  { title:'Waldorf Teacher Summer Training', dates:'Jun 16-27, 2026', loc:'Fair Oaks, CA', tag:'training' },
-  { title:'Contemplative Agriculture Weekend', dates:'Jul 18-20, 2026', loc:'Kimberton, PA', tag:'retreat' },
-  { title:'Eurythmy for Educators', dates:'Aug 4-8, 2026', loc:'Dornach, Switzerland', tag:'training' },
-  { title:'Inner Development Path Seminar', dates:'Sep 12-14, 2026', loc:'Ann Arbor, MI', tag:'seminar' }
-];
 
 // Memorial commemorative dates (recurring annually)
 var MEMORIAL_DATES = [
@@ -3131,13 +3156,106 @@ var MEMORIAL_DATES = [
 ];
 
 // Anthroposophical Holidays & Festivals
+// Every entry carries a short description and its sources (shown in the calendar day popup).
+var _SRC = {
+  festivals: ['Rudolf Steiner Archive: Festivals', 'https://rsarchive.org/Festivals/'],
+  christmas: ['Steiner, Christmas lectures (rsarchive)', 'https://rsarchive.org/Lectures/Christmas/'],
+  holyNights: ['Rudolf Steiner Archive: 12 Holy Nights & Epiphany', 'https://rsarchive.org/blog/HolyNights.html'],
+  easterLecture: ['Steiner, GA 233a, 21 April 1924 (rsarchive)', 'https://rsarchive.org/Lectures/GA233a/English/SOL/19240421p01.html'],
+  easterDate: ['Date of Easter (Wikipedia)', 'https://en.wikipedia.org/wiki/Date_of_Easter'],
+  ascPent: ['Steiner, The Festivals and Their Meaning III: Ascension and Pentecost (rsarchive)', 'https://rsarchive.org/Lectures/AscenPent/'],
+  parzival: ['Steiner, GA 149, 2 January 1914 (rsarchive)', 'https://rsarchive.org/Lectures/GA149/English/SOL/19140102p01.html'],
+  usnoSeasons: ['U.S. Naval Observatory: Earth Seasons', 'https://aa.usno.navy.mil/data/Earth_Seasons'],
+  usnoMoon: ['U.S. Naval Observatory: Moon Phases', 'https://aa.usno.navy.mil/data/MoonPhases'],
+  wiki: function(title, page) { return [title + ' (Wikipedia)', 'https://en.wikipedia.org/wiki/' + page]; }
+};
+
+// Self-hosted copies of free-licensed Wikimedia Commons images (credit and source page shown in the popup)
+var FESTIVAL_IMAGES = {
+  epiphany: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/epiphany.jpg", "alt": "Adoration of the Magi, Gentile da Fabriano (1423)", "page": "https://commons.wikimedia.org/wiki/File:Gentile_da_Fabriano_-_Adorazione_dei_Magi_-_Google_Art_Project.jpg", "credit": "Gentile da Fabriano, Public domain, via Wikimedia Commons"},
+  candlemas: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/candlemas.jpg", "alt": "Presentation of Christ in the Temple, Giotto, Scrovegni Chapel (c. 1305)", "page": "https://commons.wikimedia.org/wiki/File:Giotto_di_Bondone_-_No._19_Scenes_from_the_Life_of_Christ_-_3._Presentation_of_Christ_at_the_Temple_-_WGA09197.jpg", "credit": "Giotto, Public domain, via Wikimedia Commons"},
+  johanni: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/johanni.jpg", "alt": "St. John's fire (Johannisfeuer) burning at night", "page": "https://commons.wikimedia.org/wiki/File:Johannisfeuer-1.jpg", "credit": "Walter J. Pilsak, Waldsassen, CC BY-SA 3.0, via Wikimedia Commons"},
+  michaelmas: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/michaelmas.jpg", "alt": "St. Michael and the Dragon, Raphael (c. 1505)", "page": "https://commons.wikimedia.org/wiki/File:Raffaello_Sanzio_-_St_Michael_and_the_Dragon_-_WGA18633.jpg", "credit": "Raphael, Public domain, via Wikimedia Commons"},
+  martinmas: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/martinmas.jpg", "alt": "Glowing paper sun lantern for St. Martin's lantern walk", "page": "https://commons.wikimedia.org/wiki/File:Lampion_an_Martinslaterne.jpg", "credit": "XDAS123, CC BY-SA 4.0, via Wikimedia Commons"},
+  nicholas: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/nicholas.jpg", "alt": "Icon of St. Nicholas of Myra (1294)", "page": "https://commons.wikimedia.org/wiki/File:Nikola_from_1294.jpg", "credit": "Aleksa Petrov, Public domain, via Wikimedia Commons"},
+  holynights: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/holynights.jpg", "alt": "Rudolf Steiner's apocalyptic seal: the woman clothed with the sun, moon at her feet", "page": "https://commons.wikimedia.org/wiki/File:Rudolf_Steiner%27s_Apocalyptic_Seal_-_5_woman_clothed_with_the_sun.png", "credit": "Clara Rettich, Public domain, via Wikimedia Commons"},
+  christmas: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/christmas.jpg", "alt": "The Nativity, Giotto, Scrovegni Chapel (c. 1305)", "page": "https://commons.wikimedia.org/wiki/File:Giotto_di_Bondone_-_No._17_Scenes_from_the_Life_of_Christ_-_1._Nativity_-_Birth_of_Jesus_-_WGA09193.jpg", "credit": "Giotto, Public domain, via Wikimedia Commons"},
+  advent: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/advent.jpg", "alt": "Advent wreath with violet and rose candles", "page": "https://commons.wikimedia.org/wiki/File:Advent_wreath_with_violet_and_rose_candles_1.jpg", "credit": "PHILIP János, CC0, via Wikimedia Commons"},
+  ashwed: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/ashwed.jpg", "alt": "Ash Wednesday (Aschermittwoch), Carl Spitzweg (c. 1860)", "page": "https://commons.wikimedia.org/wiki/File:Carl_Spitzweg_-_Aschermittwoch.jpg", "credit": "Carl Spitzweg, Public domain, via Wikimedia Commons"},
+  palmsun: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/palmsun.jpg", "alt": "Entry into Jerusalem, Giotto, Scrovegni Chapel (c. 1305)", "page": "https://commons.wikimedia.org/wiki/File:Giotto_di_Bondone_-_No._26_Scenes_from_the_Life_of_Christ_-_10._Entry_into_Jerusalem_-_WGA09206.jpg", "credit": "Giotto, Public domain, via Wikimedia Commons"},
+  maundy: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/maundy.jpg", "alt": "The Last Supper, Leonardo da Vinci (1495-1498)", "page": "https://commons.wikimedia.org/wiki/File:Leonardo_da_Vinci_(1452-1519)_-_The_Last_Supper_(1495-1498).jpg", "credit": "Leonardo da Vinci, Public domain, via Wikimedia Commons"},
+  goodfri: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/goodfri.jpg", "alt": "The Crucifixion, Isenheim Altarpiece, Matthias Grünewald (1512-1516)", "page": "https://commons.wikimedia.org/wiki/File:Matthias_Gr%C3%BCnewald_-_The_Crucifixion_-_WGA10723.jpg", "credit": "Matthias Grünewald, Public domain, via Wikimedia Commons"},
+  holysat: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/holysat.jpg", "alt": "The Body of the Dead Christ in the Tomb, Hans Holbein the Younger (1521-1522)", "page": "https://commons.wikimedia.org/wiki/File:The_Body_of_the_Dead_Christ_in_the_Tomb,_and_a_detail,_by_Hans_Holbein_the_Younger.jpg", "credit": "Hans Holbein the Younger, Public domain, via Wikimedia Commons"},
+  easter: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/easter.jpg", "alt": "The Resurrection, Isenheim Altarpiece, Matthias Grünewald (1512-1516)", "page": "https://commons.wikimedia.org/wiki/File:Grunewald_Resurrection_Isenheim.jpg", "credit": "Matthias Grünewald, Public domain, via Wikimedia Commons"},
+  ascension: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/ascension.jpg", "alt": "The Ascension, Giotto, Scrovegni Chapel (c. 1305)", "page": "https://commons.wikimedia.org/wiki/File:Giotto_di_Bondone_-_No._38_Scenes_from_the_Life_of_Christ_-_22._Ascension_-_WGA09226.jpg", "credit": "Giotto, Public domain, via Wikimedia Commons"},
+  pentecost: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/pentecost.jpg", "alt": "Rudolf Steiner, apocalyptic seal 7: the dove above the Grail cup", "page": "https://commons.wikimedia.org/wiki/File:Rudolf_Steiner%27s_Apocalyptic_Seal_-_7_resurrection.png", "credit": "Clara Rettich, Public domain, via Wikimedia Commons"},
+  trinity: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/trinity.jpg", "alt": "The Holy Trinity icon, Andrei Rublev (c. 1411-1425)", "page": "https://commons.wikimedia.org/wiki/File:Andrey_Rublev_-_%D0%A1%D0%B2._%D0%A2%D1%80%D0%BE%D0%B8%D1%86%D0%B0_-_Google_Art_Project.jpg", "credit": "Andrei Rublev, Public domain, via Wikimedia Commons"},
+  parzival: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/parzival.jpg", "alt": "Thin 4% crescent moon with earthshine on the dark limb", "page": "https://commons.wikimedia.org/wiki/File:4%25_Illuminated_Crescent_Moon_with_Earthshine_(41490002672).jpg", "credit": "Stephen Rahn from Macon, GA, USA, CC0, via Wikimedia Commons"},
+  equinox_spring: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/equinox_spring.jpg", "alt": "Spring and Easter season table in a Waldorf school classroom, Prague", "page": "https://commons.wikimedia.org/wiki/File:Stole%C4%8Dek_ro%C4%8Dn%C3%ADch_dob_-_Jaro-obdob%C3%AD_Velikonoc_-_Waldrofsk%C3%A1_%C5%A1kola_Praha_D%C4%9Bdina_-_2._t%C5%99%C3%ADda.jpg", "credit": "Krejci.praha6, CC BY-SA 4.0, via Wikimedia Commons"},
+  solstice_summer: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/solstice_summer.jpg", "alt": "Summer solstice sunrise at Stonehenge, 21 June 2019", "page": "https://commons.wikimedia.org/wiki/File:Stonehenge,_sunrise_June_21_2019.jpg", "credit": "Callyclan, CC BY-SA 4.0, via Wikimedia Commons"},
+  equinox_autumn: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/equinox_autumn.jpg", "alt": "Autumn nature table at a Steiner (Waldorf) playgroup", "page": "https://commons.wikimedia.org/wiki/File:Steiner_Autumn_Table.JPG", "credit": "Dahliyani Briedis, CC BY 3.0, via Wikimedia Commons"},
+  solstice_winter: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/solstice_winter.jpg", "alt": "The Goetheanum in Dornach at winter sunset over snow (January)", "page": "https://commons.wikimedia.org/wiki/File:Goetheanum_im_Sonnenuntergang.JPG", "credit": "Florian K at German Wikipedia, CC BY-SA 3.0, via Wikimedia Commons"},
+  waldorf1919: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/waldorf1919.jpg", "alt": "Freie Waldorfschule Uhlandshöhe, Stuttgart, the first Waldorf school", "page": "https://commons.wikimedia.org/wiki/File:Landappbw_95260_1819_Waldorfschule_Uhlandsh%C3%B6he_Stuttgart.jpg", "credit": "Martin Hahn, CC0, via Wikimedia Commons"},
+  goetheanum_fire: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/goetheanum_fire.jpg", "alt": "Smouldering ruins of the First Goetheanum after the fire, 1923", "page": "https://commons.wikimedia.org/wiki/File:Brandruine_Goetheanum_1923.jpg", "credit": "Max Benzinger, Public domain, via Wikimedia Commons"},
+  christmas_conference: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/christmas_conference.jpg", "alt": "Rudolf Steiner's blackboard drawing of the second Goetheanum motif, 1 January 1924 (Christmas Conference)", "page": "https://commons.wikimedia.org/wiki/File:Wandtafelbild_-_Gotheanum-Motiv_(1924).jpg", "credit": "Rudolf Steiner, Public domain, via Wikimedia Commons"},
+  koberwitz: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/koberwitz.jpg", "alt": "Koberwitz manor (Kobierzyce palace), site of the 1924 Agriculture Course", "page": "https://commons.wikimedia.org/wiki/File:Kobierzyce-palac.jpg", "credit": "Julo (Wikimedia user), Public domain, via Wikimedia Commons"}
+};
+
 var ANTHRO_HOLIDAYS = [
   // Fixed dates
-  { month: 12, day: 24, title: '12 Holy Nights Begin', cat: 'festival' },
-  { month: 12, day: 25, title: 'Christmas - Birth of Light', cat: 'festival' },
-  { month: 1, day: 6, title: '12 Holy Nights End (Epiphany)', cat: 'festival' },
-  { month: 9, day: 29, title: 'Michaelmas - Festival of Courage', cat: 'festival' },
-  // Advent Sundays + Easter + Pentecost are moveable — computed per year
+  { key: 'epiphany', month: 1, day: 6, title: '12 Holy Nights End (Epiphany)', cat: 'festival',
+    desc: 'Epiphany closes the Twelve Holy Nights and opens the season of Epiphany: the light of Christmas carried out into the year.',
+    src: [_SRC.holyNights, _SRC.wiki('Epiphany', 'Epiphany_(holiday)')] },
+  { key: 'candlemas', month: 2, day: 2, title: 'Candlemas', cat: 'festival',
+    desc: 'Forty days after Christmas: the midpoint between winter solstice and spring equinox, traditionally a festival of candles and returning light.',
+    src: [_SRC.wiki('Candlemas', 'Candlemas')] },
+  { key: 'johanni', month: 6, day: 24, title: "St. John's Tide (Johanni)", cat: 'festival',
+    desc: 'Festival of John the Baptist near midsummer. Steiner described it as the time when the Earth breathes out most fully into the cosmos; often celebrated with a bonfire.',
+    src: [_SRC.festivals, _SRC.wiki('Nativity of John the Baptist', 'Nativity_of_John_the_Baptist')] },
+  { key: 'michaelmas', month: 9, day: 29, title: 'Michaelmas - Festival of Courage', cat: 'festival',
+    desc: 'Festival of the Archangel Michael at the turn to autumn. Steiner hoped it would become a festival of courage and inner strength as nature dies back.',
+    src: [_SRC.festivals, _SRC.wiki('Michaelmas', 'Michaelmas')] },
+  { key: 'martinmas', month: 11, day: 11, title: 'Martinmas (Lantern Walk)', cat: 'festival',
+    desc: 'Feast of St. Martin, who shared his cloak with a beggar. In Waldorf communities children carry lanterns: carrying an inner light into the darkening season.',
+    src: [_SRC.wiki('Martinmas', 'Martinmas')] },
+  { key: 'nicholas', month: 12, day: 6, title: 'St. Nicholas Day', cat: 'festival',
+    desc: 'Feast of St. Nicholas of Myra, patron of children; small gifts are left in shoes the night before.',
+    src: [_SRC.wiki('Saint Nicholas Day', 'Saint_Nicholas_Day')] },
+  { key: 'holynights', month: 12, day: 24, title: '12 Holy Nights Begin', cat: 'festival',
+    desc: 'Christmas Eve. The Twelve Holy Nights begin: a time for inner quiet, review of the past year and preparing the year ahead. Traditions differ on whether the first night is that of 24 or 25 December.',
+    src: [_SRC.holyNights, _SRC.christmas] },
+  { key: 'christmas', month: 12, day: 25, title: 'Christmas - Birth of Light', cat: 'festival',
+    desc: 'The festival of the birth of Christ and of the light reborn at the darkest time of the year.',
+    src: [_SRC.christmas, _SRC.wiki('Christmas', 'Christmas')] }
+];
+
+// Days relative to Easter Sunday
+var EASTER_FESTIVALS = [
+  { key: 'ashwed', offset: -46, title: 'Ash Wednesday', desc: 'Beginning of Lent, the forty days of preparation for Easter.', src: [_SRC.wiki('Ash Wednesday', 'Ash_Wednesday')] },
+  { key: 'palmsun', offset: -7, title: 'Palm Sunday', desc: 'Entry into Jerusalem; the beginning of Holy Week.', src: [_SRC.wiki('Palm Sunday', 'Palm_Sunday')] },
+  { key: 'maundy', offset: -3, title: 'Maundy Thursday', desc: 'The Last Supper and the washing of the feet.', src: [_SRC.wiki('Maundy Thursday', 'Maundy_Thursday')] },
+  { key: 'goodfri', offset: -2, title: 'Good Friday', desc: 'The Crucifixion. In the Parzival saga, the day the Grail is renewed.', src: [_SRC.wiki('Good Friday', 'Good_Friday'), _SRC.parzival] },
+  { key: 'holysat', offset: -1, title: 'Holy Saturday', desc: 'The day in the grave: the descent into the depths of the Earth.', src: [_SRC.wiki('Holy Saturday', 'Holy_Saturday')] },
+  { key: 'easter', offset: 0, title: 'Easter - Festival of Resurrection', desc: 'First Sunday after the first full moon after the spring equinox. Its date is set by sun and moon together, which Steiner discussed in his 1924 Easter lectures.', src: [_SRC.easterLecture, _SRC.easterDate] },
+  { key: 'ascension', offset: 39, title: 'Ascension', desc: 'Forty days after Easter: the Ascension of Christ.', src: [_SRC.ascPent, _SRC.wiki('Feast of the Ascension', 'Feast_of_the_Ascension')] },
+  { key: 'pentecost', offset: 49, title: 'Pentecost (Whitsun) - Awakening of Spirit', desc: 'Fifty days after Easter. Steiner called Whitsun the festival of the free individuality.', src: [_SRC.ascPent, _SRC.wiki('Pentecost', 'Pentecost')] },
+  { key: 'trinity', offset: 56, title: 'Trinity Sunday', desc: 'The Sunday after Pentecost, closing the Easter season.', src: [_SRC.wiki('Trinity Sunday', 'Trinity_Sunday')] }
+];
+
+// Historical anniversaries (shown as memorial-style days)
+var ANTHRO_ANNIVERSARIES = [
+  { key: 'waldorf1919', month: 9, day: 7, year: 1919, title: 'First Waldorf School opened (Stuttgart)',
+    desc: 'The Free Waldorf School on the Uhlandshoehe in Stuttgart opened for the children of Waldorf-Astoria factory workers, founded by Emil Molt with Rudolf Steiner.',
+    src: [_SRC.wiki('History of Waldorf schools', 'History_of_Waldorf_schools'), ['German History in Documents: Opening of the first Waldorf school', 'https://germanhistorydocs.org/en/weimar-germany-1918-1933/opening-of-the-first-waldorf-school-september-1919.pdf']] },
+  { key: 'goetheanum_fire', month: 12, day: 31, year: 1922, title: 'First Goetheanum destroyed by fire',
+    desc: 'The first Goetheanum in Dornach burned on New Year\'s Eve 1922 into 1 January 1923.',
+    src: [_SRC.wiki('Goetheanum', 'Goetheanum')] },
+  { key: 'christmas_conference', month: 12, day: 25, year: 1923, title: 'Foundation Stone laid (Christmas Conference)',
+    desc: 'At the Christmas Conference in Dornach (24 December 1923 to 1 January 1924) Steiner refounded the General Anthroposophical Society and laid the Foundation Stone meditation on 25 December.',
+    src: [_SRC.wiki('General Anthroposophical Society', 'General_Anthroposophical_Society'), ['Steiner, The Christmas Conference, GA 260 (e.Lib)', 'https://rudolfsteinerelib.org/GA/index.php?ga=GA0260']] },
+  { key: 'koberwitz', month: 6, day: 7, year: 1924, title: 'Agriculture Course begins (Koberwitz)',
+    desc: 'Steiner gave the eight lectures of the Agriculture Course at Koberwitz, 7 to 16 June 1924: the beginning of biodynamic farming.',
+    src: [_SRC.wiki('Biodynamic agriculture', 'Biodynamic_agriculture'), ['Paull (2020), The Koberwitzers', 'https://orgprints.org/38176/1/Paull2020.Koberwitzers.IJEPM.pdf']] }
 ];
 
 function _computeEaster(yr) {
@@ -3159,49 +3277,122 @@ function _dateStr(d) {
 
 function _addDays(d, n) { var r = new Date(d); r.setDate(r.getDate() + n); return r; }
 
+// ── Astronomy (Meeus, Astronomical Algorithms; accurate to a few minutes for 2000-2100) ──
+function _jdToDate(jd) { return new Date((jd - 2440587.5) * 86400000); }
+function _rad(d) { return d * Math.PI / 180; }
+
+// Equinoxes and solstices: idx 0 = March, 1 = June, 2 = September, 3 = December
+var _SEASON_POLY = [
+  [2451623.80984, 365242.37404, 0.05169, -0.00411, -0.00057],
+  [2451716.56767, 365241.62603, 0.00325, 0.00888, -0.00030],
+  [2451810.21715, 365242.01767, -0.11575, 0.00337, 0.00078],
+  [2451900.05952, 365242.74049, -0.06223, -0.00823, 0.00032]
+];
+var _SEASON_A = [485,203,199,182,156,136,77,74,70,58,52,50,45,44,29,18,17,16,14,12,12,12,9,8];
+var _SEASON_B = [324.96,337.23,342.08,27.85,73.14,171.52,222.54,296.72,243.58,119.81,297.17,21.02,247.54,325.15,60.93,155.12,288.79,198.04,199.76,95.39,287.11,320.81,227.73,15.45];
+var _SEASON_C = [1934.136,32964.467,20.186,445267.112,45036.886,22518.443,65928.934,3034.906,9037.513,33718.147,150.678,2281.226,29929.562,31555.956,4443.417,67555.328,4562.452,62894.029,31436.921,14577.848,31931.756,34777.259,1222.114,16859.074];
+
+function _seasonDate(yr, idx) {
+  var y = (yr - 2000) / 1000, c = _SEASON_POLY[idx];
+  var jde0 = c[0] + c[1] * y + c[2] * y * y + c[3] * y * y * y + c[4] * y * y * y * y;
+  var t = (jde0 - 2451545.0) / 36525;
+  var w = _rad(35999.373 * t - 2.47);
+  var dl = 1 + 0.0334 * Math.cos(w) + 0.0007 * Math.cos(2 * w);
+  var s = 0;
+  for (var i = 0; i < 24; i++) s += _SEASON_A[i] * Math.cos(_rad(_SEASON_B[i] + _SEASON_C[i] * t));
+  return _jdToDate(jde0 + 0.00001 * s / dl);
+}
+
+// Time of the new moon for lunation number k (k = 0 at 6 Jan 2000)
+function _newMoonDate(k) {
+  var t = k / 1236.85;
+  var jde = 2451550.09766 + 29.530588861 * k + 0.00015437 * t * t - 0.000000150 * t * t * t + 0.00000000073 * t * t * t * t;
+  var e = 1 - 0.002516 * t - 0.0000074 * t * t;
+  var m = _rad(2.5534 + 29.10535670 * k - 0.0000014 * t * t - 0.00000011 * t * t * t);
+  var mp = _rad(201.5643 + 385.81693528 * k + 0.0107582 * t * t + 0.00001238 * t * t * t - 0.000000058 * t * t * t * t);
+  var f = _rad(160.7108 + 390.67050284 * k - 0.0016118 * t * t - 0.00000227 * t * t * t + 0.000000011 * t * t * t * t);
+  var om = _rad(124.7746 - 1.56375588 * k + 0.0020672 * t * t + 0.00000215 * t * t * t);
+  jde += -0.40720 * Math.sin(mp) + 0.17241 * e * Math.sin(m) + 0.01608 * Math.sin(2 * mp)
+       + 0.01039 * Math.sin(2 * f) + 0.00739 * e * Math.sin(mp - m) - 0.00514 * e * Math.sin(mp + m)
+       + 0.00208 * e * e * Math.sin(2 * m) - 0.00111 * Math.sin(mp - 2 * f) - 0.00057 * Math.sin(mp + 2 * f)
+       + 0.00056 * e * Math.sin(2 * mp + m) - 0.00042 * Math.sin(3 * mp) + 0.00042 * e * Math.sin(m + 2 * f)
+       + 0.00038 * e * Math.sin(m - 2 * f) - 0.00024 * e * Math.sin(2 * mp - m) - 0.00017 * Math.sin(om);
+  return _jdToDate(jde);
+}
+
+// First new moon strictly after the given date
+function _nextNewMoon(after) {
+  var k = Math.floor((after.getTime() - Date.UTC(2000, 0, 6)) / (29.530588861 * 86400000)) - 1;
+  var nm = _newMoonDate(k);
+  while (nm <= after) { k++; nm = _newMoonDate(k); }
+  return nm;
+}
+
+function _festivalTime(d) {
+  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+}
+
+// Images from Wikimedia Commons (free licenses), keyed by festival; filled in FESTIVAL_IMAGES below
+function _addFestival(key, dateStr, title, cat, desc, src, time) {
+  var exists = calEvents.some(function(e) { return e.date === dateStr && e.title === title; });
+  if (!exists) calEvents.push({ date: dateStr, title: title, cat: cat, loc: '', org: '', time: time || '', desc: desc || '', src: src || [], img: FESTIVAL_IMAGES[key] || null });
+}
+
+var _SEASONS = [
+  { key: 'equinox_spring', title: 'Spring Equinox', desc: 'Day and night of equal length; the sun crosses the celestial equator northward. Easter is reckoned from the first full moon after this point.' },
+  { key: 'solstice_summer', title: 'Summer Solstice', desc: 'Longest day of the year in the northern hemisphere. St. John\'s Tide (24 June) follows a few days later.' },
+  { key: 'equinox_autumn', title: 'Autumn Equinox', desc: 'Day and night of equal length as the sun crosses southward. Michaelmas (29 September) follows a week later.' },
+  { key: 'solstice_winter', title: 'Winter Solstice', desc: 'Shortest day of the year in the northern hemisphere: the turning point toward returning light, just before Christmas.' }
+];
+
 function _injectAnthroHolidays(yr) {
-  // Fixed holidays
   ANTHRO_HOLIDAYS.forEach(function(h) {
-    var dateStr = yr + '-' + String(h.month).padStart(2, '0') + '-' + String(h.day).padStart(2, '0');
-    var exists = calEvents.some(function(e) { return e.date === dateStr && e.cat === 'festival'; });
-    if (!exists) calEvents.push({ date: dateStr, title: h.title, cat: 'festival', loc: '', org: '', time: '' });
+    _addFestival(h.key, yr + '-' + String(h.month).padStart(2, '0') + '-' + String(h.day).padStart(2, '0'), h.title, 'festival', h.desc, h.src);
   });
+
+  // The Twelve Holy Nights, one entry per night (25 Dec - 5 Jan)
+  for (var n = 1; n <= 12; n++) {
+    var hn = _addDays(new Date(yr, 11, 24), n);
+    _addFestival('holynights', _dateStr(hn), 'Holy Night ' + n + ' of 12', 'festival',
+      'One of the Twelve Holy Nights between Christmas and Epiphany. Each night is traditionally linked with one month of the coming year.',
+      [_SRC.holyNights]);
+  }
 
   // Advent Sundays (4 Sundays before Dec 25)
   var xmas = new Date(yr, 11, 25);
   var xmasDay = xmas.getDay();
   var advent4 = _addDays(xmas, -(xmasDay === 0 ? 7 : xmasDay)); // Sunday before Christmas
   for (var a = 0; a < 4; a++) {
-    var advDate = _addDays(advent4, -7 * a);
-    var advStr = _dateStr(advDate);
-    var advNum = 4 - a;
-    var exists = calEvents.some(function(e) { return e.date === advStr && e.cat === 'festival'; });
-    if (!exists) calEvents.push({ date: advStr, title: 'Advent Sunday ' + advNum, cat: 'festival', loc: '', org: '', time: '' });
+    _addFestival('advent', _dateStr(_addDays(advent4, -7 * a)), 'Advent Sunday ' + (4 - a), 'festival',
+      'The four Sundays before Christmas: a season of waiting and preparation. Many Waldorf communities hold an Advent Spiral.',
+      [_SRC.wiki('Advent', 'Advent')]);
   }
 
-  // Easter and Pentecost
+  // Easter cycle
   var easter = _computeEaster(yr);
-  var easterStr = _dateStr(easter);
-  var exists = calEvents.some(function(e) { return e.date === easterStr && e.cat === 'festival'; });
-  if (!exists) calEvents.push({ date: easterStr, title: 'Easter - Festival of Resurrection', cat: 'festival', loc: '', org: '', time: '' });
+  EASTER_FESTIVALS.forEach(function(f) {
+    _addFestival(f.key, _dateStr(_addDays(easter, f.offset)), f.title, 'festival', f.desc, f.src);
+  });
 
-  // Good Friday (2 days before Easter)
-  var goodFri = _addDays(easter, -2);
-  var gfStr = _dateStr(goodFri);
-  exists = calEvents.some(function(e) { return e.date === gfStr && e.cat === 'festival'; });
-  if (!exists) calEvents.push({ date: gfStr, title: 'Good Friday', cat: 'festival', loc: '', org: '', time: '' });
+  // Parzival (Grail) Moon: first crescent after the new moon following Easter Sunday
+  var nm = _nextNewMoon(_addDays(easter, 1));
+  var crescent = new Date(nm.getTime() + 86400000);
+  _addFestival('parzival', _dateStr(crescent), 'Parzival Moon (Grail Moon)', 'festival',
+    'Look west after sunset for the thin golden crescent holding the dimly lit dark disk of the moon (earthshine), the image Steiner described as the Grail in the sky at Easter time. Visible about 1 to 3 evenings after the new moon of ' + nm.toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) + '. Interpretations of the exact evening differ.',
+    [_SRC.parzival, _SRC.usnoMoon]);
 
-  // Pentecost/Whitsun (49 days after Easter)
-  var pentecost = _addDays(easter, 49);
-  var pentStr = _dateStr(pentecost);
-  exists = calEvents.some(function(e) { return e.date === pentStr && e.cat === 'festival'; });
-  if (!exists) calEvents.push({ date: pentStr, title: 'Pentecost (Whitsun) - Awakening of Spirit', cat: 'festival', loc: '', org: '', time: '' });
+  // Equinoxes and solstices (dated in the viewer's local time zone)
+  for (var s = 0; s < 4; s++) {
+    var sd = _seasonDate(yr, s);
+    _addFestival(_SEASONS[s].key, _dateStr(sd), _SEASONS[s].title, 'festival', _SEASONS[s].desc,
+      [_SRC.usnoSeasons, _SRC.wiki(s % 2 ? 'Solstice' : 'Equinox', s % 2 ? 'Solstice' : 'Equinox')], _festivalTime(sd));
+  }
 
-  // Ascension (39 days after Easter)
-  var ascension = _addDays(easter, 39);
-  var ascStr = _dateStr(ascension);
-  exists = calEvents.some(function(e) { return e.date === ascStr && e.cat === 'festival'; });
-  if (!exists) calEvents.push({ date: ascStr, title: 'Ascension', cat: 'festival', loc: '', org: '', time: '' });
+  // Historical anniversaries
+  ANTHRO_ANNIVERSARIES.forEach(function(h) {
+    _addFestival(h.key, yr + '-' + String(h.month).padStart(2, '0') + '-' + String(h.day).padStart(2, '0'),
+      h.title + ' (' + (yr - h.year) + ' yrs)', 'memorial', h.desc, h.src);
+  });
 }
 
 function _injectMemorialDates(yr) {
@@ -3310,13 +3501,33 @@ function showDayEvents(dateStr) {
   dayEvs.forEach(function(ev) {
     var dpMeta = _evMeta(ev);
     var dpTitle = ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="document.querySelectorAll(\'.day-popup,.day-popup-overlay\').forEach(function(x){x.remove();});showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title);
-    html += '<div class="dp-event"><h5>' + dpTitle + '</h5>' + (dpMeta ? '<div class="dp-meta">' + dpMeta + '</div>' : '') + '</div>';
+    html += '<div class="dp-event">' + _evImageHtml(ev) + '<h5>' + dpTitle + '</h5>' + (dpMeta ? '<div class="dp-meta">' + dpMeta + '</div>' : '')
+      + (ev.desc ? '<p class="dp-desc">' + esc(_shortText(ev.desc, 320)) + '</p>' : '') + _evSourcesHtml(ev) + '</div>';
   });
   popup.innerHTML = html;
   document.body.appendChild(popup);
 }
 
 // Join an event's time / location / organizer, skipping empty parts (avoids ' · · ').
+function _evSourcesHtml(ev) {
+  if (!ev.src || !ev.src.length) return '';
+  var label = (ev.cat === 'festival' || ev.cat === 'memorial') ? 'Sources: ' : 'Links: ';
+  return '<div class="dp-src">' + label + ev.src.map(function(s) {
+    return '<a href="' + escUrl(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>';
+  }).join(' &middot; ') + '</div>';
+}
+
+function _shortText(txt, max) {
+  txt = String(txt || '').split('\n\n')[0];
+  return txt.length > max ? txt.slice(0, txt.lastIndexOf(' ', max)) + '...' : txt;
+}
+
+function _evImageHtml(ev) {
+  if (!ev.img) return '';
+  return '<figure class="dp-img"><img src="' + escUrl(ev.img.src) + '" alt="' + esc(ev.img.alt) + '" loading="lazy">'
+    + '<figcaption><a href="' + escUrl(ev.img.page) + '" target="_blank" rel="noopener">' + esc(ev.img.credit) + '</a></figcaption></figure>';
+}
+
 function _evMeta(ev) {
   return [ev.time, ev.loc, ev.org].filter(function(x) { return x && String(x).trim(); }).map(esc).join(' &middot; ');
 }
@@ -3340,6 +3551,9 @@ function renderEventList() {
     var isToday = (d.toDateString() === todayStr);
     html += '<div class="evrow reveal">';
     html += '<div class="evdate' + (isToday ? ' today' : '') + '"><div class="mo">' + mo + '</div><div class="dy">' + dy + '</div></div>';
+    if (ev.img && ev.img.src) {
+      html += '<img class="evthumb" src="' + escUrl(ev.img.src) + '" alt="' + esc(ev.img.alt || ev.title) + '" loading="lazy" title="' + esc(ev.img.credit || '') + '">';
+    }
     var cat = String(ev.cat || 'event');
     var meta = _evMeta(ev);
     html += '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div>';
@@ -3364,12 +3578,21 @@ function renderEventList() {
 function renderSeminars() {
   var container = document.getElementById('seminars-area');
   if (!container) return;
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var items = calEvents.filter(function(e) {
+    return ['workshop', 'retreat', 'study_group', 'seminar', 'training', 'study'].indexOf(e.cat) !== -1
+      && new Date(e.date + 'T23:59:59') >= today;
+  }).sort(function(a, b) { return a.date < b.date ? -1 : 1; }).slice(0, 6);
+  if (!items.length) {
+    container.innerHTML = '<p class="sem-empty">No upcoming seminars listed yet. Know of one? Use "Submit an event" to add it.</p>';
+    return;
+  }
   var html = '';
-  seminarData.forEach(function(s) {
+  items.forEach(function(ev) {
     html += '<div class="seminar-card">';
-    html += '<h5>' + esc(s.title) + '</h5>';
-    html += '<div class="sem-meta">' + esc(s.dates) + '<br>' + esc(s.loc) + '</div>';
-    html += '<span class="sem-tag ' + esc(s.tag) + '">' + esc(s.tag) + '</span>';
+    html += '<h5>' + esc(ev.title) + '</h5>';
+    html += '<div class="sem-meta">' + esc(ev.time || localDate(ev.date, { month: 'short', day: 'numeric', year: 'numeric' })) + (ev.loc ? '<br>' + esc(ev.loc) : '') + '</div>';
+    html += '<span class="sem-tag ' + esc(ev.cat) + '">' + esc(String(ev.cat).replace('_', ' ')) + '</span>';
     html += '</div>';
   });
   container.innerHTML = html;
@@ -3460,7 +3683,22 @@ function renderHomeUpcoming(upcoming) {
     box.innerHTML = '<div class="empty-note">' + esc(t('events.none_yet', 'No upcoming events yet.')) + ' <a href="#" onclick="showSec(\'events\');showEventForm();return false;">' + esc(t('events.submit_one', 'Submit one')) + '</a></div>';
     return;
   }
-  box.innerHTML = upcoming.map(function(ev) {
+  var feat = calEvents.filter(function(e) { return e.featured && new Date(e.date + 'T23:59:59') >= today0; })
+    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })[0];
+  var bannerHtml = '';
+  if (feat) {
+    upcoming = upcoming.filter(function(e) { return e !== feat; }).slice(0, 3);
+    var join = (feat.src || []).filter(function(x) { return /Join/.test(x[0]); })[0];
+    bannerHtml = '<div class="feat-ev">'
+      + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(feat.img.src) + '" alt="' + esc(feat.title) + '" loading="lazy">' : '')
+      + '<div class="feat-ev-body"><div class="etag">' + esc(t('home.featured_event', 'Featured event')) + '</div>'
+      + '<h5><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
+      + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
+      + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(feat.desc, 160)) + '</p>' : '')
+      + (join ? '<a class="feat-ev-join" href="' + escUrl(join[1]) + '" target="_blank" rel="noopener">' + esc(join[0]) + '</a>' : '')
+      + '</div></div>';
+  }
+  box.innerHTML = bannerHtml + upcoming.map(function(ev) {
     var d = new Date(ev.date + 'T12:00:00');
     var cat = String(ev.cat || 'event');
     var titleHtml = ev.id
@@ -3743,7 +3981,7 @@ async function _applyLiveCounts() {
       if (!bm) return;
       var meta = catMeta[m[1].toLowerCase()];
       if (!meta) return;   // e.g. Books & Library: count comes from elsewhere, leave it
-      var n = meta.dirCat ? counts[meta.dirCat] : undefined;
+      var n = meta.dirCat ? [].concat(meta.dirCat).reduce(function(sum, c) { return sum + (counts[c] || 0); }, 0) : undefined;
       if (n) { badge.textContent = n + (bm[1] ? ' \u2192' : ''); badge.hidden = false; }
       else if (bm[1]) { badge.textContent = '\u2192'; }   // keep the arrow link affordance
       else { badge.textContent = ''; badge.hidden = true; }
@@ -5797,7 +6035,7 @@ function ytAgo(iso) {
 }
 
 var _ytLatest = null;      // rows from the youtube_channel_latest view (or the seed)
-var _ytOffset = 0;         // "another one" nudges within the same week
+var _ytOffset = 0;         // "another one" nudges within the same day
 
 async function _ytFetchLatest() {
   if (_ytLatest) return _ytLatest;
@@ -5811,11 +6049,17 @@ async function _ytFetchLatest() {
   return _ytLatest;
 }
 
+// Day number (UTC): the daily rotation key. Same day => same featured channel for every visitor.
+function dayKey(d) {
+  d = d ? new Date(d) : new Date();
+  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
+}
+
 function weeklyChannel(rows, offset) {
-  // prefer channels that actually have a video; rotate by ISO week so it changes every Monday
+  // prefer channels that actually have a video; rotate daily so a new channel is featured every day
   var pool = rows.filter(function (r) { return r.video_id; });
   if (!pool.length) pool = rows;
-  var i = (isoWeekKey() + (offset || 0)) % pool.length;
+  var i = (dayKey() + (offset || 0)) % pool.length;
   return pool[(i + pool.length) % pool.length];
 }
 
@@ -5826,7 +6070,7 @@ function renderVideoCard(ch) {
   var html = '<div class="video-card">';
   if (thumb) html += '<a class="video-thumb" href="' + escUrl(href) + '" target="_blank" rel="noopener"><img src="' + escUrl(thumb) + '" alt="" loading="lazy"></a>';
   html += '<div class="video-body">'
-    + '<div class="video-kicker">' + t('video.kicker', 'This week') + ' &middot; ' + esc(YT_CATEGORIES[ch.category] || ch.category || '') + '</div>'
+    + '<div class="video-kicker">' + t('video.kicker', 'Today') + ' &middot; ' + esc(YT_CATEGORIES[ch.category] || ch.category || '') + '</div>'
     + '<a class="video-title" href="' + escUrl(href) + '" target="_blank" rel="noopener">' + esc(isVideo ? ch.video_title : ch.name) + '</a>'
     + '<div class="video-channel">' + [isVideo ? '<b>' + esc(ch.name) + '</b>' : esc(ch.description || ''), ch.language ? esc(ch.language) : ''].filter(Boolean).join(' &middot; ') + '</div>'
     + (isVideo && ch.published_at ? '<div class="video-meta">' + esc(ytAgo(ch.published_at)) + '</div>' : '')
@@ -5858,7 +6102,7 @@ async function renderYouTubeChannels() {
   var order = Object.keys(YT_CATEGORIES).filter(function (k) { return groups[k]; }).concat(Object.keys(groups).filter(function (k) { return !YT_CATEGORIES[k]; }));
   var html = '<div class="listblock"><div class="listblock-head"><h3>' + t('podcasts.youtube_heading', 'YouTube Channels') + '</h3>'
     + '<span class="podcast-count">' + rows.length + ' ' + t('podcasts.channels', 'channels') + '</span></div><div class="listblock-body">'
-    + '<div class="yt-toolbar"><span>' + t('podcasts.youtube_note', 'Curated anthroposophical channels, refreshed weekly. &#9733; = this week\'s featured channel.') + '</span>'
+    + '<div class="yt-toolbar"><span>' + t('podcasts.youtube_note', 'Curated anthroposophical channels, refreshed daily. &#9733; = today\'s featured channel.') + '</span>'
     + '<a href="#" onclick="suggestYouTubeChannel();return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>'
     + '<div class="yt-grid">';
   order.forEach(function (cat) {

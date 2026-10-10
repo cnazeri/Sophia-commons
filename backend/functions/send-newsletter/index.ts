@@ -8,13 +8,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const ADMIN_EMAILS = ["cameron@sophiacommons.org", "admin@sophiacommons.org"];
-const BATCH_SIZE = 10;
-const BATCH_DELAY_MS = 1000; // 1 second between batches to respect Resend rate limits
+const ADMIN_EMAILS = ["cameron.nazeri@gmail.com", "cameron@sophiacommons.org", "admin@sophiacommons.org"];  // keep in sync with sophia_commons_v9.js; prefer app_metadata.role
+const BATCH_SIZE = 100;   // Resend batch endpoint maximum
+const BATCH_DELAY_MS = 600;  // stay under 2 requests/second
 const FROM_ADDRESS = "Sophia Commons <newsletter@sophiacommons.org>";
 
+const SITE = "https://sophiacommons.org";
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": SITE,   // was "*": only the site's admin panel calls this
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
@@ -24,6 +25,12 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+function unsubscribeFooter(token: string) {
+  return `<p style="margin-top:32px;padding-top:12px;border-top:1px solid #E8E2DA;font-size:12px;color:#6F665B;font-family:Arial,sans-serif">
+You're receiving this because you subscribed at sophiacommons.org.
+<a href="${SITE}/newsletter/unsubscribe?t=${token}" style="color:#7F6116">Unsubscribe</a></p>`;
 }
 
 function sleep(ms: number) {
@@ -63,7 +70,11 @@ serve(async (req: Request) => {
     return jsonResponse({ error: "Invalid or expired token" }, 401);
   }
 
-  if (!user.email || !ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+  // Admin = app_metadata.role "admin" (same rule as the database RLS), or a listed address
+  // that has actually been confirmed (an unconfirmed sign-up with an admin address is refused).
+  const isRoleAdmin = user.app_metadata?.role === "admin";
+  const isListedAdmin = !!user.email && ADMIN_EMAILS.includes(user.email.toLowerCase()) && !!user.email_confirmed_at;
+  if (!isRoleAdmin && !isListedAdmin) {
     return jsonResponse({ error: "Forbidden: admin access required" }, 403);
   }
 
@@ -86,8 +97,9 @@ serve(async (req: Request) => {
   // ── Fetch confirmed subscribers ──
   const { data: subscribers, error: fetchError } = await supabaseClient
     .from("newsletter_subscribers")
-    .select("id, email, name")
-    .eq("confirmed", true);
+    .select("id, email, name, unsubscribe_token")
+    .eq("confirmed", true)
+    .is("unsubscribed_at", null);
 
   if (fetchError) {
     return jsonResponse({ error: "Failed to fetch subscribers: " + fetchError.message }, 500);
@@ -97,57 +109,39 @@ serve(async (req: Request) => {
     return jsonResponse({ message: "No confirmed subscribers found", sent: 0, failed: 0, total: 0 });
   }
 
-  // ── Send emails in batches ──
+  // ── Send in batches via Resend's batch endpoint (up to 100 emails per request) ──
+  // The old loop sent 10 single emails per second, which exceeds Resend's default
+  // 2 requests/second limit and would time out the function at roughly 1,500 subscribers.
   let sent = 0;
   let failed = 0;
   const errors: { email: string; error: string }[] = [];
 
   for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
     const batch = subscribers.slice(i, i + BATCH_SIZE);
-
-    const results = await Promise.allSettled(
-      batch.map(async (subscriber) => {
-        const res = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${resendApiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: FROM_ADDRESS,
-            to: [subscriber.email],
-            subject: subject,
-            html: html_content,
-          }),
-        });
-
-        if (!res.ok) {
-          const errBody = await res.text();
-          throw new Error(`Resend API ${res.status}: ${errBody}`);
-        }
-
-        return subscriber.email;
-      })
-    );
-
-    for (const result of results) {
-      if (result.status === "fulfilled") {
-        sent++;
-      } else {
-        failed++;
-        errors.push({
-          email: batch[results.indexOf(result)]?.email || "unknown",
-          error: result.reason?.message || "Unknown error",
-        });
-      }
+    const payload = batch.map((subscriber) => ({
+      from: FROM_ADDRESS,
+      to: [subscriber.email],
+      subject: subject,
+      // Every newsletter carries a one-click unsubscribe link (required by CAN-SPAM / GDPR)
+      html: html_content + unsubscribeFooter(subscriber.unsubscribe_token),
+      headers: {
+        "List-Unsubscribe": `<${SITE}/newsletter/unsubscribe?t=${subscriber.unsubscribe_token}>, <mailto:hello@sophiacommons.org?subject=unsubscribe>`,
+      },
+    }));
+    try {
+      const res = await fetch("https://api.resend.com/emails/batch", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${resendApiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Resend API ${res.status}: ${await res.text()}`);
+      sent += batch.length;
+    } catch (e) {
+      failed += batch.length;
+      errors.push({ email: `${batch[0].email} (+${batch.length - 1} more)`, error: (e as Error).message });
     }
-
-    // Rate limit delay between batches (skip after last batch)
-    if (i + BATCH_SIZE < subscribers.length) {
-      await sleep(BATCH_DELAY_MS);
-    }
+    if (i + BATCH_SIZE < subscribers.length) await sleep(BATCH_DELAY_MS);
   }
-
   return jsonResponse({
     message: `Newsletter sent: ${sent} succeeded, ${failed} failed out of ${subscribers.length} subscribers`,
     sent,

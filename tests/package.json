@@ -1,0 +1,11 @@
+{
+  "name": "sophia-commons-smoke-tests",
+  "private": true,
+  "description": "Headless browser checks to run before each deploy",
+  "scripts": {
+    "test": "node smoke.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}
