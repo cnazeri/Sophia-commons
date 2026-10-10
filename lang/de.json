@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.18.0",
+  "footer.version": "v1.19.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -744,5 +744,8 @@
   "video.yesterday": "gestern",
   "home.events_heading": "Veranstaltungen",
   "home.happening_now": "Jetzt",
-  "home.coming_up": "Demnächst"
+  "home.coming_up": "Demnächst",
+  "video.new_video": "Neues Video",
+  "video.watch": "Ansehen",
+  "video.next_new": "nächstes neues Video"
 }

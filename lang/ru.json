@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.18.0",
+  "footer.version": "v1.19.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -744,5 +744,8 @@
   "video.yesterday": "вчера",
   "home.events_heading": "События",
   "home.happening_now": "Сейчас",
-  "home.coming_up": "Скоро"
+  "home.coming_up": "Скоро",
+  "video.new_video": "Новое видео",
+  "video.watch": "Смотреть",
+  "video.next_new": "следующее новое видео"
 }

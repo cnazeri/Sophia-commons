@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.18.0",
+  "footer.version": "v1.19.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -773,5 +773,8 @@
   "video.yesterday": "yesterday",
   "home.events_heading": "Events",
   "home.happening_now": "Happening now",
-  "home.coming_up": "Coming up"
+  "home.coming_up": "Coming up",
+  "video.new_video": "New video",
+  "video.watch": "Watch",
+  "video.next_new": "next new video"
 }

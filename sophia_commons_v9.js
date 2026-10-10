@@ -6287,14 +6287,46 @@ function renderVideoCard(ch) {
   return html;
 }
 
+// Newest uploads from the curated channels in the last 3 days, newest first.
+function _freshVideos(rows) {
+  var cutoff = Date.now() - 3 * 864e5;
+  return rows.filter(function (r) { return r.video_id && r.published_at && new Date(r.published_at).getTime() >= cutoff; })
+    .sort(function (a, b) { return b.published_at.localeCompare(a.published_at); });
+}
+
+// Home page: when a channel has just posted, feature that video (channel photo, name, thumbnail).
+function renderNewVideoCard(v, count) {
+  var ch = '<span class="nv-ch">' + (v.avatar_url ? '<img src="' + escUrl(v.avatar_url) + '" alt="" width="24" height="24" loading="lazy">' : '')
+    + '<b>' + esc(v.name) + '</b>' + (v.subscriber_text ? '<span class="nv-subs">' + esc(v.subscriber_text) + ' ' + esc(t('channel.subscribers', 'subscribers')) + '</span>' : '') + '</span>';
+  return '<div class="new-video">'
+    + '<a class="nv-thumb" href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(v.video_thumbnail) + '" alt="" loading="lazy" width="320" height="180"></a>'
+    + '<div class="nv-body"><div class="etag">' + esc(t('video.new_video', 'New video')) + ' &middot; ' + esc(ytAgo(v.published_at)) + '</div>'
+    + '<h5><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(v.video_title) + '</a></h5>' + ch
+    + '<div class="video-actions"><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(t('video.watch', 'Watch')) + ' &rarr;</a>'
+    + '<a href="/podcasts" onclick="showSec(\'podcasts\');openChannel(\'' + escJs(v.slug) + '\');return false;">' + esc(t('channel.details', 'details, ratings and reviews')) + '</a>'
+    + (count > 1 ? '<a href="#" class="quiet" onclick="_newVidOffset++;renderVideoSpotlight();return false;">' + esc(t('video.next_new', 'next new video')) + ' (' + count + ') &#8635;</a>' : '')
+    + '</div></div></div>';
+}
+var _newVidOffset = 0;
+
 async function renderVideoSpotlight() {
-  var targets = [document.getElementById('video-spotlight'), document.getElementById('home-video-spotlight')].filter(Boolean);
-  if (!targets.length) return;
+  var side = document.getElementById('video-spotlight');
+  var home = document.getElementById('home-video-spotlight');
+  if (!side && !home) return;
   var rows = await _ytFetchLatest();
   var ch = weeklyChannel(rows, _ytOffset);
-  var html = renderVideoCard(ch)
+  var daily = renderVideoCard(ch)
     + '<div class="video-actions" style="padding:0 2px;"><a href="#" class="quiet" onclick="suggestYouTubeChannel();return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>';
-  targets.forEach(function (el) { el.innerHTML = html; });
+  if (side) side.innerHTML = daily;
+  if (!home) return;
+  var fresh = _freshVideos(rows);
+  if (fresh.length) {
+    home.innerHTML = renderNewVideoCard(fresh[_newVidOffset % fresh.length], fresh.length);
+    home.classList.add('has-new');       // shown on every screen size
+  } else {
+    home.innerHTML = daily;               // phones only (the sidebar shows it on desktop)
+    home.classList.remove('has-new');
+  }
 }
 
 async function renderYouTubeChannels() {
