@@ -3468,3 +3468,11 @@ footer li a { display: inline-block; padding: 10px 0; }
 .detail-badge.highlight { background: var(--gold); color: var(--ink, #2c2418); }
 /* v1.24: the home video card shows on every screen size (the sidebar video box was removed) */
 #home-video-spotlight.home-video { display: block; margin: 0 0 14px; }
+
+/* ══════════════════ v1.25: Rudolf Steiner portrait + Foundation Stone Meditation (right sidebar) ══════════════════ */
+.rs-fig { margin: 0 0 8px; }
+.rs-fig img { width: 100%; max-width: 200px; height: auto; display: block; border-radius: 10px; border: 1px solid var(--border-subtle); filter: sepia(.15); }
+.rs-fig figcaption { font-size: 10.5px; color: var(--text-muted); margin-top: 4px; }
+.rs-fig figcaption a { color: inherit; }
+.rs-fsm { display: inline-flex; align-items: center; min-height: 36px; font-size: 13px; font-weight: 700; color: var(--gold-text); }
+.rs-note { font-size: 10.5px; color: var(--text-muted); margin-bottom: 12px; }

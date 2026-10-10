@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.24.0",
+  "footer.version": "v1.25.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -778,5 +778,8 @@
   "sidebar.category_media_social": "Podcasts, Videos & soziale Medien",
   "dir.highlighted": "Empfohlen",
   "dir.visit": "Besuchen",
-  "video.of_the_day": "Video des Tages"
+  "video.of_the_day": "Video des Tages",
+  "steiner.heading": "rudolf steiner",
+  "steiner.fsm": "Der Grundsteinspruch →",
+  "steiner.fsm_note": "Gegeben auf der Weihnachtstagung 1923/24 (GA 260)"
 }
