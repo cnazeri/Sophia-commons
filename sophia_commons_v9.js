@@ -533,6 +533,31 @@ function showCategory(name, skipPush, opts) {
 }
 
 // ── School of Spiritual Science, First Class (blue card holders) ──
+// Opens Groups & Circles and scrolls to the Blue Card Holders section once it has rendered
+function showBlueCard() {
+  showCategory('Groups & Circles');
+  _scrollToFirstClass();
+}
+function _scrollToFirstClass() {
+  var tries = 0;
+  (function wait() {
+    var el = document.getElementById('first-class');
+    if (el) {
+      // keep the section clear of the sticky header
+      var hdr = 0;
+      document.querySelectorAll('#site-header').forEach(function(h) {
+        var cs = getComputedStyle(h);
+        if (cs.position === 'sticky' || cs.position === 'fixed') hdr = Math.max(hdr, h.getBoundingClientRect().bottom);
+      });
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - hdr - 12, behavior: 'smooth' });
+      return;
+    }
+    if (++tries < 50) setTimeout(wait, 100);
+  })();
+}
+// A shared link to /category/groups-circles#first-class lands on the section
+if (location.hash === '#first-class') window.addEventListener('load', _scrollToFirstClass);
+
 async function _firstClassBlock() {
   var evs = [];
   if (sbReady()) {

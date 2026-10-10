@@ -3513,3 +3513,7 @@ footer li a { display: inline-block; padding: 10px 0; }
 .home-events + hr.soft { display: none; }   /* events box and video card sit 12px apart */
 .newsq-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; }
 .adm-post-head b a { color: var(--text-primary); }
+
+/* v1.30: Blue Card Holders link under Groups in the sidebar */
+.cat-sub a { padding-left: 14px; font-size: .92em; }
+.cat-sub a::before { content: '- '; color: var(--text-muted); }

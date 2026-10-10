@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.29.0",
+  "footer.version": "v1.30.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -786,5 +786,7 @@
   "firstclass.heading2": "Titulares de la tarjeta azul",
   "firstclass.badge2": "Escuela de Ciencia Espiritual, Primera Clase",
   "firstclass.intro2": "Lecciones y encuentros de la Clase para miembros de la Escuela de Ciencia Espiritual. La entrada requiere la tarjeta azul. Aquí no se publica contenido mántrico; consulta cada encuentro para inscribirte.",
-  "dir.photo": "Foto"
+  "dir.photo": "Foto",
+  "firstclass.link": "Titulares de la tarjeta azul (Primera Clase)",
+  "firstclass.link_side": "tarjeta azul"
 }

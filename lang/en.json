@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.29.0",
+  "footer.version": "v1.30.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -815,5 +815,7 @@
   "firstclass.heading2": "Blue Card Holders",
   "firstclass.badge2": "School of Spiritual Science, First Class",
   "firstclass.intro2": "Class lessons and Class gatherings for members of the School of Spiritual Science. Admission requires the blue card. Mantric content is not published here; see each gathering for how to sign up.",
-  "dir.photo": "Photo"
+  "dir.photo": "Photo",
+  "firstclass.link": "Blue Card Holders (First Class)",
+  "firstclass.link_side": "blue card holders"
 }
