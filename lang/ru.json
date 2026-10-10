@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.32.0",
+  "footer.version": "v1.33.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -793,5 +793,10 @@
   "books.pof_sub": "GA 4 - издания, переводы и четыре основные книги",
   "books.pof_quote_intro": "Рудольф Штейнер сам предвидел непреходящее значение \"Философии свободы\". В беседе 1922 года Вальтер Иоганнес Штейн спросил его:",
   "books.pof_quote_q": "\"Что останется от вашего труда через тысячи лет?\"",
-  "books.pof_quote_a": "Штейнер ответил: \"Ничего, кроме Философии свободы.\""
+  "books.pof_quote_a": "Штейнер ответил: \"Ничего, кроме Философии свободы.\"",
+  "sidebar.category_science": "наука и технологии",
+  "dir_cat_labels.science": "Наука и технологии",
+  "catmeta.science___technology_name": "Наука и технологии",
+  "catmeta.science___technology_desc": "Гётеанистская наука, исследования и вопрос моральной, человечной технологии с антропософской точки зрения.",
+  "podcasts.x_heading": "В X (Twitter)"
 }

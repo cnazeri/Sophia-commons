@@ -484,6 +484,7 @@ const catMeta = {
   'housing & room rent':     { dirCat: null,          desc: 'Rooms, apartments, and community housing near Waldorf schools, Camphill communities, and biodynamic farms. Land for intentional communities.' },
   'jobs & volunteering':     { dirCat: null,          desc: 'Waldorf teaching positions, biodynamic farm apprenticeships, Camphill co-worker roles, administrative jobs, and volunteer opportunities across the movement.' },
   'groups & circles':        { dirCat: 'societies',          desc: 'Study circles, meditation groups, reading groups, local branch meetings, youth groups, and working groups in the anthroposophical tradition.' },
+  'science & technology':    { dirCat: 'science', desc: 'Goethean science, research and the question of a moral, human-centered technology, from an anthroposophical perspective.' },
   'online resources':        { dirCat: 'online',      desc: 'Websites, archives, podcasts, video channels, online courses, and digital tools for the anthroposophical community.' },
   'societies & organizations': { dirCat: 'societies', desc: 'National and international anthroposophical societies, branches, federations, and membership organizations.' },
   'eldercare':                 { dirCat: 'eldercare', desc: 'Anthroposophical senior living, nursing care, Camphill elder programs and support for the later years of life.' },
@@ -2493,7 +2494,7 @@ const mapLocs = [
   {name:'SteinerBooks',cat:'societies',lat:42.19,lng:-73.36,city:'Great Barrington, MA'},
 ];
 // Colorblind-friendly palette (Okabe-Ito based) so neighbouring categories are easy to tell apart
-const catColors = {societies:'#0072B2',waldorf:'#D55E00',biodynamic:'#009E73',medicine:'#56B4E9',camphill:'#CC79A7',eurythmy:'#E69F00',cc:'#5B3A8C',eldercare:'#8C6D46',online:'#666666',social_media:'#666666'};
+const catColors = {societies:'#0072B2',waldorf:'#D55E00',biodynamic:'#009E73',medicine:'#56B4E9',camphill:'#CC79A7',eurythmy:'#E69F00',cc:'#5B3A8C',eldercare:'#8C6D46',online:'#666666',science:'#3B6E8F',social_media:'#666666'};
 var _clusterer = null;
 function _loadClusterer() {
   if (window.markerClusterer || document.getElementById('mc-lib')) return;
@@ -3143,6 +3144,7 @@ async function loadDirectoryFromSupabase() {
       community: t('dir_cat_labels.community'),
       christian_community: t('dir_cat_labels.christian_community', 'The Christian Community'),
       online: t('dir_cat_labels.online'),
+      science: t('dir_cat_labels.science', 'Science & Technology'),
       other: t('dir_cat_labels.other')
     };
 
@@ -5568,6 +5570,33 @@ var podcastData = {
     {title:'Anthroposophy Community Group', url:'https://www.facebook.com/groups/anthroposophy/', platform:'Facebook', desc:'Global discussion group for anthroposophical topics and questions.', lang:'EN', verified:true},
     {title:'Rudolf Steiner Archive - Facebook', url:'https://www.facebook.com/RudolfSteinerArchive/', platform:'Facebook', desc:'Updates from the Rudolf Steiner Archive in Interlochen, MI.', lang:'EN', verified:true}
   ],
+  x: [
+    {title:"Goetheanum (Deutsch)", url:'https://x.com/goetheanum', platform:'X', desc:"Goetheanum and the General Anthroposophical Society, Dornach.", lang:'DE', verified:true},
+    {title:"Goetheanum (English)", url:'https://x.com/GoetheanumEN', platform:'X', desc:"English account of the Goetheanum and the School of Spiritual Science.", lang:'EN', verified:true},
+    {title:"Das Goetheanum (weekly)", url:'https://x.com/dasgoetheanum', platform:'X', desc:"The weekly magazine Das Goetheanum.", lang:'DE', verified:true},
+    {title:"Rudolf Steiner Archive", url:'https://x.com/SteinerLibrary', platform:'X', desc:"Updates from rsarchive.org, the free online Steiner library.", lang:'EN', verified:true},
+    {title:"Rudolf Steiner Press", url:'https://x.com/RudolfSteinerPr', platform:'X', desc:"UK publisher of Steiner's works in English.", lang:'EN', verified:true},
+    {title:"SteinerBooks", url:'https://x.com/SteinerBooks', platform:'X', desc:"US publisher of Steiner's Collected Works and anthroposophical books.", lang:'EN', verified:true},
+    {title:"Info3", url:'https://x.com/Info3Verlag', platform:'X', desc:"Info3, independent German magazine on anthroposophy.", lang:'DE', verified:true},
+    {title:"Anthromedia", url:'https://x.com/anthromedia', platform:'X', desc:"Anthroposophy internet portal.", lang:'DE/EN', verified:true},
+    {title:"Rudolf Steiner (Freedom Cards)", url:'https://x.com/rudolfsteiner', platform:'X', desc:"Philosophy of Freedom study cards project.", lang:'EN', verified:true},
+    {title:"Anthroposophy (Freedom Cards)", url:'https://x.com/anthroposophy', platform:'X', desc:"Philosophy of Freedom study cards project.", lang:'EN', verified:true},
+    {title:"AWSNA", url:'https://x.com/AWSNA', platform:'X', desc:"Association of Waldorf Schools of North America.", lang:'EN', verified:true},
+    {title:"ECSWE", url:'https://x.com/ecswe', platform:'X', desc:"European Council for Steiner Waldorf Education.", lang:'EN', verified:true},
+    {title:"Waldorf Today", url:'https://x.com/waldorftoday', platform:'X', desc:"Waldorf education news.", lang:'EN', verified:true},
+    {title:"Steiner Schools", url:'https://x.com/steinerschools', platform:'X', desc:"Waldorf education, biodynamics and the threefold social order.", lang:'EN', verified:true},
+    {title:"Alanus Hochschule, Mannheim", url:'https://x.com/AlanusHS', platform:'X', desc:"Institute for Waldorf education.", lang:'DE', verified:true},
+    {title:"Biodynamic Association UK", url:'https://x.com/BiodynamicUK', platform:'X', desc:"UK biodynamic farming association.", lang:'EN', verified:true},
+    {title:"Demeter USA", url:'https://x.com/DemeterUSA', platform:'X', desc:"US biodynamic certifier.", lang:'EN', verified:true},
+    {title:"SEKEM", url:'https://x.com/sekemgroup', platform:'X', desc:"Biodynamic social enterprise in Egypt.", lang:'EN', verified:true},
+    {title:"Hawthorne Valley", url:'https://x.com/HawthorneValley', platform:'X', desc:"Biodynamic farm and Waldorf center in New York.", lang:'EN', verified:true},
+    {title:"Camphill Village Trust", url:'https://x.com/CamphillVillag1', platform:'X', desc:"Camphill communities in the UK.", lang:'EN', verified:true},
+    {title:"Camphill Scotland", url:'https://x.com/CamphillScot', platform:'X', desc:"Membership body for Camphill in Scotland.", lang:'EN', verified:true},
+    {title:"IVAA", url:'https://x.com/IVAAmeds', platform:'X', desc:"International Federation of Anthroposophic Medical Associations.", lang:'EN', verified:true},
+    {title:"Dr. Hauschka UK", url:'https://x.com/LoveHauschka', platform:'X', desc:"UK account of the WALA skin care brand.", lang:'EN', verified:true},
+    {title:"Gesundheit Aktiv", url:'https://x.com/gesundheitaktiv', platform:'X', desc:"German patient association rooted in anthroposophic medicine.", lang:'DE', verified:true},
+    {title:"Gary Lachman", url:'https://x.com/GaryLachman', platform:'X', desc:"Author, including a biography of Rudolf Steiner.", lang:'EN', verified:true}
+  ],
   archives: [
     {title:'Rudolf Steiner Archive', url:'https://rsarchive.org', platform:'rsarchive.org', desc:'Complete archive of Steiner lectures and writings. The largest online collection.', lang:'EN', verified:true},
     {title:'Rudolf Steiner Audio', url:'https://www.rudolfsteineraudio.com', platform:'Audio', desc:'Professional audio recordings of Steiner lectures and books.', lang:'EN', verified:true},
@@ -5580,7 +5609,7 @@ function renderPodcastSection() {
   var container = document.getElementById('podcasts-dynamic');
   if (!container) return;
 
-  var totalCount = podcastData.podcasts.length + podcastData.video.length + podcastData.archives.length;
+  var totalCount = podcastData.podcasts.length + podcastData.video.length + podcastData.x.length + podcastData.archives.length;
   document.getElementById('podcasts-count').textContent = totalCount + ' ' + t('podcasts.shows_label');
 
   function renderBlock(items, heading) {
@@ -5602,6 +5631,7 @@ function renderPodcastSection() {
     + renderBlock(podcastData.podcasts, t('podcasts.podcasts_heading'))
     + renderBlock(podcastData.video, t('podcasts.video_social_heading'))
     + '</div>'
+    + renderBlock(podcastData.x, t('podcasts.x_heading', 'On X (Twitter)'))
     + renderBlock(podcastData.archives, t('podcasts.archives_heading'));
 }
 

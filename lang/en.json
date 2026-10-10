@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.32.0",
+  "footer.version": "v1.33.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -822,5 +822,10 @@
   "books.pof_sub": "GA 4 - editions, translations and the four basic books",
   "books.pof_quote_intro": "Rudolf Steiner himself foresaw the lasting importance of The Philosophy of Freedom. In a 1922 conversation, Walter Johannes Stein asked him:",
   "books.pof_quote_q": "\"What will remain of your work in thousands of years?\"",
-  "books.pof_quote_a": "Steiner replied: \"Nothing but The Philosophy of Freedom.\""
+  "books.pof_quote_a": "Steiner replied: \"Nothing but The Philosophy of Freedom.\"",
+  "sidebar.category_science": "science & technology",
+  "dir_cat_labels.science": "Science & Technology",
+  "catmeta.science___technology_name": "Science & Technology",
+  "catmeta.science___technology_desc": "Goethean science, research and the question of a moral, human-centered technology, from an anthroposophical perspective.",
+  "podcasts.x_heading": "On X (Twitter)"
 }

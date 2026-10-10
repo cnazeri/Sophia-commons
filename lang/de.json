@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.32.0",
+  "footer.version": "v1.33.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -793,5 +793,10 @@
   "books.pof_sub": "GA 4 - Ausgaben, Übersetzungen und die vier Grundschriften",
   "books.pof_quote_intro": "Rudolf Steiner selbst sah die bleibende Bedeutung der Philosophie der Freiheit voraus. In einem Gespräch 1922 fragte ihn Walter Johannes Stein:",
   "books.pof_quote_q": "\"Was wird von Ihrem Werk in Jahrtausenden bleiben?\"",
-  "books.pof_quote_a": "Steiner antwortete: \"Nichts als die Philosophie der Freiheit.\""
+  "books.pof_quote_a": "Steiner antwortete: \"Nichts als die Philosophie der Freiheit.\"",
+  "sidebar.category_science": "Wissenschaft & Technik",
+  "dir_cat_labels.science": "Wissenschaft & Technik",
+  "catmeta.science___technology_name": "Wissenschaft & Technik",
+  "catmeta.science___technology_desc": "Goetheanistische Wissenschaft, Forschung und die Frage einer moralischen, menschengemaessen Technik aus anthroposophischer Sicht.",
+  "podcasts.x_heading": "Auf X (Twitter)"
 }
