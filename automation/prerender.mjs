@@ -65,6 +65,7 @@ const SECTIONS = [
   ['events', 'Events & Calendar', 'Upcoming anthroposophical events, conferences, webinars and study groups, plus the festival year: Holy Nights, Easter, Parzival Moon, St. John\'s, Michaelmas and more.'],
   ['browse', 'Browse Categories', 'Browse the Sophia Commons directory by category and region.'],
   ['news', 'News', 'News from the anthroposophical movement worldwide.'],
+  ['blog', 'Blog', 'Articles and reflections from the anthroposophical community.'],
   ['books', 'Books & Library', 'Rudolf Steiner\'s works by GA number and the top 50 anthroposophical books, with free online texts.'],
   ['podcasts', 'Podcasts & Media', 'Anthroposophical YouTube channels, podcasts and media, refreshed daily.'],
   ['memorial', 'In Memoriam', 'Remembering members of the anthroposophical community.'],

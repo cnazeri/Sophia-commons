@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.36.0",
+  "footer.version": "v1.37.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -798,5 +798,16 @@
   "dir_cat_labels.science": "Ciencia y tecnología",
   "catmeta.science___technology_name": "Ciencia y tecnología",
   "catmeta.science___technology_desc": "Ciencia goetheanística, investigación y la cuestión de una tecnología moral y humana, desde una perspectiva antroposófica.",
-  "podcasts.x_heading": "En X (Twitter)"
+  "podcasts.x_heading": "En X (Twitter)",
+  "nav.blog": "blog",
+  "blog.heading": "Blog",
+  "blog.intro": "Artículos y reflexiones de la comunidad antroposófica. Los miembros pueden enviar un artículo; aparece tras la revisión del editor.",
+  "blog.form_heading": "Escribir un artículo",
+  "blog.f_title": "Título",
+  "blog.f_excerpt": "Resumen breve (opcional)",
+  "blog.f_body": "Artículo",
+  "blog.f_hint": "Deja una línea en blanco entre párrafos. Empieza una línea con ## para un subtítulo. **negrita** y *cursiva* funcionan, y los enlaces https se pueden pulsar.",
+  "blog.f_cover": "Enlace a una imagen (opcional, https://)",
+  "blog.f_tags": "Temas separados por comas (opcional)",
+  "blog.f_submit": "Enviar artículo"
 }

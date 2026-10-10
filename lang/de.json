@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.36.0",
+  "footer.version": "v1.37.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -798,5 +798,16 @@
   "dir_cat_labels.science": "Wissenschaft & Technik",
   "catmeta.science___technology_name": "Wissenschaft & Technik",
   "catmeta.science___technology_desc": "Goetheanistische Wissenschaft, Forschung und die Frage einer moralischen, menschengemaessen Technik aus anthroposophischer Sicht.",
-  "podcasts.x_heading": "Auf X (Twitter)"
+  "podcasts.x_heading": "Auf X (Twitter)",
+  "nav.blog": "blog",
+  "blog.heading": "Blog",
+  "blog.intro": "Artikel und Gedanken aus der anthroposophischen Gemeinschaft. Mitglieder koennen einen Artikel einreichen; er erscheint nach Pruefung durch die Redaktion.",
+  "blog.form_heading": "Artikel schreiben",
+  "blog.f_title": "Titel",
+  "blog.f_excerpt": "Kurze Zusammenfassung (optional)",
+  "blog.f_body": "Artikel",
+  "blog.f_hint": "Leerzeile zwischen Absaetzen. Mit ## beginnt eine Zwischenueberschrift. **fett** und *kursiv* funktionieren, https-Links werden klickbar.",
+  "blog.f_cover": "Bild-Link (optional, https://)",
+  "blog.f_tags": "Themen, durch Kommas getrennt (optional)",
+  "blog.f_submit": "Artikel einreichen"
 }

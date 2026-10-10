@@ -1095,7 +1095,7 @@ const roomHistory = {};
 const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
   directory: '/directory', books: '/books', podcasts: '/podcasts',
-  memorial: '/memorial', eldercare: '/eldercare', privacy: '/privacy', terms: '/terms', about: '/about'
+  memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', privacy: '/privacy', terms: '/terms', about: '/about'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
@@ -1103,6 +1103,7 @@ Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
 function _getSecMeta() {
   return {
     home:      { title: t('meta.title', "Sophia Commons | Anthroposophical Community Directory"), desc: t('meta.og_description', 'The free global directory for the anthroposophical community. Find Waldorf schools, biodynamic farms, Camphill communities, eurythmy, anthroposophic medicine, events, and more.') },
+    blog:      { title: t('meta.blog_title', 'Blog | Sophia Commons'), desc: t('meta.blog_desc', 'Articles and reflections from the anthroposophical community.') },
     news:      { title: t('meta.news_title', "News | Sophia Commons"), desc: t('meta.news_desc', 'Latest news from the anthroposophical world - Waldorf education, biodynamic agriculture, eurythmy, Camphill communities, and spiritual science.') },
     events:    { title: t('meta.events_title', "Events & Calendar | Sophia Commons"), desc: t('meta.events_desc', 'Upcoming anthroposophical events, conferences, workshops, study groups, and retreats worldwide.') },
     browse:    { title: t('meta.browse_title', "Browse Categories | Sophia Commons"), desc: t('meta.browse_desc', 'Browse Waldorf schools, biodynamic farms, Camphill communities, eurythmy programs, anthroposophic medicine, and more by category.') },
@@ -1154,6 +1155,7 @@ function showSec(id, skipPush) {
   if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); }
   if (id === 'books' && typeof renderTop50Books === 'function') renderTop50Books();
   if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
+  if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   const leftbar = document.getElementById('leftbar');
   const hamburger = document.getElementById('hamburger-btn');
@@ -1262,6 +1264,10 @@ function routeFromPath(pathname, isPopstate) {
     return;
   }
 
+  // Blog article: /blog/:slug
+  var blogMatch = p.match(/^\/blog\/([a-z0-9-]+)$/);
+  if (blogMatch && typeof showBlogPost === 'function') { showBlogPost(blogMatch[1], skip); return; }
+
   // Memorial route: /memorial/:slug
   var memMatch = p.match(/^\/memorial\/([^\/]+)$/);
   if (memMatch) {
@@ -1290,6 +1296,8 @@ window.addEventListener('popstate', function(e) {
       showSec(e.state.id, true);
     } else if (e.state.type === 'detail') {
       showDetail(e.state.detailType, e.state.detailId, true);
+    } else if (e.state.type === 'blog' && typeof showBlogPost === 'function') {
+      showBlogPost(e.state.slug, true);
     } else if (e.state.type === 'memorial') {
       showMemorialDetail(e.state.name, true);
     } else if (e.state.type === 'region') {
@@ -4522,6 +4530,7 @@ function adminSwitchTab(tab) {
   else if (tab === 'newsq') loadNewsQueue();
   else if (tab === 'members') loadAdminMembers();
   else if (tab === 'activity') loadAdminActivity();
+  else if (tab === 'blog' && typeof loadAdminBlog === 'function') loadAdminBlog();
 }
 
 function adminEsc(s) { return esc(s); }

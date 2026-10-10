@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.36.0",
+  "footer.version": "v1.37.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -798,5 +798,16 @@
   "dir_cat_labels.science": "Наука и технологии",
   "catmeta.science___technology_name": "Наука и технологии",
   "catmeta.science___technology_desc": "Гётеанистская наука, исследования и вопрос моральной, человечной технологии с антропософской точки зрения.",
-  "podcasts.x_heading": "В X (Twitter)"
+  "podcasts.x_heading": "В X (Twitter)",
+  "nav.blog": "блог",
+  "blog.heading": "Блог",
+  "blog.intro": "Статьи и размышления антропософского сообщества. Участники могут прислать статью; она появится после проверки редактором.",
+  "blog.form_heading": "Написать статью",
+  "blog.f_title": "Заголовок",
+  "blog.f_excerpt": "Краткое описание (необязательно)",
+  "blog.f_body": "Статья",
+  "blog.f_hint": "Оставляйте пустую строку между абзацами. Строка с ## становится подзаголовком. **жирный** и *курсив* работают, ссылки https становятся кликабельными.",
+  "blog.f_cover": "Ссылка на изображение (необязательно, https://)",
+  "blog.f_tags": "Темы через запятую (необязательно)",
+  "blog.f_submit": "Отправить статью"
 }

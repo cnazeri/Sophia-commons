@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.36.0",
+  "footer.version": "v1.37.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -827,5 +827,16 @@
   "dir_cat_labels.science": "Science & Technology",
   "catmeta.science___technology_name": "Science & Technology",
   "catmeta.science___technology_desc": "Goethean science, research and the question of a moral, human-centered technology, from an anthroposophical perspective.",
-  "podcasts.x_heading": "On X (Twitter)"
+  "podcasts.x_heading": "On X (Twitter)",
+  "nav.blog": "blog",
+  "blog.heading": "Blog",
+  "blog.intro": "Articles and reflections from the anthroposophical community. Members can submit an article; it appears after the editor reviews it.",
+  "blog.form_heading": "Write an article",
+  "blog.f_title": "Title",
+  "blog.f_excerpt": "Short summary (optional)",
+  "blog.f_body": "Article",
+  "blog.f_hint": "Leave a blank line between paragraphs. Start a line with ## for a subheading. **bold** and *italic* work, and https links become clickable.",
+  "blog.f_cover": "Picture link (optional, https://)",
+  "blog.f_tags": "Topics, separated by commas (optional)",
+  "blog.f_submit": "Submit article"
 }
