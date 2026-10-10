@@ -552,8 +552,8 @@ async function _firstClassBlock() {
       + '<div class="emeta">' + esc(time) + (where ? ' &middot; ' + esc(where) : '') + '</div></div></div>';
   }).join('');
   return '<div class="listblock fc-block" id="first-class" style="margin-bottom:16px;">'
-    + '<div class="listblock-head"><h3>' + esc(t('firstclass.heading', 'School of Spiritual Science: First Class')) + '</h3><span class="fc-badge">' + esc(t('firstclass.badge', 'blue card holders')) + '</span></div>'
-    + '<div class="listblock-body"><p class="fc-intro">' + esc(t('firstclass.intro', 'Class lessons and Class gatherings for members of the School of Spiritual Science. Admission requires the blue card. Mantric content is not published here; contact the organizers for details.')) + '</p>'
+    + '<div class="listblock-head"><h3>' + esc(t('firstclass.heading2', 'Blue Card Holders')) + '</h3><span class="fc-badge">' + esc(t('firstclass.badge2', 'School of Spiritual Science, First Class')) + '</span></div>'
+    + '<div class="listblock-body"><p class="fc-intro">' + esc(t('firstclass.intro2', 'Class lessons and Class gatherings for members of the School of Spiritual Science. Admission requires the blue card. Mantric content is not published here; see each gathering for how to sign up.')) + '</p>'
     + (rows || '<div class="empty-note">' + esc(t('firstclass.none', 'No upcoming Class gatherings are listed yet.')) + '</div>')
     + '<div class="fc-add"><a href="/events" onclick="showSec(\'events\');showEventForm();return false;">+ ' + esc(t('firstclass.add', 'Add a Class gathering')) + '</a></div>'
     + '</div></div>';

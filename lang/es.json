@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.27.0",
+  "footer.version": "v1.27.1",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -782,5 +782,8 @@
   "steiner.heading": "rudolf steiner",
   "steiner.fsm": "La meditación de la Piedra Fundamental →",
   "steiner.fsm_note": "Dada en el Congreso de Navidad de 1923/24 (GA 260)",
-  "dir.pic_credit": "Imagen de"
+  "dir.pic_credit": "Imagen de",
+  "firstclass.heading2": "Titulares de la tarjeta azul",
+  "firstclass.badge2": "Escuela de Ciencia Espiritual, Primera Clase",
+  "firstclass.intro2": "Lecciones y encuentros de la Clase para miembros de la Escuela de Ciencia Espiritual. La entrada requiere la tarjeta azul. Aquí no se publica contenido mántrico; consulta cada encuentro para inscribirte."
 }

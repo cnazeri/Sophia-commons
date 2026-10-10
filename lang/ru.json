@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.27.0",
+  "footer.version": "v1.27.1",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -782,5 +782,8 @@
   "steiner.heading": "рудольф штейнер",
   "steiner.fsm": "Медитация Краеугольного камня →",
   "steiner.fsm_note": "Дана на Рождественском съезде 1923/24 (GA 260)",
-  "dir.pic_credit": "Изображение с"
+  "dir.pic_credit": "Изображение с",
+  "firstclass.heading2": "Владельцы синей карты",
+  "firstclass.badge2": "Школа духовной науки, Первый класс",
+  "firstclass.intro2": "Уроки и встречи Класса для членов Школы духовной науки. Вход только по синей карте. Мантрическое содержание здесь не публикуется; запись указана у каждой встречи."
 }
