@@ -60,3 +60,6 @@ supabase/.temp/
 
 # Outreach contact lists: never commit
 outreach/
+
+# Claude Code project notes (local only; repo is public)
+CLAUDE.md
