@@ -173,10 +173,15 @@ function renderEventDetail(ev) {
   var endStr = ev.end_date ? localDate(ev.end_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'}) : '';
   var dateStr = localDate(ev.start_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'});
   var timeStr = ev.is_all_day ? t('event_detail.all_day') : d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+  // same-day end time: "09:00 AM - 12:30 PM"
+  if (!ev.is_all_day && ev.end_date && _localDay(ev.end_date) === _localDay(ev.start_date)) {
+    timeStr += ' - ' + new Date(ev.end_date).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+  }
+  var typeLabel = ev.event_type === 'first_class' ? t('firstclass.tag', 'Blue card admission') : String(ev.event_type || '').replace(/_/g, ' ');
 
   var badges = '';
   if (ev.featured) badges += '<span class="detail-badge category">' + t('event_detail.featured') + '</span>';
-  if (ev.event_type) badges += '<span class="detail-badge type">' + esc(ev.event_type) + '</span>';
+  if (ev.event_type) badges += '<span class="detail-badge type">' + esc(typeLabel) + '</span>';
   if (ev.is_free) badges += '<span class="detail-badge free">' + t('event_detail.free') + '</span>';
   if (ev.is_online) badges += '<span class="detail-badge type">' + t('event_detail.online') + '</span>';
 
@@ -196,7 +201,7 @@ function renderEventDetail(ev) {
     + badges
     + '<h1>' + esc(ev.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
-    + '<div class="detail-body">' + esc(ev.description || '') + '</div>'
+    + '<div class="detail-body" style="white-space:pre-line;">' + esc(ev.description || '') + '</div>'
     + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold-text);font-weight:700;margin-bottom:12px;">' + t('event_detail.ticket_price').replace('${price}', ev.ticket_price) + '</p>' : '')
     + '<div class="detail-actions">' + actions + '</div>'
     + '</div>'
@@ -518,6 +523,36 @@ function showCategory(name, skipPush, opts) {
   loadCategoryPage(key, meta.dirCat, opts);
 }
 
+// ── School of Spiritual Science, First Class (blue card holders) ──
+async function _firstClassBlock() {
+  var evs = [];
+  if (sbReady()) {
+    try {
+      var r = await _sb.from('events').select('id, title, start_date, end_date, location_name, city, region, country, is_online, organizer_name')
+        .eq('event_type', 'first_class').in('status', ['upcoming', 'ongoing'])
+        .gte('start_date', new Date(Date.now() - 864e5).toISOString()).order('start_date').limit(20);
+      evs = r.data || [];
+    } catch (e) { console.warn('first class events unavailable', e); }
+  }
+  var rows = evs.map(function (ev) {
+    var where = ev.is_online ? t('common.online', 'Online') : [ev.location_name, ev.city, ev.region].filter(Boolean).join(', ');
+    var time = localDate(ev.start_date, { weekday: 'short', month: 'short', day: 'numeric' }) + ', '
+      + new Date(ev.start_date).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+      + (ev.end_date ? ' - ' + new Date(ev.end_date).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '');
+    var d = new Date(ev.start_date);
+    return '<div class="evrow"><div class="evdate"><div class="mo">' + esc(localDate(ev.start_date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
+      + '<div class="evinfo"><div class="etag">' + esc(t('firstclass.tag', 'Blue card admission')) + '</div>'
+      + '<h5><a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a></h5>'
+      + '<div class="emeta">' + esc(time) + (where ? ' &middot; ' + esc(where) : '') + '</div></div></div>';
+  }).join('');
+  return '<div class="listblock fc-block" id="first-class" style="margin-bottom:16px;">'
+    + '<div class="listblock-head"><h3>' + esc(t('firstclass.heading', 'School of Spiritual Science: First Class')) + '</h3><span class="fc-badge">' + esc(t('firstclass.badge', 'blue card holders')) + '</span></div>'
+    + '<div class="listblock-body"><p class="fc-intro">' + esc(t('firstclass.intro', 'Class lessons and Class gatherings for members of the School of Spiritual Science. Admission requires the blue card. Mantric content is not published here; contact the organizers for details.')) + '</p>'
+    + (rows || '<div class="empty-note">' + esc(t('firstclass.none', 'No upcoming Class gatherings are listed yet.')) + '</div>')
+    + '<div class="fc-add"><a href="/events" onclick="showSec(\'events\');showEventForm();return false;">+ ' + esc(t('firstclass.add', 'Add a Class gathering')) + '</a></div>'
+    + '</div></div>';
+}
+
 async function loadCategoryPage(catKey, dirCat, opts) {
   opts = opts || {};
   var container = document.getElementById('cat-page-content');
@@ -535,6 +570,9 @@ async function loadCategoryPage(catKey, dirCat, opts) {
       if (data) dirEntries = data;
     } catch(e) {}
   }
+
+  // Groups: the School of Spiritual Science, First Class (blue card holders) gets its own section first
+  if (catKey === 'groups & circles') html += await _firstClassBlock();
 
   if (dirEntries.length > 0) {
     html += _dirListShell(dirEntries, opts.q || '');
@@ -2845,7 +2883,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
 
     // Map Supabase event fields to calEvents format
     var loc = [ev.city, ev.country].filter(Boolean).join(', ') || '';
-    var cat = (ev.category_name || ev.event_type || 'community').toLowerCase();
+    var cat = ev.event_type === 'first_class' ? 'first class (blue card)' : (ev.category_name || ev.event_type || 'community').toLowerCase();
     var org = ev.organizer_name || '';
     var time = '';
     if (ev.start_time) {

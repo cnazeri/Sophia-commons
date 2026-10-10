@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.20.1",
+  "footer.version": "v1.21.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -791,5 +791,11 @@
   "days.today": "today",
   "days.daily_label": "Every day",
   "days.german": "German original",
-  "days.intro": "Rudolf Steiner describes eight processes of the soul that we usually carry out carelessly. Practise one exercise at a time for one or two weeks, then the next. Later, starting on a Saturday, do one each day, so the same exercise always falls on the same weekday, together with the daily review."
+  "days.intro": "Rudolf Steiner describes eight processes of the soul that we usually carry out carelessly. Practise one exercise at a time for one or two weeks, then the next. Later, starting on a Saturday, do one each day, so the same exercise always falls on the same weekday, together with the daily review.",
+  "firstclass.heading": "School of Spiritual Science: First Class",
+  "firstclass.badge": "blue card holders",
+  "firstclass.tag": "Blue card admission",
+  "firstclass.intro": "Class lessons and Class gatherings for members of the School of Spiritual Science. Admission requires the blue card. Mantric content is not published here; contact the organizers for details.",
+  "firstclass.none": "No upcoming Class gatherings are listed yet.",
+  "firstclass.add": "Add a Class gathering"
 }

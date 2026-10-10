@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.20.1",
+  "footer.version": "v1.21.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -762,5 +762,11 @@
   "days.today": "heute",
   "days.daily_label": "Jeden Tag",
   "days.german": "Deutsches Original",
-  "days.intro": "Rudolf Steiner beschreibt acht Seelenvorgänge, die wir gewöhnlich achtlos vollziehen. Man übe zunächst eine Übung ein bis zwei Wochen lang, dann die nächste. Später, an einem Samstag beginnend, jeden Tag eine, so dass dieselbe Übung immer auf denselben Wochentag fällt, zusammen mit der täglichen Rückschau."
+  "days.intro": "Rudolf Steiner beschreibt acht Seelenvorgänge, die wir gewöhnlich achtlos vollziehen. Man übe zunächst eine Übung ein bis zwei Wochen lang, dann die nächste. Später, an einem Samstag beginnend, jeden Tag eine, so dass dieselbe Übung immer auf denselben Wochentag fällt, zusammen mit der täglichen Rückschau.",
+  "firstclass.heading": "Freie Hochschule für Geisteswissenschaft: Erste Klasse",
+  "firstclass.badge": "Mitglieder mit blauer Karte",
+  "firstclass.tag": "Zutritt mit blauer Karte",
+  "firstclass.intro": "Klassenstunden und Klassentreffen für Mitglieder der Freien Hochschule für Geisteswissenschaft. Zutritt nur mit der blauen Karte. Mantrische Inhalte werden hier nicht veröffentlicht; Einzelheiten bei den Veranstaltern.",
+  "firstclass.none": "Noch keine kommenden Klassentreffen eingetragen.",
+  "firstclass.add": "Klassentreffen eintragen"
 }

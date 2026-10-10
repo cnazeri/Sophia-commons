@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.20.1",
+  "footer.version": "v1.21.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -762,5 +762,11 @@
   "days.today": "hoy",
   "days.daily_label": "Cada día",
   "days.german": "Original en alemán",
-  "days.intro": "Rudolf Steiner describe ocho procesos del alma que solemos realizar sin atención. Practica un ejercicio durante una o dos semanas y luego el siguiente. Más adelante, empezando un sábado, haz uno cada día, de modo que el mismo ejercicio caiga siempre en el mismo día, junto con la revisión diaria."
+  "days.intro": "Rudolf Steiner describe ocho procesos del alma que solemos realizar sin atención. Practica un ejercicio durante una o dos semanas y luego el siguiente. Más adelante, empezando un sábado, haz uno cada día, de modo que el mismo ejercicio caiga siempre en el mismo día, junto con la revisión diaria.",
+  "firstclass.heading": "Escuela de Ciencia Espiritual: Primera Clase",
+  "firstclass.badge": "titulares de la tarjeta azul",
+  "firstclass.tag": "Entrada con tarjeta azul",
+  "firstclass.intro": "Lecciones y encuentros de la Clase para miembros de la Escuela de Ciencia Espiritual. La entrada requiere la tarjeta azul. Aquí no se publica contenido mántrico; consulta a los organizadores.",
+  "firstclass.none": "Aún no hay encuentros de la Clase.",
+  "firstclass.add": "Añadir un encuentro de la Clase"
 }
