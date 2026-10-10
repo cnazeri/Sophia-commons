@@ -3441,8 +3441,8 @@ footer li a { display: inline-block; padding: 10px 0; }
 .fc-add a { color: var(--gold-text); font-weight: 700; }
 
 /* ══════════════════ v1.22: one Podcasts, Video & Social Media block on the home page ══════════════════ */
-.media-block { grid-column: span 2; }
-.media-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.media-block { grid-column: auto; }
+.media-cols { display: grid; grid-template-columns: 1fr; gap: 0; }
 .media-sub { font-size: 10px !important; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
 @media (max-width: 560px) {
   .media-block { grid-column: auto; }
