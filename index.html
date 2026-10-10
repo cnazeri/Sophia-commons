@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://maps.googleapis.com https://maps.gstatic.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://nominatim.openstreetmap.org https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://maps.googleapis.com https://maps.gstatic.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https: blob:; connect-src 'self' https://nominatim.openstreetmap.org https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sophia Commons | Anthroposophical Community Directory</title>
 
@@ -24,6 +24,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sophia Commons">
 <link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="canonical" href="https://sophiacommons.org/">
 <link rel="alternate" type="text/markdown" title="Guide for AI assistants" href="https://sophiacommons.org/llms.txt">
@@ -205,15 +206,16 @@
   gtag('config', 'G-05ZYGFX41N');
 </script>
 
-<!-- Early connections for the database and fonts (the Supabase client loads at the end of <body>) -->
+<!-- Early connections for the database and the Supabase client (the Supabase client loads at the end of <body>) -->
 <link rel="preconnect" href="https://bnrvgitzbpocratvszgk.supabase.co" crossorigin>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" href="/lang/en.json" as="fetch" crossorigin="anonymous">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lora:wght@400;600;700&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.16.0">
+<!-- Fonts are self-hosted (fonts/, @font-face at the top of the stylesheet); preload the Latin files -->
+<link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.17.1">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -1903,45 +1905,16 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.16.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.17.1 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
-<!-- Supabase (moved from <head> so the page can paint first; must stay before the app scripts) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script>
-  const SUPABASE_URL = 'https://bnrvgitzbpocratvszgk.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_Quj2NdNaaDKJOe4UT5Y5nw_1Sog2yjI';
-  let _sb;
-  try {
-    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Check for existing session on page load
-    _sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        window._supabaseUser = session.user;
-        const uname = session.user.email ? session.user.email.split('@')[0] : 'user';
-        window._scAuthDetail = { username: uname, user: session.user };
-        window.dispatchEvent(new CustomEvent('supabase-auth-ready', { detail: window._scAuthDetail }));
-      }
-    });
-
-    // Listen for auth state changes (login, logout, token refresh)
-    _sb.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        window._supabaseUser = session.user;
-      } else if (event === 'SIGNED_OUT') {
-        window._supabaseUser = null;
-      }
-    });
-  } catch(e) {
-    console.warn('Supabase not available:', e.message);
-    _sb = null;
-  }
-</script>
-<script src="/i18n.js?v=1.16.0"></script>
-<script src="/sophia_commons_v9.js?v=1.16.0"></script>
+<!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script defer src="/sb-init.js?v=1.17.1"></script>
+<script defer src="/i18n.js?v=1.17.1"></script>
+<script defer src="/sophia_commons_v9.js?v=1.17.1"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

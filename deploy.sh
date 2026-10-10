@@ -9,7 +9,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 PUBLIC_FILES=(
-  index.html sophia_commons_v9.css sophia_commons_v9.js i18n.js sw.js manifest.json
+  index.html sophia_commons_v9.css sophia_commons_v9.js i18n.js sb-init.js sw.js manifest.json
   robots.txt llms.txt sitemap.xml _redirects googleae2ea1fc1aac5bc6.html
   logo.svg logo.png icon-192.png icon-512.png og-image.jpg
 )
@@ -20,6 +20,7 @@ for f in "${PUBLIC_FILES[@]}"; do
   [ -f "$f" ] && cp "$f" _deploy/ || echo "  (skipped missing $f)"
 done
 cp lang/*.json _deploy/lang/
+mkdir -p _deploy/fonts && cp fonts/*.woff2 _deploy/fonts/
 
 echo "→ Prerendering static pages and sitemap (falls back to the plain app if Supabase is unreachable)"
 if ! node automation/prerender.mjs _deploy; then

@@ -607,6 +607,56 @@
       "category": "camphill",
       "description": "Camphill school for children in Pennsylvania.",
       "verified": true
+    },
+    {
+      "slug": "threefold-mankind-chicago",
+      "name": "Three-Fold Mankind, Chicago Program Initiative",
+      "url": "https://www.youtube.com/@VidarGroup",
+      "channel_id": "UCyeB3xw94Qw91MGmW_4Owvg",
+      "language": "EN",
+      "category": "society",
+      "description": "Chicago initiative for social threefolding: talks and study programs on Steiner's social ideas.",
+      "verified": true
+    },
+    {
+      "slug": "weltenwandler",
+      "name": "Weltenwandler: Komm in dein Licht",
+      "url": "https://www.youtube.com/@Weltenwandler-KommindeinLi-z1e",
+      "channel_id": "UCcKJ9WLd7n2O-d6zjGlymTg",
+      "language": "DE",
+      "category": "study-group",
+      "description": "Rudolf Steiner's path of inner development explained for newcomers to anthroposophy, with talks on karma and personal growth.",
+      "verified": true
+    },
+    {
+      "slug": "hazel-archer-ginsberg",
+      "name": "Hazel Archer-Ginsberg",
+      "url": "https://www.youtube.com/@hazelarcher-ginsberg8747",
+      "channel_id": "UC-K-0SnCuVkSxiIbfJierJA",
+      "language": "EN",
+      "category": "lecturer",
+      "description": "Spiritual research into the festival life of anthroposophy and the New Mysteries.",
+      "verified": true
+    },
+    {
+      "slug": "michaeliten",
+      "name": "Michaeliten",
+      "url": "https://www.youtube.com/@Michaeliten-org",
+      "channel_id": "UCINRrWOZa_NqAuLm9cAdDnQ",
+      "language": "DE",
+      "category": "study-group",
+      "description": "Webinars on the New Mysteries and today's spiritual challenges, including technology and artificial intelligence.",
+      "verified": true
+    },
+    {
+      "slug": "rudolf-steiner-branch-chicago",
+      "name": "Rudolf Steiner Branch, Chicago",
+      "url": "https://www.youtube.com/@rudolfsteinerbranch-chicag8994",
+      "channel_id": "UCkyOx6ERbDFvBkgxgHge9Sg",
+      "language": "EN",
+      "category": "society",
+      "description": "Talks and study programs from the Chicago branch of the Anthroposophical Society, introducing spiritual science to members and friends.",
+      "verified": true
     }
   ]
 }

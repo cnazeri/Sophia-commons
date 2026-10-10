@@ -4,16 +4,17 @@
 // <title>, description, canonical and Open Graph tags plus a crawlable summary (heading, intro and
 // real links), and regenerates sitemap.xml with every listing and upcoming event.
 // The single-page app still boots from every copy and removes the summary (#prerender) on load.
-// Reads only public data with the publishable key embedded in index.html. Never writes anything.
+// Reads only public data with the publishable key from sb-init.js. Never writes anything.
 import fs from 'node:fs';
 import path from 'node:path';
 
 const OUT = process.argv[2] || '_deploy';
 const SITE = 'https://sophiacommons.org';
 const template = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
-const SB_URL = (template.match(/const SUPABASE_URL = '([^']+)'/) || [])[1];
-const SB_KEY = (template.match(/const SUPABASE_ANON_KEY = '([^']+)'/) || [])[1];
-if (!SB_URL || !SB_KEY) throw new Error('Supabase URL/key not found in index.html');
+const sbInit = fs.readFileSync(path.join(OUT, 'sb-init.js'), 'utf8');
+const SB_URL = (sbInit.match(/const SUPABASE_URL = '([^']+)'/) || [])[1];
+const SB_KEY = (sbInit.match(/const SUPABASE_ANON_KEY = '([^']+)'/) || [])[1];
+if (!SB_URL || !SB_KEY) throw new Error('Supabase URL/key not found in sb-init.js');
 
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const attr = esc;
@@ -156,5 +157,25 @@ const urls = [{ loc: SITE + '/', pri: '1.0' }]
 const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + urls.map(u => `  <url><loc>${esc(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`).join('\n') + '\n</urlset>\n';
 fs.writeFileSync(path.join(OUT, 'sitemap.xml'), xml);
+
+// Home: write the featured event banner into index.html so it shows with the first paint (it was
+// the largest element on phones and only appeared after the script and an events request).
+// The app replaces this with the live list as soon as it loads.
+const feat = events.find(ev => ev.featured);
+if (feat) {
+  const short = (t, n) => { t = String(t || '').replace(/\s+/g, ' ').trim(); return t.length <= n ? t : t.slice(0, n - 3).replace(/\s+\S*$/, '') + '...'; };
+  const img = feat.image_url && feat.image_url.includes('/storage/v1/object/public/')
+    ? feat.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + '?width=200&quality=72&resize=contain' : feat.image_url;
+  const when = new Date(feat.start_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Los_Angeles' });
+  const join = feat.online_url ? `<a class="feat-ev-join" href="${attr(feat.online_url)}" target="_blank" rel="noopener">${/zoom\./i.test(feat.online_url) ? 'Join on Zoom' : 'Join online'}</a>` : '';
+  const banner = `<div class="feat-ev" data-id="${attr(feat.id)}">`
+    + (img ? `<img class="feat-ev-img" src="${attr(img)}" alt="" width="96" height="116" fetchpriority="high">` : '')
+    + `<div class="feat-ev-body"><div class="etag">Featured event</div><h5><a href="/event/${attr(feat.id)}">${esc(feat.title)}</a></h5>`
+    + `<div class="emeta">${esc(when)}</div>` + (feat.description ? `<p class="feat-ev-desc">${esc(short(feat.description, 160))}</p>` : '') + join + '</div></div>';
+  const homeFile = path.join(OUT, 'index.html');
+  const home = fs.readFileSync(homeFile, 'utf8');
+  const placeholder = /(<div class="listblock-body" id="home-upcoming"[^>]*>)\s*<div class="empty-note">[^<]*<\/div>/;
+  if (placeholder.test(home)) fs.writeFileSync(homeFile, home.replace(placeholder, (m, open) => open + banner));
+}
 
 console.log(`prerender: ${written.length} pages, sitemap ${urls.length} URLs (${dir.length} listings, ${events.length} events)`);
