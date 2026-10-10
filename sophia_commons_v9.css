@@ -889,7 +889,7 @@ header {
 }
 #logo:hover { text-decoration: none; color: var(--text-primary); }
 #logo .monad { width: 36px; height: 36px; flex-shrink: 0; }
-#logo span:last-child {
+#logo .logo-words > span:last-child {
   font-family: 'Nunito Sans', sans-serif;
   font-size: 10px; font-weight: 600;
   color: var(--text-muted);
@@ -2999,15 +2999,17 @@ footer { color: rgba(250,247,242,0.78); }
 
 /* ── Header & top bar ── */
 #topbar .nav-links a.signinbtn { display: inline-block; white-space: nowrap; }
-#logo > span:first-child { white-space: nowrap; }
+#logo .logo-words > span:first-child { white-space: nowrap; }
 
 @media (max-width: 768px) {
   /* One compact header row: [menu] [logo] [post] instead of four stacked rows */
   header { flex-wrap: nowrap; gap: 10px; padding: 10px 16px; }
   #hamburger-btn { flex-shrink: 0; }
-  #logo { min-width: 0; flex-direction: column; align-items: flex-start; gap: 0; }
-  #logo > span:first-child { font-size: 21px !important; letter-spacing: .06em !important; }
-  #logo span:last-child { margin-left: 0; font-size: 8.5px; }
+  #logo { min-width: 0; gap: 8px; }
+  #logo .logo-words { flex-direction: column; align-items: flex-start; gap: 0; }
+  #logo .logo-words > span:first-child { font-size: 21px !important; letter-spacing: .06em !important; }
+  #logo .logo-words > span:last-child { margin-left: 0; font-size: 8.5px; }
+  #logo .logo-mark { height: 40px; }
   #postlink { margin-left: auto; flex-shrink: 0; padding: 8px 14px; font-size: 11px; white-space: nowrap; }
   #mainnav { scrollbar-width: none; }
   #mainnav::-webkit-scrollbar { display: none; }
@@ -3020,8 +3022,9 @@ footer { color: rgba(250,247,242,0.78); }
   /* "about" and "submit listing" duplicate the header button; keep sign-in + languages */
   #topbar .nav-links a:not(.signinbtn):not(#adminlink) { display: none; }
   #topbar .nav-links a.signinbtn { margin-left: 0; }
-  #logo span:last-child { display: none; }
-  #logo > span:first-child { font-size: 18px !important; letter-spacing: .04em !important; }
+  #logo .logo-words > span:last-child { display: none; }
+  #logo .logo-words > span:first-child { font-size: 18px !important; letter-spacing: .04em !important; }
+  #logo .logo-mark { height: 34px; }
   #logo sup { display: none; }
   #postlink { font-size: 10.5px; letter-spacing: .02em; }
   #postlink { padding: 8px 12px; }
@@ -3476,3 +3479,7 @@ footer li a { display: inline-block; padding: 10px 0; }
 .rs-fig figcaption a { color: inherit; }
 .rs-fsm { display: inline-flex; align-items: center; min-height: 36px; font-size: 13px; font-weight: 700; color: var(--gold-text); }
 .rs-note { font-size: 10.5px; color: var(--text-muted); margin-bottom: 12px; }
+
+/* ══════════════════ v1.26: logo mark before the wordmark ══════════════════ */
+.logo-mark { height: 56px; width: auto; flex-shrink: 0; display: block; }
+.logo-words { display: flex; align-items: center; gap: 12px; min-width: 0; }
