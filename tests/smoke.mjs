@@ -77,6 +77,16 @@ try {
   });
   await page.waitForTimeout(300);
   check(xss === 0 && (await page.evaluate(() => window.__x)) === 0, 'event titles are escaped');
+  // Sections built on first open must actually render
+  const secFill = await page.evaluate(async () => {
+    showSec('events'); await new Promise(r => setTimeout(r, 300));
+    const cal = document.querySelectorAll('#cal-grid .cal-day').length, list = document.querySelectorAll('#event-list .evrow, #event-list .empty-note').length;
+    showSec('books'); await new Promise(r => setTimeout(r, 300));
+    const books = document.querySelectorAll('#sec-books li, #sec-books .book-card, #sec-books a').length;
+    showSec('home');
+    return { cal, list, books };
+  });
+  check(secFill.cal >= 28 && secFill.list > 0 && secFill.books > 0, `events and books render when opened (${JSON.stringify(secFill)})`);
   check(await page.evaluate(() => safeUrl('javascript:alert(1)') === '#'), 'javascript: links are blocked');
   check(await page.evaluate(() => _evSourcesHtml({ cat: 'workshop', src: [['Join', 'javascript:alert(1)']] }).indexOf('javascript:') === -1
     && _evImageHtml({ img: { src: 'javascript:x', page: 'javascript:y', alt: 'a', credit: 'c' } }).indexOf('javascript:') === -1), 'event links and images block javascript: URLs');

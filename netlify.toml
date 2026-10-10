@@ -19,6 +19,34 @@
   [headers.values]
     Cache-Control = "no-cache"
 
+# Versioned assets (index.html loads them as ?v=<version>, so a new deploy means a new URL)
+# (exact paths, not /*.js: sw.js must stay no-cache or updates would stall)
+[[headers]]
+  for = "/sophia_commons_v9.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/i18n.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/sophia_commons_v9.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Translations are not versioned in their URL: cache briefly
+[[headers]]
+  for = "/lang/*"
+  [headers.values]
+    Cache-Control = "public, max-age=600, must-revalidate"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
 [[headers]]
   for = "/sw.js"
   [headers.values]

@@ -188,7 +188,16 @@
 </script>
 
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-05ZYGFX41N"></script>
+<script>
+  // Load Google Analytics after the page has loaded so it does not compete with content
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      var g = document.createElement('script'); g.async = true;
+      g.src = 'https://www.googletagmanager.com/gtag/js?id=G-05ZYGFX41N';
+      document.head.appendChild(g);
+    }, 1500);
+  });
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -196,42 +205,15 @@
   gtag('config', 'G-05ZYGFX41N');
 </script>
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script>
-  const SUPABASE_URL = 'https://bnrvgitzbpocratvszgk.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_Quj2NdNaaDKJOe4UT5Y5nw_1Sog2yjI';
-  let _sb;
-  try {
-    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Check for existing session on page load
-    _sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        window._supabaseUser = session.user;
-        const uname = session.user.email ? session.user.email.split('@')[0] : 'user';
-        window._scAuthDetail = { username: uname, user: session.user };
-        window.dispatchEvent(new CustomEvent('supabase-auth-ready', { detail: window._scAuthDetail }));
-      }
-    });
-
-    // Listen for auth state changes (login, logout, token refresh)
-    _sb.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        window._supabaseUser = session.user;
-      } else if (event === 'SIGNED_OUT') {
-        window._supabaseUser = null;
-      }
-    });
-  } catch(e) {
-    console.warn('Supabase not available:', e.message);
-    _sb = null;
-  }
-</script>
+<!-- Early connections for the database and fonts (the Supabase client loads at the end of <body>) -->
+<link rel="preconnect" href="https://bnrvgitzbpocratvszgk.supabase.co" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" href="/lang/en.json" as="fetch" crossorigin="anonymous">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lora:wght@400;600;700&family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.12.0">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lora:wght@400;600;700&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.13.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -1323,7 +1305,7 @@
 
     <div class="catblock reveal memorial-card" data-name="Rudolf Steiner" style="text-align:center;padding:20px 16px;">
       <div class="mem-avatar" id="avatar-steiner" style="width:90px;height:90px;border-radius:50%;background:var(--surface);border:2px solid var(--border);margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Steiner_um_1905.jpg" alt="Rudolf Steiner portrait, 1905" style="width:100%;height:100%;object-fit:cover;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Steiner_um_1905.jpg/250px-Steiner_um_1905.jpg" loading="lazy" decoding="async" width="90" height="90" alt="Rudolf Steiner portrait, 1905" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Rudolf Steiner</h3>
       <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1861 - 1925</div>
@@ -1333,7 +1315,7 @@
 
     <div class="catblock reveal memorial-card" data-name="Marie Steiner-von Sivers" style="text-align:center;padding:20px 16px;">
       <div class="mem-avatar" id="avatar-marie" style="width:90px;height:90px;border-radius:50%;background:var(--surface);border:2px solid var(--border);margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Marie_Steiner.jpg" alt="Marie Steiner-von Sivers portrait" style="width:100%;height:100%;object-fit:cover;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Marie_Steiner.jpg/250px-Marie_Steiner.jpg" loading="lazy" decoding="async" width="90" height="90" alt="Marie Steiner-von Sivers portrait" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Marie Steiner-von Sivers</h3>
       <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1867 - 1948</div>
@@ -1343,7 +1325,7 @@
 
     <div class="catblock reveal memorial-card" data-name="Ita Wegman" style="text-align:center;padding:20px 16px;">
       <div class="mem-avatar" id="avatar-wegman" style="width:90px;height:90px;border-radius:50%;background:var(--surface);border:2px solid var(--border);margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Ita_Wegman_1899.jpg" alt="Ita Wegman portrait, 1899" style="width:100%;height:100%;object-fit:cover;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Ita_Wegman_1899.jpg/250px-Ita_Wegman_1899.jpg" loading="lazy" decoding="async" width="90" height="90" alt="Ita Wegman portrait, 1899" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Ita Wegman</h3>
       <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1876 - 1943</div>
@@ -1373,7 +1355,7 @@
 
     <div class="catblock reveal memorial-card" data-name="Albert Steffen" style="text-align:center;padding:20px 16px;">
       <div class="mem-avatar" id="avatar-steffen" style="width:90px;height:90px;border-radius:50%;background:var(--surface);border:2px solid var(--border);margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Albert_Steffen_-_1916.jpg" alt="Albert Steffen portrait, 1916" style="width:100%;height:100%;object-fit:cover;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Albert_Steffen_-_1916.jpg/250px-Albert_Steffen_-_1916.jpg" loading="lazy" decoding="async" width="90" height="90" alt="Albert Steffen portrait, 1916" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <h3 style="font-family:'Lora',Georgia,serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Albert Steffen</h3>
       <div style="font-size:12px;color:var(--gold-text);font-weight:600;margin-bottom:4px;">1884 - 1963</div>
@@ -1881,13 +1863,45 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.12.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.13.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
-<script src="/i18n.js?v=1.12.0"></script>
-<script src="/sophia_commons_v9.js?v=1.12.0"></script>
+<!-- Supabase (moved from <head> so the page can paint first; must stay before the app scripts) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script>
+  const SUPABASE_URL = 'https://bnrvgitzbpocratvszgk.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_Quj2NdNaaDKJOe4UT5Y5nw_1Sog2yjI';
+  let _sb;
+  try {
+    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Check for existing session on page load
+    _sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        window._supabaseUser = session.user;
+        const uname = session.user.email ? session.user.email.split('@')[0] : 'user';
+        window._scAuthDetail = { username: uname, user: session.user };
+        window.dispatchEvent(new CustomEvent('supabase-auth-ready', { detail: window._scAuthDetail }));
+      }
+    });
+
+    // Listen for auth state changes (login, logout, token refresh)
+    _sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        window._supabaseUser = session.user;
+      } else if (event === 'SIGNED_OUT') {
+        window._supabaseUser = null;
+      }
+    });
+  } catch(e) {
+    console.warn('Supabase not available:', e.message);
+    _sb = null;
+  }
+</script>
+<script src="/i18n.js?v=1.13.0"></script>
+<script src="/sophia_commons_v9.js?v=1.13.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

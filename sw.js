@@ -1,4 +1,4 @@
-var CACHE_NAME = 'sophia-commons-v1.12.0';
+var CACHE_NAME = 'sophia-commons-v1.13.0';
 var STATIC_ASSETS = [
   '/',
   '/sophia_commons_v9.css',
@@ -35,6 +35,21 @@ self.addEventListener('fetch', function(event) {
   // Only handle same-origin GETs; let the browser deal with APIs, fonts, analytics and CDNs.
   if (event.request.method !== 'GET') return;
   if (url.origin !== self.location.origin) return;
+
+  // Versioned JS/CSS (?v=...) never change: serve from cache first, fetch once otherwise
+  if (/\.(css|js)$/.test(url.pathname) && /[?&]v=/.test(url.search)) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(function(cache) {
+        return cache.match(event.request).then(function(hit) {
+          return hit || fetch(event.request).then(function(response) {
+            if (response.ok) cache.put(event.request, response.clone());
+            return response;
+          });
+        });
+      })
+    );
+    return;
+  }
 
   event.respondWith(
     fetch(event.request).then(function(response) {

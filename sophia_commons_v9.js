@@ -955,6 +955,10 @@ function showSec(id, skipPush) {
   window.scrollTo(0,0);
   if (id === 'directory' && !mapLoaded) loadMap();
   if (id === 'eldercare') loadEldercareLive();
+  // Sections that are not built at startup render when first opened (and refresh on later opens)
+  if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); }
+  if (id === 'books' && typeof renderTop50Books === 'function') renderTop50Books();
+  if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   const leftbar = document.getElementById('leftbar');
   const hamburger = document.getElementById('hamburger-btn');
@@ -2644,59 +2648,42 @@ function _doLocalSearch(q) {
 // Track which Supabase event titles have been merged to avoid duplicates on re-runs
 var _sbMergedEventTitles = {};
 
+// Upcoming events: merged into calEvents (one sorted list, one count). A copy is kept in localStorage
+// so the home page can show events immediately on the next visit, before the network answers.
+var _EV_CACHE_KEY = 'sc_upcoming_events_v1';
+var _cachedEventIds = [];
+var _EV_CACHE_FIELDS = ['id', 'title', 'description', 'event_type', 'start_date', 'end_date', 'is_all_day', 'location_name',
+  'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name'];
+
+function _loadCachedEvents() {
+  try {
+    var c = JSON.parse(localStorage.getItem(_EV_CACHE_KEY) || 'null');
+    if (!c || !c.saved || Date.now() - c.saved > 864e5 || !Array.isArray(c.events)) return;
+    var now = Date.now();
+    var evs = c.events.filter(function(e) { return new Date(e.start_date).getTime() >= now - 864e5; });
+    _cachedEventIds = evs.map(function(e) { return e.id; });
+    _mergeSupabaseEventsIntoCalendar(evs);
+  } catch (e) { /* storage unavailable or corrupt: just wait for the network */ }
+}
+
 async function loadEventsFromSupabase() {
   if (!sbReady()) return;
   try {
     var result = await _sb.rpc('get_upcoming_events', { days_ahead: 365, limit_n: 200 });
+    if (result.error || !result.data) { console.warn('Events load failed:', result.error); return; }
     var data = result.data;
-    var error = result.error;
-    if (error || !data || data.length === 0) return;
-
-    var container = document.querySelector('#sec-events .evlist, #sec-events');
-    if (!container) return;
-
-    // Find or create the events list area
-    var evList = document.getElementById('sb-events-list');
-    if (!evList) {
-      evList = document.createElement('div');
-      evList.id = 'sb-events-list';
-      // Insert after the section label
-      var seclabel = container.querySelector('.seclabel');
-      if (seclabel) seclabel.insertAdjacentElement('afterend', evList);
-      else container.prepend(evList);
+    try {
+      localStorage.setItem(_EV_CACHE_KEY, JSON.stringify({ saved: Date.now(), events: data.map(function(ev) {
+        var o = {}; _EV_CACHE_FIELDS.forEach(function(k) { o[k] = ev[k]; }); return o;
+      }) }));
+    } catch (e) { /* storage full or blocked: not needed for correctness */ }
+    // Replace what the cached copy put on screen with the fresh data
+    if (_cachedEventIds.length) {
+      var gone = {}; _cachedEventIds.forEach(function(id) { gone[id] = true; delete _sbMergedEventTitles['id:' + id]; });
+      for (var i = calEvents.length - 1; i >= 0; i--) { if (calEvents[i].id && gone[calEvents[i].id]) calEvents.splice(i, 1); }
+      _cachedEventIds = [];
     }
-
-    var today = new Date().toDateString();
-
-    evList.innerHTML = data.map(function(ev) {
-      var d = new Date(ev.start_date);
-      var isToday = d.toDateString() === today;
-      var loc = [ev.city, ev.country].filter(Boolean).join(', ');
-      var tag = ev.category_name || ev.event_type || '';
-      var org = ev.organizer_name || '';
-      return '<div class="evrow reveal visible">' +
-        '<div class="evdate' + (isToday ? ' today' : '') + '">' +
-          '<div class="mo">' + MONTHS_SHORT[d.getMonth()] + '</div>' +
-          '<div class="dy">' + d.getDate() + '</div>' +
-        '</div>' +
-        '<div class="evinfo">' +
-          '<div class="etag">' + esc(tag) + '</div>' +
-          '<h5><a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a></h5>' +
-          '<div class="emeta">' + esc(loc) + (org ? ' &middot; ' + esc(org) : '') + (ev.is_free ? ' &middot; ' + t('common.free') : '') + '</div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-
-    // Update count
-    var label = container.querySelector('.seclabel');
-    if (label) {
-      label.innerHTML = t('events.section_label') + ' &nbsp;&middot;&nbsp; ' + t('events.upcoming_count').replace('{count}', data.length);
-    }
-
-    // Merge Supabase events into calEvents for the calendar system
     _mergeSupabaseEventsIntoCalendar(data);
-
-    console.log('Loaded ' + data.length + ' events from Supabase');
   } catch(e) {
     console.warn('Events load failed:', e);
   }
@@ -2768,10 +2755,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
   if (merged > 0) {
     // Re-render all calendar components with the merged data
     console.log('Merged ' + merged + ' Supabase events into calendar');
-    renderCalendar();
-    renderEventList();
-    renderSeminars();
-    if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
+    if (_secVisible('events')) { renderCalendar(); renderEventList(); renderSeminars(); }
     renderMiniCal();
     renderSidebarUpcoming();
     updateHeaderCalendar();
@@ -3546,9 +3530,15 @@ function _shortText(txt, max) {
   return txt.length > max ? txt.slice(0, txt.lastIndexOf(' ', max)) + '...' : txt;
 }
 
+// Supabase Storage images: request a resized copy (much smaller, long-cached); other URLs unchanged
+function _imgSized(url, width) {
+  if (!url || url.indexOf('/storage/v1/object/public/') === -1) return url;
+  return url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + (url.indexOf('?') === -1 ? '?' : '&') + 'width=' + width + '&quality=72';
+}
+
 function _evImageHtml(ev) {
   if (!ev.img) return '';
-  return '<figure class="dp-img"><img src="' + escUrl(ev.img.src) + '" alt="' + esc(ev.img.alt) + '" loading="lazy">'
+  return '<figure class="dp-img"><img src="' + escUrl(_imgSized(ev.img.src, 680)) + '" alt="' + esc(ev.img.alt) + '" loading="lazy">'
     + '<figcaption><a href="' + escUrl(ev.img.page) + '" target="_blank" rel="noopener">' + esc(ev.img.credit) + '</a></figcaption></figure>';
 }
 
@@ -3573,7 +3563,7 @@ function _evRowHtml(ev, seriesInfo) {
   var html = '<div class="evrow reveal">';
   html += '<div class="evdate' + (isToday ? ' today' : '') + '"><div class="mo">' + localDate(ev.date, { month: 'short' }) + '</div><div class="dy">' + d.getDate() + '</div></div>';
   if (ev.img && ev.img.src) {
-    html += '<img class="evthumb" src="' + escUrl(ev.img.src) + '" alt="" loading="lazy" title="' + esc(ev.img.credit || '') + '">';
+    html += '<img class="evthumb" src="' + escUrl(_imgSized(ev.img.src, 160)) + '" alt="" loading="lazy" title="' + esc(ev.img.credit || '') + '">';
   }
   html += '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + (seriesInfo ? ' &middot; ' + esc(t('events.series', 'series')) : '') + '</div>';
   html += '<h5>' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(title) + '</a>' : esc(title)) + '</h5>';
@@ -3740,7 +3730,7 @@ function renderHomeUpcoming(upcoming) {
     upcoming = upcoming.filter(function(e) { return e !== feat; }).slice(0, 3);
     var join = (feat.src || []).filter(function(x) { return /Join/.test(x[0]); })[0];
     bannerHtml = '<div class="feat-ev">'
-      + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(feat.img.src) + '" alt="" width="96" height="116">' : '')
+      + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(_imgSized(feat.img.src, 200)) + '" alt="" width="96" height="116">' : '')
       + '<div class="feat-ev-body"><div class="etag">' + esc(t('home.featured_event', 'Featured event')) + '</div>'
       + '<h5><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
       + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
@@ -3888,11 +3878,16 @@ function syncGoogleCalendar() {
   console.log('Google Calendar sync: connect via Settings to enable.');
 }
 
+// Is a page section currently shown? Hidden sections render when showSec() opens them.
+function _secVisible(id) {
+  var el = document.getElementById('sec-' + id);
+  return !!(el && el.classList.contains('active'));
+}
+
 // ── INIT CALENDAR ON PAGE LOAD ──
 document.addEventListener('DOMContentLoaded', function() {
-  renderCalendar();
-  renderEventList();
-  renderSeminars();
+  _loadCachedEvents();
+  if (_secVisible('events')) { renderCalendar(); renderEventList(); renderSeminars(); }
   renderMiniCal();
   renderSidebarUpcoming();
   updateHeaderCalendar();
@@ -3971,20 +3966,22 @@ function rerenderForLang() {
   var activeSection = document.querySelector('.pagesec.active');
   if (!activeSection) return;
   var id = activeSection.id.replace('sec-', '');
-  if (id === 'events') { renderCalendar(); renderEventList(); renderSidebarUpcoming(); }
+  if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); renderSidebarUpcoming(); }
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
   if (id === 'marketplace') { renderMarketplace(); }
   if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); }
   if (id === 'books') { renderTop50Books(); }
-  if (id === 'directory') { _loadAllSupabaseData(); }
+  if (id === 'directory' && !_allDataLoaded) { _loadAllSupabaseData(); }
   if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
   if (typeof SC_I18N !== 'undefined') SC_I18N.applyTranslations();
 }
 
 // ── INIT: Load all data once Supabase AND i18n are ready ──
+var _allDataLoaded = false;
 function _loadAllSupabaseData() {
   if (!sbReady()) return;
+  _allDataLoaded = true;
   Promise.all([
     loadEventsFromSupabase(),
     loadNewsFromSupabase(),
@@ -5402,8 +5399,13 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
       last_seen: new Date().toISOString()
     }, { onConflict: 'session_id' }).then(function() {}).catch(function() {});
   }
-  heartbeat();
-  setInterval(heartbeat, 30000);
+  // Start after the page is idle so it does not compete with content; skip while the tab is hidden
+  var startBeat = function() {
+    heartbeat();
+    setInterval(function() { if (!document.hidden) heartbeat(); }, 30000);
+  };
+  if ('requestIdleCallback' in window) requestIdleCallback(startBeat, { timeout: 5000 });
+  else setTimeout(startBeat, 3000);
 })();
 
 // ── Dashboard Data Loading ──
@@ -6088,7 +6090,12 @@ function ytAgo(iso) {
 var _ytLatest = null;      // rows from the youtube_channel_latest view (or the seed)
 var _ytOffset = 0;         // "another one" nudges within the same day
 
-async function _ytFetchLatest() {
+var _ytLatestPromise = null;   // shared by concurrent callers so the feed is fetched once
+function _ytFetchLatest() {
+  if (!_ytLatestPromise) _ytLatestPromise = _ytFetchLatestOnce();
+  return _ytLatestPromise;
+}
+async function _ytFetchLatestOnce() {
   if (_ytLatest) return _ytLatest;
   if (sbReady()) {
     try {
@@ -6214,7 +6221,8 @@ function renderTop50Books() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  renderTop50Books();
+  // Books and Podcasts are hidden on most first visits; showSec() renders them when opened
+  if (_secVisible('books')) renderTop50Books();
   renderVideoSpotlight();
-  renderYouTubeChannels();
+  if (_secVisible('podcasts')) renderYouTubeChannels();
 });

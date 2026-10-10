@@ -2693,3 +2693,7 @@ footer li a { display: inline-block; padding: 10px 0; }
 .ev-month:first-child { margin-top: 4px; }
 .ev-more { display: block; width: 100%; min-height: 44px; margin: 12px 0 4px; border: 1px solid var(--gold); background: transparent; color: var(--gold-text); border-radius: 50px; font-family: 'Nunito Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
 .ev-more:hover { background: var(--gold-light); }
+/* Reserve space for boxes filled after load (reduces layout shift, CLS) */
+#home-upcoming { min-height: 540px; }
+@media (min-width: 1025px) { #video-spotlight { min-height: 320px; } }
+.feat-ev-img { aspect-ratio: 96 / 116; }
