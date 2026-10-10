@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.23.0",
+  "footer.version": "v1.23.1",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -775,5 +775,7 @@
   "home.media_sub_social": "соцсети",
   "home.media_all_podcasts": "все подкасты и 64 YouTube-канала →",
   "home.media_all_social": "все 25 страниц в соцсетях →",
-  "sidebar.category_media_social": "подкасты, видео и соцсети"
+  "sidebar.category_media_social": "подкасты, видео и соцсети",
+  "dir.highlighted": "Рекомендуем",
+  "dir.visit": "Перейти"
 }

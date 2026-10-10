@@ -125,6 +125,7 @@ function showStaticDetail(data) {
 function renderDirectoryDetail(d) {
   var badges = '';
   if (d.is_verified) badges += '<span class="detail-badge verified">' + t('detail.verified') + '</span>';
+  if ((d.badges || []).indexOf('featured') !== -1) badges += '<span class="detail-badge highlight">' + esc(t('dir.highlighted', 'Highlighted')) + '</span>';
   if (d.category) badges += '<span class="detail-badge category">' + esc(d.category) + '</span>';
 
   var meta = '';
@@ -565,7 +566,7 @@ async function loadCategoryPage(catKey, dirCat, opts) {
   if (sbReady() && dirCat) {
     try {
       var q0 = _sb.from('directory_entries')
-        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags, category, city, latitude, longitude')
+        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags, category, city, latitude, longitude, badges')
         .eq('status', 'approved');
       q0 = Array.isArray(dirCat) ? q0.in('category', dirCat) : q0.eq('category', dirCat);
       var { data } = await q0.order('is_verified', { ascending: false }).order('organization_name').limit(500);
@@ -575,6 +576,9 @@ async function loadCategoryPage(catKey, dirCat, opts) {
 
   // Groups: the School of Spiritual Science, First Class (blue card holders) gets its own section first
   if (catKey === 'groups & circles') html += await _firstClassBlock();
+
+  // Highlighted listings (badges contains 'featured') get a box at the top of their category
+  html += _highlightBlock(dirEntries.filter(function(d) { return (d.badges || []).indexOf('featured') !== -1; }));
 
   if (dirEntries.length > 0) {
     html += _dirListShell(dirEntries, opts.q || '');
@@ -670,6 +674,17 @@ async function loadCategoryPage(catKey, dirCat, opts) {
 }
 
 // ── Directory list with filter (category, region and verified pages) ──
+function _highlightBlock(list) {
+  if (!list.length) return '';
+  return '<div class="listblock hl-block" style="margin-bottom:16px;"><div class="listblock-head"><h3>' + esc(t('dir.highlighted', 'Highlighted')) + '</h3></div><div class="listblock-body">'
+    + list.map(function (d) {
+      return '<div class="hl-item"><h4><a href="/listing/' + esc(d.id) + '" onclick="showDetail(\'directory\',\'' + escJs(d.id) + '\');return false;">' + esc(d.organization_name) + '</a></h4>'
+        + (d.description ? '<p>' + esc(_shortText(d.description, 260)) + '</p>' : '')
+        + (d.website_url ? '<a class="hl-visit" href="' + escUrl(d.website_url) + '" target="_blank" rel="noopener">' + esc(t('dir.visit', 'Visit')) + ' ' + esc(d.website_url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '')) + ' &#8599;</a>' : '')
+        + '</div>';
+    }).join('') + '</div></div>';
+}
+
 function _dirListShell(entries, q) {
   window._catNear = null;   // a new list starts unsorted
   // Most common tags in this set become one-tap filter chips

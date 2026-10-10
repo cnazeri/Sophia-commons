@@ -3455,3 +3455,14 @@ footer li a { display: inline-block; padding: 10px 0; }
 .mau-l { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
 .mau-s { font-size: 11px; color: var(--text-muted); }
 @media (max-width: 700px) { .mau-cards { grid-template-columns: 1fr 1fr; } }
+
+/* ══════════════════ v1.23: highlighted listings ══════════════════ */
+.hl-block { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+.hl-block .listblock-head { background: var(--gold-light, #f6efdc); }
+.hl-item { padding: 8px 0; }
+.hl-item + .hl-item { border-top: 1px solid var(--border-subtle); }
+.hl-item h4 { margin: 0 0 4px; font-family: 'Lora', Georgia, serif; font-size: 16px; }
+.hl-item h4 a { color: var(--text-primary); }
+.hl-item p { margin: 0 0 6px; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.hl-visit { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 8px; background: var(--gold); color: var(--ink, #2c2418); font-weight: 700; font-size: 12px; text-decoration: none; }
+.detail-badge.highlight { background: var(--gold); color: var(--ink, #2c2418); }

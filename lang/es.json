@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.23.0",
+  "footer.version": "v1.23.1",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -775,5 +775,7 @@
   "home.media_sub_social": "redes sociales",
   "home.media_all_podcasts": "todos los pódcasts y 64 canales de YouTube →",
   "home.media_all_social": "las 25 páginas de redes sociales →",
-  "sidebar.category_media_social": "pódcasts, vídeo y redes sociales"
+  "sidebar.category_media_social": "pódcasts, vídeo y redes sociales",
+  "dir.highlighted": "Destacado",
+  "dir.visit": "Visitar"
 }
