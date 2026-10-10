@@ -1,0 +1,23 @@
+name: Weekly digest draft
+
+on:
+  schedule:
+    - cron: "0 15 * * 1"         # Mondays 15:00 UTC (8 am Pacific), after the daily YouTube sync
+  workflow_dispatch:             # "Run workflow" button in the Actions tab
+
+permissions: {}
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Build this week's digest draft (the owner approves before anything is emailed)
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.DIGEST_CRON_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          code=$(curl -s -o out.json -w "%{http_code}" -X POST "$URL/functions/v1/weekly-digest" \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{}')
+          cat out.json; echo
+          [ "$code" = "200" ] || { echo "weekly-digest returned HTTP $code"; exit 1; }

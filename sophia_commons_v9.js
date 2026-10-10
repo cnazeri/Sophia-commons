@@ -4669,7 +4669,13 @@ async function dismissReport(reportId) {
   await updateReportStatus(reportId, 'resolved');
 }
 
-function viewReportedItem(itemType, itemId) {
+async function viewReportedItem(itemType, itemId) {
+  if (itemType === 'channel_review') {
+    var r = await _sb.from('channel_reviews').select('channel_slug').eq('id', itemId).maybeSingle();
+    if (r.data) { showSec('podcasts'); openChannel(r.data.channel_slug); }
+    else alert('That review no longer exists.');
+    return;
+  }
   showDetail(itemType, itemId);
 }
 
@@ -4681,7 +4687,7 @@ async function loadNewsletterSubscriberCount() {
   var el = document.getElementById('newsletter-subscriber-count');
   if (!sbReady()) { el.textContent = t('error.supabase_not_connected'); return; }
   try {
-    var { count, error } = await _sb.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).eq('confirmed', true);
+    var { count, error } = await _sb.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).eq('confirmed', true).is('unsubscribed_at', null);
     if (error) { el.textContent = t('error.loading_subscriber_count'); return; }
     _newsletterSubscriberCount = count || 0;
     el.innerHTML = '<strong>' + _newsletterSubscriberCount + '</strong> confirmed subscriber' + (_newsletterSubscriberCount !== 1 ? 's' : '') + ' will receive this email.';
@@ -5719,313 +5725,144 @@ function fillDashTable(tableId, countsObj, limit) {
 }
 
 // ══════════════════════════════════════════
-//  WEEKLY DIGEST GENERATOR
+//  WEEKLY DIGEST
+//  The weekly-digest edge function builds the draft (also every Monday from GitHub Actions);
+//  send-newsletter emails an approved draft once and publishes it on the News page.
 // ══════════════════════════════════════════
 
-async function gatherDigestData() {
-  var now = new Date();
-  var weekAgo = new Date(now.getTime() - 7 * 86400000);
-  var weekAgoISO = weekAgo.toISOString();
-  var twoWeeksOut = new Date(now.getTime() + 14 * 86400000).toISOString();
-  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-  var digest = {
-    weekOf: months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(),
-    weekStart: months[weekAgo.getMonth()] + ' ' + weekAgo.getDate(),
-    newListings: [],
-    upcomingEvents: [],
-    recentNews: [],
-    newMemorials: [],
-    stats: { totalListings: 0, pageViews: 0, newVisitors: 0 }
-  };
-
-  try {
-    // New directory listings this week
-    var { data: listings } = await _sb.from('directory_entries')
-      .select('id, organization_name, category, location, country')
-      .eq('status', 'approved')
-      .gte('created_at', weekAgoISO)
-      .order('created_at', { ascending: false })
-      .limit(10);
-    if (listings) digest.newListings = listings;
-
-    // Upcoming events (next 14 days)
-    // (events has start_date / location_name; event_date / location do not exist)
-    var { data: events } = await _sb.from('events')
-      .select('id, title, start_date, location_name, city, country')
-      .in('status', ['upcoming', 'ongoing'])
-      .gte('start_date', now.toISOString().slice(0, 10))
-      .lte('start_date', twoWeeksOut)
-      .order('start_date', { ascending: true })
-      .limit(10);
-    if (events) digest.upcomingEvents = events.map(function(e) {
-      return { id: e.id, title: e.title, event_date: e.start_date, location: e.location_name || [e.city, e.country].filter(Boolean).join(', ') };
-    });
-
-    // Recent news
-    var { data: news } = await _sb.from('news')
-      .select('id, title, excerpt, source_name, published_at')
-      .eq('status', 'published')
-      .gte('published_at', weekAgoISO)
-      .order('published_at', { ascending: false })
-      .limit(5);
-    if (news) digest.recentNews = news;
-
-    // New memorials
-    var { data: memorials } = await _sb.from('memorials')
-      .select('name, years, bio')
-      .eq('status', 'approved')
-      .gte('created_at', weekAgoISO)
-      .limit(5);
-    if (memorials) digest.newMemorials = memorials;
-
-    // Stats
-    var { count: totalListings } = await _sb.from('directory_entries')
-      .select('id', { count: 'exact', head: true });
-    digest.stats.totalListings = totalListings || 0;
-
-    var { count: pageViews } = await _sb.from('page_views')
-      .select('id', { count: 'exact', head: true })
-      .gte('timestamp', weekAgoISO);
-    digest.stats.pageViews = pageViews || 0;
-
-    var visitors = await _fetchAllRows(function(from, to) {
-      return _sb.from('page_views').select('session_id').gte('timestamp', weekAgoISO).range(from, to);
-    });
-    digest.stats.newVisitors = new Set(visitors.map(function(v) { return v.session_id; })).size;
-
-  } catch(e) {
-    console.warn('Digest data error:', e);
-  }
-
-  return digest;
+async function _digestCall(fn, body) {
+  var s = await _sb.auth.getSession();
+  var session = s.data && s.data.session;
+  if (!session || !session.access_token) throw new Error(t('error.no_active_session', 'Please sign in again.'));
+  var res = await fetch(SUPABASE_URL + '/functions/v1/' + fn, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body || {})
+  });
+  var out = {};
+  try { out = await res.json(); } catch (e) { /* not JSON: fall through to the status code */ }
+  if (!res.ok) throw new Error(out.error || ('Server returned ' + res.status));
+  return out;
 }
 
-function buildDigestHTML(d) {
-  var html = '';
+function _digestStatus(msg, color) {
+  var el = document.getElementById('digest-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color || 'var(--text-muted)';
+}
 
-  // Header
-  html += '<h2 style="font-family:Lora,Georgia,serif;font-size:1.4rem;font-weight:700;margin-bottom:6px;">Weekly Wrap-Up: ' + d.weekOf + '</h2>';
-  html += '<p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Your weekly summary of what\'s happening in the anthroposophical community. Covering ' + d.weekStart + ' through ' + d.weekOf + '.</p>';
-
-  // Stats bar
-  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;">';
-  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--text-primary);">' + d.stats.totalListings.toLocaleString() + '</div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);">Total Listings</div></div>';
-  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--text-primary);">' + d.stats.pageViews.toLocaleString() + '</div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);">Page Views</div></div>';
-  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--text-primary);">' + d.stats.newVisitors.toLocaleString() + '</div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);">Unique Visitors</div></div>';
-  html += '</div>';
-
-  // New Listings
-  if (d.newListings.length > 0) {
-    html += '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:6px;">New Directory Listings</h3>';
-    html += '<ul style="list-style:none;padding:0;margin-bottom:20px;">';
-    d.newListings.forEach(function(l) {
-      html += '<li style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">';
-      html += '<a href="#" onclick="showDetail(\'directory\',\'' + l.id + '\');return false;" style="font-weight:600;">' + esc(l.organization_name) + '</a>';
-      html += '<span style="color:var(--text-muted);margin-left:8px;">' + esc(l.category || '') + (l.location ? ' · ' + esc(l.location) : '') + '</span>';
-      html += '</li>';
-    });
-    html += '</ul>';
-  }
-
-  // Upcoming Events
-  if (d.upcomingEvents.length > 0) {
-    html += '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:6px;">Upcoming Events</h3>';
-    html += '<ul style="list-style:none;padding:0;margin-bottom:20px;">';
-    d.upcomingEvents.forEach(function(e) {
-      var dateStr = e.event_date ? new Date(e.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-      html += '<li style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">';
-      html += '<span style="font-weight:700;color:var(--gold-text);margin-right:8px;">' + dateStr + '</span>';
-      html += '<a href="#" onclick="showDetail(\'event\',\'' + e.id + '\');return false;" style="font-weight:600;">' + esc(e.title) + '</a>';
-      html += (e.location ? '<span style="color:var(--text-muted);margin-left:8px;">' + esc(e.location) + '</span>' : '');
-      html += '</li>';
-    });
-    html += '</ul>';
-  }
-
-  // News Highlights
-  if (d.recentNews.length > 0) {
-    html += '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:6px;">News Highlights</h3>';
-    html += '<ul style="list-style:none;padding:0;margin-bottom:20px;">';
-    d.recentNews.forEach(function(n) {
-      html += '<li style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">';
-      html += '<a href="#" onclick="showDetail(\'news\',\'' + n.id + '\');return false;" style="font-weight:600;display:block;margin-bottom:2px;">' + esc(n.title) + '</a>';
-      html += (n.excerpt ? '<span style="color:var(--text-secondary);font-size:12px;">' + esc(n.excerpt).substring(0, 120) + '...</span>' : '');
-      html += '</li>';
-    });
-    html += '</ul>';
-  }
-
-  // New Memorials
-  if (d.newMemorials.length > 0) {
-    html += '<h3 style="font-family:Lora,serif;font-size:1rem;font-weight:700;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:6px;">In Memoriam</h3>';
-    html += '<ul style="list-style:none;padding:0;margin-bottom:20px;">';
-    d.newMemorials.forEach(function(m) {
-      html += '<li style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">';
-      html += '<strong>' + esc(m.name) + '</strong>';
-      html += (m.years ? ' <span style="color:var(--gold-text);">(' + esc(m.years) + ')</span>' : '');
-      html += '</li>';
-    });
-    html += '</ul>';
-  }
-
-  // No activity fallback
-  if (d.newListings.length === 0 && d.upcomingEvents.length === 0 && d.recentNews.length === 0 && d.newMemorials.length === 0) {
-    html += '<p style="color:var(--text-muted);font-style:italic;text-align:center;padding:20px;">A quiet week in the community. Check back next week for updates!</p>';
-  }
-
-  html += '<p style="font-size:11px;color:var(--text-muted);margin-top:20px;border-top:1px solid var(--border);padding-top:12px;">This digest is automatically generated every week from Sophia Commons activity. <a href="#" onclick="showSec(\'home\');return false;">Return to Home</a></p>';
-
-  return html;
+// The email is shown in a sandboxed frame: exactly what subscribers will see, with no scripts.
+function _digestFrame(html) {
+  return '<iframe class="digest-frame" sandbox="" title="Digest preview" srcdoc="'
+    + esc('<!doctype html><meta charset="utf-8"><body style="margin:12px;background:#fff">' + html) + '"></iframe>';
 }
 
 async function previewWeeklyDigest() {
-  var statusEl = document.getElementById('digest-status');
-  statusEl.textContent = 'Gathering data...';
-  statusEl.style.color = 'var(--text-muted)';
-
-  var data = await gatherDigestData();
-  var html = buildDigestHTML(data);
-
-  document.getElementById('digest-preview-content').innerHTML = html;
-  document.getElementById('digest-preview').style.display = 'block';
-  statusEl.textContent = 'Preview ready. Review above, then click "Generate" to publish.';
+  if (!isAdmin()) return;
+  _digestStatus('Building preview...');
+  try {
+    var out = await _digestCall('weekly-digest', { preview: true });
+    document.getElementById('digest-preview-content').innerHTML = _digestFrame(out.html);
+    document.getElementById('digest-preview').style.display = 'block';
+    _digestStatus('Preview only (' + out.counts + '). Nothing was saved.');
+  } catch (e) { _digestStatus('Error: ' + e.message, 'var(--error,#c0392b)'); }
 }
 
-// Generate digest as draft (for auto-generation or manual)
-async function generateWeeklyDigest(asDraft) {
+async function generateWeeklyDigest() {
   if (!isAdmin()) return;
-  var statusEl = document.getElementById('digest-status');
   var btn = document.getElementById('digest-generate-btn');
   btn.disabled = true;
-  statusEl.textContent = 'Generating digest...';
-  statusEl.style.color = 'var(--text-muted)';
-
+  _digestStatus('Building draft...');
   try {
-    var data = await gatherDigestData();
-    var html = buildDigestHTML(data);
-    var title = 'Weekly Wrap-Up: ' + data.weekOf;
-    var isDraft = asDraft === true;
-
-    var { error } = await _sb.from('news').insert({
-      title: title,
-      body: html,
-      excerpt: 'Your weekly summary of new listings, events, news, and community highlights from Sophia Commons.',
-      source_name: 'Sophia Commons Staff',
-      tags: ['weekly-digest'],
-      featured: true,
-      user_id: window._supabaseUser ? window._supabaseUser.id : null,   // required column
-      // news.status only allows pending | published | rejected; a draft is 'pending' + the weekly-digest tag
-      status: isDraft ? 'pending' : 'published',
-      published_at: isDraft ? null : new Date().toISOString()
-    });
-
-    if (error) throw error;
-
-    if (isDraft) {
-      statusEl.textContent = 'Draft created: "' + title + '" — awaiting your approval.';
-      statusEl.style.color = 'var(--gold,#b8956a)';
-    } else {
-      statusEl.textContent = 'Digest published to News! "' + title + '"';
-      statusEl.style.color = 'var(--success,#27ae60)';
-    }
+    var out = await _digestCall('weekly-digest', {});
+    _digestStatus('Draft ready (' + out.counts + '). Review it under Awaiting Your Approval.', 'var(--gold-text)');
     loadDigestDrafts();
-    loadDigestHistory();
-  } catch(e) {
-    statusEl.textContent = 'Error: ' + (e.message || 'Failed to generate');
-    statusEl.style.color = 'var(--error,#c0392b)';
-  }
+  } catch (e) { _digestStatus('Error: ' + e.message, 'var(--error,#c0392b)'); }
   btn.disabled = false;
 }
 
-// Approve a draft digest — publish it
-async function approveDigest(id) {
+// Approve: email it to every confirmed subscriber (once), then it appears on the News page.
+async function approveDigest(id, sendEmail) {
   if (!isAdmin()) return;
+  if (sendEmail) {
+    await loadNewsletterSubscriberCount();
+    if (!confirm('Email this digest to ' + _newsletterSubscriberCount + ' subscriber(s) and publish it on the News page?')) return;
+  }
+  _digestStatus(sendEmail ? 'Sending...' : 'Publishing...');
   try {
-    var { error } = await _sb.from('news')
-      .update({ status: 'published', published_at: new Date().toISOString() })
-      .eq('id', id);
-    if (error) throw error;
-    document.getElementById('digest-status').textContent = 'Digest approved and published!';
-    document.getElementById('digest-status').style.color = 'var(--success,#27ae60)';
+    if (sendEmail) {
+      var out = await _digestCall('send-newsletter', { news_id: id });
+      _digestStatus('Sent to ' + out.sent + ' of ' + out.total + ' subscribers' + (out.failed ? ' (' + out.failed + ' failed)' : '') + ', and published on the News page.', 'var(--success,#27ae60)');
+    } else {
+      var r = await _sb.from('news').update({ status: 'published', published_at: new Date().toISOString() }).eq('id', id);
+      if (r.error) throw r.error;
+      _digestStatus('Published on the News page (not emailed).', 'var(--success,#27ae60)');
+    }
     loadDigestDrafts();
     loadDigestHistory();
-  } catch(e) {
-    alert('Error approving: ' + (e.message || 'Unknown'));
-  }
+  } catch (e) { _digestStatus('Error: ' + e.message, 'var(--error,#c0392b)'); }
 }
 
-// Delete a draft digest
 async function deleteDigest(id) {
   if (!isAdmin()) return;
-  if (!confirm('Delete this draft digest?')) return;
+  if (!confirm('Delete this draft? Nothing will be sent this week unless you build a new one.')) return;
   try {
-    var del3 = await _sb.from('news').delete().eq('id', id);
-    if (del3.error) throw del3.error;
+    var del = await _sb.from('news').delete().eq('id', id);
+    if (del.error) throw del.error;
     loadDigestDrafts();
-  } catch(e) {
-    alert('Error: ' + (e.message || 'Unknown'));
-  }
+  } catch (e) { alert('Error: ' + (e.message || 'Unknown')); }
 }
 
-// Load pending draft digests
 async function loadDigestDrafts() {
   var el = document.getElementById('digest-drafts');
   if (!el || !sbReady()) return;
   try {
-    var { data, error } = await _sb.from('news')
-      .select('id, title, body, created_at')
-      .eq('status', 'pending')
-      .contains('tags', ['weekly-digest'])
-      .order('created_at', { ascending: false })
-      .limit(5);
-    if (error || !data || data.length === 0) {
-      el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No drafts awaiting approval.</div>';
+    var r = await _sb.from('news').select('id, title, body, excerpt, created_at')
+      .eq('status', 'pending').contains('tags', ['weekly-digest'])
+      .order('created_at', { ascending: false }).limit(5);
+    if (r.error || !r.data || !r.data.length) {
+      el.innerHTML = '<div class="digest-empty">No drafts awaiting approval.</div>';
       return;
     }
-    el.innerHTML = data.map(function(d) {
-      var date = new Date(d.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
-      return '<div style="background:var(--surface);border:1px solid var(--gold,#b8956a);border-radius:8px;padding:14px;margin-bottom:10px;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
-        + '<strong style="font-size:13px;">' + esc(d.title) + '</strong>'
-        + '<span style="font-size:11px;color:var(--text-muted);">' + date + '</span>'
-        + '</div>'
-        + '<details style="margin-bottom:10px;"><summary style="font-size:12px;color:var(--text-muted);cursor:pointer;">Preview content</summary>'
-        + '<div style="font-size:12px;line-height:1.6;color:var(--text-secondary);margin-top:8px;max-height:300px;overflow-y:auto;">' + d.body + '</div>'
-        + '</details>'
-        + '<div style="display:flex;gap:8px;">'
-        + '<button class="admin-btn admin-btn-approve" onclick="approveDigest(\'' + d.id + '\')" style="padding:6px 16px;font-size:12px;">Approve &amp; Publish</button>'
-        + '<button class="admin-btn admin-btn-reject" onclick="deleteDigest(\'' + d.id + '\')" style="padding:6px 16px;font-size:12px;">Delete</button>'
+    el.innerHTML = r.data.map(function(d) {
+      var date = localDate(d.created_at, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      var id = escJs(d.id);
+      return '<div class="digest-draft">'
+        + '<div class="digest-draft-head"><strong>' + esc(d.title) + '</strong><span>' + esc(date) + '</span></div>'
+        + '<div class="digest-draft-sub">' + esc(d.excerpt || '') + '</div>'
+        + '<details><summary>Preview the email</summary>' + _digestFrame(d.body || '') + '</details>'
+        + '<div class="digest-draft-actions">'
+        + '<button class="admin-btn admin-btn-approve" onclick="approveDigest(\'' + id + '\', true)">Approve &amp; email</button>'
+        + '<button class="admin-btn" onclick="approveDigest(\'' + id + '\', false)">Publish only</button>'
+        + '<button class="admin-btn admin-btn-reject" onclick="deleteDigest(\'' + id + '\')">Delete</button>'
         + '</div></div>';
     }).join('');
-  } catch(e) {
-    el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">Error loading drafts.</div>';
+  } catch (e) {
+    el.innerHTML = '<div class="digest-empty">Error loading drafts.</div>';
   }
 }
 
 async function loadDigestHistory() {
   var el = document.getElementById('digest-history');
-  if (!sbReady()) { el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">Not connected</div>'; return; }
+  if (!el) return;
+  if (!sbReady()) { el.innerHTML = '<div class="digest-empty">Not connected</div>'; return; }
   try {
-    var { data, error } = await _sb.from('news')
-      .select('id, title, published_at')
-      .eq('status', 'published')
-      .contains('tags', ['weekly-digest'])
-      .order('published_at', { ascending: false })
-      .limit(8);
-    if (error || !data || data.length === 0) {
-      el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No past digests yet.</div>';
+    var r = await _sb.from('news').select('id, title, published_at, emailed_at, emailed_count')
+      .eq('status', 'published').contains('tags', ['weekly-digest'])
+      .order('published_at', { ascending: false }).limit(8);
+    if (r.error || !r.data || !r.data.length) {
+      el.innerHTML = '<div class="digest-empty">No past digests yet.</div>';
       return;
     }
-    el.innerHTML = data.map(function(d) {
-      var date = new Date(d.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;">'
-        + '<a href="#" onclick="showDetail(\'news\',\'' + d.id + '\');return false;" style="font-weight:600;">' + esc(d.title) + '</a>'
-        + '<span style="color:var(--text-muted);">' + date + '</span>'
-        + '</div>';
+    el.innerHTML = r.data.map(function(d) {
+      var date = localDate(d.published_at, { month: 'short', day: 'numeric', year: 'numeric' });
+      var sent = d.emailed_at ? 'emailed to ' + (d.emailed_count || 0) : 'not emailed';
+      return '<div class="digest-hist"><a href="/article/' + esc(d.id) + '" onclick="showDetail(\'news\',\'' + escJs(d.id) + '\');return false;">' + esc(d.title) + '</a>'
+        + '<span>' + esc(date) + ' &middot; ' + sent + '</span></div>';
     }).join('');
-  } catch(e) {
-    el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">Error loading history.</div>';
+  } catch (e) {
+    el.innerHTML = '<div class="digest-empty">Error loading history.</div>';
   }
 }
 
@@ -6200,6 +6037,7 @@ function ytAgo(iso) {
   if (!iso) return '';
   var days = Math.floor((Date.now() - new Date(iso).getTime()) / 864e5);
   if (days < 1) return t('video.today', 'today');
+  if (days === 1) return t('video.yesterday', 'yesterday');
   if (days < 30) return days + ' ' + t('video.days_ago', 'days ago');
   if (days < 365) return Math.floor(days / 30) + ' ' + t('video.months_ago', 'months ago');
   return Math.floor(days / 365) + ' ' + t('video.years_ago', 'years ago');
@@ -6271,29 +6109,193 @@ async function renderVideoSpotlight() {
 async function renderYouTubeChannels() {
   var el = document.getElementById('yt-channels-block');
   if (!el) return;
-  var rows = await _ytFetchLatest();
+  var both = await Promise.all([_ytFetchLatest(), _loadChannelRatings()]);
+  var rows = both[0], ratings = both[1];
   var week = weeklyChannel(rows, 0);
   var groups = {};
   rows.forEach(function (r) { (groups[r.category] = groups[r.category] || []).push(r); });
   var order = Object.keys(YT_CATEGORIES).filter(function (k) { return groups[k]; }).concat(Object.keys(groups).filter(function (k) { return !YT_CATEGORIES[k]; }));
   var html = '<div class="listblock"><div class="listblock-head"><h3>' + t('podcasts.youtube_heading', 'YouTube Channels') + '</h3>'
     + '<span class="podcast-count">' + rows.length + ' ' + t('podcasts.channels', 'channels') + '</span></div><div class="listblock-body">'
-    + '<div class="yt-toolbar"><span>' + t('podcasts.youtube_note', 'Curated anthroposophical channels, refreshed daily. &#9733; = today\'s featured channel.') + '</span>'
+    + '<div class="yt-toolbar"><span>' + t('podcasts.youtube_note2', 'Curated anthroposophical channels, refreshed daily. Tap a channel\'s stars to see details, rate it and read reviews.') + '</span>'
     + '<a href="#" onclick="suggestYouTubeChannel();return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>'
     + '<div class="yt-grid">';
   order.forEach(function (cat) {
     html += '<div class="yt-cat"><h4>' + esc(YT_CATEGORIES[cat] || cat) + ' <span>' + groups[cat].length + '</span></h4>';
     groups[cat].sort(function (a, b) { return (b.published_at || '').localeCompare(a.published_at || '') || a.name.localeCompare(b.name); });
-    groups[cat].forEach(function (r) {
-      html += '<div class="yt-row' + (week && r.slug === week.slug ? ' is-week' : '') + '">'
-        + '<a class="ltitle" href="' + escUrl(r.channel_url) + '" target="_blank" rel="noopener" title="' + esc(r.description || '') + '">' + esc(r.name) + '</a>'
-        + (r.verified ? '<span class="lv">&#10003;</span>' : '')
-        + '<span class="lmeta">' + esc(r.language || '') + (r.published_at ? ' &middot; ' + esc(ytAgo(r.published_at)) : '') + '</span></div>';
-    });
+    groups[cat].forEach(function (r) { html += _ytRowHtml(r, ratings[r.slug], week && r.slug === week.slug); });
     html += '</div>';
   });
   html += '</div></div></div>';
   el.innerHTML = html;
+}
+
+function _ytRowHtml(r, rt, isWeek) {
+  var meta = [esc(r.language || ''), esc(_subsText(r)), r.published_at ? esc(ytAgo(r.published_at)) : ''].filter(Boolean).join(' &middot; ');
+  return '<div class="yt-row' + (isWeek ? ' is-week' : '') + '">'
+    + (r.avatar_url ? '<img class="yt-ava" src="' + escUrl(r.avatar_url) + '" alt="" width="32" height="32" loading="lazy">' : '<span class="yt-ava" aria-hidden="true"></span>')
+    + '<div class="yt-main"><div><a class="ltitle" href="' + escUrl(r.channel_url) + '" target="_blank" rel="noopener" title="' + esc(r.description || '') + '">' + esc(r.name) + '</a>'
+    + (r.verified ? '<span class="lv">&#10003;</span>' : '') + '</div>'
+    + '<span class="lmeta">' + meta + '</span>'
+    + '<button type="button" class="yt-rate" onclick="openChannel(\'' + escJs(r.slug) + '\', this)" aria-label="' + esc(r.name + ': ' + t('channel.details', 'details, ratings and reviews')) + '">'
+    + (rt && rt.count ? _stars(rt.avg) + ' <span>' + rt.count + '</span>' : '<span class="stars off-all" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span>' + t('channel.rate_short', 'Rate') + '</span>')
+    + '</button></div></div>';
+}
+
+// ── Channel details, star ratings and reviews ──
+// Ratings come from the channel_rating_summary view; one review (stars + optional comment)
+// per member per channel, stored in channel_reviews. Admins can hide a review.
+var _chRatingsPromise = null;
+function _loadChannelRatings() {
+  if (!_chRatingsPromise) _chRatingsPromise = (async function () {
+    var map = {};
+    if (!sbReady()) return map;
+    try {
+      var r = await _sb.from('channel_rating_summary').select('channel_slug, avg_rating, review_count');
+      (r.data || []).forEach(function (x) { map[x.channel_slug] = { avg: Number(x.avg_rating), count: x.review_count }; });
+    } catch (e) { console.warn('channel ratings unavailable', e); }
+    return map;
+  })();
+  return _chRatingsPromise;
+}
+
+// Five stars filled to the nearest half, with a text label for screen readers.
+function _stars(avg) {
+  var v = Math.round((avg || 0) * 2) / 2, out = '';
+  for (var i = 1; i <= 5; i++) out += '<span class="' + (i <= v ? 'on' : (i - 0.5 === v ? 'half' : 'off')) + '">&#9733;</span>';
+  return '<span class="stars" role="img" aria-label="' + esc(v + ' ' + t('channel.out_of_5', 'out of 5 stars')) + '">' + out + '</span>';
+}
+
+function _ratingSummary(rt) {
+  if (!rt || !rt.count) return '<span class="ch-norating">' + t('channel.no_ratings', 'No ratings yet') + '</span>';
+  return _stars(rt.avg) + ' <span class="ch-avg">' + rt.avg.toFixed(1) + '</span> <span class="ch-count">(' + rt.count + ')</span>';
+}
+
+function _subsText(r) {
+  return r.subscriber_text ? r.subscriber_text + ' ' + t('channel.subscribers', 'subscribers') : '';
+}
+
+async function openChannel(slug, trigger) {
+  var rows = await _ytFetchLatest();
+  var ch = rows.filter(function (r) { return r.slug === slug; })[0];
+  if (!ch) return;
+  var ratings = await _loadChannelRatings();
+  closeDayPopup(false);
+  _dpReturnFocus = trigger || document.activeElement;
+  var overlay = document.createElement('div');
+  overlay.className = 'day-popup-overlay';
+  overlay.onclick = function () { closeDayPopup(); };
+  document.body.appendChild(overlay);
+  var popup = document.createElement('div');
+  popup.className = 'day-popup ch-popup';
+  popup.setAttribute('role', 'dialog');
+  popup.setAttribute('aria-modal', 'true');
+  popup.setAttribute('aria-labelledby', 'ch-popup-title');
+  popup.innerHTML = _channelHeadHtml(ch, ratings[slug])
+    + '<div id="ch-form"></div><h5 class="ch-sub">' + t('channel.reviews', 'Reviews') + '</h5><div id="ch-reviews" aria-live="polite">' + t('common.loading', 'Loading...') + '</div>';
+  document.body.appendChild(popup);
+  popup.querySelector('.dp-close').focus();
+  _loadChannelReviews(slug);
+}
+
+function _channelHeadHtml(ch, rt) {
+  var meta = [_subsText(ch), ch.total_videos ? ch.total_videos + ' ' + t('channel.videos', 'videos') : '', ch.language].filter(Boolean).join(' &middot; ');
+  return '<button class="dp-close" type="button" aria-label="' + esc(t('common.close', 'Close')) + '" onclick="closeDayPopup()">&times;</button>'
+    + '<div class="ch-head">' + (ch.avatar_url ? '<img src="' + escUrl(ch.avatar_url) + '" alt="" width="64" height="64">' : '')
+    + '<div><h4 id="ch-popup-title">' + esc(ch.name) + (ch.verified ? ' <span class="lv" title="' + esc(t('common.verified', 'Verified')) + '">&#10003;</span>' : '') + '</h4>'
+    + '<div class="dp-meta">' + meta + '</div><div class="ch-rating">' + _ratingSummary(rt) + '</div></div></div>'
+    + (ch.description ? '<p class="dp-desc">' + esc(ch.description) + '</p>' : '')
+    + (ch.video_id ? '<p class="ch-latest">' + t('channel.latest', 'Latest') + ': <a href="' + escUrl(ch.video_url) + '" target="_blank" rel="noopener">' + esc(ch.video_title) + '</a> <span>' + esc(ytAgo(ch.published_at)) + '</span></p>' : '')
+    + '<p><a class="ch-yt" href="' + escUrl(ch.channel_url) + '" target="_blank" rel="noopener">' + t('channel.watch', 'Open on YouTube') + ' &rarr;</a></p>';
+}
+
+async function _loadChannelReviews(slug) {
+  var el = document.getElementById('ch-reviews');
+  if (!el) return;
+  if (!sbReady()) { el.textContent = t('error.supabase_not_connected', 'Not connected.'); return; }
+  var r = await _sb.from('channel_reviews').select('id, user_id, rating, comment, is_hidden, updated_at')
+    .eq('channel_slug', slug).order('updated_at', { ascending: false }).limit(50);
+  if (r.error) { el.textContent = t('channel.load_error', 'Reviews could not be loaded.'); return; }
+  var reviews = r.data || [];
+  var me = window._supabaseUser ? window._supabaseUser.id : null;
+  var mine = reviews.filter(function (x) { return x.user_id === me; })[0] || null;
+  _renderChannelForm(slug, mine);
+  if (!reviews.length) { el.innerHTML = '<p class="ch-empty">' + t('channel.no_reviews', 'No reviews yet. Be the first to rate this channel.') + '</p>'; return; }
+  var names = {};
+  var ids = reviews.map(function (x) { return x.user_id; });
+  var pr = await _sb.from('profiles').select('id, username, full_name').in('id', ids);
+  (pr.data || []).forEach(function (p) { names[p.id] = p.username || p.full_name; });
+  el.innerHTML = reviews.map(function (x) { return _reviewHtml(x, names[x.user_id], me); }).join('');
+}
+
+function _reviewHtml(x, name, me) {
+  var acts = '';
+  if (isAdmin()) acts += '<button type="button" onclick="hideChannelReview(\'' + escJs(x.id) + '\',' + !x.is_hidden + ')">' + (x.is_hidden ? t('channel.unhide', 'Show') : t('channel.hide', 'Hide')) + '</button>';
+  else if (signedIn && x.user_id !== me) acts += '<button type="button" onclick="closeDayPopup(false);openReportModal(\'channel_review\',\'' + escJs(x.id) + '\')">' + t('channel.report', 'Report') + '</button>';
+  return '<div class="ch-review' + (x.is_hidden ? ' is-hidden' : '') + '">'
+    + '<div class="ch-review-head">' + _stars(x.rating) + ' <b>' + esc(name || t('channel.member', 'Member')) + '</b>'
+    + '<span>' + esc(localDate(x.updated_at, { month: 'short', day: 'numeric', year: 'numeric' })) + (x.is_hidden ? ' &middot; ' + t('channel.hidden', 'hidden') : '') + '</span></div>'
+    + (x.comment ? '<p>' + esc(x.comment) + '</p>' : '')
+    + (acts ? '<div class="ch-review-acts">' + acts + '</div>' : '') + '</div>';
+}
+
+function _renderChannelForm(slug, mine) {
+  var el = document.getElementById('ch-form');
+  if (!el) return;
+  if (!signedIn) {
+    el.innerHTML = '<button type="button" class="ch-signin" onclick="closeDayPopup(false);openModal()">' + t('channel.signin', 'Sign in to rate and review') + '</button>';
+    return;
+  }
+  var cur = mine ? mine.rating : 0, s = escJs(slug);
+  var radios = '';
+  for (var i = 5; i >= 1; i--) {
+    radios += '<input type="radio" name="ch-stars" id="ch-star-' + i + '" value="' + i + '"' + (i === cur ? ' checked' : '') + '>'
+      + '<label for="ch-star-' + i + '" title="' + i + '"><span class="sr-only">' + i + ' ' + t('channel.stars', 'stars') + '</span>&#9733;</label>';
+  }
+  el.innerHTML = '<form class="ch-form" onsubmit="saveChannelReview(\'' + s + '\');return false;">'
+    + '<fieldset><legend>' + t(mine ? 'channel.your_rating' : 'channel.rate', mine ? 'Your rating' : 'Rate this channel') + '</legend><div class="ch-stars-input">' + radios + '</div></fieldset>'
+    + '<label class="sr-only" for="ch-comment">' + t('channel.comment_label', 'Your review (optional)') + '</label>'
+    + '<textarea id="ch-comment" maxlength="1000" rows="3" placeholder="' + esc(t('channel.comment_ph', 'What do you value about this channel? (optional)')) + '">' + esc(mine && mine.comment || '') + '</textarea>'
+    + '<div class="ch-form-acts"><button type="submit" class="ch-save">' + t('channel.save', 'Save review') + '</button>'
+    + (mine ? '<button type="button" class="ch-del" onclick="deleteChannelReview(\'' + s + '\',\'' + escJs(mine.id) + '\')">' + t('channel.delete', 'Delete my review') + '</button>' : '')
+    + '<span id="ch-form-status" role="status"></span></div></form>';
+}
+
+async function saveChannelReview(slug) {
+  var picked = document.querySelector('input[name="ch-stars"]:checked');
+  var status = document.getElementById('ch-form-status');
+  if (!picked) { status.textContent = t('channel.pick_stars', 'Choose 1 to 5 stars first.'); return; }
+  var comment = (document.getElementById('ch-comment').value || '').trim().slice(0, 1000) || null;
+  status.textContent = t('channel.saving', 'Saving...');
+  var r = await _sb.from('channel_reviews').upsert({
+    channel_slug: slug, user_id: window._supabaseUser.id, rating: Number(picked.value), comment: comment
+  }, { onConflict: 'channel_slug,user_id' });
+  if (r.error) { status.textContent = t('channel.save_error', 'Could not save. Please try again.'); console.warn(r.error); return; }
+  _afterReviewChange(slug);
+}
+
+async function deleteChannelReview(slug, id) {
+  if (!confirm(t('channel.delete_confirm', 'Delete your review of this channel?'))) return;
+  var r = await _sb.from('channel_reviews').delete().eq('id', id);
+  if (r.error) { alert(t('channel.save_error', 'Could not save. Please try again.')); return; }
+  _afterReviewChange(slug);
+}
+
+async function hideChannelReview(id, hide) {
+  if (!isAdmin()) return;
+  var r = await _sb.from('channel_reviews').update({ is_hidden: hide }).eq('id', id).select('channel_slug').single();
+  if (r.error) { alert('Error: ' + r.error.message); return; }
+  _afterReviewChange(r.data.channel_slug);
+}
+
+// Refresh the averages, the open popup and the channel list after any change.
+async function _afterReviewChange(slug) {
+  _chRatingsPromise = null;
+  var ratings = await _loadChannelRatings();
+  var box = document.querySelector('.ch-popup .ch-rating');
+  if (box) box.innerHTML = _ratingSummary(ratings[slug]);
+  _loadChannelReviews(slug);
+  renderYouTubeChannels();
 }
 
 async function suggestYouTubeChannel() {

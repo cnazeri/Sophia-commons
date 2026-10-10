@@ -2,6 +2,7 @@
 //  Sophia Commons - Send Newsletter Edge Function
 //  POST /functions/v1/send-newsletter
 //  Body: { subject: string, html_content: string }
+//     or { news_id: uuid }  (an approved weekly digest draft: sent once, then published)
 //  Auth: Bearer token (admin users only)
 // ══════════════════════════════════════════
 
@@ -91,16 +92,32 @@ serve(async (req: Request) => {
   // ── Parse request body ──
   let subject: string;
   let html_content: string;
+  let newsId: string | null = null;
 
   try {
     const body = await req.json();
     subject = body.subject?.trim();
     html_content = body.html_content?.trim();
+    newsId = typeof body.news_id === "string" ? body.news_id : null;
   } catch {
     return jsonResponse({ error: "Invalid JSON body" }, 400);
   }
 
+  if (newsId) {
+    // Claim the digest first (emailed_at is set only if still empty), so a double click or a
+    // retry can never email subscribers twice.
+    const { data: claimed, error: claimError } = await supabaseClient.from("news")
+      .update({ emailed_at: new Date().toISOString() })
+      .eq("id", newsId).is("emailed_at", null).contains("tags", ["weekly-digest"])
+      .select("id, title, body, email_subject").maybeSingle();
+    if (claimError) return jsonResponse({ error: "Could not load digest: " + claimError.message }, 500);
+    if (!claimed) return jsonResponse({ error: "This digest was already emailed (or is not a weekly digest)." }, 409);
+    subject = (claimed.email_subject || claimed.title || "").trim();
+    html_content = (claimed.body || "").trim();
+  }
+
   if (!subject || !html_content) {
+    if (newsId) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
     return jsonResponse({ error: "Both 'subject' and 'html_content' are required" }, 400);
   }
 
@@ -112,10 +129,12 @@ serve(async (req: Request) => {
     .is("unsubscribed_at", null);
 
   if (fetchError) {
+    if (newsId) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
     return jsonResponse({ error: "Failed to fetch subscribers: " + fetchError.message }, 500);
   }
 
   if (!subscribers || subscribers.length === 0) {
+    if (newsId) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
     return jsonResponse({ message: "No confirmed subscribers found", sent: 0, failed: 0, total: 0 });
   }
 
@@ -151,6 +170,13 @@ serve(async (req: Request) => {
       errors.push({ email: `${batch[0].email} (+${batch.length - 1} more)`, error: (e as Error).message });
     }
     if (i + BATCH_SIZE < subscribers.length) await sleep(BATCH_DELAY_MS);
+  }
+  if (newsId) {
+    // Nothing went out: release the claim so the admin can try again. Otherwise publish it.
+    const done = sent === 0
+      ? { emailed_at: null }
+      : { emailed_count: sent, status: "published", published_at: new Date().toISOString() };
+    await supabaseClient.from("news").update(done).eq("id", newsId);
   }
   return jsonResponse({
     message: `Newsletter sent: ${sent} succeeded, ${failed} failed out of ${subscribers.length} subscribers`,

@@ -79,12 +79,14 @@ def _parse_feed(content):
         if not vid:
             continue
         thumb = e.find("media:group/media:thumbnail", NS)
+        desc = (e.findtext("media:group/media:description", default="", namespaces=NS) or "").strip()
         videos.append({
             "video_id": vid,
             "title": e.findtext("a:title", default="", namespaces=NS)[:300],
             "url": "https://www.youtube.com/watch?v=" + vid,
             "thumbnail_url": thumb.get("url") if thumb is not None else "https://i.ytimg.com/vi/%s/hqdefault.jpg" % vid,
             "published_at": e.findtext("a:published", default=None, namespaces=NS),
+            "description": desc[:2000] or None,
         })
     return title, videos
 
@@ -194,6 +196,42 @@ def scrape_channel_videos(channel_id):
     return title, vids
 
 
+# ── channel details (avatar, subscribers) from the public channel page ─────
+_MULT = {"K": 1e3, "M": 1e6, "B": 1e9}
+
+def _count(txt):
+    """'14.5K' -> 14500, '1,234' -> 1234."""
+    m = re.match(r"([\d.,]+)\s*([KMB]?)", txt or "")
+    if not m:
+        return None
+    return int(round(float(m.group(1).replace(",", "")) * _MULT.get(m.group(2), 1)))
+
+
+def fetch_channel_details(channel_id):
+    try:
+        r = requests.get("https://www.youtube.com/channel/%s?hl=en" % channel_id, headers=BROWSER_UA, timeout=25)
+        if r.status_code != 200:
+            return None
+    except Exception:
+        return None
+    html = r.text
+    out = {}
+    img = re.search(r'<meta property="og:image" content="(https://yt3\.[^"]+)"', html)
+    if img:
+        out["avatar_url"] = re.sub(r"=s\d+-", "=s176-", img.group(1))
+    subs = re.search(r'"([\d.,]+[KMB]?) subscribers?"', html)
+    if subs:
+        out["subscriber_text"] = subs.group(1)
+        out["subscriber_count"] = _count(subs.group(1))
+    # the header reads "<n> subscribers" then "<n> videos"; earlier "1 video" strings are playlists
+    vids = re.search(r'"([\d.,]+[KMB]?) videos?"', html[subs.end():] if subs else html)
+    if vids:
+        out["total_videos"] = _count(vids.group(1))
+    if out:
+        out["details_at"] = datetime.now(timezone.utc).isoformat()
+    return out or None
+
+
 # ── Supabase REST ───────────────────────────────────────────────────────────
 class Supa:
     def __init__(self, url, key):
@@ -209,6 +247,12 @@ class Supa:
                               data=json.dumps(rows[i:i + 200]), timeout=30)
             if r.status_code >= 300:
                 raise RuntimeError("%s upsert failed %s: %s" % (table, r.status_code, r.text[:300]))
+
+    def patch(self, table, match, row):
+        r = requests.patch(self.url + table, headers={**self.h, "Prefer": "return=minimal"},
+                           params=match, data=json.dumps(row), timeout=30)
+        if r.status_code >= 300:
+            raise RuntimeError("%s patch failed %s: %s" % (table, r.status_code, r.text[:300]))
 
     def select(self, table, params):
         r = requests.get(self.url + table, headers=self.h, params=params, timeout=30)
@@ -246,10 +290,34 @@ def discover(api_key, known_ids, supa, dry):
     return found
 
 
+def sync_channel_details(supa, channel_rows, force=False):
+    """Avatar and subscriber count change slowly: refresh weekly (Sundays), or when missing."""
+    try:
+        have = {r["slug"]: r for r in supa.select("youtube_channels", {"select": "slug,avatar_url,details_at"})}
+    except Exception as e:
+        log("  ! details: cannot read channels (%s); is the 2026-10-10 migration applied?" % e)
+        return
+    sunday = datetime.now(timezone.utc).isoweekday() == 7
+    done = 0
+    for row in channel_rows:
+        cur = have.get(row["slug"], {})
+        if not row.get("channel_id") or not row.get("active", True):
+            continue
+        if not (force or sunday or not cur.get("avatar_url")):
+            continue
+        det = fetch_channel_details(row["channel_id"])
+        if det:
+            supa.patch("youtube_channels", {"slug": "eq." + row["slug"]}, det)
+            done += 1
+        time.sleep(0.6)
+    log("channel details refreshed: %d" % done)
+
+
 # ── main ────────────────────────────────────────────────────────────────────
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="fetch feeds but do not write to Supabase")
+    ap.add_argument("--details", action="store_true", help="refresh every channel's avatar and subscriber count now")
     args = ap.parse_args()
 
     with open(CHANNELS_FILE, encoding="utf-8") as f:
@@ -324,8 +392,14 @@ def main():
     # 4. supabase
     if supa:
         supa.upsert("youtube_channels", channel_rows, "slug")
-        supa.upsert("youtube_videos", all_videos, "video_id")
+        # RSS rows carry a description; scraped rows do not, so upsert them apart (a bulk upsert
+        # needs the same keys in every row, and must not blank out a description saved earlier)
+        with_desc = [v for v in all_videos if "description" in v]
+        without = [v for v in all_videos if "description" not in v]
+        supa.upsert("youtube_videos", with_desc, "video_id")
+        supa.upsert("youtube_videos", without, "video_id")
         log("supabase upsert ok")
+        sync_channel_details(supa, channel_rows, force=args.details)
 
     # 5. discovery
     api_key = os.environ.get("YOUTUBE_API_KEY")
