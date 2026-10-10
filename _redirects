@@ -1,1 +1,12 @@
+# Old category slugs with '&' moved to plain slugs (2026-10-11)
+/category/waldorf-&-education  /category/waldorf-education  301
+/category/arts-&-eurythmy  /category/arts-eurythmy  301
+/category/community-&-camphill  /category/community-camphill  301
+/category/societies-&-organizations  /category/societies-organizations  301
+/category/groups-&-circles  /category/groups-circles  301
+/category/podcasts-&-media  /category/podcasts-media  301
+/category/free-&-sharing  /category/free-sharing  301
+/category/jobs-&-volunteering  /category/jobs-volunteering  301
+/category/housing-&-room-rent  /category/housing-room-rent  301
+/category/books-&-library  /category/books-library  301
 /*    /index.html   200

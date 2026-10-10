@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://maps.googleapis.com https://maps.gstatic.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://maps.googleapis.com https://maps.gstatic.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://nominatim.openstreetmap.org https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sophia Commons | Anthroposophical Community Directory</title>
 
@@ -213,7 +213,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lora:wght@400;600;700&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.13.0">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.14.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -779,7 +779,7 @@
   <div class="seclabel" style="margin-bottom:10px;">Podcasts &amp; Media &nbsp;·&nbsp; 23 shows, channels, and platforms</div>
   <div id="yt-channels-block"></div>
   <div class="twocol">
-    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="podcasts.podcasts_heading">Podcasts</h3><a href="/category/podcasts-%26-media?q=podcast" onclick="showCategory('Podcasts & Media',false,{q:'podcast'});return false;">all podcasts →</a></div>
+    <div class="listblock reveal"><div class="listblock-head"><h3 data-i18n="podcasts.podcasts_heading">Podcasts</h3><a href="/category/podcasts-media?q=podcast" onclick="showCategory('Podcasts & Media',false,{q:'podcast'});return false;">all podcasts →</a></div>
       <div class="listblock-body">
         <div class="lrow"><a class="ltitle" href="https://anthroposophy.org/podcast/" target="_blank">ASA Official Podcast</a><span class="lmeta">Spotify / RSS</span><span class="lv">✓</span></div>
         <div class="lrow"><a class="ltitle" href="https://goetheanum.transistor.fm/" target="_blank">Goetheanum Podcast</a><span class="lmeta">Transistor</span><span class="lv">✓</span></div>
@@ -825,13 +825,14 @@
     </div>
     <div id="dir-map"></div>
     <div class="map-legend">
-      <span><span class="dot" style="background:#b04522;"></span>Societies</span>
-      <span><span class="dot" style="background:#8c3a28;"></span>Waldorf</span>
-      <span><span class="dot" style="background:#5a7a3a;"></span>Biodynamic</span>
-      <span><span class="dot" style="background:#3a6a8a;"></span>Medicine</span>
-      <span><span class="dot" style="background:#7a5a9a;"></span>Camphill</span>
-      <span><span class="dot" style="background:#c49030;"></span>Eurythmy</span>
-      <span><span class="dot" style="background:#6a4a3a;"></span>Chr. Community</span>
+      <span><span class="dot" style="background:#0072B2;"></span>Societies</span>
+      <span><span class="dot" style="background:#D55E00;"></span>Waldorf</span>
+      <span><span class="dot" style="background:#009E73;"></span>Biodynamic</span>
+      <span><span class="dot" style="background:#56B4E9;"></span>Medicine</span>
+      <span><span class="dot" style="background:#CC79A7;"></span>Camphill</span>
+      <span><span class="dot" style="background:#E69F00;"></span>Eurythmy</span>
+      <span><span class="dot" style="background:#5B3A8C;"></span>The Christian Community</span>
+      <span><span class="dot" style="background:#8C6D46;"></span>Eldercare</span>
     </div>
   </div>
 
@@ -1863,7 +1864,7 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.13.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.14.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
@@ -1900,8 +1901,8 @@
     _sb = null;
   }
 </script>
-<script src="/i18n.js?v=1.13.0"></script>
-<script src="/sophia_commons_v9.js?v=1.13.0"></script>
+<script src="/i18n.js?v=1.14.0"></script>
+<script src="/sophia_commons_v9.js?v=1.14.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

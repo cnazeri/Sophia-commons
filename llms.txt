@@ -7,16 +7,17 @@ The site is free to use. Listings can be suggested by anyone and are reviewed be
 ## Directory
 
 - [Full directory](https://sophiacommons.org/directory): all approved organizations, searchable by name, tag, category and country
+- Every category and region page can sort its listings by distance from a town, postcode or the visitor's location ("Find nearest"), and the directory map shows every geocoded listing
 - [Browse by category](https://sophiacommons.org/browse): overview of all categories and regions
-- [Waldorf and education](https://sophiacommons.org/category/waldorf-%26-education): Waldorf/Steiner schools, kindergartens and teacher trainings
+- [Waldorf and education](https://sophiacommons.org/category/waldorf-education): Waldorf/Steiner schools, kindergartens and teacher trainings
 - [Biodynamic agriculture](https://sophiacommons.org/category/biodynamic-agriculture): biodynamic farms, Demeter associations, training
-- [Arts and eurythmy](https://sophiacommons.org/category/arts-%26-eurythmy): eurythmy schools and ensembles, speech, art therapy
+- [Arts and eurythmy](https://sophiacommons.org/category/arts-eurythmy): eurythmy schools and ensembles, speech, art therapy
 - [Anthroposophic medicine](https://sophiacommons.org/category/anthroposophic-medicine): clinics, practitioners, pharmacies, medical associations
 - [The Christian Community](https://sophiacommons.org/category/the-christian-community): congregations and centers of The Christian Community (Die Christengemeinschaft) worldwide, with addresses and a map
-- [Community and Camphill](https://sophiacommons.org/category/community-%26-camphill): Camphill villages and intentional communities
+- [Community and Camphill](https://sophiacommons.org/category/community-camphill): Camphill villages and intentional communities
 - [Eldercare](https://sophiacommons.org/eldercare): anthroposophical care homes and senior communities
-- [Societies and organizations](https://sophiacommons.org/category/societies-%26-organizations): Anthroposophical Society branches and national societies
-- [Groups and circles](https://sophiacommons.org/category/groups-%26-circles) and [esoteric studies](https://sophiacommons.org/category/esoteric-studies): study groups and reading circles
+- [Societies and organizations](https://sophiacommons.org/category/societies-organizations): Anthroposophical Society branches and national societies
+- [Groups and circles](https://sophiacommons.org/category/groups-circles) and [esoteric studies](https://sophiacommons.org/category/esoteric-studies): study groups and reading circles
 - [Online resources](https://sophiacommons.org/category/online-resources) and [social media](https://sophiacommons.org/category/social-media)
 
 ## By region

@@ -477,7 +477,20 @@ const catMeta = {
   'social media':              { dirCat: 'social_media', desc: 'Facebook groups, YouTube channels, X/Twitter accounts, Instagram pages, Discord communities, and other social media for the anthroposophical movement.' }
 };
 
+// Category URL slugs: plain ASCII ("waldorf-education"). Old "%26" slugs still resolve.
+function _catSlug(name) {
+  return String(name || '').toLowerCase().replace(/&/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+function _catKeyFromName(name) {
+  var k = String(name || '').toLowerCase();
+  if (catMeta[k]) return k;
+  var slug = _catSlug(k);
+  for (var key in catMeta) { if (_catSlug(key) === slug) return key; }
+  return k;
+}
+
 function showCategory(name, skipPush, opts) {
+  name = _catKeyFromName(name);
   opts = opts || {};
   captureCurrentSection('category');
 
@@ -490,11 +503,12 @@ function showCategory(name, skipPush, opts) {
   document.getElementById('cat-page-desc').textContent = t(catI18nKey) !== catI18nKey ? t(catI18nKey) : (meta.desc || t('catpage.default_browse_desc'));
   document.getElementById('cat-page-content').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + t('common.loading') + '</div>';
   showSec('category', true);
-  updateSEOMeta(displayName + ' | Sophia Commons Directory', meta.desc || t('catpage.default_seo_desc'), '/category/' + encodeURIComponent(name));
+  // Canonical uses the same slug as the pushed URL and the sitemap (/category/waldorf-education)
+  updateSEOMeta(displayName + ' | Sophia Commons Directory', meta.desc || t('catpage.default_seo_desc'), '/category/' + _catSlug(key));
 
   // Push SEO-friendly category URL
   if (!skipPush) {
-    var slug = encodeURIComponent(key.replace(/\s+/g, '-'));
+    var slug = _catSlug(key);
     var path = '/category/' + slug + (opts.q ? '?q=' + encodeURIComponent(opts.q) : '');
     if (window.location.pathname + window.location.search !== path) {
       history.pushState({ type: 'category', name: name, q: opts.q || '' }, '', path);
@@ -514,7 +528,7 @@ async function loadCategoryPage(catKey, dirCat, opts) {
   if (sbReady() && dirCat) {
     try {
       var q0 = _sb.from('directory_entries')
-        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags, category')
+        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags, category, city, latitude, longitude')
         .eq('status', 'approved');
       q0 = Array.isArray(dirCat) ? q0.in('category', dirCat) : q0.eq('category', dirCat);
       var { data } = await q0.order('is_verified', { ascending: false }).order('organization_name').limit(500);
@@ -617,6 +631,7 @@ async function loadCategoryPage(catKey, dirCat, opts) {
 
 // ── Directory list with filter (category, region and verified pages) ──
 function _dirListShell(entries, q) {
+  window._catNear = null;   // a new list starts unsorted
   // Most common tags in this set become one-tap filter chips
   var tc = {};
   entries.forEach(function(d) { (d.tags || []).forEach(function(tg) { tc[tg] = (tc[tg] || 0) + 1; }); });
@@ -626,9 +641,71 @@ function _dirListShell(entries, q) {
     + '<div class="listblock-head"><h3>' + t('catpage.organizations_heading') + '</h3><span class="dir-count" id="cat-count"></span></div>'
     + '<div class="dir-filter">'
     +   '<input type="search" id="cat-filter" aria-label="' + esc(t('dir.filter_aria', 'Filter these listings')) + '" placeholder="' + esc(t('dir.filter_placeholder', 'Filter {count} listings by name, place or topic').replace('{count}', entries.length)) + '" value="' + esc(q) + '" oninput="_applyCatFilter(this.value)">'
+    +   '<div class="dir-near" role="search">'
+    +     '<label for="cat-near" class="sr-only">' + esc(t('dir.near_label', 'Town or postcode')) + '</label>'
+    +     '<input type="text" id="cat-near" autocomplete="postal-code" placeholder="' + esc(t('dir.near_placeholder', 'Town or postcode, to sort by distance')) + '" onkeydown="if(event.key===\'Enter\'){_catNearSearch(this.value);}">'
+    +     '<button type="button" class="dir-near-btn" onclick="_catNearSearch(document.getElementById(\'cat-near\').value)">' + esc(t('dir.near_btn', 'Find nearest')) + '</button>'
+    +     '<button type="button" class="dir-near-btn dir-near-geo" onclick="_catNearGeo()">' + esc(t('dir.near_geo', 'Use my location')) + '</button>'
+    +   '</div>'
+    +   '<div id="cat-near-status" class="dir-near-status" role="status"></div>'
     +   (chips.length ? '<div class="dir-chips">' + chips.map(function(c) { return '<button type="button" class="dir-chip" onclick="_setCatFilter(\'' + escJs(c) + '\')">' + esc(c) + '</button>'; }).join('') + '</div>' : '')
     + '</div>'
     + '<div class="listblock-body" id="cat-entries"></div></div>';
+}
+
+// ── Find near me (category and region pages) ──
+function _distKm(lat1, lng1, lat2, lng2) {
+  var R = 6371, toR = Math.PI / 180;
+  var dLat = (lat2 - lat1) * toR, dLng = (lng2 - lng1) * toR;
+  var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * toR) * Math.cos(lat2 * toR) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function _fmtDist(km) {
+  var miles = /^en-(US|GB)$/.test(navigator.language || '');
+  var v = miles ? km * 0.621371 : km;
+  return (v < 10 ? v.toFixed(1) : Math.round(v)) + (miles ? ' mi' : ' km');
+}
+function _catNearSet(lat, lng, label) {
+  window._catNear = { lat: lat, lng: lng, label: label };
+  var st = document.getElementById('cat-near-status');
+  if (st) st.innerHTML = esc(t('dir.near_sorted', 'Sorted by distance from {place}.').replace('{place}', label))
+    + ' <button type="button" class="dir-near-clear" onclick="_catNearClear()">' + esc(t('dir.near_clear', 'Clear')) + '</button>';
+  var f = document.getElementById('cat-filter');
+  if (f) f.value = '';
+  _applyCatFilter('');
+}
+function _catNearClear() {
+  window._catNear = null;
+  var st = document.getElementById('cat-near-status'); if (st) st.textContent = '';
+  var n = document.getElementById('cat-near'); if (n) n.value = '';
+  var f = document.getElementById('cat-filter'); _applyCatFilter(f ? f.value : '');
+}
+var _nearLastCall = 0;
+async function _catNearSearch(place) {
+  place = String(place || '').trim();
+  var st = document.getElementById('cat-near-status');
+  if (!place) { if (st) st.textContent = t('dir.near_need', 'Type a town or postcode first.'); return; }
+  if (Date.now() - _nearLastCall < 1100) return;   // OpenStreetMap asks for at most 1 lookup per second
+  _nearLastCall = Date.now();
+  if (st) st.textContent = t('dir.near_looking', 'Looking up {place}...').replace('{place}', place);
+  try {
+    var r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(place), { headers: { 'Accept-Language': (document.documentElement.lang || 'en') } });
+    var j = await r.json();
+    if (!j || !j.length) { if (st) st.textContent = t('dir.near_notfound', 'Could not find "{place}". Try a town name or a postcode with the country.').replace('{place}', place); return; }
+    _catNearSet(parseFloat(j[0].lat), parseFloat(j[0].lon), j[0].display_name.split(',').slice(0, 2).join(','));
+  } catch (e) {
+    if (st) st.textContent = t('dir.near_error', 'The place lookup is not available right now. Please try again.');
+  }
+}
+function _catNearGeo() {
+  var st = document.getElementById('cat-near-status');
+  if (!navigator.geolocation) { if (st) st.textContent = t('dir.geo_unsupported', 'Your browser cannot share its location. Type a town instead.'); return; }
+  if (st) st.textContent = t('dir.geo_asking', 'Asking your browser for your location...');
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    _catNearSet(pos.coords.latitude, pos.coords.longitude, t('dir.your_location', 'your location'));
+  }, function() {
+    if (st) st.textContent = t('dir.geo_denied', 'Location was not shared. Type a town or postcode instead.');
+  }, { timeout: 10000, maximumAge: 600000 });
 }
 
 function _setCatFilter(v) {
@@ -649,15 +726,27 @@ function _applyCatFilter(q) {
   });
   var note = '';
   if (words.length && !list.length) {
-    note = '<div class="empty-note">' + esc(t('dir.no_match', 'No listings match "{q}". Showing all {count} instead.').replace('{q}', q).replace('{count}', entries.length)) + '</div>';
-    list = entries;
+    note = '<div class="empty-note">' + esc(t('dir.no_match_honest', 'No listings match "{q}".').replace('{q}', q))
+      + ' <button type="button" class="dir-near-btn" onclick="_catNearSearch(\'' + escJs(q) + '\')">' + esc(t('dir.nearest_to', 'Show the nearest to {q}').replace('{q}', q)) + '</button>'
+      + ' <button type="button" class="dir-near-btn" onclick="_setCatFilter(\'' + escJs(q) + '\')">' + esc(t('dir.see_all', 'See all {count}').replace('{count}', entries.length)) + '</button></div>';
+    box.innerHTML = note;
+    var cnt0 = document.getElementById('cat-count');
+    if (cnt0) cnt0.textContent = t('dir.count_some', '{shown} of {count} listings').replace('{shown}', 0).replace('{count}', entries.length);
+    return;
+  }
+  var near = window._catNear;
+  if (near) {
+    list = list.map(function(d) {
+      var km = (d.latitude != null && d.longitude != null) ? _distKm(near.lat, near.lng, d.latitude, d.longitude) : null;
+      return Object.assign({}, d, { _km: km });
+    }).sort(function(a, b) { return (a._km == null) - (b._km == null) || (a._km || 0) - (b._km || 0); });
   }
   var cnt = document.getElementById('cat-count');
   if (cnt) cnt.textContent = list.length === entries.length
     ? t('dir.count_all', '{count} listings').replace('{count}', entries.length)
     : t('dir.count_some', '{shown} of {count} listings').replace('{shown}', list.length).replace('{count}', entries.length);
   document.querySelectorAll('.dir-chip').forEach(function(b) { b.classList.toggle('active', !!q && b.textContent.toLowerCase() === q); });
-  var groupByCat = window._catGroupByCategory;
+  var groupByCat = window._catGroupByCategory && !near;
   var html = note;
   var lastCat = null;
   list.forEach(function(d) {
@@ -667,6 +756,7 @@ function _applyCatFilter(q) {
     }
     var v = d.is_verified ? '<span class="dir-verified" title="Verified">&#10003;</span>' : '';
     var loc = [d.location, d.country].filter(Boolean).join(', ');
+    if (d._km != null) loc = _fmtDist(d._km) + (loc ? ' · ' + loc : '');
     html += '<div class="dir-row">'
       + '<div class="dir-row-main">' + v
       + '<a class="ltitle" href="/listing/' + esc(d.id) + '" onclick="showDetail(\'directory\',\'' + escJs(d.id) + '\');return false;">' + esc(d.organization_name) + '</a>'
@@ -694,10 +784,10 @@ function _catLabel(slug) {
 var REGIONS = {
   'north-america': { label: 'North America', countries: ['USA', 'United States', 'Canada', 'Mexico'] },
   'latin-america': { label: 'Latin America', countries: ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru', 'Mexico'] },
-  'europe':        { label: 'Europe', countries: ['Germany', 'Switzerland', 'Austria', 'France', 'Netherlands', 'Norway', 'Sweden', 'Denmark', 'Finland', 'Italy', 'Spain', 'Czech Republic', 'Hungary', 'Romania', 'Estonia', 'Latvia', 'Russia', 'Belgium', 'Portugal', 'Poland'] },
+  'europe':        { label: 'Europe', countries: ['Germany', 'Switzerland', 'Austria', 'France', 'Netherlands', 'Norway', 'Sweden', 'Denmark', 'Finland', 'Italy', 'Spain', 'Czech Republic', 'Hungary', 'Romania', 'Estonia', 'Latvia', 'Russia', 'Belgium', 'Portugal', 'Poland', 'Lithuania', 'Luxembourg', 'Slovenia', 'Croatia', 'Georgia'] },
   'uk-ireland':    { label: 'UK & Ireland', countries: ['UK', 'United Kingdom', 'Ireland'] },
-  'africa':        { label: 'Africa', countries: ['South Africa', 'Kenya', 'Tanzania', 'Botswana', 'Egypt'] },
-  'asia':          { label: 'Asia', countries: ['India', 'Japan', 'China', 'South Korea', 'Taiwan', 'Thailand', 'Philippines', 'Vietnam', 'Israel'] },
+  'africa':        { label: 'Africa', countries: ['South Africa', 'Kenya', 'Tanzania', 'Botswana', 'Egypt', 'Namibia'] },
+  'asia':          { label: 'Asia', countries: ['India', 'Japan', 'China', 'South Korea', 'Taiwan', 'Thailand', 'Philippines', 'Vietnam', 'Israel', 'Malaysia', 'Indonesia', 'Turkey'] },
   'australia-nz':  { label: 'Australia & New Zealand', countries: ['Australia', 'New Zealand'] },
   'international': { label: 'International & Online', countries: ['International', 'Online'] },
   'verified':      { label: 'Verified organizations', verified: true }
@@ -722,7 +812,7 @@ async function showRegion(key, skipPush, opts) {
   if (!sbReady()) { container.innerHTML = '<div class="empty-note">The directory is offline right now. Please try again shortly.</div>'; return; }
   try {
     var q = _sb.from('directory_entries')
-      .select('id, organization_name, description, location, country, is_verified, tags, category')
+      .select('id, organization_name, description, location, country, is_verified, tags, category, city, latitude, longitude')
       .eq('status', 'approved');
     q = r.verified ? q.eq('is_verified', true) : q.in('country', r.countries);
     var res = await q.order('category').order('organization_name').limit(1000);
@@ -807,7 +897,7 @@ function _catNameForBlock(block) {
 }
 
 function _catPath(name, q) {
-  return '/category/' + encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-')) + (q ? '?q=' + encodeURIComponent(q) : '');
+  return '/category/' + _catSlug(name) + (q ? '?q=' + encodeURIComponent(q) : '');
 }
 
 function _wirePlaceholderLinks() {
@@ -913,15 +1003,15 @@ Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
 
 function _getSecMeta() {
   return {
-    home:      { title: t('meta.title', "Sophia Commons | Anthroposophical Community Directory"), desc: t('meta.og_description') },
-    news:      { title: t('meta.news_title', "News | Sophia Commons"), desc: t('meta.news_desc') },
-    events:    { title: t('meta.events_title', "Events & Calendar | Sophia Commons"), desc: t('meta.events_desc') },
-    browse:    { title: t('meta.browse_title', "Browse Categories | Sophia Commons"), desc: t('meta.browse_desc') },
-    directory: { title: t('meta.directory_title', "Global Directory | Sophia Commons"), desc: t('meta.directory_desc') },
+    home:      { title: t('meta.title', "Sophia Commons | Anthroposophical Community Directory"), desc: t('meta.og_description', 'The free global directory for the anthroposophical community. Find Waldorf schools, biodynamic farms, Camphill communities, eurythmy, anthroposophic medicine, events, and more.') },
+    news:      { title: t('meta.news_title', "News | Sophia Commons"), desc: t('meta.news_desc', 'Latest news from the anthroposophical world - Waldorf education, biodynamic agriculture, eurythmy, Camphill communities, and spiritual science.') },
+    events:    { title: t('meta.events_title', "Events & Calendar | Sophia Commons"), desc: t('meta.events_desc', 'Upcoming anthroposophical events, conferences, workshops, study groups, and retreats worldwide.') },
+    browse:    { title: t('meta.browse_title', "Browse Categories | Sophia Commons"), desc: t('meta.browse_desc', 'Browse Waldorf schools, biodynamic farms, Camphill communities, eurythmy programs, anthroposophic medicine, and more by category.') },
+    directory: { title: t('meta.directory_title', "Global Directory | Sophia Commons"), desc: t('meta.directory_desc', 'Interactive map and directory of 430+ anthroposophical organizations across 30+ countries worldwide.') },
     books:     { title: t('meta.books_title', 'Books & Library | Sophia Commons'), desc: t('meta.books_desc', 'Rudolf Steiner catalog and the top 50 anthroposophical books.') },
     podcasts:  { title: t('meta.podcasts_title', 'Podcasts & Media | Sophia Commons'), desc: t('meta.podcasts_desc', 'Anthroposophical podcasts, YouTube channels, archives and media.') },
-    memorial:  { title: t('meta.memorial_title', "In Memoriam | Sophia Commons"), desc: t('meta.memorial_desc') },
-    marketplace: { title: t('meta.marketplace_title', "Marketplace | Sophia Commons"), desc: t('meta.marketplace_desc') },
+    memorial:  { title: t('meta.memorial_title', "In Memoriam | Sophia Commons"), desc: t('meta.memorial_desc', 'Honoring members of the anthroposophical community who have crossed the threshold.') },
+    marketplace: { title: t('meta.marketplace_title', "Marketplace | Sophia Commons"), desc: t('meta.marketplace_desc', 'Buy, sell, share and swap within the anthroposophical community: books, crafts, biodynamic goods and more.') },
     about:     { title: 'About | Sophia Commons', desc: 'Sophia Commons is a free, community-maintained directory for the anthroposophical world.' },
     privacy:   { title: 'Privacy | Sophia Commons', desc: 'What Sophia Commons collects, why, and how to have your data corrected or deleted.' },
     terms:     { title: 'Terms of use | Sophia Commons', desc: 'The simple terms for using and contributing to the Sophia Commons directory.' }
@@ -941,11 +1031,17 @@ function updateSEOMeta(title, desc, path) {
   if (twTitle) twTitle.setAttribute('content', title);
   var twDesc = document.querySelector('meta[name="twitter:description"]');
   if (twDesc) twDesc.setAttribute('content', desc);
+  var fullUrl = 'https://sophiacommons.org' + (path || '/');
   var canonical = document.querySelector('link[rel="canonical"]');
-  if (canonical) canonical.setAttribute('href', 'https://sophiacommons.org' + (path || '/'));
+  if (canonical) canonical.setAttribute('href', fullUrl);
+  var ogUrl = document.querySelector('meta[property="og:url"]');
+  if (ogUrl) ogUrl.setAttribute('content', fullUrl);
+  var twUrl = document.querySelector('meta[name="twitter:url"]');
+  if (twUrl) twUrl.setAttribute('content', fullUrl);
 }
 
 function showSec(id, skipPush) {
+  var oldLd = document.getElementById('detail-jsonld'); if (oldLd) oldLd.remove();
   if (!document.getElementById('sec-' + id)) id = 'home';
   document.querySelectorAll('.pagesec').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('#mainnav button').forEach(b => b.classList.remove('active'));
@@ -2290,7 +2386,17 @@ const mapLocs = [
   {name:'Rudolf Steiner Archive',cat:'societies',lat:44.76,lng:-85.62,city:'Interlochen, MI'},
   {name:'SteinerBooks',cat:'societies',lat:42.19,lng:-73.36,city:'Great Barrington, MA'},
 ];
-const catColors = {societies:'#b04522',waldorf:'#8c3a28',biodynamic:'#5a7a3a',medicine:'#3a6a8a',camphill:'#7a5a9a',eurythmy:'#c49030',cc:'#6a4a3a',eldercare:'#C4907A'};
+// Colorblind-friendly palette (Okabe-Ito based) so neighbouring categories are easy to tell apart
+const catColors = {societies:'#0072B2',waldorf:'#D55E00',biodynamic:'#009E73',medicine:'#56B4E9',camphill:'#CC79A7',eurythmy:'#E69F00',cc:'#5B3A8C',eldercare:'#8C6D46',online:'#666666',social_media:'#666666'};
+var _clusterer = null;
+function _loadClusterer() {
+  if (window.markerClusterer || document.getElementById('mc-lib')) return;
+  var sc = document.createElement('script');
+  sc.id = 'mc-lib';
+  sc.src = 'https://cdn.jsdelivr.net/npm/@googlemaps/markerclusterer@2.5.3/dist/index.min.js';
+  sc.onload = function() { if (window.google && window.google.maps && map) { var f = document.getElementById('map-filter'); renderMarkers(f ? f.value : 'all'); } };
+  document.head.appendChild(sc);
+}
 let map, markers=[], infoWin, mapLoaded=false;
 var GMAPS_KEY = ['AIza','SyDP','gdBP','ghok','ctex','iuHE','mx1E','GlDD','a6wN','yh8'].join('');
 
@@ -2306,6 +2412,7 @@ function _mapFallback() {
 
 function loadMap() {
   mapLoaded = true;
+  _loadClusterer();
   if (window.google && window.google.maps) { initMap(); return; }
   var script = document.createElement('script');
   script.src = 'https://maps.googleapis.com/maps/api/js?key=' + GMAPS_KEY + '&callback=initMap';
@@ -2369,15 +2476,17 @@ async function _loadDirectoryMapLocs() {
 }
 
 function renderMarkers(filter) {
+  if (_clusterer) { _clusterer.clearMarkers(); _clusterer = null; }
   markers.forEach(function(m) { m.setMap(null); });
   markers = [];
+  var useClusters = !!(window.markerClusterer && window.markerClusterer.MarkerClusterer);
   var all = mapLocs.concat(_mapDbLocs);
   var locs = filter === 'all' ? all : all.filter(function(l) { return l.cat === filter; });
   locs.forEach(function(loc) {
     var color = catColors[loc.cat] || '#888';
     var m = new google.maps.Marker({
       position: { lat: loc.lat, lng: loc.lng },
-      map: map,
+      map: useClusters ? null : map,
       title: loc.name + ' (' + ((document.querySelector('#map-filter option[value="' + loc.cat + '"]') || {}).textContent || loc.cat) + ')',
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
@@ -2400,6 +2509,7 @@ function renderMarkers(filter) {
     });
     markers.push(m);
   });
+  if (useClusters) _clusterer = new window.markerClusterer.MarkerClusterer({ map: map, markers: markers });
 }
 function filterMap() { renderMarkers(document.getElementById('map-filter').value); }
 
@@ -3976,6 +4086,14 @@ function rerenderForLang() {
   if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
   if (typeof SC_I18N !== 'undefined') SC_I18N.applyTranslations();
 }
+
+// Direct visits route before translations load: refresh the section's title/description afterwards
+window.addEventListener('i18n-ready', function() {
+  var act = document.querySelector('.pagesec.active');
+  var id = act && act.id ? act.id.replace(/^sec-/, '') : '';
+  var m = _getSecMeta()[id];
+  if (m) updateSEOMeta(m.title, m.desc, window.location.pathname);
+});
 
 // ── INIT: Load all data once Supabase AND i18n are ready ──
 var _allDataLoaded = false;
@@ -6226,3 +6344,7 @@ document.addEventListener('DOMContentLoaded', function () {
   renderVideoSpotlight();
   if (_secVisible('podcasts')) renderYouTubeChannels();
 });
+
+// Static pages built at deploy time (automation/prerender.mjs) carry a crawler summary in #prerender.
+// The app renders the real page, so remove the summary as soon as the script runs.
+(function() { var pr = document.getElementById('prerender'); if (pr) pr.remove(); })();

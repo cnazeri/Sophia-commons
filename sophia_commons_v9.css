@@ -2697,3 +2697,12 @@ footer li a { display: inline-block; padding: 10px 0; }
 #home-upcoming { min-height: 540px; }
 @media (min-width: 1025px) { #video-spotlight { min-height: 320px; } }
 .feat-ev-img { aspect-ratio: 96 / 116; }
+/* Find near me (category and region pages) */
+.dir-near { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.dir-near input { flex: 1 1 200px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; background: var(--elevated); color: var(--text-primary); }
+.dir-near-btn { min-height: 44px; padding: 8px 14px; border: 1px solid var(--gold); background: var(--gold); color: var(--on-gold); border-radius: 50px; font-family: 'Nunito Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+.dir-near-btn.dir-near-geo, .empty-note .dir-near-btn + .dir-near-btn { background: transparent; color: var(--gold-text); }
+.dir-near-btn:hover { filter: brightness(0.96); }
+.dir-near-status { font-size: 13px; color: var(--text-secondary); margin-top: 6px; min-height: 1px; }
+.dir-near-clear { background: none; border: none; color: var(--gold-text); text-decoration: underline; cursor: pointer; font-size: 13px; min-height: 32px; }
+.empty-note .dir-near-btn { margin: 8px 6px 0 0; }

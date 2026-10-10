@@ -21,6 +21,13 @@ for f in "${PUBLIC_FILES[@]}"; do
 done
 cp lang/*.json _deploy/lang/
 
+echo "→ Prerendering static pages and sitemap (falls back to the plain app if Supabase is unreachable)"
+if ! node automation/prerender.mjs _deploy; then
+  echo "  (prerender failed; deploying without static pages, keeping the repo sitemap)"
+  find _deploy -name '*.html' ! -name index.html ! -name 'google*.html' -delete 2>/dev/null || true
+  cp sitemap.xml _deploy/sitemap.xml
+fi
+
 echo "→ Checking for secrets"
 if grep -rIl -E 'sb_secret_|service_role|sbp_[0-9a-f]{20}|re_[A-Za-z0-9]{20}|RESEND_API_KEY=' _deploy; then
   echo "✗ A file above looks like it contains a secret. Deploy stopped." >&2
@@ -32,8 +39,8 @@ node --check _deploy/sophia_commons_v9.js
 node --check _deploy/i18n.js
 for j in _deploy/lang/*.json; do node -e "JSON.parse(require('fs').readFileSync('$j','utf8'))"; done
 
-echo "→ $(find _deploy -type f | wc -l | tr -d ' ') files ready:"
-find _deploy -type f | sed 's|^_deploy/|   |' | sort
+echo "→ $(find _deploy -type f | wc -l | tr -d ' ') files ready (top level shown):"
+find _deploy -maxdepth 1 -type f | sed 's|^_deploy/|   |' | sort
 
 if [ "${1:-}" = "--preview" ]; then
   npx --yes netlify-cli deploy --dir=_deploy
