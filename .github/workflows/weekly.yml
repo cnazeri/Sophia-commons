@@ -42,6 +42,12 @@ jobs:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}   # optional: enables new-channel discovery
         run: python3 automation/youtube_sync.py
 
+      - name: Collect news from anthroposophical feeds (pending until the admin publishes)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python3 automation/news_roundup.py
+
       - name: Check every outbound link and resource
         if: steps.when.outputs.links == 'true'
         run: python3 automation/link_check.py

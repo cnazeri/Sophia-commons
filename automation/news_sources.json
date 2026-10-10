@@ -1,0 +1,14 @@
+{
+  "note": "RSS feeds read by automation/news_roundup.py. New articles arrive as pending news for the admin to publish.",
+  "sources": [
+    { "name": "Goetheanum", "feed": "https://goetheanum.ch/en/rss", "lang": "EN", "topic": "goetheanum" },
+    { "name": "Das Goetheanum (weekly)", "feed": "https://dasgoetheanum.com/feed/", "lang": "DE", "topic": "goetheanum" },
+    { "name": "Anthroposophical Society in Great Britain", "feed": "https://www.anthroposophy.org.uk/feed/", "lang": "EN", "topic": "society" },
+    { "name": "Biodynamic Association UK", "feed": "https://www.biodynamic.org.uk/feed/", "lang": "EN", "topic": "biodynamic" },
+    { "name": "Biodynamic Federation Demeter International", "feed": "https://www.demeter.net/feed/", "lang": "EN", "topic": "biodynamic" },
+    { "name": "Waldorf Today", "feed": "https://www.waldorftoday.com/feed/", "lang": "EN", "topic": "waldorf" },
+    { "name": "Association of Waldorf Schools of North America", "feed": "https://www.waldorfeducation.org/rss", "lang": "EN", "topic": "waldorf" },
+    { "name": "Die Christengemeinschaft", "feed": "https://www.christengemeinschaft.de/feed/", "lang": "DE", "topic": "christian-community" },
+    { "name": "LILIPOH Magazine", "feed": "https://lilipoh.com/feed/", "lang": "EN", "topic": "health" }
+  ]
+}

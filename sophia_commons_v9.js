@@ -147,7 +147,10 @@ function renderDirectoryDetail(d) {
   if (d.phone) actions += '<a class="btn-secondary-detail" href="tel:' + esc(d.phone) + '">' + t('detail.call') + ' &#9742;</a>';
 
   var pic = d.photo_url ? '<figure class="detail-pic' + (d.photo_url.indexOf('#contain') !== -1 ? ' is-logo' : '') + '"><img src="' + escUrl(_imgSized(d.photo_url.split('#')[0], 720)) + '" alt="' + esc(d.organization_name) + '" loading="lazy">'
-    + (d.website_url ? '<figcaption>' + esc(t('dir.pic_credit', 'Image from')) + ' <a href="' + escUrl(d.website_url) + '" target="_blank" rel="noopener">' + esc(d.website_url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '')) + '</a></figcaption>' : '') + '</figure>' : '';
+    + (d.photo_credit
+        // Wikimedia Commons photos: "Author, License, via Wikimedia Commons|<file page>"
+        ? '<figcaption>' + esc(t('dir.photo', 'Photo')) + ': <a href="' + escUrl(d.photo_credit.split('|')[1] || '') + '" target="_blank" rel="noopener">' + esc(d.photo_credit.split('|')[0]) + '</a></figcaption>'
+        : (d.website_url ? '<figcaption>' + esc(t('dir.pic_credit', 'Image from')) + ' <a href="' + escUrl(d.website_url) + '" target="_blank" rel="noopener">' + esc(d.website_url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '')) + '</a></figcaption>' : '')) + '</figure>' : '';
   return '<div class="detail-hero">'
     + pic
     + badges
@@ -4488,6 +4491,7 @@ function adminSwitchTab(tab) {
   else if (tab === 'reports') loadAdminReports('pending');
   else if (tab === 'traffic') refreshDashboard();
   else if (tab === 'digest') { loadDigestDrafts(); loadDigestHistory(); }
+  else if (tab === 'newsq') loadNewsQueue();
   else if (tab === 'members') loadAdminMembers();
   else if (tab === 'activity') loadAdminActivity();
 }
@@ -5966,6 +5970,48 @@ function fillDashTable(tableId, countsObj, limit) {
     html += '<tr><td>' + escHtml(entry[0]) + '</td><td>' + entry[1] + '</td><td class="bar-cell"><span class="mini-bar" style="width:' + pct + '%"></span></td></tr>';
   });
   tbody.innerHTML = html || '<tr><td colspan="3" style="color:var(--text-muted);text-align:center;padding:12px;">No data yet</td></tr>';
+}
+
+// ══════════════════════════════════════════
+//  NEWS QUEUE: roundup articles (automation/news_roundup.py) waiting for the admin
+// ══════════════════════════════════════════
+async function loadNewsQueue() {
+  var el = document.getElementById('newsq-list');
+  if (!el || !isAdmin() || !sbReady()) return;
+  el.innerHTML = '<div class="admin-empty">Loading...</div>';
+  var r = await _sb.from('news').select('id, title, excerpt, source_name, source_url, published_at, tags')
+    .eq('status', 'pending').contains('tags', ['roundup']).order('published_at', { ascending: false }).limit(200);
+  if (r.error) { el.innerHTML = '<div class="admin-empty">Could not load: ' + esc(r.error.message) + '</div>'; return; }
+  var items = r.data || [];
+  if (!items.length) { el.innerHTML = '<div class="admin-empty">No articles waiting. New ones arrive each morning.</div>'; return; }
+  el.innerHTML = '<div class="newsq-bar"><b>' + items.length + '</b> waiting <button type="button" class="adm-btn" onclick="newsQueueAll(\'published\')">Publish all</button>'
+    + '<button type="button" class="adm-btn adm-danger" onclick="newsQueueAll(\'rejected\')">Reject all</button></div>'
+    + items.map(function (n) {
+      var lang = (n.tags || []).indexOf('de') !== -1 ? ' &middot; German' : '';
+      return '<div class="adm-post" id="nq-' + esc(n.id) + '"><div class="adm-post-head"><span class="adm-pill">' + esc(n.source_name || '') + '</span>'
+        + '<b><a href="' + escUrl(n.source_url) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a></b>'
+        + '<span class="adm-post-meta">' + esc(localDate(n.published_at, { month: 'short', day: 'numeric', year: 'numeric' })) + lang + '</span></div>'
+        + (n.excerpt ? '<p>' + esc(n.excerpt) + '</p>' : '')
+        + '<div class="adm-post-acts"><button type="button" class="adm-btn" onclick="newsQueueSet(\'' + escJs(n.id) + '\',\'published\')">Publish</button> '
+        + '<button type="button" class="adm-btn adm-danger" onclick="newsQueueSet(\'' + escJs(n.id) + '\',\'rejected\')">Reject</button></div></div>';
+    }).join('');
+}
+
+async function newsQueueSet(id, status) {
+  if (!isAdmin()) return;
+  var r = await _sb.from('news').update({ status: status }).eq('id', id);   // published_at keeps the article's own date
+  if (r.error) { alert('Error: ' + r.error.message); return; }
+  var row = document.getElementById('nq-' + id); if (row) row.remove();
+  if (status === 'published') loadNewsFromSupabase();
+}
+
+async function newsQueueAll(status) {
+  if (!isAdmin()) return;
+  if (!confirm((status === 'published' ? 'Publish' : 'Reject') + ' every article in the queue?')) return;
+  var r = await _sb.from('news').update({ status: status }).eq('status', 'pending').contains('tags', ['roundup']);
+  if (r.error) { alert('Error: ' + r.error.message); return; }
+  loadNewsQueue();
+  if (status === 'published') loadNewsFromSupabase();
 }
 
 // ══════════════════════════════════════════

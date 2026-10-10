@@ -215,7 +215,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.28.0">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.29.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -1535,6 +1535,7 @@
     <button class="admin-tab" onclick="adminSwitchTab('reports')">Reports</button>
     <button class="admin-tab" onclick="adminSwitchTab('traffic')">Traffic Dashboard</button>
     <button class="admin-tab" onclick="adminSwitchTab('digest')">Weekly Digest</button>
+    <button class="admin-tab" onclick="adminSwitchTab('newsq')">News queue</button>
     <button class="admin-tab" onclick="adminSwitchTab('members')">Members</button>
     <button class="admin-tab" onclick="adminSwitchTab('activity')">Activity</button>
   </div>
@@ -1693,6 +1694,18 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- NEWS QUEUE PANEL -->
+  <div id="admin-newsq" class="admin-tab-content">
+    <div class="adm-head">
+      <h3>News queue</h3>
+      <div class="adm-tools">
+        <button type="button" class="adm-btn" onclick="loadNewsQueue()">Refresh</button>
+      </div>
+    </div>
+    <p class="adm-note" style="margin-top:0;">Articles collected every morning from anthroposophical news feeds (Goetheanum, Das Goetheanum, Biodynamic, Waldorf, The Christian Community and others). Nothing appears on the News page until you click Publish. Each item links to the original article.</p>
+    <div id="newsq-list"><div class="admin-empty">Loading...</div></div>
   </div>
 
   <!-- MEMBERS PANEL -->
@@ -1910,16 +1923,16 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.28.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.29.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.28.0"></script>
-<script defer src="/i18n.js?v=1.28.0"></script>
-<script defer src="/sophia_commons_v9.js?v=1.28.0"></script>
+<script defer src="/sb-init.js?v=1.29.0"></script>
+<script defer src="/i18n.js?v=1.29.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.29.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

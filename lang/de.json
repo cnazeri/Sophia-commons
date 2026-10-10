@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.28.0",
+  "footer.version": "v1.29.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -785,5 +785,6 @@
   "dir.pic_credit": "Bild von",
   "firstclass.heading2": "Mitglieder mit blauer Karte",
   "firstclass.badge2": "Freie Hochschule, Erste Klasse",
-  "firstclass.intro2": "Klassenstunden und Klassentreffen für Mitglieder der Freien Hochschule für Geisteswissenschaft. Zutritt nur mit der blauen Karte. Mantrische Inhalte werden hier nicht veröffentlicht; Anmeldung jeweils beim Treffen."
+  "firstclass.intro2": "Klassenstunden und Klassentreffen für Mitglieder der Freien Hochschule für Geisteswissenschaft. Zutritt nur mit der blauen Karte. Mantrische Inhalte werden hier nicht veröffentlicht; Anmeldung jeweils beim Treffen.",
+  "dir.photo": "Foto"
 }
