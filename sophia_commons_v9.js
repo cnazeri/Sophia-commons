@@ -6450,8 +6450,10 @@ function dayKey(d) {
 }
 
 function weeklyChannel(rows, offset) {
-  // prefer channels that actually have a video; rotate daily so a new channel is featured every day
-  var pool = rows.filter(function (r) { return r.video_id; });
+  // prefer channels that posted in the last 6 months, then any with a video; rotate daily
+  var recent = Date.now() - 182 * 864e5;
+  var pool = rows.filter(function (r) { return r.video_id && r.published_at && new Date(r.published_at).getTime() >= recent; });
+  if (!pool.length) pool = rows.filter(function (r) { return r.video_id; });
   if (!pool.length) pool = rows;
   var i = (dayKey() + (offset || 0)) % pool.length;
   return pool[(i + pool.length) % pool.length];
@@ -6484,12 +6486,12 @@ function _freshVideos(rows) {
 }
 
 // Home page: when a channel has just posted, feature that video (channel photo, name, thumbnail).
-function renderNewVideoCard(v, count) {
+function renderNewVideoCard(v, count, kicker) {
   var ch = '<span class="nv-ch">' + (v.avatar_url ? '<img src="' + escUrl(v.avatar_url) + '" alt="" width="24" height="24" loading="lazy">' : '')
     + '<b>' + esc(v.name) + '</b>' + (v.subscriber_text ? '<span class="nv-subs">' + esc(v.subscriber_text) + ' ' + esc(t('channel.subscribers', 'subscribers')) + '</span>' : '') + '</span>';
   return '<div class="new-video">'
     + '<a class="nv-thumb" href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(v.video_thumbnail) + '" alt="" loading="lazy" width="320" height="180"></a>'
-    + '<div class="nv-body"><div class="etag">' + esc(t('video.new_video', 'New video')) + ' &middot; ' + esc(ytAgo(v.published_at)) + '</div>'
+    + '<div class="nv-body"><div class="etag">' + esc(kicker || t('video.new_video', 'New video')) + (v.published_at ? ' &middot; ' + esc(ytAgo(v.published_at)) : '') + '</div>'
     + '<h5><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(v.video_title) + '</a></h5>' + ch
     + '<div class="video-actions"><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(t('video.watch', 'Watch')) + ' &rarr;</a>'
     + '<a href="/podcasts" onclick="showSec(\'podcasts\');openChannel(\'' + escJs(v.slug) + '\');return false;">' + esc(t('channel.details', 'details, ratings and reviews')) + '</a>'
@@ -6498,24 +6500,19 @@ function renderNewVideoCard(v, count) {
 }
 var _newVidOffset = 0;
 
+// Home page video: a channel's upload from the last 3 days ("New video"), otherwise the channel of
+// the day with its latest video ("Video of the day"). Shown on every screen size.
 async function renderVideoSpotlight() {
-  var side = document.getElementById('video-spotlight');
   var home = document.getElementById('home-video-spotlight');
-  if (!side && !home) return;
-  var rows = await _ytFetchLatest();
-  var ch = weeklyChannel(rows, _ytOffset);
-  var daily = renderVideoCard(ch)
-    + '<div class="video-actions" style="padding:0 2px;"><a href="#" class="quiet" onclick="suggestYouTubeChannel();return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>';
-  if (side) side.innerHTML = daily;
   if (!home) return;
+  var rows = await _ytFetchLatest();
   var fresh = _freshVideos(rows);
   if (fresh.length) {
     home.innerHTML = renderNewVideoCard(fresh[_newVidOffset % fresh.length], fresh.length);
-    home.classList.add('has-new');       // shown on every screen size
-  } else {
-    home.innerHTML = daily;               // phones only (the sidebar shows it on desktop)
-    home.classList.remove('has-new');
+    return;
   }
+  var ch = weeklyChannel(rows, _ytOffset);
+  home.innerHTML = ch && ch.video_id ? renderNewVideoCard(ch, 0, t('video.of_the_day', 'Video of the day')) : renderVideoCard(ch);
 }
 
 async function renderYouTubeChannels() {

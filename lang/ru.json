@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.23.1",
+  "footer.version": "v1.24.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -777,5 +777,6 @@
   "home.media_all_social": "все 25 страниц в соцсетях →",
   "sidebar.category_media_social": "подкасты, видео и соцсети",
   "dir.highlighted": "Рекомендуем",
-  "dir.visit": "Перейти"
+  "dir.visit": "Перейти",
+  "video.of_the_day": "Видео дня"
 }

@@ -3466,3 +3466,5 @@ footer li a { display: inline-block; padding: 10px 0; }
 .hl-item p { margin: 0 0 6px; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
 .hl-visit { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 8px; background: var(--gold); color: var(--ink, #2c2418); font-weight: 700; font-size: 12px; text-decoration: none; }
 .detail-badge.highlight { background: var(--gold); color: var(--ink, #2c2418); }
+/* v1.24: the home video card shows on every screen size (the sidebar video box was removed) */
+#home-video-spotlight.home-video { display: block; margin: 0 0 14px; }

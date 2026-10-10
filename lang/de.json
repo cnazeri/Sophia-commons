@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.23.1",
+  "footer.version": "v1.24.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -777,5 +777,6 @@
   "home.media_all_social": "alle 25 Social-Media-Seiten →",
   "sidebar.category_media_social": "Podcasts, Videos & soziale Medien",
   "dir.highlighted": "Empfohlen",
-  "dir.visit": "Besuchen"
+  "dir.visit": "Besuchen",
+  "video.of_the_day": "Video des Tages"
 }

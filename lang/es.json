@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.23.1",
+  "footer.version": "v1.24.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -777,5 +777,6 @@
   "home.media_all_social": "las 25 páginas de redes sociales →",
   "sidebar.category_media_social": "pódcasts, vídeo y redes sociales",
   "dir.highlighted": "Destacado",
-  "dir.visit": "Visitar"
+  "dir.visit": "Visitar",
+  "video.of_the_day": "Vídeo del día"
 }
