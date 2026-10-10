@@ -3007,7 +3007,7 @@ footer { color: rgba(250,247,242,0.78); }
   #hamburger-btn { flex-shrink: 0; }
   #logo { min-width: 0; gap: 8px; }
   #logo .logo-words { flex-direction: column; align-items: flex-start; gap: 0; }
-  #logo .logo-words > span:first-child { font-size: 21px !important; letter-spacing: .06em !important; }
+  #logo .logo-words > span:first-child { font-size: 24px !important; letter-spacing: .02em !important; }
   #logo .logo-words > span:last-child { margin-left: 0; font-size: 8.5px; }
   #logo .logo-mark { height: 40px; }
   #postlink { margin-left: auto; flex-shrink: 0; padding: 8px 14px; font-size: 11px; white-space: nowrap; }
@@ -3023,7 +3023,7 @@ footer { color: rgba(250,247,242,0.78); }
   #topbar .nav-links a:not(.signinbtn):not(#adminlink) { display: none; }
   #topbar .nav-links a.signinbtn { margin-left: 0; }
   #logo .logo-words > span:last-child { display: none; }
-  #logo .logo-words > span:first-child { font-size: 18px !important; letter-spacing: .04em !important; }
+  #logo .logo-words > span:first-child { font-size: 21px !important; letter-spacing: .02em !important; }
   #logo .logo-mark { height: 34px; }
   #logo sup { display: none; }
   #postlink { font-size: 10.5px; letter-spacing: .02em; }
@@ -3523,3 +3523,8 @@ footer li a { display: inline-block; padding: 10px 0; }
 .pof-quote p { margin: 0 0 6px; font-size: 14px; line-height: 1.5; }
 .pof-quote .pof-q, .pof-quote .pof-a { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-style: italic; }
 .pof-quote .pof-a { margin-bottom: 0; font-weight: 600; }
+
+/* v1.36: site name in the owner's traced font (letters only; the TM falls back to the old font) */
+@font-face { font-family: 'Sophia Commons Display'; src: url('/fonts/sophia-commons-display.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+#logo .logo-name { font-family: 'Sophia Commons Display', 'Cormorant Garamond', Georgia, serif; font-weight: 400; letter-spacing: .02em; line-height: 1; }
+#logo .logo-name sup { font-family: 'Nunito Sans', sans-serif; }
