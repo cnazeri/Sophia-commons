@@ -1127,8 +1127,7 @@ document.addEventListener('keydown', function(e) {
   if (e.key !== 'Escape') return;
   var mo = document.getElementById('modal-overlay');
   if (mo && mo.classList.contains('open')) { closeModal(); return; }
-  var dp = document.querySelector('.day-popup');
-  if (dp) { dp.remove(); var o = document.querySelector('.day-popup-overlay'); if (o) o.remove(); return; }
+  if (document.querySelector('.day-popup')) { closeDayPopup(); return; }
   document.querySelectorAll('.modal-overlay.open, .overlay.open, [id$="-overlay"].open').forEach(function(el) { el.classList.remove('open'); });
   var rm = document.getElementById('report-modal');
   if (rm && rm.style.display && rm.style.display !== 'none') closeReportModal();
@@ -1145,6 +1144,7 @@ document.addEventListener('keydown', function(e) {
   if (mo && mo.classList.contains('open')) dlg = document.getElementById('modal-box');
   var rm = document.getElementById('report-modal');
   if (!dlg && rm && rm.style.display && rm.style.display !== 'none') dlg = rm.querySelector('.report-modal-content');
+  if (!dlg) dlg = document.querySelector('.day-popup');
   if (!dlg) return;
   var f = Array.prototype.filter.call(dlg.querySelectorAll('a[href], button:not([disabled]), input:not([type="hidden"]), select, textarea'),
     function(el) { return el.offsetParent !== null; });
@@ -2374,7 +2374,7 @@ function renderMarkers(filter) {
     var m = new google.maps.Marker({
       position: { lat: loc.lat, lng: loc.lng },
       map: map,
-      title: loc.name,
+      title: loc.name + ' (' + ((document.querySelector('#map-filter option[value="' + loc.cat + '"]') || {}).textContent || loc.cat) + ')',
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         fillColor: color,
@@ -2771,6 +2771,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
     renderCalendar();
     renderEventList();
     renderSeminars();
+    if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
     renderMiniCal();
     renderSidebarUpcoming();
     updateHeaderCalendar();
@@ -3440,7 +3441,7 @@ function renderCalendar() {
 
   // Previous month fill
   for (var i = startDay - 1; i >= 0; i--) {
-    html += '<div class="cal-day other-month"><div class="d-num">' + (prevDays - i) + '</div></div>';
+    html += '<div class="cal-day other-month" aria-hidden="true"><div class="d-num">' + (prevDays - i) + '</div></div>';
   }
 
   // Current month days
@@ -3451,7 +3452,13 @@ function renderCalendar() {
     var hasMemorial = dayEvents.some(function(e) { return e.cat === 'memorial'; });
     var hasFestival = dayEvents.some(function(e) { return e.cat === 'festival'; });
 
-    html += '<div class="cal-day' + (isToday ? ' today' : '') + (hasFestival ? ' festival-day' : '') + (hasMemorial ? ' memorial-day' : '') + '" onclick="showDayEvents(\'' + dateStr + '\')">';
+    var dayAttrs = '';
+    if (dayEvents.length) {
+      var dayLabel = localDate(dateStr, { weekday: 'long', month: 'long', day: 'numeric' }) + ', ' + dayEvents.length + ' '
+        + (dayEvents.length === 1 ? 'entry' : 'entries') + ': ' + dayEvents.slice(0, 3).map(function(ev) { return ev.title; }).join('; ');
+      dayAttrs = ' role="button" tabindex="0" data-kbd-click aria-label="' + esc(dayLabel) + '" onclick="showDayEvents(\'' + dateStr + '\', this)"';
+    }
+    html += '<div class="cal-day' + (isToday ? ' today' : '') + (hasFestival ? ' festival-day' : '') + (hasMemorial ? ' memorial-day' : '') + (dayEvents.length ? ' has-events' : '') + '"' + dayAttrs + '>';
     html += '<div class="d-num">' + d + '</div>';
     dayEvents.forEach(function(ev) {
       html += '<div class="cal-ev ' + esc(ev.cat) + '" title="' + esc(ev.title) + '">' + esc(ev.title) + '</div>';
@@ -3463,7 +3470,7 @@ function renderCalendar() {
   var totalCells = startDay + daysInMonth;
   var remaining = (totalCells % 7 === 0) ? 0 : 7 - (totalCells % 7);
   for (var n = 1; n <= remaining; n++) {
-    html += '<div class="cal-day other-month"><div class="d-num">' + n + '</div></div>';
+    html += '<div class="cal-day other-month" aria-hidden="true"><div class="d-num">' + n + '</div></div>';
   }
 
   grid.innerHTML = html;
@@ -3476,36 +3483,53 @@ function calNavMonth(dir) {
   renderCalendar();
 }
 
-function showDayEvents(dateStr) {
+// Day popup: an accessible dialog. Focus moves to Close; Escape, the overlay or Close return focus to the trigger.
+var _dpReturnFocus = null;
+function closeDayPopup(restore) {
+  var p = document.querySelector('.day-popup'); if (p) p.remove();
+  var o = document.querySelector('.day-popup-overlay'); if (o) o.remove();
+  if (restore !== false && _dpReturnFocus && document.body.contains(_dpReturnFocus)) _dpReturnFocus.focus();
+  _dpReturnFocus = null;
+}
+
+function showDayEvents(dateStr, trigger) {
   var dayEvs = calEvents.filter(function(e) { return e.date === dateStr; });
-  var d = new Date(dateStr + 'T12:00:00');
   var label = localDate(dateStr, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
-  // Remove existing popup
-  var old = document.querySelector('.day-popup-overlay');
-  if (old) old.remove();
-  var oldP = document.querySelector('.day-popup');
-  if (oldP) oldP.remove();
-
+  closeDayPopup(false);
   if (dayEvs.length === 0) return;
+  _dpReturnFocus = trigger || document.activeElement;
 
   var overlay = document.createElement('div');
   overlay.className = 'day-popup-overlay';
-  overlay.onclick = function() { overlay.remove(); popup.remove(); };
+  overlay.onclick = function() { closeDayPopup(); };
   document.body.appendChild(overlay);
 
   var popup = document.createElement('div');
   popup.className = 'day-popup';
-  var html = '<button class="dp-close" aria-label="Close" onclick="this.parentElement.remove();var o=document.querySelector(\'.day-popup-overlay\');if(o)o.remove();">&times;</button>';
+  popup.setAttribute('role', 'dialog');
+  popup.setAttribute('aria-modal', 'true');
+  popup.setAttribute('aria-labelledby', 'day-popup-title');
+  popup.setAttribute('tabindex', '-1');
+  var html = '<button class="dp-close" type="button" aria-label="' + esc(t('common.close', 'Close')) + '" onclick="closeDayPopup()">&times;</button>';
   html += '<h4 id="day-popup-title">' + esc(label) + '</h4>';
   dayEvs.forEach(function(ev) {
     var dpMeta = _evMeta(ev);
-    var dpTitle = ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="document.querySelectorAll(\'.day-popup,.day-popup-overlay\').forEach(function(x){x.remove();});showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title);
+    var dpTitle = ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="closeDayPopup(false);showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title);
     html += '<div class="dp-event">' + _evImageHtml(ev) + '<h5>' + dpTitle + '</h5>' + (dpMeta ? '<div class="dp-meta">' + dpMeta + '</div>' : '')
-      + (ev.desc ? '<p class="dp-desc">' + esc(_shortText(ev.desc, 320)) + '</p>' : '') + _evSourcesHtml(ev) + '</div>';
+      + (ev.desc ? '<p class="dp-desc">' + _linkify(esc(_shortText(ev.desc, 320))) + '</p>' : '') + _evSourcesHtml(ev) + '</div>';
   });
   popup.innerHTML = html;
   document.body.appendChild(popup);
+  var closeBtn = popup.querySelector('.dp-close');
+  if (closeBtn) closeBtn.focus();
+}
+
+// Turn bare http(s) URLs in already-escaped text into links that wrap
+function _linkify(escaped) {
+  return escaped.replace(/https?:\/\/[^\s<]+/g, function(u) {
+    return '<a href="' + escUrl(u.replace(/&amp;/g, '&')) + '" target="_blank" rel="noopener" class="dp-url">' + u + '</a>';
+  });
 }
 
 // Join an event's time / location / organizer, skipping empty parts (avoids ' · · ').
@@ -3532,44 +3556,70 @@ function _evMeta(ev) {
   return [ev.time, ev.loc, ev.org].filter(function(x) { return x && String(x).trim(); }).map(esc).join(' &middot; ');
 }
 
+var _evListDays = 120;   // the list shows this many days ahead; "Show more" extends it
+
+// Series key: events from one organizer whose titles share a "Prefix:" (e.g. "Mani Webinar: ...")
+function _evSeriesKey(ev) {
+  var m = /^([^:]{3,40}):/.exec(ev.title || '');
+  return (m && ev.cat !== 'festival' && ev.cat !== 'memorial') ? (ev.org || '') + '|' + m[1].toLowerCase() : null;
+}
+
+function _evRowHtml(ev, seriesInfo) {
+  var d = new Date(ev.date + 'T12:00:00');
+  var isToday = (d.toDateString() === new Date().toDateString());
+  var cat = String(ev.cat || 'event').replace('_', ' ');
+  var meta = _evMeta(ev);
+  var title = seriesInfo ? seriesInfo.name + ': ' + seriesInfo.count + ' sessions' : ev.title;
+  var html = '<div class="evrow reveal">';
+  html += '<div class="evdate' + (isToday ? ' today' : '') + '"><div class="mo">' + localDate(ev.date, { month: 'short' }) + '</div><div class="dy">' + d.getDate() + '</div></div>';
+  if (ev.img && ev.img.src) {
+    html += '<img class="evthumb" src="' + escUrl(ev.img.src) + '" alt="" loading="lazy" title="' + esc(ev.img.credit || '') + '">';
+  }
+  html += '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + (seriesInfo ? ' &middot; ' + esc(t('events.series', 'series')) : '') + '</div>';
+  html += '<h5>' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(title) + '</a>' : esc(title)) + '</h5>';
+  if (seriesInfo) html += '<div class="emeta">' + esc(t('events.series_next', 'Next session')) + ': ' + esc(ev.title.replace(/^[^:]+:\s*/, '')) + '</div>';
+  if (meta) html += '<div class="emeta">' + meta + '</div>';
+  if (seriesInfo && seriesInfo.later.length) {
+    html += '<div class="emeta">' + esc(t('events.series_later', 'Later sessions')) + ': ' + seriesInfo.later.map(function(x) { return esc(localDate(x.date, { month: 'short', day: 'numeric' })); }).join(', ') + '</div>';
+  }
+  return html + '</div></div>';
+}
+
 function renderEventList() {
   var container = document.getElementById('event-list');
   if (!container) return;
-  var today = new Date();
-  today.setHours(0,0,0,0);
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var horizon = new Date(today.getTime() + _evListDays * 864e5);
 
   var upcoming = calEvents.filter(function(e) {
-    return new Date(e.date + 'T23:59:59') >= today;
-  }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+    return new Date(e.date + 'T23:59:59') >= today && e.cat !== 'memorial';
+  }).sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  var shown = upcoming.filter(function(e) { return new Date(e.date + 'T12:00:00') <= horizon; });
 
-  var html = '';
-  var todayStr = new Date().toDateString();
-  upcoming.forEach(function(ev) {
-    var d = new Date(ev.date + 'T12:00:00');
-    var mo = localDate(ev.date, { month: 'short' });
-    var dy = d.getDate();
-    var isToday = (d.toDateString() === todayStr);
-    html += '<div class="evrow reveal">';
-    html += '<div class="evdate' + (isToday ? ' today' : '') + '"><div class="mo">' + mo + '</div><div class="dy">' + dy + '</div></div>';
-    if (ev.img && ev.img.src) {
-      html += '<img class="evthumb" src="' + escUrl(ev.img.src) + '" alt="' + esc(ev.img.alt || ev.title) + '" loading="lazy" title="' + esc(ev.img.credit || '') + '">';
-    }
-    var cat = String(ev.cat || 'event');
-    var meta = _evMeta(ev);
-    html += '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div>';
-    html += '<h5>' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title)) + '</h5>';
-    if (meta) html += '<div class="emeta">' + meta + '</div>';
-    html += '</div></div>';
+  // Collapse series: keep the first upcoming session, list the later dates under it
+  var series = {};
+  shown.forEach(function(e) { var k = _evSeriesKey(e); if (k) (series[k] = series[k] || []).push(e); });
+  var html = '', lastMonth = '';
+  shown.forEach(function(ev) {
+    var k = _evSeriesKey(ev), group = k && series[k].length >= 3 ? series[k] : null;
+    if (group && group[0] !== ev) return;
+    var month = localDate(ev.date, { month: 'long', year: 'numeric' });
+    if (month !== lastMonth) { html += '<h4 class="ev-month">' + esc(month) + '</h4>'; lastMonth = month; }
+    var sName = group ? /^([^:]+):/.exec(ev.title)[1] : '';
+    // Generic prefixes ("Study", "Zoom talk") need the organizer to make sense; series with shared artwork do not
+    if (group && ev.org && !(ev.img && group.every(function(x) { return x.img && x.img.src === ev.img.src; }))) sName += ' (' + ev.org.replace(/\s*\(.*\)$/, '') + ')';
+    html += _evRowHtml(ev, group ? { name: sName, count: group.length, later: group.slice(1) } : null);
   });
+  if (!shown.length) html = '<div class="empty-note">' + esc(t('events.none_yet', 'No upcoming events yet.')) + '</div>';
+  if (upcoming.length > shown.length) {
+    html += '<button type="button" class="ev-more" onclick="_evListDays += 180; renderEventList();">' + esc(t('events.show_more', 'Show more events')) + '</button>';
+  }
   container.innerHTML = html;
 
   // Re-observe for scroll animations
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
     });
   }, { threshold: 0.1 });
   container.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
@@ -3690,7 +3740,7 @@ function renderHomeUpcoming(upcoming) {
     upcoming = upcoming.filter(function(e) { return e !== feat; }).slice(0, 3);
     var join = (feat.src || []).filter(function(x) { return /Join/.test(x[0]); })[0];
     bannerHtml = '<div class="feat-ev">'
-      + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(feat.img.src) + '" alt="' + esc(feat.title) + '" loading="lazy">' : '')
+      + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(feat.img.src) + '" alt="" width="96" height="116">' : '')
       + '<div class="feat-ev-body"><div class="etag">' + esc(t('home.featured_event', 'Featured event')) + '</div>'
       + '<h5><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
       + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
@@ -3726,7 +3776,8 @@ function updateHeaderCalendar() {
   // Local date (toISOString() is UTC and flips to tomorrow in the evening in the Americas).
   var todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
   // Count real events only (birthday/anniversary markers are calendar decorations, not events).
-  var futureCount = calEvents.filter(function(e) { return e.date >= todayStr && e.cat !== 'memorial'; }).length;
+  // Count real events only: festivals and memorial dates are calendar decorations, shown separately
+  var futureCount = calEvents.filter(function(e) { return e.date >= todayStr && e.cat !== 'memorial' && e.cat !== 'festival'; }).length;
   upEl.textContent = t('header.upcoming_events').replace('{count}', futureCount);
   var evLabel = document.getElementById('events-seclabel');
   if (evLabel && !document.getElementById('sb-events-list')) {
@@ -6068,7 +6119,7 @@ function renderVideoCard(ch) {
   var href = isVideo ? ch.video_url : ch.channel_url;
   var thumb = ch.video_thumbnail || ch.channel_thumbnail;
   var html = '<div class="video-card">';
-  if (thumb) html += '<a class="video-thumb" href="' + escUrl(href) + '" target="_blank" rel="noopener"><img src="' + escUrl(thumb) + '" alt="" loading="lazy"></a>';
+  if (thumb) html += '<a class="video-thumb" href="' + escUrl(href) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(thumb) + '" alt="" loading="lazy"></a>';
   html += '<div class="video-body">'
     + '<div class="video-kicker">' + t('video.kicker', 'Today') + ' &middot; ' + esc(YT_CATEGORIES[ch.category] || ch.category || '') + '</div>'
     + '<a class="video-title" href="' + escUrl(href) + '" target="_blank" rel="noopener">' + esc(isVideo ? ch.video_title : ch.name) + '</a>'

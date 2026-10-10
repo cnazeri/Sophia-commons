@@ -2634,3 +2634,62 @@ footer { color: rgba(250,247,242,0.78); }
 .feat-ev-join { display: inline-block; font-size: 12px; font-weight: 600; padding: 6px 12px; min-height: 32px; border-radius: 8px; background: var(--gold); color: var(--ink); text-decoration: none; }
 .feat-ev-join:hover { filter: brightness(0.95); }
 @media (max-width: 480px) { .feat-ev-img { width: 76px; height: 92px; } }
+
+/* ── v1.12 accessibility pass (WCAG 2.2 AA audit, Oct 2026) ── */
+/* Visible keyboard focus on every field (earlier rules removed the outline) */
+#searchwrap input:focus-visible, #searchinput:focus-visible,
+#modal-box input:focus-visible, #submit-box input:focus-visible, #submit-box select:focus-visible, #submit-box textarea:focus-visible,
+#event-submit-box input:focus-visible, #event-submit-box select:focus-visible, #event-submit-box textarea:focus-visible,
+.newsletter-input:focus-visible, .newsletter-textarea:focus-visible, .ftnl input:focus-visible {
+  outline: 2px solid var(--focus-ring) !important; outline-offset: 2px;
+}
+/* Touch targets: owner standard is 44px */
+.day-popup .dp-close { width: 44px; height: 44px; display: grid; place-items: center; top: 6px; right: 6px; font-size: 24px; color: var(--text-secondary); }
+.mc-head button { min-width: 44px; min-height: 44px; }
+.mc-grid .mc-d { min-height: 32px; display: grid; place-items: center; }
+@media (max-width: 768px) { .mc-grid .mc-d { min-height: 44px; } }
+.feat-ev-join { min-height: 44px; padding: 11px 16px; }
+.lang-btn { min-height: 44px; min-width: 44px; }
+#map-filter { min-height: 44px; }
+footer li a { display: inline-block; padding: 10px 0; }
+@media (max-width: 768px) { footer li a { display: block; padding: 12px 0; } }
+/* Calendar: days with entries are buttons */
+.cal-day.has-events { cursor: pointer; }
+.cal-day.other-month .d-num { opacity: .75; }
+/* Mobile calendar dots: darker, readable colors */
+@media (max-width: 540px) {
+  .cal-ev { background: var(--gold-text) !important; }
+  .cal-ev.memorial { background: var(--rose-text, #8a4a2e) !important; }
+  .cal-ev.conference { background: var(--sage) !important; }
+}
+/* Contrast: tag counts were dimmed to 2.8:1 */
+.dir-tag-count { opacity: 1; font-size: 11px; }
+/* Long links in the day popup wrap instead of overflowing */
+.day-popup .dp-url, .day-popup .dp-desc, .day-popup .dp-src { overflow-wrap: anywhere; word-break: break-word; }
+/* Submit-listing and report forms: same gold button as the sign-in modal (they rendered as plain grey buttons) */
+#submit-box .btn-primary, .report-modal-content .btn-primary {
+  width: 100%; margin-top: 18px; padding: 12px; min-height: 44px;
+  background: var(--gold); color: var(--on-gold);
+  border: none; border-radius: 50px;
+  font-family: 'Nunito Sans', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.03em;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+#submit-box .btn-primary:hover, .report-modal-content .btn-primary:hover { background: var(--gold-hover); transform: translateY(-1px); }
+#submit-box .btn-primary:disabled { opacity: .6; cursor: wait; transform: none; }
+#submit-box { position: relative; }
+.submit-close-btn {
+  position: absolute; top: 10px; right: 10px;
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; border-radius: 50%;
+  font-size: 24px; line-height: 1; color: var(--text-secondary); cursor: pointer;
+}
+.submit-close-btn:hover { background: var(--muted-bg, rgba(0,0,0,.05)); color: var(--text-primary); }
+/* Footer newsletter: visible label and readable error */
+.ftnl .ft-label { display: block; font-size: 13px; color: rgba(255,255,255,.9); margin: 4px 0 4px; }
+.ftnl .ft-err { font-size: 13px; color: #FFD6CC; background: rgba(179,64,60,.35); border-radius: 6px; padding: 6px 8px; margin: 6px 0; }
+.ftnl input, .ftnl button { min-height: 44px; }
+/* Events list: month headings and "show more" */
+.ev-month { font-family: 'Lora', Georgia, serif; font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 16px 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--border-subtle); }
+.ev-month:first-child { margin-top: 4px; }
+.ev-more { display: block; width: 100%; min-height: 44px; margin: 12px 0 4px; border: 1px solid var(--gold); background: transparent; color: var(--gold-text); border-radius: 50px; font-family: 'Nunito Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+.ev-more:hover { background: var(--gold-light); }
