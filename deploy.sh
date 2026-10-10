@@ -11,7 +11,7 @@ cd "$(dirname "$0")"
 PUBLIC_FILES=(
   index.html sophia_commons_v9.css sophia_commons_v9.js i18n.js sb-init.js sw.js manifest.json
   robots.txt llms.txt sitemap.xml _redirects googleae2ea1fc1aac5bc6.html
-  logo.svg logo.png icon-192.png icon-512.png og-image.jpg
+  logo.svg logo.png icon-192.png icon-512.png favicon.ico favicon-32.png apple-touch-icon.png og-image.jpg
 )
 
 echo "→ Building _deploy/"

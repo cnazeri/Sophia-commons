@@ -677,6 +677,26 @@
       "category": "study-group",
       "description": "A chapter-by-chapter study of Rudolf Steiner's Philosophy of Freedom: free thinking as the foundation of ethical individualism and social life.",
       "verified": true
+    },
+    {
+      "slug": "imgaja-gerhard-anger",
+      "name": "Imgaja - Gerhard Anger",
+      "url": "https://www.youtube.com/@im_gaja",
+      "channel_id": "UC_Zzxv9avV7-YUkJ3i9kBQg",
+      "language": "DE",
+      "category": "lecturer",
+      "description": "Gerhard Anger on spiritual development, the path to the Christ and higher knowledge, with a monthly overview of his work (in German).",
+      "verified": true
+    },
+    {
+      "slug": "wise-cosmos",
+      "name": "Wise Cosmos",
+      "url": "https://www.youtube.com/@Wisecosmos",
+      "channel_id": "UCfwUIUXQ97VTGKb25dr7ppg",
+      "language": "EN",
+      "category": "study-group",
+      "description": "Wise Cosmos Educational Initiative: research, talks and courses on anthroposophy, esoteric Christianity and Waldorf education.",
+      "verified": true
     }
   ]
 }
