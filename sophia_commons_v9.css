@@ -3517,3 +3517,9 @@ footer li a { display: inline-block; padding: 10px 0; }
 /* v1.30: Blue Card Holders link under Groups in the sidebar */
 .cat-sub a { padding-left: 14px; font-size: .92em; }
 .cat-sub a::before { content: '- '; color: var(--text-muted); }
+
+/* v1.32: Philosophy of Freedom quote */
+.pof-quote { margin: 4px 0 10px; padding: 12px 16px; border-left: 3px solid var(--gold); background: var(--gold-light); border-radius: 0 6px 6px 0; }
+.pof-quote p { margin: 0 0 6px; font-size: 14px; line-height: 1.5; }
+.pof-quote .pof-q, .pof-quote .pof-a { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-style: italic; }
+.pof-quote .pof-a { margin-bottom: 0; font-weight: 600; }

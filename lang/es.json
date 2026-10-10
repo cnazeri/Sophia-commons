@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.31.0",
+  "footer.version": "v1.32.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -788,5 +788,10 @@
   "firstclass.intro2": "Lecciones y encuentros de la Clase para miembros de la Escuela de Ciencia Espiritual. La entrada requiere la tarjeta azul. Aquí no se publica contenido mántrico; consulta cada encuentro para inscribirte.",
   "dir.photo": "Foto",
   "firstclass.link": "Titulares de la tarjeta azul (Primera Clase)",
-  "firstclass.link_side": "tarjeta azul"
+  "firstclass.link_side": "tarjeta azul",
+  "books.pof_heading": "La filosofía de la libertad",
+  "books.pof_sub": "GA 4 - ediciones, traducciones y los cuatro libros básicos",
+  "books.pof_quote_intro": "Rudolf Steiner previó la importancia duradera de La filosofía de la libertad. En una conversación de 1922, Walter Johannes Stein le preguntó:",
+  "books.pof_quote_q": "\"¿Qué quedará de su obra dentro de miles de años?\"",
+  "books.pof_quote_a": "Steiner respondió: \"Nada más que La filosofía de la libertad.\""
 }
