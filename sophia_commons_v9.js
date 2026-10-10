@@ -4284,6 +4284,8 @@ function adminSwitchTab(tab) {
   else if (tab === 'reports') loadAdminReports('pending');
   else if (tab === 'traffic') refreshDashboard();
   else if (tab === 'digest') { loadDigestDrafts(); loadDigestHistory(); }
+  else if (tab === 'members') loadAdminMembers();
+  else if (tab === 'activity') loadAdminActivity();
 }
 
 function adminEsc(s) { return esc(s); }
@@ -5722,6 +5724,157 @@ function fillDashTable(tableId, countsObj, limit) {
     html += '<tr><td>' + escHtml(entry[0]) + '</td><td>' + entry[1] + '</td><td class="bar-cell"><span class="mini-bar" style="width:' + pct + '%"></span></td></tr>';
   });
   tbody.innerHTML = html || '<tr><td colspan="3" style="color:var(--text-muted);text-align:center;padding:12px;">No data yet</td></tr>';
+}
+
+// ══════════════════════════════════════════
+//  MEMBERS + ACTIVITY (admin only)
+//  admin_list_users / admin_recent_posts / admin_moderate are database functions that refuse
+//  anyone who is not an admin, so these tabs show nothing to other accounts.
+// ══════════════════════════════════════════
+
+var _admMembers = [];
+var _admSubs = [];
+
+function _admDate(iso) {
+  return iso ? localDate(iso, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+}
+
+async function loadAdminMembers() {
+  var list = document.getElementById('adm-members-list');
+  var subsEl = document.getElementById('adm-subs-list');
+  if (!isAdmin() || !sbReady()) { list.innerHTML = '<div class="admin-empty">Admins only.</div>'; return; }
+  var res = await Promise.all([
+    _sb.rpc('admin_list_users'),
+    _sb.from('newsletter_subscribers').select('email, name, confirmed, created_at, confirmed_at, unsubscribed_at').order('created_at', { ascending: false })
+  ]);
+  if (res[0].error) { list.innerHTML = '<div class="admin-empty">Could not load members: ' + esc(res[0].error.message) + '</div>'; }
+  else { _admMembers = res[0].data || []; renderAdminMembers(); }
+  if (res[1].error) { subsEl.innerHTML = '<div class="admin-empty">Could not load subscribers.</div>'; return; }
+  _admSubs = res[1].data || [];
+  subsEl.innerHTML = _admSubs.length ? '<table class="adm-table"><thead><tr><th>Email</th><th>Name</th><th>Status</th><th>Signed up</th></tr></thead><tbody>'
+    + _admSubs.map(function (s) {
+      var st = s.unsubscribed_at ? 'unsubscribed' : (s.confirmed ? 'subscribed' : 'unconfirmed');
+      return '<tr><td><a href="mailto:' + esc(s.email) + '">' + esc(s.email) + '</a></td><td>' + esc(s.name || '') + '</td>'
+        + '<td><span class="adm-pill adm-' + st + '">' + st + '</span></td><td>' + esc(_admDate(s.created_at)) + '</td></tr>';
+    }).join('') + '</tbody></table>' : '<div class="admin-empty">No subscribers yet.</div>';
+}
+
+function _admPosts(m) { return (m.comments || 0) + (m.chat || 0) + (m.events || 0) + (m.listings || 0) + (m.reviews || 0); }
+
+function _admFilteredMembers() {
+  var q = ((document.getElementById('adm-member-q') || {}).value || '').trim().toLowerCase();
+  return _admMembers.filter(function (m) {
+    return !q || [m.email, m.username, m.full_name].join(' ').toLowerCase().indexOf(q) !== -1;
+  });
+}
+
+function renderAdminMembers() {
+  var rows = _admFilteredMembers();
+  var subs = _admMembers.filter(function (m) { return m.newsletter === 'subscribed'; }).length;
+  var active = _admMembers.filter(function (m) { return m.last_sign_in_at && Date.now() - new Date(m.last_sign_in_at) < 30 * 864e5; }).length;
+  document.getElementById('adm-members-stats').innerHTML =
+    '<div><b>' + _admMembers.length + '</b> members</div><div><b>' + active + '</b> signed in, last 30 days</div><div><b>' + subs + '</b> also get the newsletter</div>';
+  document.getElementById('adm-members-list').innerHTML = rows.length
+    ? '<table class="adm-table"><thead><tr><th>Email</th><th>Name</th><th>Joined</th><th>Last sign-in</th><th>Posts</th><th>Newsletter</th></tr></thead><tbody>'
+      + rows.map(function (m) {
+        var name = m.full_name || m.username || '';
+        return '<tr><td><a href="mailto:' + esc(m.email) + '">' + esc(m.email) + '</a>'
+          + (m.is_admin ? ' <span class="adm-pill adm-admin">admin</span>' : '')
+          + (m.confirmed ? '' : ' <span class="adm-pill adm-unconfirmed">unconfirmed</span>') + '</td>'
+          + '<td>' + esc(name) + '</td><td>' + esc(_admDate(m.created_at)) + '</td><td>' + esc(_admDate(m.last_sign_in_at)) + '</td>'
+          + '<td>' + _admPosts(m) + '</td><td>' + esc(m.newsletter || '') + '</td></tr>';
+      }).join('') + '</tbody></table>'
+    : '<div class="admin-empty">No members match.</div>';
+}
+
+function _admEmails(which) {
+  if (which === 'members') return _admFilteredMembers().map(function (m) { return m.email; });
+  return _admSubs.filter(function (s) { return s.confirmed && !s.unsubscribed_at; }).map(function (s) { return s.email; });
+}
+
+async function copyAdminEmails(which) {
+  var emails = _admEmails(which);
+  if (!emails.length) { alert('No emails to copy.'); return; }
+  try { await navigator.clipboard.writeText(emails.join(', ')); alert('Copied ' + emails.length + ' email address(es).'); }
+  catch (e) { prompt('Copy these addresses:', emails.join(', ')); }
+}
+
+function _csvCell(v) {
+  var s = v == null ? '' : String(v);
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // stop spreadsheet formulas
+  return '"' + s.replace(/"/g, '""') + '"';
+}
+
+function downloadAdminCsv(which) {
+  var head, rows;
+  if (which === 'members') {
+    head = ['email', 'name', 'username', 'joined', 'last_sign_in', 'confirmed', 'newsletter', 'posts'];
+    rows = _admFilteredMembers().map(function (m) {
+      return [m.email, m.full_name, m.username, m.created_at, m.last_sign_in_at, m.confirmed, m.newsletter, _admPosts(m)];
+    });
+  } else {
+    head = ['email', 'name', 'status', 'signed_up'];
+    rows = _admSubs.map(function (s) {
+      return [s.email, s.name, s.unsubscribed_at ? 'unsubscribed' : (s.confirmed ? 'subscribed' : 'unconfirmed'), s.created_at];
+    });
+  }
+  var csv = [head].concat(rows).map(function (r) { return r.map(_csvCell).join(','); }).join('\r\n');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'sophia-commons-' + which + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+}
+
+// ── Activity ──
+var _admPostsList = [];
+var _admKind = 'all';
+var _ADM_REMOVABLE = { comment: 1, review: 1, chat: 1, event: 1, listing: 1, news: 1 };
+
+async function loadAdminActivity() {
+  var el = document.getElementById('adm-act-list');
+  if (!isAdmin() || !sbReady()) { el.innerHTML = '<div class="admin-empty">Admins only.</div>'; return; }
+  el.innerHTML = '<div class="admin-empty">Loading...</div>';
+  var r = await _sb.rpc('admin_recent_posts', { max_rows: 300 });
+  if (r.error) { el.innerHTML = '<div class="admin-empty">Could not load posts: ' + esc(r.error.message) + '</div>'; return; }
+  _admPostsList = r.data || [];
+  renderAdminActivity();
+}
+
+function renderAdminActivity() {
+  var counts = {};
+  _admPostsList.forEach(function (p) { counts[p.kind] = (counts[p.kind] || 0) + 1; });
+  var kinds = ['all'].concat(Object.keys(counts).sort());
+  document.getElementById('adm-act-chips').innerHTML = kinds.map(function (k) {
+    var n = k === 'all' ? _admPostsList.length : counts[k];
+    return '<button type="button" class="adm-chip' + (k === _admKind ? ' active' : '') + '" aria-pressed="' + (k === _admKind) + '" onclick="_admKind=\'' + escJs(k) + '\';renderAdminActivity()">' + esc(k) + ' <span>' + n + '</span></button>';
+  }).join('');
+  var q = ((document.getElementById('adm-act-q') || {}).value || '').trim().toLowerCase();
+  var rows = _admPostsList.filter(function (p) {
+    return (_admKind === 'all' || p.kind === _admKind) && (!q || [p.title, p.body, p.author].join(' ').toLowerCase().indexOf(q) !== -1);
+  });
+  document.getElementById('adm-act-list').innerHTML = rows.length ? rows.map(_admPostHtml).join('') : '<div class="admin-empty">Nothing here.</div>';
+}
+
+function _admPostHtml(p) {
+  var removed = p.status === 'deleted' || p.status === 'hidden';
+  var action = _ADM_REMOVABLE[p.kind] && !removed
+    ? '<button type="button" class="adm-btn adm-danger" onclick="moderateAdminPost(\'' + escJs(p.kind) + '\',\'' + escJs(p.id) + '\')">' + (p.kind === 'review' ? 'Hide' : 'Remove') + '</button>'
+    : (p.kind.indexOf('pending') === 0 ? '<button type="button" class="adm-btn" onclick="adminSwitchTab(\'' + (p.kind === 'pending listing' ? 'listings' : 'memorials') + '\')">Review</button>' : '');
+  return '<div class="adm-post' + (removed ? ' is-removed' : '') + '">'
+    + '<div class="adm-post-head"><span class="adm-pill">' + esc(p.kind) + '</span><b>' + esc(p.title || '') + '</b>'
+    + '<span class="adm-post-meta">' + esc(p.author || 'unknown') + ' &middot; ' + esc(_timeAgo(p.created_at)) + (p.status ? ' &middot; ' + esc(p.status) : '') + '</span></div>'
+    + (p.body ? '<p>' + esc(_shortText(p.body, 300)) + '</p>' : '')
+    + (action ? '<div class="adm-post-acts">' + action + '</div>' : '') + '</div>';
+}
+
+async function moderateAdminPost(kind, id) {
+  if (!isAdmin()) return;
+  var verb = kind === 'review' ? 'Hide this review' : (kind === 'comment' ? 'Remove this comment (replies stay)' : 'Permanently delete this ' + kind);
+  if (!confirm(verb + '?')) return;
+  var r = await _sb.rpc('admin_moderate', { post_kind: kind, post_id: id });
+  if (r.error) { alert('Error: ' + r.error.message); return; }
+  loadAdminActivity();
 }
 
 // ══════════════════════════════════════════
