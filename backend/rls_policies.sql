@@ -409,7 +409,7 @@ ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
 -- Anyone (including anon) can subscribe
 CREATE POLICY "newsletter: public insert"
   ON public.newsletter_subscribers FOR INSERT
-  WITH CHECK (true);
+  WITH CHECK (confirmed = false);   -- signups start unconfirmed (double opt-in); matches the live policy
 
 -- No one can read subscriber list except admins (privacy protection)
 CREATE POLICY "newsletter: admin read"

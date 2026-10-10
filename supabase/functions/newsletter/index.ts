@@ -52,6 +52,11 @@ function confirmEmailHtml(confirmUrl: string) {
 </div>`;
 }
 
+// Site-wide brake on confirmation emails: at most this many per window, counted in the database
+// (function instances are short-lived, so an in-memory counter would not hold).
+const CONFIRM_EMAILS_PER_WINDOW = 30;
+const CONFIRM_WINDOW_MS = 10 * 60000;   // 10 minutes
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors(req) });
   if (req.method !== "POST") return json(req, { error: "Method not allowed" }, 405);
@@ -74,6 +79,11 @@ serve(async (req: Request) => {
     if (existing?.confirm_sent_at && Date.now() - new Date(existing.confirm_sent_at).getTime() < RESEND_COOLDOWN_MIN * 60000) {
       return json(req, { ok: true, status: "pending_confirmation" });
     }
+
+    const since = new Date(Date.now() - CONFIRM_WINDOW_MS).toISOString();
+    const { count: recent } = await supabase.from("newsletter_subscribers")
+      .select("id", { count: "exact", head: true }).gte("confirm_sent_at", since);
+    if ((recent ?? 0) >= CONFIRM_EMAILS_PER_WINDOW) return json(req, { error: "too_many_requests" }, 429);
 
     const token = crypto.randomUUID();
     const row = { email, confirmed: false, confirm_token: token, confirm_sent_at: new Date().toISOString(), unsubscribed_at: null };
