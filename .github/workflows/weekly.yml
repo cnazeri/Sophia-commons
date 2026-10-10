@@ -53,6 +53,8 @@ jobs:
           git add automation/youtube_channels.json automation/youtube_feed.json
           [ -d crawl_reports ] && git add crawl_reports/
           git diff --cached --quiet || git commit -m "daily: youtube feed $(date -u +%F)"
+          # someone may have pushed while this job ran: replay our snapshot commit on top, then push
+          git pull --rebase --autostash origin main
           git push
 
       - name: Open or update the broken-links issue
