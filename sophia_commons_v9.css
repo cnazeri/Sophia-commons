@@ -3445,3 +3445,13 @@ footer li a { display: inline-block; padding: 10px 0; }
   .media-block { grid-column: auto; }
   .media-cols { grid-template-columns: 1fr; }
 }
+
+/* ══════════════════ v1.23: monthly active users (admin Traffic) ══════════════════ */
+.mau-wrap { margin: 10px 0 22px; }
+.mau-h { font-family: 'Nunito Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); margin: 12px 0 8px; }
+.mau-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.mau-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.mau-v { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+.mau-l { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+.mau-s { font-size: 11px; color: var(--text-muted); }
+@media (max-width: 700px) { .mau-cards { grid-template-columns: 1fr 1fr; } }

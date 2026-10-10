@@ -5633,6 +5633,18 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
 // ══════════════════════════════════════════
 
 (function initTracker() {
+  // Automated browsers (test tools, Lighthouse, crawlers) are not visitors: don't count them.
+  if (navigator.webdriver || /HeadlessChrome|Lighthouse|bot\b|crawl|spider|slurp|PageSpeed/i.test(navigator.userAgent)) return;
+  // Anonymous visitor ID kept in this browser so a returning visitor counts once per month
+  // (random, no personal data). Falls back to a per-visit ID if storage is blocked.
+  var visitorId = null;
+  try {
+    visitorId = localStorage.getItem('sc_vid');
+    if (!visitorId) {
+      visitorId = crypto.randomUUID ? crypto.randomUUID() : ('v_' + Math.random().toString(36).slice(2) + Date.now().toString(36));
+      localStorage.setItem('sc_vid', visitorId);
+    }
+  } catch (e) { visitorId = null; }
   var sessionId = sessionStorage.getItem('sc_sid');
   if (!sessionId) {
     sessionId = crypto.randomUUID ? crypto.randomUUID() : ('s_' + Math.random().toString(36).slice(2) + Date.now().toString(36));
@@ -5669,6 +5681,8 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
     if (!sbReady()) return;
     _sb.from('page_views').insert({
       session_id: sessionId,
+      visitor_id: visitorId || sessionId,
+      is_member: !!signedIn,
       page: page || 'home',
       referrer: document.referrer || null,
       browser: getBrowser(),
@@ -5738,8 +5752,32 @@ async function _fetchAllRows(makeQuery, maxRows) {
   return out;
 }
 
+// Page views and monthly active users (server-side counts; admin only)
+async function loadMonthlyStats() {
+  var cards = document.getElementById('mau-cards'), table = document.getElementById('mau-table');
+  if (!cards || !isAdmin() || !sbReady()) return;
+  var res = await Promise.all([_sb.rpc('admin_rolling_30'), _sb.rpc('admin_monthly_stats', { months: 12 })]);
+  if (res[0].error || res[1].error) { cards.innerHTML = '<div class="admin-empty">Could not load: ' + esc((res[0].error || res[1].error).message) + '</div>'; return; }
+  var r = (res[0].data || [])[0] || {};
+  var card = function (label, val, sub) { return '<div class="mau-card"><div class="mau-v">' + Number(val || 0).toLocaleString() + '</div><div class="mau-l">' + esc(label) + '</div>' + (sub ? '<div class="mau-s">' + esc(sub) + '</div>' : '') + '</div>'; };
+  cards.innerHTML = card('Page views', r.page_views)
+    + card('Monthly active visitors', r.active_visitors, 'unique browsers')
+    + card('Active members', r.active_members, 'signed in while browsing')
+    + card('Members who signed in', r.registered_active, 'from account records');
+  var months = res[1].data || [];
+  table.innerHTML = months.length ? '<table class="adm-table"><thead><tr><th>Month</th><th>Page views</th><th>Active visitors</th><th>Active members</th><th>Visits</th></tr></thead><tbody>'
+    + months.map(function (m) {
+      var label = localDate(m.month + 'T12:00:00', { month: 'long', year: 'numeric' });
+      return '<tr><td>' + esc(label) + '</td><td>' + Number(m.page_views).toLocaleString() + '</td>'
+        + '<td>' + (m.has_visitor_ids ? Number(m.active_visitors).toLocaleString() : '<span title="Visitor IDs started October 10, 2026">n/a</span>') + '</td>'
+        + '<td>' + (m.has_visitor_ids ? Number(m.active_members).toLocaleString() : 'n/a') + '</td>'
+        + '<td>' + Number(m.sessions).toLocaleString() + '</td></tr>';
+    }).join('') + '</tbody></table>' : '<div class="admin-empty">No page views yet.</div>';
+}
+
 async function refreshDashboard() {
   if (!isAdmin()) return;
+  loadMonthlyStats();
   var days = daysFromRange(_dashRange);
   var since = new Date();
   since.setDate(since.getDate() - days);

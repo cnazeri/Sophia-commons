@@ -215,7 +215,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.22.0">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.23.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -1596,6 +1596,15 @@
         <span><strong id="dash-live-count">0</strong> visitors online now</span>
       </div>
 
+      <!-- Last 30 days and month by month (admin_rolling_30 / admin_monthly_stats) -->
+      <div class="mau-wrap">
+        <h4 class="mau-h">Last 30 days</h4>
+        <div class="mau-cards" id="mau-cards"><div class="admin-empty">Loading...</div></div>
+        <h4 class="mau-h">By month</h4>
+        <div class="adm-table-wrap" id="mau-table"></div>
+        <p class="adm-note">Active visitors are counted once per browser per month using an anonymous ID (no names, emails or IP addresses). Test tools and search-engine crawlers are not counted.</p>
+      </div>
+
       <div class="dash-grid">
         <div class="dash-card">
           <div class="dash-label">Total Page Views</div>
@@ -1893,16 +1902,16 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.22.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.23.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.22.0"></script>
-<script defer src="/i18n.js?v=1.22.0"></script>
-<script defer src="/sophia_commons_v9.js?v=1.22.0"></script>
+<script defer src="/sb-init.js?v=1.23.0"></script>
+<script defer src="/i18n.js?v=1.23.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.23.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
