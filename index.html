@@ -215,7 +215,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.21.1">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.22.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -384,11 +384,10 @@
     <li><a href="#" onclick="showCategory('Housing & Room Rent');return false;" data-i18n="sidebar.category_housing">housing &amp; room rent</a><span class="cbadge">54</span></li>
     <li><a href="#" onclick="showCategory('Jobs & Volunteering');return false;" data-i18n="sidebar.category_jobs">jobs &amp; volunteering</a><span class="cbadge">176</span></li>
     <li><a href="#" onclick="showCategory('Groups & Circles');return false;" data-i18n="sidebar.category_groups">groups, seminars &amp; retreats</a><span class="cbadge">111</span></li>
-    <li><a href="#" onclick="showSec('podcasts');return false;" data-i18n="sidebar.category_podcasts">podcasts &amp; media</a><span class="cbadge">23</span></li>
+    <li><a href="/podcasts" onclick="showSec('podcasts');return false;" data-i18n="sidebar.category_media_social">podcasts, video &amp; social media</a><span class="cbadge">48</span></li>
     <li><a href="#" onclick="showSec('books');return false;" data-i18n="sidebar.category_books">books &amp; library</a><span class="cbadge">350+</span></li>
     <li><a href="#" onclick="showSec('eldercare');return false;" data-i18n="sidebar.category_eldercare">eldercare</a><span class="cbadge" data-live-count="eldercare">42</span></li>
     <li><a href="#" onclick="showCategory('Online Resources');return false;" data-i18n="sidebar.category_online">online resources</a><span class="cbadge">280</span></li>
-    <li><a href="#" onclick="showCategory('Social Media');return false;" data-i18n="sidebar.category_social_media">social media</a><span class="cbadge">25</span></li>
   </ul>
   <h5 data-i18n="sidebar.region">region</h5>
   <ul>
@@ -611,26 +610,26 @@
         <a href="#" class="chat-join-btn" onclick="handleChat();return false;" data-i18n="home.sign_in_to_join">sign in to join chat →</a>
       </div>
     </div>
-    <div class="catblock reveal">
-      <div class="catblock-head"><h3 data-i18n="home.podcasts_media">Podcasts &amp; Media</h3><span class="alllink">23</span></div>
-      <ul>
-        <li><a href="#" onclick="showSec('podcasts');return false;">ASA Official Podcast<sup>✓</sup></a></li>
-        <li><a href="#" onclick="showSec('podcasts');return false;">Goetheanum Podcast<sup>✓</sup></a></li>
-        <li><a href="#" onclick="showSec('podcasts');return false;">Inner Work Path<sup>✓</sup></a></li>
-        <li><a href="#" onclick="showSec('podcasts');return false;">Rudolf Steiner Audio<sup>✓</sup></a></li>
-        <li><a href="#" onclick="showSec('podcasts');return false;">Goetheanum TV<sup>✓</sup></a></li>
-      </ul>
-    </div>
-    <div class="catblock reveal">
-      <div class="catblock-head"><h3 onclick="showCategory('Social Media');event.stopPropagation();" style="cursor:pointer;">Social Media</h3><span class="alllink">25</span></div>
-      <ul>
-        <li><a href="https://www.youtube.com/@Goetheanum" target="_blank">Goetheanum TV (YouTube)<sup>✓</sup></a></li>
-        <li><a href="https://www.facebook.com/groups/QA.anthroposophia" target="_blank">Anthroposophy Q&amp;A (Facebook)</a></li>
-        <li><a href="https://x.com/goetheanum" target="_blank">Goetheanum (X/Twitter)<sup>✓</sup></a></li>
-        <li><a href="https://www.instagram.com/goetheanum_deutsch/" target="_blank">Goetheanum (Instagram)<sup>✓</sup></a></li>
-        <li><a href="https://discord.me/rosefolk" target="_blank">Rosefolk (Discord)</a></li>
-        <li><a href="#" onclick="showCategory('Social Media');return false;">view all 25 →</a></li>
-      </ul>
+    <div class="catblock reveal media-block">
+      <div class="catblock-head"><h3 onclick="showSec('podcasts');event.stopPropagation();" style="cursor:pointer;" data-i18n="home.media_social">Podcasts, Video &amp; Social Media</h3><span class="alllink">48</span></div>
+      <div class="media-cols">
+        <ul>
+          <li class="media-sub" data-i18n="home.media_sub_podcasts">podcasts &amp; video</li>
+          <li><a href="#" onclick="showSec('podcasts');return false;">ASA Official Podcast<sup>✓</sup></a></li>
+          <li><a href="#" onclick="showSec('podcasts');return false;">Goetheanum Podcast<sup>✓</sup></a></li>
+          <li><a href="#" onclick="showSec('podcasts');return false;">Inner Work Path<sup>✓</sup></a></li>
+          <li><a href="#" onclick="showSec('podcasts');return false;">Rudolf Steiner Audio<sup>✓</sup></a></li>
+          <li><a href="/podcasts" onclick="showSec('podcasts');return false;" data-i18n="home.media_all_podcasts">all podcasts &amp; 64 YouTube channels →</a></li>
+        </ul>
+        <ul>
+          <li class="media-sub" data-i18n="home.media_sub_social">social media</li>
+          <li><a href="https://www.youtube.com/@Goetheanum" target="_blank" rel="noopener">Goetheanum TV (YouTube)<sup>✓</sup></a></li>
+          <li><a href="https://www.facebook.com/groups/QA.anthroposophia" target="_blank" rel="noopener">Anthroposophy Q&amp;A (Facebook)</a></li>
+          <li><a href="https://x.com/goetheanum" target="_blank" rel="noopener">Goetheanum (X/Twitter)<sup>✓</sup></a></li>
+          <li><a href="https://www.instagram.com/goetheanum_deutsch/" target="_blank" rel="noopener">Goetheanum (Instagram)<sup>✓</sup></a></li>
+          <li><a href="/category/social-media" onclick="showCategory('Social Media');return false;" data-i18n="home.media_all_social">all 25 social media pages →</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -1894,16 +1893,16 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.21.1 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.22.0 &nbsp;·&nbsp; <span class="ft-affiliate" data-i18n="footer.affiliate">As an Amazon Associate we earn from qualifying purchases.</span></span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.21.1"></script>
-<script defer src="/i18n.js?v=1.21.1"></script>
-<script defer src="/sophia_commons_v9.js?v=1.21.1"></script>
+<script defer src="/sb-init.js?v=1.22.0"></script>
+<script defer src="/i18n.js?v=1.22.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.22.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

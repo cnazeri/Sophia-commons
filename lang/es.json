@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.21.1",
+  "footer.version": "v1.22.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -769,5 +769,11 @@
   "firstclass.intro": "Lecciones y encuentros de la Clase para miembros de la Escuela de Ciencia Espiritual. La entrada requiere la tarjeta azul. Aquí no se publica contenido mántrico; consulta a los organizadores.",
   "firstclass.none": "Aún no hay encuentros de la Clase.",
   "firstclass.add": "Añadir un encuentro de la Clase",
-  "event_detail.sign_up": "Inscribirse para asistir"
+  "event_detail.sign_up": "Inscribirse para asistir",
+  "home.media_social": "Pódcasts, vídeo y redes sociales",
+  "home.media_sub_podcasts": "pódcasts y vídeo",
+  "home.media_sub_social": "redes sociales",
+  "home.media_all_podcasts": "todos los pódcasts y 64 canales de YouTube →",
+  "home.media_all_social": "las 25 páginas de redes sociales →",
+  "sidebar.category_media_social": "pódcasts, vídeo y redes sociales"
 }

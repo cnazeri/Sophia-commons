@@ -3436,3 +3436,12 @@ footer li a { display: inline-block; padding: 10px 0; }
 .fc-block .etag { color: #2f4f86; }
 .fc-add { font-size: 12px; margin: 8px 0 2px; }
 .fc-add a { color: var(--gold-text); font-weight: 700; }
+
+/* ══════════════════ v1.22: one Podcasts, Video & Social Media block on the home page ══════════════════ */
+.media-block { grid-column: span 2; }
+.media-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.media-sub { font-size: 10px !important; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+@media (max-width: 560px) {
+  .media-block { grid-column: auto; }
+  .media-cols { grid-template-columns: 1fr; }
+}
