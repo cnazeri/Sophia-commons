@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.20.0",
+  "footer.version": "v1.20.1",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -753,5 +753,14 @@
   "cots.read": "Leer el verso de esta semana",
   "cots.mirror": "Verso espejo",
   "cots.southern": "Hemisferio sur",
-  "cots.note": "Original alemán y traducciones al inglés en el Rudolf Steiner Archive."
+  "cots.note": "Original alemán y traducciones al inglés en el Rudolf Steiner Archive.",
+  "days.heading": "para los días de la semana",
+  "days.heading_full": "Para los días de la semana",
+  "days.daily": "Diario",
+  "days.five_min": "cinco minutos de mirar hacia dentro",
+  "days.all": "Leer los ocho ejercicios",
+  "days.today": "hoy",
+  "days.daily_label": "Cada día",
+  "days.german": "Original en alemán",
+  "days.intro": "Rudolf Steiner describe ocho procesos del alma que solemos realizar sin atención. Practica un ejercicio durante una o dos semanas y luego el siguiente. Más adelante, empezando un sábado, haz uno cada día, de modo que el mismo ejercicio caiga siempre en el mismo día, junto con la revisión diaria."
 }

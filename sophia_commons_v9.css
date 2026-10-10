@@ -3415,3 +3415,15 @@ footer li a { display: inline-block; padding: 10px 0; }
 .cots-meta { margin-top: 8px; color: var(--text-secondary); font-size: 11.5px; }
 .cots-meta a { color: var(--gold-text); font-weight: 600; }
 .cots-note { margin-top: 4px; color: var(--text-muted); font-size: 10.5px; }
+
+/* ══════════════════ v1.20: For the Days of the Week (right sidebar) ══════════════════ */
+.dx { font-size: 12.5px; margin-bottom: 12px; }
+.dx-day { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--gold-text); }
+.dx-name { font-family: 'Lora', Georgia, serif; font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 2px 0 4px; }
+.dx-text { margin: 0 0 6px; line-height: 1.5; color: var(--text-secondary); }
+.dx-daily { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; }
+.dx-more { min-height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--gold-text); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.dx-more:hover { border-color: var(--gold); }
+.dx-popup { width: 520px; }
+.dx-item.is-today { background: var(--gold-light, #f6efdc); border-radius: 8px; padding: 8px 10px; }
+.dx-theme { font-family: 'Nunito Sans', sans-serif; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-left: 4px; }

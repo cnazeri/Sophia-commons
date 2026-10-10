@@ -4065,6 +4065,69 @@ function renderCotsWidget() {
 
 document.addEventListener('DOMContentLoaded', renderCotsWidget);
 
+// ── FOR THE DAYS OF THE WEEK (Rudolf Steiner, GA 245) ──
+// Eight soul exercises: one for each weekday (starting on Saturday) plus a daily five-minute review.
+// English text from the owner's translation of the German original at anthroposophie.net.
+var DAY_EXERCISES = [
+  { day: 0, name: 'Right judgment', theme: 'Resolutions', text: ['Make resolutions, even regarding the most trivial matters, only after full and well-founded deliberation. All thoughtless action and meaningless activity should be kept away from the soul. One should always have well-considered reasons for everything, and strictly refrain from doing anything for which there is no significant reason.', 'If one is convinced of the correctness of a decision one has made, one should hold fast to it with inner steadfastness. This judgment is not made dependent on likes and dislikes.'] },
+  { day: 1, name: 'The right word', theme: 'Speaking', text: ['Only that which has sense and meaning should pass the lips of one who strives for higher development. All talking for the sake of talking, merely to pass the time, is harmful in this sense.', 'The ordinary kind of conversation, where a jumble of things is said, should be avoided; yet one must not cut oneself off from other people. It is precisely in such interaction that speech should gradually evolve toward significance. Answer everyone who speaks to you, thoughtfully and with consideration for every aspect. Never speak without a reason, and be ready to remain silent. Use neither too many nor too few words. First listen calmly, then process what has been heard.'] },
+  { day: 2, name: 'The right deed', theme: 'External actions', text: ['External actions should not be a source of disturbance to our fellow human beings. Whenever one is prompted by one\'s inner self (conscience) to act, carefully consider how best to respond for the good of the whole, for the lasting happiness of others, and for the sake of the eternal.', 'When acting on one\'s own initiative, thoroughly consider the consequences of one\'s actions beforehand.'] },
+  { day: 3, name: 'The right standpoint', theme: 'The ordering of life', text: ['Live in harmony with nature and the spirit; do not lose oneself in the trivialities of outward life. Avoid anything that brings restlessness and haste into one\'s life.', 'Do nothing in haste, yet do not be sluggish. See life as a means for work and for higher development, and act accordingly.'] },
+  { day: 4, name: 'Making the exercises a habit', theme: 'Human striving', text: ['Take care not to do anything beyond one\'s strength, yet also not to neglect anything that lies within it.', 'Look beyond the everyday and the immediate moment to set goals (ideals) connected with a human being\'s highest duties: for instance, wishing to develop oneself in the spirit of these exercises so as to be better able to help and advise others later on, even if not in the immediate future.'] },
+  { day: 5, name: 'Right memory', theme: 'Learning from life', text: ['Strive to learn as much as possible from life. Nothing passes us by without offering an opportunity to gather experiences useful for life. If one has done something incorrectly or imperfectly, this becomes an occasion to do something similar correctly later on.', 'When watching others act, observe them with a similar goal in mind (though not with unloving eyes), and do nothing without looking back on experiences that can aid one\'s decisions and actions. One can learn a great deal from every person, even from children, if one pays attention.'] },
+  { day: 6, name: 'Right opinion', theme: 'Thoughts', text: ['Pay attention to one\'s mental images (thoughts). Think only significant thoughts. Gradually learn to distinguish, within one\'s thoughts, the essential from the inessential, the eternal from the transient, and truth from mere opinion.', 'When listening to what others say, try to become completely still within and refrain from all assent, and especially from all disparaging judgment (criticism or rejection), even in one\'s thoughts and feelings.'] }
+];
+var DAY_EXERCISE_DAILY = { name: 'Right contemplation', theme: 'Every day, about five minutes', text: ['Take a look inside yourself, if only for five minutes at the same time every day. Immerse yourself in yourself, carefully consult with yourself, examine and form your principles of life, go through your knowledge (or its opposite) in your mind, consider your duties, and reflect on the content and true purpose of life.', 'Be seriously dissatisfied with your own mistakes and imperfections; in a word, strive to find out what is essential and lasting, and seriously set yourself corresponding goals, for example virtues to be acquired. Do not think you have done something well, but always strive further, following the highest role models.'] };
+var DAY_EXERCISE_SRC = 'https://www.anthroposophie.net/steiner/bib_steiner_fuer_die_tage_der_woche.htm';
+
+function _dayName(dow) {
+  // 2023-01-01 was a Sunday: format a date with the right weekday in the visitor's language
+  return localDate(new Date(2023, 0, 1 + dow), { weekday: 'long' });
+}
+
+function renderDayExercise() {
+  var el = document.getElementById('days-widget');
+  if (!el) return;
+  var ex = DAY_EXERCISES.filter(function (x) { return x.day === new Date().getDay(); })[0];
+  el.innerHTML = '<div class="dx-day">' + esc(_dayName(ex.day)) + ' &middot; ' + esc(ex.theme) + '</div>'
+    + '<div class="dx-name">' + esc(ex.name) + '</div>'
+    + '<p class="dx-text">' + esc(ex.text[0]) + '</p>'
+    + '<div class="dx-daily"><b>' + esc(t('days.daily', 'Daily')) + ':</b> ' + esc(DAY_EXERCISE_DAILY.name.toLowerCase()) + ', ' + esc(t('days.five_min', 'five minutes of looking within')) + '</div>'
+    + '<button type="button" class="dx-more" onclick="showDayExercises(this)">' + esc(t('days.all', 'Read all eight exercises')) + '</button>';
+}
+
+function _dxBlock(ex, label, isToday) {
+  return '<div class="dp-event dx-item' + (isToday ? ' is-today' : '') + '"><div class="dx-day">' + esc(label) + (isToday ? ' &middot; ' + esc(t('days.today', 'today')) : '') + '</div>'
+    + '<h5>' + esc(ex.name) + ' <span class="dx-theme">' + esc(ex.theme) + '</span></h5>'
+    + ex.text.map(function (p) { return '<p class="dp-desc">' + esc(p) + '</p>'; }).join('') + '</div>';
+}
+
+function showDayExercises(trigger) {
+  closeDayPopup(false);
+  _dpReturnFocus = trigger || document.activeElement;
+  var overlay = document.createElement('div');
+  overlay.className = 'day-popup-overlay';
+  overlay.onclick = function () { closeDayPopup(); };
+  document.body.appendChild(overlay);
+  var popup = document.createElement('div');
+  popup.className = 'day-popup dx-popup';
+  popup.setAttribute('role', 'dialog');
+  popup.setAttribute('aria-modal', 'true');
+  popup.setAttribute('aria-labelledby', 'dx-title');
+  var today = new Date().getDay();
+  var order = [6, 0, 1, 2, 3, 4, 5];   // Steiner begins the week's exercises on Saturday
+  popup.innerHTML = '<button class="dp-close" type="button" aria-label="' + esc(t('common.close', 'Close')) + '" onclick="closeDayPopup()">&times;</button>'
+    + '<h4 id="dx-title">' + esc(t('days.heading_full', 'For the Days of the Week')) + '</h4>'
+    + '<p class="dp-desc">' + esc(t('days.intro', 'Rudolf Steiner describes eight processes of the soul that we usually carry out carelessly. Practise one exercise at a time for one or two weeks, then the next. Later, starting on a Saturday, do one each day, so the same exercise always falls on the same weekday, together with the daily review.')) + '</p>'
+    + order.map(function (d) { var ex = DAY_EXERCISES.filter(function (x) { return x.day === d; })[0]; return _dxBlock(ex, _dayName(d), d === today); }).join('')
+    + _dxBlock(DAY_EXERCISE_DAILY, t('days.daily_label', 'Every day'), false)
+    + '<p class="dp-src">Rudolf Steiner, GA 245. <a href="' + escUrl(DAY_EXERCISE_SRC) + '" target="_blank" rel="noopener">' + esc(t('days.german', 'German original')) + '</a></p>';
+  document.body.appendChild(popup);
+  popup.querySelector('.dp-close').focus();
+}
+
+document.addEventListener('DOMContentLoaded', renderDayExercise);
+
 // ── INIT CALENDAR ON PAGE LOAD ──
 document.addEventListener('DOMContentLoaded', function() {
   _loadCachedEvents();

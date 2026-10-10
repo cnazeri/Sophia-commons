@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.20.0",
+  "footer.version": "v1.20.1",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -782,5 +782,14 @@
   "cots.read": "Read this week's verse",
   "cots.mirror": "Mirror verse",
   "cots.southern": "Southern Hemisphere",
-  "cots.note": "German original and English translations at the Rudolf Steiner Archive."
+  "cots.note": "German original and English translations at the Rudolf Steiner Archive.",
+  "days.heading": "for the days of the week",
+  "days.heading_full": "For the Days of the Week",
+  "days.daily": "Daily",
+  "days.five_min": "five minutes of looking within",
+  "days.all": "Read all eight exercises",
+  "days.today": "today",
+  "days.daily_label": "Every day",
+  "days.german": "German original",
+  "days.intro": "Rudolf Steiner describes eight processes of the soul that we usually carry out carelessly. Practise one exercise at a time for one or two weeks, then the next. Later, starting on a Saturday, do one each day, so the same exercise always falls on the same weekday, together with the daily review."
 }
