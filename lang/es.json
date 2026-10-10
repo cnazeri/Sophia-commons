@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.26.0",
+  "footer.version": "v1.27.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -781,5 +781,6 @@
   "video.of_the_day": "Vídeo del día",
   "steiner.heading": "rudolf steiner",
   "steiner.fsm": "La meditación de la Piedra Fundamental →",
-  "steiner.fsm_note": "Dada en el Congreso de Navidad de 1923/24 (GA 260)"
+  "steiner.fsm_note": "Dada en el Congreso de Navidad de 1923/24 (GA 260)",
+  "dir.pic_credit": "Imagen de"
 }

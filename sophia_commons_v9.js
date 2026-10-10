@@ -146,7 +146,10 @@ function renderDirectoryDetail(d) {
   if (d.email) actions += '<a class="btn-secondary-detail" href="mailto:' + esc(d.email) + '">' + t('detail.contact') + ' &#9993;</a>';
   if (d.phone) actions += '<a class="btn-secondary-detail" href="tel:' + esc(d.phone) + '">' + t('detail.call') + ' &#9742;</a>';
 
+  var pic = d.photo_url ? '<figure class="detail-pic' + (d.photo_url.indexOf('#contain') !== -1 ? ' is-logo' : '') + '"><img src="' + escUrl(_imgSized(d.photo_url.split('#')[0], 720)) + '" alt="' + esc(d.organization_name) + '" loading="lazy">'
+    + (d.website_url ? '<figcaption>' + esc(t('dir.pic_credit', 'Image from')) + ' <a href="' + escUrl(d.website_url) + '" target="_blank" rel="noopener">' + esc(d.website_url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '')) + '</a></figcaption>' : '') + '</figure>' : '';
   return '<div class="detail-hero">'
+    + pic
     + badges
     + '<h1>' + esc(d.organization_name) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
@@ -566,7 +569,7 @@ async function loadCategoryPage(catKey, dirCat, opts) {
   if (sbReady() && dirCat) {
     try {
       var q0 = _sb.from('directory_entries')
-        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags, category, city, latitude, longitude, badges')
+        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags, category, city, latitude, longitude, badges, photo_url')
         .eq('status', 'approved');
       q0 = Array.isArray(dirCat) ? q0.in('category', dirCat) : q0.eq('category', dirCat);
       var { data } = await q0.order('is_verified', { ascending: false }).order('organization_name').limit(500);
@@ -678,7 +681,7 @@ function _highlightBlock(list) {
   if (!list.length) return '';
   return '<div class="listblock hl-block" style="margin-bottom:16px;"><div class="listblock-head"><h3>' + esc(t('dir.highlighted', 'Highlighted')) + '</h3></div><div class="listblock-body">'
     + list.map(function (d) {
-      return '<div class="hl-item"><h4><a href="/listing/' + esc(d.id) + '" onclick="showDetail(\'directory\',\'' + escJs(d.id) + '\');return false;">' + esc(d.organization_name) + '</a></h4>'
+      return '<div class="hl-item">' + (d.photo_url ? _dirThumbHtml(d, 320) : '') + '<h4><a href="/listing/' + esc(d.id) + '" onclick="showDetail(\'directory\',\'' + escJs(d.id) + '\');return false;">' + esc(d.organization_name) + '</a></h4>'
         + (d.description ? '<p>' + esc(_shortText(d.description, 260)) + '</p>' : '')
         + (d.website_url ? '<a class="hl-visit" href="' + escUrl(d.website_url) + '" target="_blank" rel="noopener">' + esc(t('dir.visit', 'Visit')) + ' ' + esc(d.website_url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '')) + ' &#8599;</a>' : '')
         + '</div>';
@@ -769,6 +772,18 @@ function _setCatFilter(v) {
 }
 
 var _catFilterTimer = null;
+// Listing picture: the organization's own share image (stored in listing-photos). '#contain' marks a
+// logo, shown whole on white instead of cropped. Listings without one get a lettered placeholder.
+function _dirThumbHtml(d, width) {
+  var url = d.photo_url || '';
+  if (url) {
+    var logo = url.indexOf('#contain') !== -1;
+    return '<img class="dir-thumb' + (logo ? ' is-logo' : '') + '" src="' + escUrl(_imgSized(url.split('#')[0], width || 160)) + '" alt="" loading="lazy" decoding="async" width="72" height="72">';
+  }
+  var letter = String(d.organization_name || '?').replace(/^(the|die|der|la|le|les|el|a)\s+/i, '').charAt(0).toUpperCase();
+  return '<span class="dir-thumb ph" aria-hidden="true">' + esc(letter) + '</span>';
+}
+
 function _applyCatFilter(q) {
   var entries = window._catEntries || [];
   var box = document.getElementById('cat-entries');
@@ -812,12 +827,12 @@ function _applyCatFilter(q) {
     var v = d.is_verified ? '<span class="dir-verified" title="Verified">&#10003;</span>' : '';
     var loc = [d.location, d.country].filter(Boolean).join(', ');
     if (d._km != null) loc = _fmtDist(d._km) + (loc ? ' · ' + loc : '');
-    html += '<div class="dir-row">'
+    html += '<div class="dir-row">' + _dirThumbHtml(d) + '<div class="dir-row-body">'
       + '<div class="dir-row-main">' + v
       + '<a class="ltitle" href="/listing/' + esc(d.id) + '" onclick="showDetail(\'directory\',\'' + escJs(d.id) + '\');return false;">' + esc(d.organization_name) + '</a>'
       + (loc ? '<span class="lmeta">' + esc(loc) + '</span>' : '') + '</div>'
-      + (d.description ? '<div class="dir-row-desc">' + esc(d.description.substring(0, 170)) + (d.description.length > 170 ? '…' : '') + '</div>' : '')
-      + '</div>';
+      + (d.description ? '<div class="dir-row-desc">' + esc(d.description.substring(0, 170)) + (d.description.length > 170 ? '...' : '') + '</div>' : '')
+      + '</div></div>';
   });
   box.innerHTML = html;
   // Keep the URL in sync with the filter (no new history entries while typing)
@@ -867,7 +882,7 @@ async function showRegion(key, skipPush, opts) {
   if (!sbReady()) { container.innerHTML = '<div class="empty-note">The directory is offline right now. Please try again shortly.</div>'; return; }
   try {
     var q = _sb.from('directory_entries')
-      .select('id, organization_name, description, location, country, is_verified, tags, category, city, latitude, longitude')
+      .select('id, organization_name, description, location, country, is_verified, tags, category, city, latitude, longitude, photo_url')
       .eq('status', 'approved');
     q = r.verified ? q.eq('is_verified', true) : q.in('country', r.countries);
     var res = await q.order('category').order('organization_name').limit(1000);
@@ -893,7 +908,7 @@ async function loadEldercareLive() {
   if (!box) return;
   try {
     var res = await _sb.from('directory_entries')
-      .select('id, organization_name, description, location, country, is_verified, tags')
+      .select('id, organization_name, description, location, country, is_verified, tags, photo_url')
       .eq('status', 'approved').eq('category', 'eldercare').order('country').order('organization_name').limit(500);
     var list = res.data || [];
     if (!list.length) return;

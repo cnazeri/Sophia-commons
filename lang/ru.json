@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.26.0",
+  "footer.version": "v1.27.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -781,5 +781,6 @@
   "video.of_the_day": "Видео дня",
   "steiner.heading": "рудольф штейнер",
   "steiner.fsm": "Медитация Краеугольного камня →",
-  "steiner.fsm_note": "Дана на Рождественском съезде 1923/24 (GA 260)"
+  "steiner.fsm_note": "Дана на Рождественском съезде 1923/24 (GA 260)",
+  "dir.pic_credit": "Изображение с"
 }

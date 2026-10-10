@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.26.0",
+  "footer.version": "v1.27.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -781,5 +781,6 @@
   "video.of_the_day": "Video des Tages",
   "steiner.heading": "rudolf steiner",
   "steiner.fsm": "Der Grundsteinspruch →",
-  "steiner.fsm_note": "Gegeben auf der Weihnachtstagung 1923/24 (GA 260)"
+  "steiner.fsm_note": "Gegeben auf der Weihnachtstagung 1923/24 (GA 260)",
+  "dir.pic_credit": "Bild von"
 }
