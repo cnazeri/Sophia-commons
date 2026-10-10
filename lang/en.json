@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.17.1",
+  "footer.version": "v1.18.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -770,5 +770,8 @@
   "channel.details": "details, ratings and reviews",
   "channel.rate_short": "Rate",
   "podcasts.youtube_note2": "Curated anthroposophical channels, refreshed daily. Tap a channel's stars to see details, rate it and read reviews.",
-  "video.yesterday": "yesterday"
+  "video.yesterday": "yesterday",
+  "home.events_heading": "Events",
+  "home.happening_now": "Happening now",
+  "home.coming_up": "Coming up"
 }

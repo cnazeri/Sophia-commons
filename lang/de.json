@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.17.1",
+  "footer.version": "v1.18.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -741,5 +741,8 @@
   "channel.details": "Details, Bewertungen und Rezensionen",
   "channel.rate_short": "Bewerten",
   "podcasts.youtube_note2": "Ausgewählte anthroposophische Kanäle, täglich aktualisiert. Tippen Sie auf die Sterne eines Kanals für Details, Bewertungen und Rezensionen.",
-  "video.yesterday": "gestern"
+  "video.yesterday": "gestern",
+  "home.events_heading": "Veranstaltungen",
+  "home.happening_now": "Jetzt",
+  "home.coming_up": "Demnächst"
 }

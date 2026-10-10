@@ -2810,6 +2810,13 @@ async function loadEventsFromSupabase() {
   }
 }
 
+// YYYY-MM-DD in the visitor's time zone (toISOString() would give the UTC day)
+function _localDay(iso) {
+  if (!iso) return '';
+  var d = new Date(iso);
+  return isNaN(d) ? '' : d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
 function _mergeSupabaseEventsIntoCalendar(sbEvents) {
   var merged = 0;
   sbEvents.forEach(function(ev) {
@@ -2866,6 +2873,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       src: [ev.online_url ? [ev.online_url.indexOf('zoom.us') !== -1 ? 'Join on Zoom' : 'Join online', ev.online_url] : null,
             ev.ticket_url ? ['Event page', ev.ticket_url] : null].filter(Boolean),
       featured: !!ev.featured,
+      end: _localDay(ev.end_date) || dateStr,
       img: ev.image_url ? { src: ev.image_url, alt: ev.title || '', page: ev.ticket_url || ev.image_url, credit: ev.organizer_name || 'Event image' } : null
     });
 
@@ -3829,60 +3837,67 @@ function renderSidebarUpcoming() {
     html += '</div>';
   });
   container.innerHTML = html || '<div class="sb-empty">' + esc(t('events.none_yet', 'No upcoming events yet.')) + '</div>';
-  renderHomeUpcoming(upcoming);
+  renderHomeUpcoming();
 }
 
 // Home page "Upcoming Events" card: previously three hard-coded spring 2026 events, all
 // auto-hidden once past, which left an empty box. Render from the live calendar instead.
-function renderHomeUpcoming(upcoming) {
+function renderHomeUpcoming() {
   var box = document.getElementById('home-upcoming');
   if (!box) return;
   // Until real events arrive, keep the banner the deploy wrote into the page (festival dates alone
   // would replace it, and the redraw shows up as a late paint on phones).
   if (!_dbEventsShown && box.querySelector('.feat-ev')) return;
-  var today0 = new Date(); today0.setHours(0, 0, 0, 0);
-  upcoming = calEvents.filter(function(e) { return e.cat !== 'memorial' && new Date(e.date + 'T23:59:59') >= today0; })
-    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }).slice(0, 4);
-  if (!upcoming || !upcoming.length) {
+  var today = _localDay(new Date());
+  var byDate = function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; };
+  var live = calEvents.filter(function(e) { return e.cat !== 'memorial' && (e.end || e.date) >= today; }).sort(byDate);
+  if (!live.length) {
     box.innerHTML = '<div class="empty-note">' + esc(t('events.none_yet', 'No upcoming events yet.')) + ' <a href="#" onclick="showSec(\'events\');showEventForm();return false;">' + esc(t('events.submit_one', 'Submit one')) + '</a></div>';
     return;
   }
-  var feat = calEvents.filter(function(e) { return e.featured && new Date(e.date + 'T23:59:59') >= today0; })
-    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })[0];
-  var bannerHtml = '';
-  if (feat) {
-    upcoming = upcoming.filter(function(e) { return e !== feat; }).slice(0, 3);
-    var join = (feat.src || []).filter(function(x) { return /Join/.test(x[0]); })[0];
-    bannerHtml = '<div class="feat-ev" data-id="' + esc(feat.id) + '">'
-      + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(_imgSized(feat.img.src, 200)) + '" alt="" width="96" height="116">' : '')
-      + '<div class="feat-ev-body"><div class="etag">' + esc(t('home.featured_event', 'Featured event')) + '</div>'
-      + '<h5><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
-      + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
-      + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(feat.desc, 160)) + '</p>' : '')
-      + (join ? '<a class="feat-ev-join" href="' + escUrl(join[1]) + '" target="_blank" rel="noopener">' + esc(join[0]) + '</a>' : '')
-      + '</div></div>';
-  }
-  var rowsHtml = upcoming.map(function(ev) {
-    var d = new Date(ev.date + 'T12:00:00');
-    var cat = String(ev.cat || 'event');
-    var titleHtml = ev.id
-      ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>'
-      : '<a href="#" onclick="showSec(\'events\');return false;">' + esc(ev.title) + '</a>';
-    var meta = _evMeta(ev);
-    return '<div class="evrow">'
-      + '<div class="evdate"><div class="mo">' + esc(localDate(ev.date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
-      + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5>' + titleHtml + '</h5>'
-      + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
-  }).join('');
+  var feat = live.filter(function(e) { return e.featured; })[0];
+  var rest = live.filter(function(e) { return e !== feat; });
+  // Happening now: started on or before today and not yet over (multi-day conferences, tours)
+  var now = rest.filter(function(e) { return e.date <= today; }).slice(0, 4);
+  var next = rest.filter(function(e) { return e.date > today; }).slice(0, now.length ? 4 : 6);
+  var gridHtml = '<div class="home-ev-grid' + (now.length ? '' : ' no-now') + '">'
+    + (now.length ? '<div class="home-ev-col"><h4 class="home-ev-sub"><span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) + '</h4>' + now.map(_homeEvRow).join('') + '</div>' : '')
+    + '<div class="home-ev-col"><h4 class="home-ev-sub">' + esc(t('home.coming_up', 'Coming up')) + '</h4><div class="home-ev-rows">' + next.map(_homeEvRow).join('') + '</div></div>'
+    + '</div>';
   // The deploy writes the featured banner into the page so it shows with the first paint. Keep that
   // node (same event, English) rather than redrawing it, which phones would count as a late paint.
   var kept = feat && (typeof SC_I18N === 'undefined' || SC_I18N.getLang() === 'en') ? box.querySelector('.feat-ev[data-id="' + feat.id + '"]') : null;
   if (kept) {
     Array.prototype.slice.call(box.children).forEach(function(c) { if (c !== kept) c.remove(); });
-    kept.insertAdjacentHTML('afterend', rowsHtml);
+    kept.insertAdjacentHTML('afterend', gridHtml);
   } else {
-    box.innerHTML = bannerHtml + rowsHtml;
+    box.innerHTML = (feat ? _featBannerHtml(feat) : '') + gridHtml;
   }
+}
+
+function _featBannerHtml(feat) {
+  var join = (feat.src || []).filter(function(x) { return /Join/.test(x[0]); })[0];
+  return '<div class="feat-ev" data-id="' + esc(feat.id) + '">'
+    + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(_imgSized(feat.img.src, 200)) + '" alt="" width="96" height="116">' : '')
+    + '<div class="feat-ev-body"><div class="etag">' + esc(t('home.featured_event', 'Featured event')) + '</div>'
+    + '<h5><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
+    + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
+    + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(feat.desc, 160)) + '</p>' : '')
+    + (join ? '<a class="feat-ev-join" href="' + escUrl(join[1]) + '" target="_blank" rel="noopener">' + esc(join[0]) + '</a>' : '')
+    + '</div></div>';
+}
+
+function _homeEvRow(ev) {
+  var d = new Date(ev.date + 'T12:00:00');
+  var cat = String(ev.cat || 'event');
+  var titleHtml = ev.id
+    ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>'
+    : '<a href="/events" onclick="showSec(\'events\');return false;">' + esc(ev.title) + '</a>';
+  var meta = _evMeta(ev);
+  return '<div class="evrow">'
+    + '<div class="evdate"><div class="mo">' + esc(localDate(ev.date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
+    + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5>' + titleHtml + '</h5>'
+    + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
 }
 
 // ── HEADER CALENDAR WIDGET ──
