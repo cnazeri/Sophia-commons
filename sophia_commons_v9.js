@@ -2367,6 +2367,7 @@ async function handleNewsletterLink(action, token) {
 
 function doSignup() { handleNewsletterSignup('signup-email', '.signup-box button', 'rsignup-ok'); }
 function doFtSignup() { handleNewsletterSignup('ft-email', '.ftnl button', 'ft-ok'); }
+function doRbSignup() { handleNewsletterSignup('rb-email', '.rb-nl button', 'rb-ok'); }
 
 // ── DIRECTORY MAP ──
 const mapLocs = [
