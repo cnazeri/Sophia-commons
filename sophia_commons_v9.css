@@ -3559,3 +3559,12 @@ footer li a { display: inline-block; padding: 10px 0; }
 .companion-row { padding-left: 22px; }
 .companion-row .companion-text { flex: 1; min-width: 0; }
 .companion-row .companion-desc { display: block; font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-top: 2px; }
+
+/* v1.38: Top 50 covers */
+.top50-item { grid-template-columns: 30px 64px 1fr; gap: 12px; align-items: start; }
+.top50-cover { width: 64px; height: 96px; object-fit: cover; border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,.18); display: block; }
+.top50-cover-blank { background: linear-gradient(160deg, var(--gold-light), var(--muted-bg)); display: flex; align-items: center; justify-content: center; padding: 6px; box-sizing: border-box; }
+.top50-cover-blank span { font-family: 'Lora', Georgia, serif; font-size: 9.5px; line-height: 1.25; text-align: center; color: var(--text-secondary); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; }
+/* v1.38: main menu in the site-name font (the & falls back to the body font) */
+#mainnav button { font-family: 'Sophia Commons Display', 'Nunito Sans', sans-serif; font-weight: 400; font-size: 15px; letter-spacing: .06em; }
+@media (max-width: 760px) { #mainnav button { font-size: 14px; } }
