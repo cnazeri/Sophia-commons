@@ -3129,7 +3129,7 @@ async function loadDirectoryFromSupabase() {
       dirList = document.createElement('div');
       dirList.id = 'sb-directory-list';
       // Insert after the map section
-      const mapWrap = container.querySelector('.mapwrap');
+      const mapWrap = container.querySelector('#related-dirs') || container.querySelector('.mapwrap');
       if (mapWrap) mapWrap.insertAdjacentElement('afterend', dirList);
       else container.appendChild(dirList);
     }

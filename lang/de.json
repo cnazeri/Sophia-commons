@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.42.0",
+  "footer.version": "v1.43.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -812,5 +812,6 @@
   "blog.f_submit": "Artikel einreichen",
   "topbar.create_account": "Registrieren",
   "nav.news_events": "Neuigkeiten & Veranstaltungen",
-  "footer.link_blog": "Blog"
+  "footer.link_blog": "Blog",
+  "rightbar.related_directories_title": "Verwandte Verzeichnisse"
 }
