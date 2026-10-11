@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.48.0",
+  "footer.version": "v1.49.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -818,5 +818,6 @@
   "event_detail.apple_ics": "Apple / andere (.ics)",
   "rightbar.community_spotlight_title": "Im Blickpunkt",
   "topbar.sign_up": "registrieren",
-  "topbar.sign_up_hint": "Kostenloses Konto erstellen, um zu chatten und Eintraege zu veroeffentlichen"
+  "topbar.sign_up_hint": "Kostenloses Konto erstellen, um zu chatten und Eintraege zu veroeffentlichen",
+  "topbar.post_listing_link": "Eintrag erstellen"
 }

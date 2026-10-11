@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.48.0",
+  "footer.version": "v1.49.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -818,5 +818,6 @@
   "event_detail.apple_ics": "Apple / другие (.ics)",
   "rightbar.community_spotlight_title": "В центре внимания",
   "topbar.sign_up": "регистрация",
-  "topbar.sign_up_hint": "Создайте бесплатный аккаунт, чтобы общаться в чате и размещать объявления"
+  "topbar.sign_up_hint": "Создайте бесплатный аккаунт, чтобы общаться в чате и размещать объявления",
+  "topbar.post_listing_link": "разместить запись"
 }

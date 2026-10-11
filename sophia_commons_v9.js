@@ -4601,14 +4601,6 @@ function _updateHeaderCta() {
   var key = signedIn ? 'topbar.post_listing' : 'topbar.create_account';
   a.setAttribute('data-i18n', key);
   a.textContent = signedIn ? t(key, '+ post a listing') : t(key, 'Sign Up');
-  // top-left link: "sign up" for visitors, "submit listing" for members
-  var top = document.getElementById('topbar-signup');
-  if (top) {
-    var k2 = signedIn ? 'topbar.submit_listing' : 'topbar.sign_up';
-    top.setAttribute('data-i18n', k2);
-    top.textContent = signedIn ? t(k2, 'submit listing') : t(k2, 'sign up');
-    top.title = signedIn ? '' : t('topbar.sign_up_hint', 'Create a free account to chat and post listings');
-  }
 }
 
 function updateAdminVisibility() {
