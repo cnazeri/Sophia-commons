@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.43.0",
+  "footer.version": "v1.44.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -813,5 +813,7 @@
   "topbar.create_account": "Регистрация",
   "nav.news_events": "новости и события",
   "footer.link_blog": "Блог",
-  "rightbar.related_directories_title": "Связанные каталоги"
+  "rightbar.related_directories_title": "Связанные каталоги",
+  "event_detail.add_to_calendar": "Добавить в календарь",
+  "event_detail.apple_ics": "Apple / другие (.ics)"
 }

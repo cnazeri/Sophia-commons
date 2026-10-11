@@ -175,6 +175,83 @@ function renderDirectoryDetail(d) {
     + '<div id="related-listings"></div>';
 }
 
+// ── Add an event to Google, Outlook or Apple calendars ──
+var _calEventStore = {};
+function _calRange(ev) {
+  var start = new Date(ev.start_date);
+  var end = ev.end_date ? new Date(ev.end_date) : new Date(start.getTime() + 90 * 60000);   // no end time: assume 90 minutes
+  if (ev.is_all_day) {
+    var s0 = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
+    var e0 = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate()) + 86400000); // end date is exclusive
+    return { start: s0, end: e0, allDay: true };
+  }
+  if (end <= start) end = new Date(start.getTime() + 90 * 60000);
+  return { start: start, end: end, allDay: false };
+}
+function _calStamp(d, allDay) {
+  var iso = d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  return allDay ? iso.slice(0, 8) : iso;            // 20261108 or 20261108T170000Z
+}
+function _calWhere(ev) {
+  var place = [ev.location_name, ev.address, ev.city, ev.country].filter(Boolean).join(', ');
+  return place || (ev.online_url || '');
+}
+function _calDetails(ev) {
+  var parts = [String(ev.description || '').slice(0, 1500)];
+  if (ev.online_url) parts.push('Join: ' + ev.online_url);
+  if (ev.ticket_url) parts.push('Sign up / tickets: ' + ev.ticket_url);
+  parts.push('Sophia Commons: https://sophiacommons.org/event/' + ev.id);
+  return parts.filter(Boolean).join('\n\n');
+}
+function calendarLinks(ev) {
+  var r = _calRange(ev), q = encodeURIComponent;
+  var google = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + q(ev.title)
+    + '&dates=' + _calStamp(r.start, r.allDay) + '/' + _calStamp(r.end, r.allDay)
+    + '&details=' + q(_calDetails(ev)) + '&location=' + q(_calWhere(ev));
+  var msParams = 'subject=' + q(ev.title) + '&body=' + q(_calDetails(ev)) + '&location=' + q(_calWhere(ev))
+    + (r.allDay
+      ? '&startdt=' + r.start.toISOString().slice(0, 10) + '&enddt=' + r.end.toISOString().slice(0, 10) + '&allday=true'
+      : '&startdt=' + q(r.start.toISOString()) + '&enddt=' + q(r.end.toISOString()));
+  return {
+    google: google,
+    outlook: 'https://outlook.live.com/calendar/0/action/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent&' + msParams,
+    office: 'https://outlook.office.com/calendar/0/action/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent&' + msParams
+  };
+}
+function _icsText(s) { return String(s || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([,;])/g, '\\$1'); }
+function _icsFold(line) {
+  var out = [], l = line;
+  while (l.length > 74) { out.push(l.slice(0, 74)); l = ' ' + l.slice(74); }
+  out.push(l);
+  return out.join('\r\n');
+}
+function downloadEventIcs(id) {
+  var ev = _calEventStore[id];
+  if (!ev) return;
+  var r = _calRange(ev);
+  var lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Sophia Commons//Events//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT',
+    'UID:' + ev.id + '@sophiacommons.org', 'DTSTAMP:' + _calStamp(new Date(), false),
+    (r.allDay ? 'DTSTART;VALUE=DATE:' : 'DTSTART:') + _calStamp(r.start, r.allDay),
+    (r.allDay ? 'DTEND;VALUE=DATE:' : 'DTEND:') + _calStamp(r.end, r.allDay),
+    'SUMMARY:' + _icsText(ev.title), 'DESCRIPTION:' + _icsText(_calDetails(ev)), 'LOCATION:' + _icsText(_calWhere(ev)),
+    'URL:https://sophiacommons.org/event/' + ev.id, 'END:VEVENT', 'END:VCALENDAR'];
+  var blob = new Blob([lines.map(_icsFold).join('\r\n') + '\r\n'], { type: 'text/calendar;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = String(ev.title || 'event').replace(/[^\w\- ]+/g, '').trim().slice(0, 60).replace(/\s+/g, '-') + '.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function() { URL.revokeObjectURL(a.href); }, 2000);
+}
+function _calButtonsHtml(ev) {
+  _calEventStore[ev.id] = ev;
+  var L = calendarLinks(ev);
+  return '<div class="cal-add"><span class="cal-add-label">' + t('event_detail.add_to_calendar', 'Add to calendar') + ':</span>'
+    + '<a href="' + escUrl(L.google) + '" target="_blank" rel="noopener">Google</a>'
+    + '<a href="' + escUrl(L.outlook) + '" target="_blank" rel="noopener">Outlook.com</a>'
+    + '<a href="' + escUrl(L.office) + '" target="_blank" rel="noopener">Microsoft 365</a>'
+    + '<a href="#" onclick="downloadEventIcs(\'' + esc(ev.id) + '\');return false;">' + t('event_detail.apple_ics', 'Apple / other (.ics)') + '</a></div>';
+}
+
 function renderEventDetail(ev) {
   var d = new Date(ev.start_date);
   var endStr = ev.end_date ? localDate(ev.end_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'}) : '';
@@ -213,6 +290,7 @@ function renderEventDetail(ev) {
     + '<div class="detail-body" style="white-space:pre-line;">' + esc(ev.description || '') + '</div>'
     + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold-text);font-weight:700;margin-bottom:12px;">' + t('event_detail.ticket_price').replace('${price}', ev.ticket_price) + '</p>' : '')
     + '<div class="detail-actions">' + actions + '</div>'
+    + _calButtonsHtml(ev)
     + '</div>'
     + '<div class="detail-sidebar"><h4>' + t('event_detail.title') + '</h4>'
     + '<p><strong>' + t('event_detail.date') + ':</strong> ' + esc(dateStr) + '</p>'

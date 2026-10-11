@@ -3602,3 +3602,9 @@ footer li a { display: inline-block; padding: 10px 0; }
 .related-dirs ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 10px; }
 .related-dirs li a { display: inline-block; padding: 8px 14px; border: 1px solid var(--border); border-radius: 999px; font-size: 13px; background: var(--elevated); }
 .related-dirs li a:hover { border-color: var(--gold); text-decoration: none; }
+
+/* v1.44: add to calendar */
+.cal-add { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+.cal-add-label { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-right: 2px; }
+.cal-add a { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 999px; font-size: 13px; background: var(--elevated); }
+.cal-add a:hover { border-color: var(--gold); text-decoration: none; }

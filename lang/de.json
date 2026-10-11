@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.43.0",
+  "footer.version": "v1.44.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -813,5 +813,7 @@
   "topbar.create_account": "Registrieren",
   "nav.news_events": "Neuigkeiten & Veranstaltungen",
   "footer.link_blog": "Blog",
-  "rightbar.related_directories_title": "Verwandte Verzeichnisse"
+  "rightbar.related_directories_title": "Verwandte Verzeichnisse",
+  "event_detail.add_to_calendar": "In Kalender eintragen",
+  "event_detail.apple_ics": "Apple / andere (.ics)"
 }
