@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.41.0",
+  "footer.version": "v1.42.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -810,5 +810,7 @@
   "blog.f_cover": "Ссылка на изображение (необязательно, https://)",
   "blog.f_tags": "Темы через запятую (необязательно)",
   "blog.f_submit": "Отправить статью",
-  "topbar.create_account": "Регистрация"
+  "topbar.create_account": "Регистрация",
+  "nav.news_events": "новости и события",
+  "footer.link_blog": "Блог"
 }

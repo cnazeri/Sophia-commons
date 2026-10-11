@@ -1142,6 +1142,9 @@ function updateSEOMeta(title, desc, path) {
 
 function showSec(id, skipPush) {
   var oldLd = document.getElementById('detail-jsonld'); if (oldLd) oldLd.remove();
+  // News lives inside the combined News & Events page
+  var _toNews = (id === 'news');
+  if (_toNews) id = 'events';
   if (!document.getElementById('sec-' + id)) id = 'home';
   document.querySelectorAll('.pagesec').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('#mainnav button').forEach(b => b.classList.remove('active'));
@@ -1157,6 +1160,7 @@ function showSec(id, skipPush) {
   if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
+  if (_toNews) setTimeout(function() { var n = document.getElementById('sec-news'); if (n) n.scrollIntoView({ block: 'start' }); }, 50);
   const leftbar = document.getElementById('leftbar');
   const hamburger = document.getElementById('hamburger-btn');
   const ov = document.getElementById('menu-overlay');
