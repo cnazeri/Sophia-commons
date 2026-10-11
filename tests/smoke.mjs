@@ -103,9 +103,8 @@ try {
   });
   check(Math.abs(moon.drawn - moon.label) <= 15, `moon drawing matches label (${moon.drawn}% drawn vs ${moon.label}%)`);
 
-  // Today's date in the mini calendar is readable
-  const today = await page.evaluate(() => { const el = document.querySelector('.mc-d.today'); const cs = getComputedStyle(el); return cs.color !== cs.backgroundColor; });
-  check(today, "today's date is visible in the mini calendar");
+  // The right sidebar no longer has a mini calendar (removed v1.51); the upcoming list stays
+  check(await page.$('#sidebar-upcoming') !== null, 'upcoming events list is in the right sidebar');
   await ctx.close();
 } finally {
   await browser.close();
