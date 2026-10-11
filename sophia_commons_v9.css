@@ -3608,3 +3608,12 @@ footer li a { display: inline-block; padding: 10px 0; }
 .cal-add-label { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-right: 2px; }
 .cal-add a { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 999px; font-size: 13px; background: var(--elevated); }
 .cal-add a:hover { border-color: var(--gold); text-decoration: none; }
+
+/* v1.45: community spotlight on the home page, under Events */
+.home-spotlight #spotlight-block { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.home-spotlight .spotlight-card { margin: 0; padding: 12px 14px; }
+.home-spotlight .spotlight-kicker { font-size: 10.5px; }
+.home-spotlight .spotlight-title { font-size: 15px; font-family: 'Lora', Georgia, serif; }
+.home-spotlight .spotlight-note { font-size: 12.5px; }
+.home-spotlight + hr.soft { display: none; }
+@media (max-width: 600px) { .home-spotlight #spotlight-block { grid-template-columns: 1fr; } }
