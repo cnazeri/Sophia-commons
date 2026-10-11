@@ -4507,7 +4507,7 @@ function isAdmin() {
   return !!(u.email && u.email_confirmed_at && ADMIN_EMAILS.indexOf(u.email.toLowerCase()) !== -1);
 }
 
-// Header button: "Create an Account" for visitors, "+ post a listing" once signed in
+// Header button: "Sign Up" for visitors, "+ post a listing" once signed in
 function headerCta() {
   if (signedIn) { showSubmitForm(); return; }
   openModal();
@@ -4518,7 +4518,7 @@ function _updateHeaderCta() {
   if (!a) return;
   var key = signedIn ? 'topbar.post_listing' : 'topbar.create_account';
   a.setAttribute('data-i18n', key);
-  a.textContent = signedIn ? t(key, '+ post a listing') : t(key, 'Create an Account');
+  a.textContent = signedIn ? t(key, '+ post a listing') : t(key, 'Sign Up');
 }
 
 function updateAdminVisibility() {

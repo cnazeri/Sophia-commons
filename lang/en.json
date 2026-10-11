@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.40.0",
+  "footer.version": "v1.41.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -839,5 +839,5 @@
   "blog.f_cover": "Picture link (optional, https://)",
   "blog.f_tags": "Topics, separated by commas (optional)",
   "blog.f_submit": "Submit article",
-  "topbar.create_account": "Create an Account"
+  "topbar.create_account": "Sign Up"
 }
