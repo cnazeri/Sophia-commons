@@ -635,8 +635,32 @@ function _scrollToFirstClass() {
     if (++tries < 50) setTimeout(wait, 100);
   })();
 }
-// A shared link to /category/groups-circles#first-class lands on the section
-if (location.hash === '#first-class') window.addEventListener('load', _scrollToFirstClass);
+// A shared link to /category/groups-circles#first-class lands on the section.
+// The #anchor is read now, at script start: routing later rewrites the address without it.
+var _bootHash = location.hash;
+if (_bootHash === '#first-class') window.addEventListener('load', _scrollToFirstClass);
+
+// Any other #anchor in a shared link (for example /books#higher-worlds-guide): scroll to it once the page is shown,
+// clear of the sticky header, and highlight it briefly
+function _scrollToHash() {
+  var id = decodeURIComponent((_bootHash || '').slice(1));
+  if (!id || id === 'first-class') return;
+  var tries = 0, lastTop = null, steady = 0, flashed = false;
+  // Lists above the target can still be loading, so keep re-aiming until it stops moving
+  (function aim() {
+    var el = document.getElementById(id);
+    if (el && el.offsetParent !== null) {
+      var hdr = document.getElementById('site-header');
+      var off = hdr ? hdr.getBoundingClientRect().bottom : 0;
+      var top = Math.round(el.getBoundingClientRect().top + window.scrollY - off - 16);
+      if (top !== lastTop) { window.scrollTo(0, top); lastTop = top; steady = 0; } else { steady++; }
+      if (!flashed) { el.classList.add('anchor-flash'); flashed = true; setTimeout(function() { el.classList.remove('anchor-flash'); }, 2600); }
+      if (steady >= 4) return;
+    }
+    if (++tries < 60) setTimeout(aim, 150);
+  })();
+}
+window.addEventListener('load', _scrollToHash);
 
 async function _firstClassBlock() {
   var evs = [];

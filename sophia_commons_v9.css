@@ -3646,3 +3646,7 @@ footer li a { display: inline-block; padding: 10px 0; }
 .claim-card .claim-btn { margin-top: 14px; }
 .claim-x { position: absolute; top: 10px; right: 12px; background: none; border: 0; font-size: 24px; cursor: pointer; color: var(--text-muted); }
 .claim-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+/* v1.56: highlight the target of a shared #anchor link */
+.anchor-flash { animation: anchorFlash 2.6s ease-out; }
+@keyframes anchorFlash { 0%, 40% { background: var(--gold-light); box-shadow: 0 0 0 3px var(--gold); } 100% { background: transparent; box-shadow: none; } }
