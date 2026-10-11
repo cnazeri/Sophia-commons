@@ -697,6 +697,16 @@
       "category": "study-group",
       "description": "Wise Cosmos Educational Initiative: research, talks and courses on anthroposophy, esoteric Christianity and Waldorf education.",
       "verified": true
+    },
+    {
+      "slug": "karma-police-bureau",
+      "name": "The Karma Police Bureau",
+      "url": "https://www.youtube.com/@THEKARMAPOLICEBUREAU",
+      "channel_id": "UCqX4C1zjRJUJx7WbtPjwMcw",
+      "language": "EN",
+      "category": "steiner-lectures",
+      "description": "Rudolf Steiner lectures read by Dale Brunsvold (Rudolf Steiner Audio) and set to animated artistic images, such as the cycle Michael and the New Generation.",
+      "verified": true
     }
   ]
 }
