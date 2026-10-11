@@ -170,6 +170,7 @@ function renderDirectoryDetail(d) {
     + (d.website_url ? '<p><strong>' + t('detail.website') + ':</strong> <a href="' + escUrl(d.website_url) + '" target="_blank">' + esc(d.website_url.replace('https://','').replace('http://','')) + '</a></p>' : '')
     + '<p><strong>' + t('detail.status') + ':</strong> ' + (d.is_verified ? '<span style="color:var(--sage);font-weight:700;">&#10003; ' + t('detail.verified') + '</span>' : t('detail.listed')) + '</p>'
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'directory\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '')
+    + (typeof claimBoxHtml === 'function' ? claimBoxHtml(d) : '')
     + '</div>'
     + renderCommentsSection('directory', d.id)
     + '<div id="related-listings"></div>';
@@ -4606,6 +4607,7 @@ function _updateHeaderCta() {
 function updateAdminVisibility() {
   _updateHeaderCta();
   var show = isAdmin();
+  if (show) { try { localStorage.setItem('sc_notrack', '1'); } catch (e) {} }
   var btn = document.getElementById('nav-admin');
   if (btn) btn.style.display = show ? 'inline-block' : 'none';
   var link = document.getElementById('adminlink');
@@ -4629,6 +4631,7 @@ function adminSwitchTab(tab) {
   else if (tab === 'members') loadAdminMembers();
   else if (tab === 'activity') loadAdminActivity();
   else if (tab === 'blog' && typeof loadAdminBlog === 'function') loadAdminBlog();
+  else if (tab === 'claims' && typeof loadAdminClaims === 'function') loadAdminClaims();
 }
 
 function adminEsc(s) { return esc(s); }
@@ -5829,6 +5832,15 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
 //  TRAFFIC DASHBOARD — PAGE VIEW TRACKER
 // ══════════════════════════════════════════
 
+// The site owner's own browsing is not counted: once an admin signs in on a browser, that browser stops
+// sending page views (also after signing out), and the dashboard leaves out its earlier visits.
+function _isOwnerBrowser() {
+  try { return localStorage.getItem('sc_notrack') === '1'; } catch (e) { return false; }
+}
+function _ownerVisitorId() {
+  try { return _isOwnerBrowser() ? localStorage.getItem('sc_vid') : null; } catch (e) { return null; }
+}
+
 (function initTracker() {
   // Automated browsers (test tools, Lighthouse, crawlers) are not visitors: don't count them.
   if (navigator.webdriver || /HeadlessChrome|Lighthouse|bot\b|crawl|spider|slurp|PageSpeed/i.test(navigator.userAgent)) return;
@@ -5875,7 +5887,7 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
   }
 
   function trackView(page) {
-    if (!sbReady()) return;
+    if (!sbReady() || _isOwnerBrowser() || isAdmin()) return;
     _sb.from('page_views').insert({
       session_id: sessionId,
       visitor_id: visitorId || sessionId,
@@ -5904,7 +5916,7 @@ document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
 
   // Heartbeat for live visitor count (ping every 30s)
   function heartbeat() {
-    if (!sbReady()) return;
+    if (!sbReady() || _isOwnerBrowser() || isAdmin()) return;
     _sb.from('page_views_heartbeat').upsert({
       session_id: sessionId,
       last_seen: new Date().toISOString()
@@ -5990,7 +6002,9 @@ async function loadDailyVisitors() {
     var key = _localDay(d.toISOString());
     days.push(key); byDay[key] = { v: new Set(), m: new Set(), views: 0 };
   }
+  var own = _ownerVisitorId();
   rows.forEach(function(r) {
+    if (own && r.visitor_id === own) return;
     var b = byDay[_localDay(r.timestamp)];
     if (!b) return;
     var who = r.visitor_id || ('s:' + r.session_id);
@@ -6012,7 +6026,7 @@ async function loadDailyVisitors() {
     return '<div class="dc-col" title="' + esc(label + ': ' + v + ' visitors, ' + byDay[k].views + ' page views, ' + byDay[k].m.size + ' members') + '">'
       + '<span class="dc-n">' + (v || '') + '</span><div class="dc-bar' + (k === today ? ' today' : '') + '" style="height:' + Math.round(100 * v / max) + '%"></div>'
       + '<span class="dc-d">' + (dt.getDate() === 1 || k === days[0] || dt.getDay() === 1 ? esc(label) : '') + '</span></div>';
-  }).join('') + '</div><p class="adm-note">Each bar is one day (your time zone). Hover a bar for page views and signed-in members. A visitor is one browser, counted once per day.</p>';
+  }).join('') + '</div><p class="adm-note">Each bar is one day (your time zone). Hover a bar for page views and signed-in members. A visitor is one browser, counted once per day. Your own browsing on this browser is left out.</p>';
 }
 
 async function refreshDashboard() {
@@ -6035,6 +6049,8 @@ async function refreshDashboard() {
       return _sb.from('page_views').select('*').gte('timestamp', sinceISO)
         .order('timestamp', { ascending: true }).range(from, to);
     });
+    var _own = _ownerVisitorId();
+    if (_own) views = views.filter(function(v) { return v.visitor_id !== _own; });
     var prevViews = await _fetchAllRows(function(from, to) {
       return _sb.from('page_views').select('session_id, page, timestamp')
         .gte('timestamp', prevSinceISO).lt('timestamp', sinceISO)
