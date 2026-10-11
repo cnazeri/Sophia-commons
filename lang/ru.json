@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.46.0",
+  "footer.version": "v1.47.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -816,5 +816,7 @@
   "rightbar.related_directories_title": "Связанные каталоги",
   "event_detail.add_to_calendar": "Добавить в календарь",
   "event_detail.apple_ics": "Apple / другие (.ics)",
-  "rightbar.community_spotlight_title": "В центре внимания"
+  "rightbar.community_spotlight_title": "В центре внимания",
+  "topbar.sign_up": "регистрация",
+  "topbar.sign_up_hint": "Создайте бесплатный аккаунт, чтобы общаться в чате и размещать объявления"
 }
