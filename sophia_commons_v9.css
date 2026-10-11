@@ -3620,3 +3620,12 @@ footer li a { display: inline-block; padding: 10px 0; }
 
 /* v1.48: About page subsections */
 .legal-page h3 { font-family: 'Lora', Georgia, serif; font-size: 1rem; color: var(--text-primary); margin: 18px 0 6px; }
+
+/* v1.52: daily visitors chart in Admin > Traffic */
+.daily-chart { margin: 10px 0 18px; }
+.dc-bars { display: flex; align-items: flex-end; gap: 3px; height: 170px; padding: 18px 4px 22px; border-bottom: 1px solid var(--border); position: relative; }
+.dc-col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; min-width: 0; }
+.dc-bar { width: 100%; min-height: 2px; background: var(--gold); border-radius: 3px 3px 0 0; opacity: .75; }
+.dc-bar.today { opacity: 1; background: var(--gold-text); }
+.dc-n { font-size: 9.5px; color: var(--text-muted); margin-bottom: 2px; }
+.dc-d { position: absolute; bottom: -20px; font-size: 9.5px; color: var(--text-muted); white-space: nowrap; }

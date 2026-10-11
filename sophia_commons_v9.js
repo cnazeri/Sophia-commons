@@ -5972,9 +5972,53 @@ async function loadMonthlyStats() {
     }).join('') + '</tbody></table>' : '<div class="admin-empty">No page views yet.</div>';
 }
 
+// Daily visitors for the last 30 days: unique browsers (visitor_id, or the visit id for older rows) per local day
+async function loadDailyVisitors() {
+  var cards = document.getElementById('daily-cards'), chart = document.getElementById('daily-chart');
+  if (!cards || !isAdmin() || !sbReady()) return;
+  var since = new Date(); since.setHours(0, 0, 0, 0); since.setDate(since.getDate() - 29);
+  var rows;
+  try {
+    rows = await _fetchAllRows(function(from, to) {
+      return _sb.from('page_views').select('visitor_id, session_id, is_member, timestamp')
+        .gte('timestamp', since.toISOString()).order('timestamp', { ascending: true }).range(from, to);
+    });
+  } catch (e) { cards.innerHTML = '<div class="admin-empty">Could not load daily visitors.</div>'; return; }
+  var days = [], byDay = {};
+  for (var i = 0; i < 30; i++) {
+    var d = new Date(since); d.setDate(since.getDate() + i);
+    var key = _localDay(d.toISOString());
+    days.push(key); byDay[key] = { v: new Set(), m: new Set(), views: 0 };
+  }
+  rows.forEach(function(r) {
+    var b = byDay[_localDay(r.timestamp)];
+    if (!b) return;
+    var who = r.visitor_id || ('s:' + r.session_id);
+    b.v.add(who); b.views++;
+    if (r.is_member) b.m.add(who);
+  });
+  var n = function(k) { return byDay[k] ? byDay[k].v.size : 0; };
+  var today = days[29], yesterday = days[28];
+  var avg7 = Math.round(days.slice(23).reduce(function(s, k) { return s + n(k); }, 0) / 7);
+  var card = function(label, val, sub) { return '<div class="mau-card"><div class="mau-v">' + Number(val || 0).toLocaleString() + '</div><div class="mau-l">' + esc(label) + '</div>' + (sub ? '<div class="mau-s">' + esc(sub) + '</div>' : '') + '</div>'; };
+  cards.innerHTML = card('Visitors today', n(today), byDay[today].views + ' page views')
+    + card('Yesterday', n(yesterday), byDay[yesterday].views + ' page views')
+    + card('Daily average', avg7, 'last 7 days')
+    + card('Best day', Math.max.apply(null, days.map(n)), 'last 30 days');
+  var max = Math.max(1, Math.max.apply(null, days.map(n)));
+  chart.innerHTML = '<div class="dc-bars">' + days.map(function(k) {
+    var v = n(k), dt = new Date(k + 'T12:00:00');
+    var label = dt.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    return '<div class="dc-col" title="' + esc(label + ': ' + v + ' visitors, ' + byDay[k].views + ' page views, ' + byDay[k].m.size + ' members') + '">'
+      + '<span class="dc-n">' + (v || '') + '</span><div class="dc-bar' + (k === today ? ' today' : '') + '" style="height:' + Math.round(100 * v / max) + '%"></div>'
+      + '<span class="dc-d">' + (dt.getDate() === 1 || k === days[0] || dt.getDay() === 1 ? esc(label) : '') + '</span></div>';
+  }).join('') + '</div><p class="adm-note">Each bar is one day (your time zone). Hover a bar for page views and signed-in members. A visitor is one browser, counted once per day.</p>';
+}
+
 async function refreshDashboard() {
   if (!isAdmin()) return;
   loadMonthlyStats();
+  loadDailyVisitors();
   var days = daysFromRange(_dashRange);
   var since = new Date();
   since.setDate(since.getDate() - days);
