@@ -3617,3 +3617,6 @@ footer li a { display: inline-block; padding: 10px 0; }
 .home-spotlight .spotlight-note { font-size: 12.5px; }
 .home-spotlight + hr.soft { display: none; }
 @media (max-width: 600px) { .home-spotlight #spotlight-block { grid-template-columns: 1fr; } }
+
+/* v1.48: About page subsections */
+.legal-page h3 { font-family: 'Lora', Georgia, serif; font-size: 1rem; color: var(--text-primary); margin: 18px 0 6px; }
