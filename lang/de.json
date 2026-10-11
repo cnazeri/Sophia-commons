@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.38.0",
+  "footer.version": "v1.39.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -809,5 +809,6 @@
   "blog.f_hint": "Leerzeile zwischen Absaetzen. Mit ## beginnt eine Zwischenueberschrift. **fett** und *kursiv* funktionieren, https-Links werden klickbar.",
   "blog.f_cover": "Bild-Link (optional, https://)",
   "blog.f_tags": "Themen, durch Kommas getrennt (optional)",
-  "blog.f_submit": "Artikel einreichen"
+  "blog.f_submit": "Artikel einreichen",
+  "topbar.create_account": "Konto erstellen"
 }

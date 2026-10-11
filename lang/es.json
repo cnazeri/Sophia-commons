@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.38.0",
+  "footer.version": "v1.39.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -809,5 +809,6 @@
   "blog.f_hint": "Deja una línea en blanco entre párrafos. Empieza una línea con ## para un subtítulo. **negrita** y *cursiva* funcionan, y los enlaces https se pueden pulsar.",
   "blog.f_cover": "Enlace a una imagen (opcional, https://)",
   "blog.f_tags": "Temas separados por comas (opcional)",
-  "blog.f_submit": "Enviar artículo"
+  "blog.f_submit": "Enviar artículo",
+  "topbar.create_account": "Crear una cuenta"
 }

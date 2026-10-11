@@ -565,7 +565,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.38.0",
+  "footer.version": "v1.39.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -809,5 +809,6 @@
   "blog.f_hint": "Оставляйте пустую строку между абзацами. Строка с ## становится подзаголовком. **жирный** и *курсив* работают, ссылки https становятся кликабельными.",
   "blog.f_cover": "Ссылка на изображение (необязательно, https://)",
   "blog.f_tags": "Темы через запятую (необязательно)",
-  "blog.f_submit": "Отправить статью"
+  "blog.f_submit": "Отправить статью",
+  "topbar.create_account": "Создать аккаунт"
 }

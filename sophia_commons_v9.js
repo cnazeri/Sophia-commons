@@ -4506,7 +4506,22 @@ function isAdmin() {
   return !!(u.email && u.email_confirmed_at && ADMIN_EMAILS.indexOf(u.email.toLowerCase()) !== -1);
 }
 
+// Header button: "Create an Account" for visitors, "+ post a listing" once signed in
+function headerCta() {
+  if (signedIn) { showSubmitForm(); return; }
+  openModal();
+  if (authMode !== 'signup') toggleAuthMode();
+}
+function _updateHeaderCta() {
+  var a = document.getElementById('postlink');
+  if (!a) return;
+  var key = signedIn ? 'topbar.post_listing' : 'topbar.create_account';
+  a.setAttribute('data-i18n', key);
+  a.textContent = signedIn ? t(key, '+ post a listing') : t(key, 'Create an Account');
+}
+
 function updateAdminVisibility() {
+  _updateHeaderCta();
   var show = isAdmin();
   var btn = document.getElementById('nav-admin');
   if (btn) btn.style.display = show ? 'inline-block' : 'none';
