@@ -1,0 +1,509 @@
+{
+ "date": "2026-10-11",
+ "checked": 442,
+ "broken": 39,
+ "redirected": 18,
+ "broken_links": [
+  {
+   "url": "https://",
+   "status": "ERR InvalidURL",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://*.analytics.google.com",
+   "status": "ERR InvalidURL",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://*.google-analytics.com",
+   "status": "ERR InvalidURL",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://anthroposophy.org/podcast/",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://www.anthroposophy.org/podcast",
+   "ms": 1389,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://camphill.edu",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://camphill.edu/",
+   "ms": 489,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://camphillca.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 776,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://emerson.org.uk/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 1279,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://eurythmyuk.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 1534,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://meadowbrookelder.org",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://newthinkingallowed.org/rudolf-steiner-anthroposophy/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 626,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://rudolfsteinerelib.org/RelArtic/UsherS/TwoBooks.html",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 71,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://soundcircleeurythmy.org/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://waldorfearlychildhood.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 892,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.alterspflege-dornach.ch",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.anthroposophy.org.au/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.biodynamic.org.uk/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 37,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.camphillminnesota.org/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.cvt.org.uk/botton-village",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 6614,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.heartbeetcamphill.org/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.ivaa.info/",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.kimberton.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 866,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.kimbertoncsa.org/",
+   "status": 401,
+   "ok": false,
+   "final_url": null,
+   "ms": 332,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.newtondee.org.uk/",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.rudolfsteiner.podbean.com/",
+   "status": "SSL",
+   "ok": false,
+   "ms": 167,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.rudolfsteinerelib.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 291,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.triformcamphill.org/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.waldorflibrary.org",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorflibrary.org/",
+   "ms": 126,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.waldorflibrary.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 156,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.youtube.com/@AnthroposophyUSA",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 174,
+   "soft": true,
+   "source": "index.html"
+  },
+  {
+   "url": "https://…",
+   "status": "ERR InvalidURL",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://commons.wikimedia.org/wiki/File:4%25_Illuminated_Crescent_Moon_with_Earthshine_(41490002672",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 187,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://commons.wikimedia.org/wiki/File:Leonardo_da_Vinci_(1452-1519",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 185,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://commons.wikimedia.org/wiki/File:Wandtafelbild_-_Gotheanum-Motiv_(1924",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 171,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://rsarchive.org/COTS/index.php?northern_week=",
+   "status": 500,
+   "ok": false,
+   "final_url": null,
+   "ms": 221,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://rudolfsteinerelib.org/GA/index.php?ga=GA0260",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 44,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Articles/EduChild/EduChi_index.html",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://rsarchive.org/Articles/EduChild/EduChi_index.html",
+   "ms": 392,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Education/_pdf/Foundations_of_Human_Experience.pdf",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://rsarchive.org/Education/_pdf/Foundations_of_Human_Experience.pdf",
+   "ms": 541,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Education/_pdf/Practical_Advice_to_Teachers.pdf",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://rsarchive.org/Education/_pdf/Practical_Advice_to_Teachers.pdf",
+   "ms": 317,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Education/_pdf/The_Kingdom_of_Childhood.pdf",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://rsarchive.org/Education/_pdf/The_Kingdom_of_Childhood.pdf",
+   "ms": 388,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  }
+ ],
+ "redirects": [
+  {
+   "url": "https://anthroposophy.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.anthroposophy.org/",
+   "ms": 428,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://anthroposophy.org/being-human/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.anthroposophy.org/being-human",
+   "ms": 737,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://biodynamics.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.biodynamics.com/",
+   "ms": 477,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://desertmarigold.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.desertmarigold.org/",
+   "ms": 531,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://portlandvillageschool.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.portlandvillageschool.org/",
+   "ms": 1022,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://twitter.com/SophiaCommons",
+   "status": 403,
+   "ok": true,
+   "final_url": "https://x.com/SophiaCommons",
+   "ms": 507,
+   "soft": true,
+   "source": "index.html"
+  },
+  {
+   "url": "https://waldorfeducation.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.waldorfeducation.org/",
+   "ms": 458,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.benziger.com/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://benziger.com/",
+   "ms": 377,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.camphill.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://camphill.org/",
+   "ms": 879,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.camphillschool.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://camphillschool.org/",
+   "ms": 1113,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.communityhomestead.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://communityhomestead.org/index.html",
+   "ms": 820,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.greenmeadow.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://greenmeadow.org/",
+   "ms": 1296,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.plowsharefarm.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.plowshare.org/",
+   "ms": 744,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.threefold.org",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://threefold.org/",
+   "ms": 404,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.truebotanica.com/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://truebotanica.com/",
+   "ms": 655,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://accounts.google.com/v3/signin/identifier?continue=https://calendar.google.com/calendar/render?action%3DTEMPLATE%26text&emr=1&followup=https://calendar.google.com/calendar/render?action%3DTEMPLATE%26text&osid=1&passive=1209600&service=cl&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-1238941042:1791742052841169",
+   "ms": 343,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Lectures/GA120/English/RSP1984/ManKar_index.html",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://rsarchive.org/Lectures/GA120/English/RSP1984/ManKar_index.html",
+   "ms": 326,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://www.steinerbooks.org",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://steinerbooks.org/",
+   "ms": 474,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  }
+ ]
+}

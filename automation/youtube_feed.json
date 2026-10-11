@@ -1,10 +1,19 @@
 {
- "generated_at": "2026-10-10T21:18:39.778073+00:00",
+ "generated_at": "2026-10-11T18:05:28.549489+00:00",
  "channels": [
   {
    "slug": "goetheanum",
    "name": "Goetheanum",
    "latest": [
+    {
+     "video_id": "VOXUFw5mTK4",
+     "title": "SAVE THE DATE 🌍",
+     "url": "https://www.youtube.com/watch?v=VOXUFw5mTK4",
+     "thumbnail_url": "https://i3.ytimg.com/vi/VOXUFw5mTK4/hqdefault.jpg",
+     "published_at": "2026-10-11T11:02:45+00:00",
+     "description": "What is school for? To learn. To work. To participate in the world – and to help shape it.\n\nThe World Teachers’ Conference 2027 brings educators from around the world together at the Goetheanum to explore learning, responsibility, creativity and the future of education.\n\n30 March – 3 April 2027 · Goetheanum\n🔗 https://www.goetheanum-paedagogik.ch/veranstaltungen/veranstaltungen-der-paedagogischen-sektion/30-maerz-3-april-world-teachers-conference\n\n________\n🇩🇪\nWofür ist Schule da? Zum Lernen. Zum Arbeiten. Um an der Welt teilzuhaben – und sie mitzugestalten.\nDie World Teachers’ Conference 2027 bringt Pädagog:innen aus aller Welt am Goetheanum zusammen, um Lernen, Verantwortung, Kreativität und die Zukunft der Bildung gemeinsam zu erkunden.\n30. März – 3. April 2027 · Goetheanum",
+     "channel_slug": "goetheanum"
+    },
     {
      "video_id": "nNKBbNB4AQw",
      "title": "TRAILER · Zum Lernen und zur Arbeit",
@@ -21,15 +30,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/WkAei0ZG7_0/hqdefault.jpg",
      "published_at": "2026-10-06T13:03:59+00:00",
      "description": "Was geschieht, wenn etwas Unerwartetes ins Archiv kommt? Und welche Geschichten können Objekte, Dokumente und Spuren aus der Vergangenheit plötzlich neu erzählen?\n\nIn diesem Beitrag von Goetheanum TV führt der Weg ins Rudolf Steiner Archiv – und zu einer besonderen Überraschung.\n\n🎥 Jetzt auf Goetheanum TV anschauen:  https://goetheanum.tv/programs/eine-ueberraschung-kommt-ins-rudolf-steiner-archiv\n\n#GoetheanumTV #RudolfSteinerArchiv #Goetheanum #Archiv #RudolfSteiner",
-     "channel_slug": "goetheanum"
-    },
-    {
-     "video_id": "DdAGlaIqPXQ",
-     "title": "International Autumn Conference 2026",
-     "url": "https://www.youtube.com/watch?v=DdAGlaIqPXQ",
-     "thumbnail_url": "https://i1.ytimg.com/vi/DdAGlaIqPXQ/hqdefault.jpg",
-     "published_at": "2026-09-29T13:03:53+00:00",
-     "description": "The Section for Inclusive Social Development invites you to the International Autumn Conference 2026 at the Goetheanum.\n\n🔗 https://tickets.goetheanum.ch/6HP/c/ndsb39Z6q/\n\nIn this Reel series, the invitation can be heard in different languages — as an expression of international collaboration and the diversity of the people connected with this Section.",
      "channel_slug": "goetheanum"
     }
    ]
@@ -369,6 +369,15 @@
    "name": "Word of Rudolf Steiner",
    "latest": [
     {
+     "video_id": "lKU0n2m-51o",
+     "title": "Después de 700 vídeos, comienza una nueva etapa | La grandeza de lo Humano",
+     "url": "https://www.youtube.com/watch?v=lKU0n2m-51o",
+     "thumbnail_url": "https://i1.ytimg.com/vi/lKU0n2m-51o/hqdefault.jpg",
+     "published_at": "2026-10-11T17:00:12+00:00",
+     "description": "Después de 12 años de haber dejado México para comenzar una nueva vida en Europa, de convertirme en madre y de compartir más de 700 vídeos contigo, ha llegado el momento de abrir una nueva etapa.\n\nPalabra de Rudolf Steiner se transforma en **La grandeza de lo Humano**.\n\nEste proyecto seguirá nutriéndose de las enseñanzas de Rudolf Steiner, que han sido una raíz fundamental de este camino, pero abrirá sus puertas a nuevas voces, historias y conocimientos.\n\nHablaremos de conciencia, libertad, espiritualidad, filosofía, ciencia, experiencias extraordinarias y, sobre todo, de esa grandeza que habita en cada ser humano y que tantas veces necesitamos descubrir, cultivar y defender.\n\nGracias por acompañarme, por escuchar, por comentar y por hacer posible este espacio. Me encantará seguir recorriendo este camino contigo.\n\nBienvenidos a esta nueva etapa.\n\n**La grandeza de lo Humano**\nConversaciones · Historias · Ideas para una vida más plena.\n\nSuscríbete para acompañarnos en lo que viene.\n\n#LaGrandezaDeLoHumano #RudolfSteiner #EspiritualidadPráctica",
+     "channel_slug": "word-of-rudolf-steiner"
+    },
+    {
      "video_id": "aC9H_gaFvLk",
      "title": "¿QUÉ PUEDE HACER EL SER HUMANO QUE LA IA NUNCA HARÁ?",
      "url": "https://www.youtube.com/watch?v=aC9H_gaFvLk",
@@ -384,15 +393,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/qYxGblaUz9E/hqdefault.jpg",
      "published_at": "2026-10-03T14:00:10+00:00",
      "description": "¿Qué es el masaje Pressel y qué lo hace diferente?\n\nEn esta conversación, Heike Jessen nos introduce en el mundo del Masaje Pressel, un método desarrollado por el médico alemán Simeon Pressel que busca trabajar al ser humano desde una visión integral y a través del equilibrio entre diferentes polaridades.\n\nHeike Jessen nació en 1959 en Soest, Alemania. Durante los años 80 participó en diferentes proyectos sociales y comenzó a acercarse a distintas técnicas de masaje. En 1986 se trasladó a España y allí conoció a la masajista Frauke Elsner. Cuando presenció por primera vez una sesión de Masaje Pressel, supo inmediatamente que había encontrado el tipo de masaje que quería practicar.\n\nPocos meses después comenzó su formación en Cataluña con Lies Pressel, esposa de Simeon Pressel. Desde 1992 ejerce como masajista en consulta propia en Madrid y posteriormente amplió su formación en trabajo biográfico, Counselling y el método de los 12 Pasos para la drogodependencia y el alcoholismo.\n\nSu vínculo con el Masaje Pressel continuó creciendo. Desde los primeros cursos realizados en España colaboró con Frauke Elsner en la parte práctica de las formaciones y, a partir de 2010, comenzó a participar regularmente en formaciones en España y Colombia. En 2013 tomó el relevo de Frauke como responsable de la parte práctica. También participó durante varios años en la formación de la Odilienschule de Masaje Pressel, en Offenburg, Alemania.\n\nEn 2019 fundó, junto con otros masajistas, la Asociación de Masajistas Pressel, con el objetivo de continuar formando nuevos profesionales y mantener vivo este trabajo.\n\nEn la entrevista hablamos sobre Simeon Pressel, el origen del método, la importancia del calor y el silencio, el trabajo con las piernas y la espalda, los movimientos en espiral y lemniscata, la relación entre las polaridades y el centro, las experiencias de Heike con sus pacientes y la situación actual de la formación en España.\n\nTambién hablamos de algo especialmente interesante: po",
-     "channel_slug": "word-of-rudolf-steiner"
-    },
-    {
-     "video_id": "4X7NBI4jb3Y",
-     "title": "¿Sabemos distinguir la verdad?",
-     "url": "https://www.youtube.com/watch?v=4X7NBI4jb3Y",
-     "thumbnail_url": "https://i1.ytimg.com/vi/4X7NBI4jb3Y/hqdefault.jpg",
-     "published_at": "2026-10-02T13:36:53+00:00",
-     "description": "¿Qué es la verdad? Una pregunta que aparece en el encuentro entre Cristo y Pilatos y que sigue siendo profundamente actual.\nEn este fragmento, José Manuel Fernández reflexiona sobre la verdad desde la perspectiva de Rudolf Steiner y la Filosofía de la Libertad. ¿Podemos encontrar la verdad a través de nuestro entendimiento convencional? ¿O nuestras propias opiniones pueden alejarnos de ella?\nUna de las ideas centrales de este fragmento es la relación entre opinión y verdad: cuando defendemos una opinión, ¿estamos realmente contemplando la verdad o simplemente nuestra propia representación de ella?\nUna invitación a detenernos, observar nuestro pensar y preguntarnos qué significa realmente buscar la verdad.\n💬 ¿Crees que una opinión puede alejarnos de la verdad? Te leo en los comentarios.\n📚 Si quieres profundizar en la Filosofía de la Libertad de Rudolf Steiner, puedes conocer el curso de José Manuel Fernández:\n👉 Información e inscripciones:\nhttps://forms.gle/45ajPtFRSxY9AfLr5\n#RudolfSteiner #FilosofiaDeLaLibertad #QueEsLaVerdad #Cristo #Pilatos #Verdad #Pensamiento #Conciencia #Espiritualidad #antroposofía",
      "channel_slug": "word-of-rudolf-steiner"
     }
    ]
@@ -1821,6 +1821,15 @@
    "name": "Three-Fold Mankind, Chicago Program Initiative",
    "latest": [
     {
+     "video_id": "x9LQi62uVCY",
+     "title": "Manichean Impulse of Alanus ab Insulis of the School of Chartres and Cathars by Frans Lutters.",
+     "url": "https://www.youtube.com/watch?v=x9LQi62uVCY",
+     "thumbnail_url": "https://i1.ytimg.com/vi/x9LQi62uVCY/hqdefault.jpg",
+     "published_at": "2026-10-10T23:56:29+00:00",
+     "description": "Manichean Impulse of Alanus ab Insulis of the School of Chartres and \n Cathars in Relation to the Future of the Earth. by Frans Lutters, Netherlands.\n Did something of the Manichean impulse flow into the mission of the School of Chartres and from there to the Cathars? Alanus ab Insulis was a famous teacher in the school of Chartres. He wrote an important book The Anti- Claudian on the Nature of the world and humanity. He was in contact with the Cathars in the South of France and had discussions with them on good and evil the world and in humanity. Frans will show how this has a great actuality around our opinion on the earth, climate change and the role of humanity",
+     "channel_slug": "threefold-mankind-chicago"
+    },
+    {
      "video_id": "jLc2DVHMXe0",
      "title": "Manicheism and Rosicrucianism: Their Kinship in the Past, Present, and Future by Steve Roberts, UK",
      "url": "https://www.youtube.com/watch?v=jLc2DVHMXe0",
@@ -1836,15 +1845,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/1eMjnVS3scQ/hqdefault.jpg",
      "published_at": "2026-09-28T00:47:29+00:00",
      "description": "In this sixth presentation devoted to the Mysteries of the Holy Grail, we will approach Rudolf Steiner as a Grail initiate and Anthroposophy as a modern renewal of the Grail impulse. Steiner characterized Spiritual Science as a “Grail Science.” We will explore how this impulse found expression in Anthroposophy, the First Goetheanum, and subsequently in the Waldorf School movement.\n\nAs we enter the Michaelmas season, we will turn toward one of the most challenging dimensions of the Grail Mystery: the confrontation with evil and the possibility of its redemption. Following a question raised after the previous presentation, we will consider Steiner’s indications concerning Mani and the Manichean stream, whose mission involves not merely combating evil, but developing the spiritual forces through which what has fallen may ultimately be transformed and redeemed.\n\nThrough Anthroposophy we can follow threads connecting the Manichean and Parzival impulses with Rosicrucianism and their later metamorphosis within Anthroposophy. The great sculptural Representative of Humanity, intended as the focal point of the First Goetheanum, gives artistic expression to this mystery: Christ standing freely between the polar adversarial powers of Lucifer and Ahriman.\n\nThis leads us into the relationship between Esoteric and Exoteric Christianity. During and following the centuries in which the Grail traditions came to literary expression, spiritual movements regarded as heretical were violently suppressed. The Cathars, with affinities to older dualistic and Manichean currents, were subjected to persecution and crusade. At Montségur, whose imposing fortress ruins still crown the mountain, some 225 Cathars who refused to renounce their faith were burned at the foot of the Pog on March 16, 1244. The **Knights Templar—whom Steiner connected esoterically with the Grail Mystery—**were likewise suppressed little more than half a century later. We will ask what became of these hidden spiritual curr",
-     "channel_slug": "threefold-mankind-chicago"
-    },
-    {
-     "video_id": "NCWAF5H29RQ",
-     "title": "Brought to Light again: The History of Manichaeism as a World Religion by Christine Gruwez",
-     "url": "https://www.youtube.com/watch?v=NCWAF5H29RQ",
-     "thumbnail_url": "https://i3.ytimg.com/vi/NCWAF5H29RQ/hqdefault.jpg",
-     "published_at": "2026-09-27T00:11:42+00:00",
-     "description": "Manichaeism, as a great and complex religious system, including different organizational forms of community, was founded by Mani, (216 -276 AD). Mani started to teach his doctrine in Sasanian Mesopotamia. From there it spread both West and East into various languages and cultures.  We’ll explore fascinating discoveries and research from the beginning of the 20th century on with the very first evidence of art in eastern Manichaeism and reveal how many questions still remain unanswered.\n\nChristine Gruwez was born in Belgium in 1942. She studied philosophy, classical philology and Iranian studies as well as Waldorf education. She is a lecturer in Waldorf education in Antwerp. Her core topics are Iran, Islam, and Manichaeism. She works worldwide in seminars and as a publicist. She has authored 14 books and will be drawing mostly from her book Mani & Rudolf Steiner: Manichaeism, Anthroposophy, and their Meeting in the Future.",
      "channel_slug": "threefold-mankind-chicago"
     }
    ]
@@ -1986,6 +1986,15 @@
    "name": "D J Elliott",
    "latest": [
     {
+     "video_id": "vnnI46sJn4A",
+     "title": "Notes on Different Qualities on Consciousness by Maurice Nicoll",
+     "url": "https://www.youtube.com/watch?v=vnnI46sJn4A",
+     "thumbnail_url": "https://i3.ytimg.com/vi/vnnI46sJn4A/hqdefault.jpg",
+     "published_at": "2026-10-11T14:15:03+00:00",
+     "description": "where is your consciousness at?",
+     "channel_slug": "dj-elliott"
+    },
+    {
      "video_id": "7sZbE9XtNa8",
      "title": "The Responsibility of Man for World Evolution by Rudolf Steiner",
      "url": "https://www.youtube.com/watch?v=7sZbE9XtNa8",
@@ -2001,15 +2010,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/upckZkNZWGg/hqdefault.jpg",
      "published_at": "2026-10-03T09:15:28+00:00",
      "description": "who do you imagine I am?",
-     "channel_slug": "dj-elliott"
-    },
-    {
-     "video_id": "AVT43RaoV-Q",
-     "title": "The Michael Imagination by Rudolf Steiner",
-     "url": "https://www.youtube.com/watch?v=AVT43RaoV-Q",
-     "thumbnail_url": "https://i2.ytimg.com/vi/AVT43RaoV-Q/hqdefault.jpg",
-     "published_at": "2026-09-26T10:00:24+00:00",
-     "description": "'tis the season of Michael",
      "channel_slug": "dj-elliott"
     }
    ]
@@ -2044,6 +2044,105 @@
      "published_at": "2025-05-15T22:40:37+00:00",
      "description": "To learn more go to: https://philosophyoffreedom.com/freedom-cards\nFrom Rudolf Steiner's \"The Philosophy Of Freedom\" to the Practice Of Freedom.\n\nSTEP 3-9: Advance from \"know then create\", recreating Nature by first understanding the principles of its origin and conditions for existence, —to \"create then know\", by first creating thought and then knowing it through introspective observation.\n\nDeterminant (Unfreedom): know then create\nFreedom (Liberation): create then know\n\nVideo series: The Practice of Freedom\nCognitive Ability Being Trained: Focused Thinking\nCognitive Personality (Worldview): Monadism\nTPOF topic: TPOF Chapter 3 Thinking As The Instrument Of Knowledge Topic 9\n\nNext video: Corrected Perception",
      "channel_slug": "philosophy-of-freedom"
+    }
+   ]
+  },
+  {
+   "slug": "imgaja-gerhard-anger",
+   "name": "Imgaja - Gerhard Anger",
+   "latest": [
+    {
+     "video_id": "3jluDa_nSGM",
+     "title": "Freiheit: Weltenplan Es kommt wie es kommen muss (Weisheit vom Menschsein – Anthroposophie)",
+     "url": "https://www.youtube.com/watch?v=3jluDa_nSGM",
+     "thumbnail_url": "https://i4.ytimg.com/vi/3jluDa_nSGM/hqdefault.jpg",
+     "published_at": "2026-10-11T18:00:31+00:00",
+     "description": "Strömungen der Menschheitsentwickelung\n1. Hochentwickelte Menschen und Eingeweihte\n2. Berechtigte Entwickelung der Menschheit\n3. Der „böse“ Mensch\n\nMenschen und Welten Karma (Schicksal)\nNicht Ideologien, Programme oder der Staat verändern die Welt. „Also sind die Menschengedanken und die Menschenempfindungen zu kultivieren, nicht die soziale Ordnung zu verändern.\", GA266/1, S. 127\nEs kommt was Makrokosmisch kommen muss (höher Entwickelung). „Mit dem Augenblicke, da er sein eigenes Selbst in voller Klarheit erkannte, mit dem Augenblicke, als er einsah, dass in seinem Innern ein jener Außenwelt mindestens ebenbürtiges Reich lebt, da mußte er sich losmachen von den Fesseln der Natur.\", GA271, S.18\nOhne individuelle Entwickelung kommt der Kulturtod (Wie es kommen muss). „die Menschen, wenn sie sich nicht wieder aus eigenem Streben und Kräften zum Geistigen empor entwickeln...so geht die Menschheit einen raschen, furchtbaren Zerfall entgegen.... hin zur geistigen Welt, dann wird eine moralische Sintflut in Europa sein“, GA350, S. 256\nDer Mensch macht das Erdenkarma mit, wenn kein Erwachen, dann kommen Katastrophen. „seelenlosen Menschen sind eine willkommene Beute für dämonische Wesen, .. - Wenn nicht eine kleine Anzahl Menschen sich durchdringen lässt von der Bedeutung des Furchtbaren, das jetzt gesagt worden ist, wenn nicht der nötige Ernst aufgebracht werden kann, dann ist die weitere Entwicklung der Menschheit unmöglich.“, GA266/3, 9.2.1920\n\nLUCIFER: Menschen in moralischen Automaten verwandeln, Erdenflucht\nSpirituismus, unbewusstes Geisterleben, Verheimlichung der Geistes Wahrheiten\n\nCHRISTUS: Menschengerechte Zukunftsentwicklung. Geisteswesen der Freiheit und Liebe\nGeisterkenntnis, Menschenerkenntnis, Welterkenntnis, Moralische Intuition, Fähigkeiten, Moralische Technik \n\nAHRIMAN: Menschen in Automaten, Teile einer Weltmaschine verwandelt Totale Unterdrückung & Diktatur\nIn unintelligente, seelenlose, geistlose, unfähige Wesen verwandeln. Entindividualisierung Trans",
+     "channel_slug": "imgaja-gerhard-anger"
+    },
+    {
+     "video_id": "_LCuXKK1Di4",
+     "title": "Das Vaterunser, das christliche Gebet",
+     "url": "https://www.youtube.com/watch?v=_LCuXKK1Di4",
+     "thumbnail_url": "https://i4.ytimg.com/vi/_LCuXKK1Di4/hqdefault.jpg",
+     "published_at": "2026-10-11T05:00:06+00:00",
+     "description": "\"Vater unser im Himmel,\ngeheiligt werde dein Name,\ndein Reich komme,\ndein Wille geschehe,\nwie im Himmel so auch auf Erden.\nGib uns unser tägliches Brot\nund vergib uns unsere Sünden \nwie auch wir vergeben unseren Sündigern.\nUnd führe uns nicht in Versuchung,\nsondern erlöse uns von dem Bösen.“, Mt. 6, 9-13\n\nBücher von Gerhard Anger:\nMensch, Bod Verlag, ISBN: 978-3750400429 \nHerzdenken, Bod Verlag, ISBN: 978-3750413610 \nDie Bergpredigt, Bod Verlag, ISBN: 978-3758330551\nTechnologie des Lebens. Bod Verlag, ISBN: 978-3-7597-6850-6\n\nWenn Sie meine Arbeit unterstützen wollen würde ich mich sehr freuen\nhttp://www.imgaja.org/1/0003_kontakt.html\n\nMit herzlichen Dank und Grüßen\nGerhard Anger\n\n#anthroposophie #christus #gott  #gebet",
+     "channel_slug": "imgaja-gerhard-anger"
+    },
+    {
+     "video_id": "aG-u2dxRDPs",
+     "title": "Seelenerleben im Jahreskreislauf 11.-17.10.26, 28.Woche nach Ostern, Seelenkalender, Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=aG-u2dxRDPs",
+     "thumbnail_url": "https://i2.ytimg.com/vi/aG-u2dxRDPs/hqdefault.jpg",
+     "published_at": "2026-10-10T23:00:14+00:00",
+     "description": "\"B Zweite Oktober-Woche (1912: 13. - 19. Oktober)\n28 Ich kann im Innern neu belebt\nErfühlen eignen Wesens Weiten\nUnd krafterfüllt Gedankenstrahlen\nAus Seelensonnenmacht\nDen Lebensrätseln lösend spenden,\nErfüllung manchem Wunsche leihen,\nDem Hoffnung schon die Schwingen lähmte.\", Rudolf Steiner, GA40\n\nSie können dieses Video auch gerne auf der Homepage: (https://www.imgaja.org/1/s2428.html) ansehen.Dort können Sie auch einen Einführungstext als PDF herunterladen.Sowie die Audio oder Video Datei herunterladen.\n       \n„Der Jahreslauf hat sein eigenes Leben. Die Menschenseele kann dieses Leben mitempfinden. Läßt sie, was von Woche zu Woche anders spricht aus dem Leben des Jahres, auf sich wirken, dann wird sie sich durch solches Mitleben selber erst richtig finden. Sie wird fühlen, wie ihr dadurch Kräfte erwachsen, die sie von innen heraus stärken. Sie wird bemerken, dass solche Kräfte in ihr geweckt sein wollen durch den Anteil, den sie nehmen kann an dem Sinn des Weltenlaufes, wie er sich in der Zeitenfolge abspielt. Sie wird dadurch erst gewahr werden, welche zarte, aber bedeutungsvolle Verbindungsfäden bestehen zwischen sich und der Welt, in die sie hineingeboren ist. In diesem Kalender ist für jede Woche ein solcher Spruch verzeichnet, der die Seele miterleben läßt, was in dieser Woche als Teil des gesamten Jahreslebens sich vollzieht. Was dieses Leben in der Seele erklingen läßt, wenn diese sich mit ihm vereinigt, soll in dem Spruche ausgedrückt sein. An ein gesundes «Sich eins fühlen» mit dem Gange der Natur und an ein daraus erstehendes kräftiges «Sich selbst finden» ist gedacht, indem geglaubt wird, ein Mitempfinden des Weltenlaufes im Sinne solcher Sprüche sei für die Seele etwas, wonach sie Verlangen trägt, wenn sie sich nur selbst recht versteht.“, GA 40\n            \nZu Ostern mit dem Seelenkalender Woche Eins beginnen:\"Auf eine Frage wegen der Datumverschiebung von Jahr zu Jahr ist folgende Antwort Rudolf Steiners überliefert: Die Hauptsache sei, dass imme",
+     "channel_slug": "imgaja-gerhard-anger"
+    }
+   ]
+  },
+  {
+   "slug": "wise-cosmos",
+   "name": "Wise Cosmos",
+   "latest": [
+    {
+     "video_id": "sq3xBuBDqL8",
+     "title": "Rudolf Steiner - A Michaelic Spirit",
+     "url": "https://www.youtube.com/watch?v=sq3xBuBDqL8",
+     "thumbnail_url": "https://i4.ytimg.com/vi/sq3xBuBDqL8/hqdefault.jpg",
+     "published_at": "2022-11-19T22:54:51+00:00",
+     "description": "Brian Gray is the former Director of the Foundation program in Anthroposophy at Rudolf Steiner College, Fair Oaks, CA.\n\nFor more information about this or our other educational materials, please visit us at WiseCosmos.org.",
+     "channel_slug": "wise-cosmos"
+    },
+    {
+     "video_id": "ty9gcibxjfI",
+     "title": "Anthroposophy and Planetary Evolution - Introduction",
+     "url": "https://www.youtube.com/watch?v=ty9gcibxjfI",
+     "thumbnail_url": "https://i1.ytimg.com/vi/ty9gcibxjfI/hqdefault.jpg",
+     "published_at": "2021-03-10T14:58:23+00:00",
+     "description": "Brian Gray made this presentation on September 16, 2016 at Rudolf Steiner College.\n\nBrian Gray is the former Director of the Foundation program in Anthroposophy at Rudolf Steiner College, Fair Oaks, CA.\n\nFor more information about this or our other educational materials, please visit us at WiseCosmos.org.",
+     "channel_slug": "wise-cosmos"
+    },
+    {
+     "video_id": "PunMs5lCcWw",
+     "title": "Why Are We Here?",
+     "url": "https://www.youtube.com/watch?v=PunMs5lCcWw",
+     "thumbnail_url": "https://i1.ytimg.com/vi/PunMs5lCcWw/hqdefault.jpg",
+     "published_at": "2021-03-10T14:57:49+00:00",
+     "description": "This video is a vignette from the anthroposophic astrology (astrosophy\" course \"Human Being and the Stars\" which is available in its entirety on WiseCosmos.org.\n\nLecture by Brian Gray, former Director of the Foundation program in Anthroposophy at Rudolf Steiner College, Fair Oaks, CA.\n\nFor more information about this or our other educational materials, please visit us at WiseCosmos.org.",
+     "channel_slug": "wise-cosmos"
+    }
+   ]
+  },
+  {
+   "slug": "karma-police-bureau",
+   "name": "The Karma Police Bureau",
+   "latest": [
+    {
+     "video_id": "MfDfRizF_X4",
+     "title": "Rudolf Steiner - Angels, Archangels of the Folk and Myths of Northern Europe - Lecture 4",
+     "url": "https://www.youtube.com/watch?v=MfDfRizF_X4",
+     "thumbnail_url": "https://i2.ytimg.com/vi/MfDfRizF_X4/hqdefault.jpg",
+     "published_at": "2017-08-10T08:03:26+00:00",
+     "description": "Lecture given in Oslo the 10th June, 1910 by Rudolf Steiner.\nSpirit of Form and the Ego. Consciousness at birth and the abnormal Spirits of Form. Human's dependence on earth for it's physical characteristics. The influence of heredity and locality since Atlantis. Youth, life, death and their relation to continents. From east to west. The decline and end of racial traits.\n\nOnline Book:\nhttp://wn.rsarchive.org/Lectures/GA121/English/APC1929/19100610p01.html\n\nOriginal unaccompanied Online Audiobook:\nhttp://www.rudolfsteineraudio.com/missionfolksouls1910/04missionfolksouls1910.mp3\n\n_____________________________________________\n\nThis animated movie is produced exclusively for non-profit, educational or personal use (Under section 107 of the Copyright Act 1976). The content cannot be sold, rented nor used for commercial purposes.",
+     "channel_slug": "karma-police-bureau"
+    },
+    {
+     "video_id": "C-a0BXDrPJI",
+     "title": "Rudolf Steiner - Angels, Archangels of the Folk and Myths of Northern Europe - Lecture 3",
+     "url": "https://www.youtube.com/watch?v=C-a0BXDrPJI",
+     "thumbnail_url": "https://i4.ytimg.com/vi/C-a0BXDrPJI/hqdefault.jpg",
+     "published_at": "2015-11-23T19:04:14+00:00",
+     "description": "Lecture given in Oslo the 9th June, 1910 by Rudolf Steiner.\nFolk-Spirits, Life-Spirits and the Human Being. The Three Soul Principles. Archangel, Geometry, Mathematics, Art and Religion. Civilisations' Youth to Old Age. Spirits of Forms, Motions, Wisdom and the different Folk. \n_____________________________________________\n\nOnline Book:\nhttp://wn.rsarchive.org/Lectures/GA121/English/APC1929/19100609p01.html\n\nOriginal unaccompanied Online Audiobook:\nhttp://www.rudolfsteineraudio.com/missionfolksouls1910/03missionfolksouls1910.mp3\n\n_____________________________________________\n\nThis animated movie is produced exclusively for non-profit, educational or personal use (Under section 107 of the Copyright Act 1976). The content cannot be sold, rented nor used for commercial purposes.",
+     "channel_slug": "karma-police-bureau"
+    },
+    {
+     "video_id": "fxGt_wGYSgE",
+     "title": "Rudolf Steiner - Angels, Archangels of the Folk and Myths of Northern Europe - Lecture 2",
+     "url": "https://www.youtube.com/watch?v=fxGt_wGYSgE",
+     "thumbnail_url": "https://i3.ytimg.com/vi/fxGt_wGYSgE/hqdefault.jpg",
+     "published_at": "2015-10-30T13:41:00+00:00",
+     "description": "Lecture given in Oslo the 8th June, 1910 by Rudolf Steiner.\nThe Aura of countries. Choleric, sanguine and phlegmatic temperaments and the aura of a people. Spirits of Form. The creation of Speech. Spirit of the age, Archai. Inventions and the development of the human brain. Spirits of Languages and Thought Spirits. Sanskrit and it's constellation.\n_____________________________________________\n\nOnline Book:\nhttp://wn.rsarchive.org/Lectures/GA121/English/APC1929/19100608p01.html\n\nOriginal unaccompanied Online Audiobook:\nhttp://www.rudolfsteineraudio.com/missionfolksouls1910/02missionfolksouls1910.mp3\n_____________________________________________\n\nhttps://en.wikipedia.org/wiki/Sanskrit\n_____________________________________________\n\nThis animated movie is produced exclusively for non-profit, educational or personal use (Under section 107 of the Copyright Act 1976). The content cannot be sold, rented nor used for commercial purposes.",
+     "channel_slug": "karma-police-bureau"
     }
    ]
   }
