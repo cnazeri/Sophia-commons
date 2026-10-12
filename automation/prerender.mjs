@@ -7,17 +7,14 @@
 // Reads only public data with the publishable key from sb-init.js. Never writes anything.
 import fs from 'node:fs';
 import path from 'node:path';
+import { SITE, esc, attr, CATEGORIES, entryList, applySeo } from './seo_html.mjs';
 
 const OUT = process.argv[2] || '_deploy';
-const SITE = 'https://sophiacommons.org';
 const template = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
 const sbInit = fs.readFileSync(path.join(OUT, 'sb-init.js'), 'utf8');
 const SB_URL = (sbInit.match(/const SUPABASE_URL = '([^']+)'/) || [])[1];
 const SB_KEY = (sbInit.match(/const SUPABASE_ANON_KEY = '([^']+)'/) || [])[1];
 if (!SB_URL || !SB_KEY) throw new Error('Supabase URL/key not found in sb-init.js');
-
-const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const attr = esc;
 
 async function rest(pathAndQuery, init = {}) {
   const r = await fetch(SB_URL + pathAndQuery, { ...init, headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', ...(init.headers || {}) } });
@@ -35,21 +32,7 @@ async function allDirectory() {
   return rows;
 }
 
-// Route definitions (keep in step with catMeta / REGIONS in sophia_commons_v9.js and the sitemap)
-const CATEGORIES = [
-  ['waldorf-education', 'Waldorf & Education', ['waldorf'], 'Waldorf and Steiner schools, kindergartens, teacher training and resources for educators worldwide.'],
-  ['biodynamic-agriculture', 'Biodynamic Agriculture', ['biodynamic'], 'Biodynamic and Demeter farms, associations, training and research in the tradition of Rudolf Steiner.'],
-  ['arts-eurythmy', 'Arts & Eurythmy', ['eurythmy'], 'Eurythmy schools, ensembles and trainings, speech, music and the arts rooted in anthroposophy.'],
-  ['anthroposophic-medicine', 'Anthroposophic Medicine', ['medicine'], 'Anthroposophic clinics and hospitals, physicians associations, pharmacies, therapies and research.'],
-  ['community-camphill', 'Community & Camphill', ['camphill', 'community'], 'Camphill communities, curative education, social therapy, intentional communities and initiatives.'],
-  ['the-christian-community', 'The Christian Community', ['christian_community'], 'Congregations and centers of The Christian Community (Die Christengemeinschaft), the Movement for Religious Renewal, worldwide with addresses.'],
-  ['societies-organizations', 'Societies & Organizations', ['societies'], 'Anthroposophical Society branches, national societies and membership organizations.'],
-  ['groups-circles', 'Groups & Circles', ['societies'], 'Study groups, reading circles and local branch meetings in the anthroposophical tradition.'],
-  ['esoteric-studies', 'Esoteric Studies', ['societies', 'online'], 'Study groups, courses and resources for the study of Rudolf Steiner\'s spiritual science.'],
-  ['science-technology', 'Science & Technology', ['science'], 'Goethean science, research and moral technology from an anthroposophical perspective.'],
-  ['online-resources', 'Online Resources', ['online'], 'Websites, archives, publishers, podcasts and online courses for the anthroposophical community.'],
-  ['social-media', 'Social Media', ['social_media'], 'Anthroposophical groups and channels on social media.'],
-];
+// Route definitions (CATEGORIES lives in seo_html.mjs; keep REGIONS in step with sophia_commons_v9.js)
 const REGIONS = [
   ['north-america', 'North America', ['USA', 'United States', 'Canada', 'Mexico']],
   ['latin-america', 'Latin America', ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru', 'Mexico']],
@@ -73,12 +56,6 @@ const SECTIONS = [
   ['about', 'About', 'Sophia Commons is a free directory and resource hub for the anthroposophical community.'],
 ];
 
-function place(e) { return [e.city, e.country].filter(Boolean).join(', '); }
-
-function entryList(entries) {
-  return '<ul>' + entries.map(e => `<li><a href="/listing/${attr(e.id)}">${esc(e.organization_name)}</a>${place(e) ? ' (' + esc(place(e)) + ')' : ''}${e.website_url && /^https?:\/\//.test(e.website_url) ? ` <a href="${attr(e.website_url)}" rel="nofollow noopener">website</a>` : ''}</li>`).join('') + '</ul>';
-}
-
 function itemListLd(name, url, entries) {
   return {
     '@context': 'https://schema.org', '@type': 'CollectionPage', name, url,
@@ -88,22 +65,7 @@ function itemListLd(name, url, entries) {
 }
 
 function render(route, title, desc, bodyHtml, ld) {
-  const url = SITE + route;
-  let h = template;
-  const set = (re, val) => { h = h.replace(re, val); };
-  set(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
-  set(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(desc)}">`);
-  set(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${attr(url)}">`);
-  set(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${attr(url)}">`);
-  set(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${attr(title)}">`);
-  set(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${attr(desc)}">`);
-  set(/<meta name="twitter:url" content="[^"]*">/, `<meta name="twitter:url" content="${attr(url)}">`);
-  set(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${attr(title)}">`);
-  set(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${attr(desc)}">`);
-  const ldTag = ld ? `\n<script type="application/ld+json" id="prerender-jsonld">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>` : '';
-  const block = `<div id="prerender" class="prerender-summary"><h1>${esc(title.replace(/ \| Sophia Commons.*$/, ''))}</h1><p>${esc(desc)}</p>${bodyHtml}</div>${ldTag}\n`;
-  if (!h.includes('<footer')) throw new Error('template has no <footer>');
-  h = h.replace('<footer', block + '<footer');
+  const h = applySeo(template, { route, title, desc, bodyHtml, ld });
   // Write <route>.html, not <route>/index.html: Netlify serves /events from events.html with a 200,
   // while a directory index would 301-redirect /events to /events/ (mismatching canonicals and sitemap).
   const file = path.join(OUT, decodeURIComponent(route.replace(/^\//, '')) + '.html');
