@@ -63,3 +63,9 @@ outreach/
 
 # Claude Code project notes (local only; repo is public)
 CLAUDE.md
+
+# Local-only tool state and old site snapshot (2026-10-11)
+.omc/
+**/.omc/
+sophia-commons-6ce169/
+sophia_commons_seed_data.sql
