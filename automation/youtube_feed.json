@@ -1,10 +1,19 @@
 {
- "generated_at": "2026-10-11T18:05:28.549489+00:00",
+ "generated_at": "2026-10-12T21:44:34.718613+00:00",
  "channels": [
   {
    "slug": "goetheanum",
    "name": "Goetheanum",
    "latest": [
+    {
+     "video_id": "0vidP3IaOmg",
+     "title": "Auf der Suche nach der Lotusblume",
+     "url": "https://www.youtube.com/watch?v=0vidP3IaOmg",
+     "thumbnail_url": "https://i1.ytimg.com/vi/0vidP3IaOmg/hqdefault.jpg",
+     "published_at": "2026-10-12T12:04:14+00:00",
+     "description": "Was entsteht, wenn Eurythmie zum Raum für Begegnung, Bewegung und gemeinsame künstlerische Suche wird?\n\nBeim Eurythmie-Festival 2025 kamen unterschiedliche Menschen, Formen und Perspektiven zusammen. Der Film begleitet diese Tage und gibt Einblicke in Proben, Aufführungen und Begegnungen rund um das Festival.\n\n🎥 Jetzt auf Goetheanum TV anschauen: https://goetheanum.tv/programs/auf-der-suche-nach-der-lotusblume-eurythmie-festival-2025",
+     "channel_slug": "goetheanum"
+    },
     {
      "video_id": "VOXUFw5mTK4",
      "title": "SAVE THE DATE 🌍",
@@ -21,15 +30,6 @@
      "thumbnail_url": "https://i3.ytimg.com/vi/nNKBbNB4AQw/hqdefault.jpg",
      "published_at": "2026-10-08T12:00:02+00:00",
      "description": "Wofür ist Schule da?\n\nZum Lernen. Zum Arbeiten. Um an der Welt teilzuhaben – und sie mitzugestalten.\nUnter dem Leitmotiv „Zum Lernen und zur Arbeit“ kommen bei der World Teachers’ Conference 2027 Pädagog:innen aus aller Welt am Goetheanum zusammen. Gemeinsam fragen sie, wie Lernen und Arbeiten heute neu verstanden werden können – in einer Zeit, die von technischer Entwicklung, künstlicher Intelligenz und neuen Fragen nach Verantwortung, Kreativität und Autonomie geprägt ist. \n\nWie kann Schule zu einer Schule des Lebens werden – zu einem Ort, an dem Wissen, pädagogische Praxis, Teilhabe und Transformation zusammenkommen? \n\n30. März – 3. April 2027\n👉 Informationen & Anmeldung:\nhttps://www.goetheanum-paedagogik.ch/veranstaltungen/veranstaltungen-der-paedagogischen-sektion/30-maerz-3-april-world-teachers-conference",
-     "channel_slug": "goetheanum"
-    },
-    {
-     "video_id": "WkAei0ZG7_0",
-     "title": "Eine Überraschung im Rudolf Steiner Archiv",
-     "url": "https://www.youtube.com/watch?v=WkAei0ZG7_0",
-     "thumbnail_url": "https://i4.ytimg.com/vi/WkAei0ZG7_0/hqdefault.jpg",
-     "published_at": "2026-10-06T13:03:59+00:00",
-     "description": "Was geschieht, wenn etwas Unerwartetes ins Archiv kommt? Und welche Geschichten können Objekte, Dokumente und Spuren aus der Vergangenheit plötzlich neu erzählen?\n\nIn diesem Beitrag von Goetheanum TV führt der Weg ins Rudolf Steiner Archiv – und zu einer besonderen Überraschung.\n\n🎥 Jetzt auf Goetheanum TV anschauen:  https://goetheanum.tv/programs/eine-ueberraschung-kommt-ins-rudolf-steiner-archiv\n\n#GoetheanumTV #RudolfSteinerArchiv #Goetheanum #Archiv #RudolfSteiner",
      "channel_slug": "goetheanum"
     }
    ]
@@ -237,6 +237,15 @@
    "name": "AnthroWorld",
    "latest": [
     {
+     "video_id": "WnoASKgrc1k",
+     "title": "SALZ | Prof. Dr. Volker Harlan | Essen 2025",
+     "url": "https://www.youtube.com/watch?v=WnoASKgrc1k",
+     "thumbnail_url": "https://i4.ytimg.com/vi/WnoASKgrc1k/hqdefault.jpg",
+     "published_at": "2026-10-12T21:31:08+00:00",
+     "description": "https://anthro.world/SALZ_-_Stoff,_Prozess,_Wesen_-_ein_Vortrag_von_Volker_Harlan,_2025\n\n\"Welterkenntnis ist heutzutage im Grunde unverändert gegenüber diesem Satz, der vor schon fast 300 Jahren geschrieben worden ist von Hobbes im Leviathan. Eine Sache erkennen heißt, sich vorstellen können, was man mit ihr machen kann, wenn man sie hat. Das nennt man philosophisch Utilitarismus, also die Nützlichkeitsphilosophie. Unter diesem Gesichtspunkt gibt es überhaupt kein Wesen, unter diesem Gesichtspunkt ist alles, was wir wahrnehmen, Stoff […]\n\n[… Bildbeschreibung einer Skizze von Joseph Beuys] Wir haben ein zweites kubisches Gebilde, da ganz unten am Rand, sozusagen, wo die ganze Schwere die Substanz bis auf den tiefsten Punkt getrieben hat, in diesem kleinen Kubus. Neben dem steht ein Wort. Bei Beuys sollte es Anstalt heißen […] Es könnte aber auch Ausfall heißen. Wenn Sie es als Ausfall lesen, dann wäre es aus dem Flüssigen dasjenige herausgefallen, was wir oben bei diesem Ersten haben, wo aus dem Flüssigen das Tote herauskristallisiert ist. \n\nIn den Anstalten, wo die Weltanschauungsbilder der heranwachsenden Jugend zu Salzkristallen geformt werden, die möglichst nicht mehr auflösbar sind. Da werden wir, wie von den Kirchen früher, heute in den Schulen, materialistisch indoktriniert. Die Religion der Moderne ist der Materialismus. Das ist eine echte Religion, die eben als Materialität ihre Göttlichkeit verehrt und dasjenige, was jetzt als Bildungsanstalt möglich wird, ist, dass man eben in unendlicher Reproduktion das Ganze druckt und unter die Menschheit verbreitet. Heutzutage geschieht das dann elektronisch, digital […]\"\n\nhttps://anthro.world\nhttps://biodyn.wiki",
+     "channel_slug": "anthroworld"
+    },
+    {
      "video_id": "hFEzy8_bwAU",
      "title": "338. Folge Die Apokalypse des Johannes/ Dr. Wolfgang Peter von www.anthrowiki.at",
      "url": "https://www.youtube.com/watch?v=hFEzy8_bwAU",
@@ -251,15 +260,6 @@
      "url": "https://www.youtube.com/watch?v=dGgVKmSzoN0",
      "thumbnail_url": "https://i1.ytimg.com/vi/dGgVKmSzoN0/hqdefault.jpg",
      "published_at": "2026-10-09T14:28:09+00:00",
-     "description": "Hier findest du nähere Informationen über die von Wolfgang gehaltenen Vorträge aus der Reihe \"Die Apokalypse des Johannes\": https://anthro.world\n\nSo kommt deine Spende bei Wolfgang an: https://anthro.wiki/AnthroWiki:Spenden. Herzlichen Dank!\n\nWeitere Informationen:\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://biodyn.wiki \n#christusimpuls\n#rudolfsteiner\n#anthroposophie",
-     "channel_slug": "anthroworld"
-    },
-    {
-     "video_id": "snFy_y8ZEm0",
-     "title": "336. Folge Die Apokalypse des Johannes/ Dr. Wolfgang Peter von www.anthrowiki.at",
-     "url": "https://www.youtube.com/watch?v=snFy_y8ZEm0",
-     "thumbnail_url": "https://i4.ytimg.com/vi/snFy_y8ZEm0/hqdefault.jpg",
-     "published_at": "2026-10-09T14:26:09+00:00",
      "description": "Hier findest du nähere Informationen über die von Wolfgang gehaltenen Vorträge aus der Reihe \"Die Apokalypse des Johannes\": https://anthro.world\n\nSo kommt deine Spende bei Wolfgang an: https://anthro.wiki/AnthroWiki:Spenden. Herzlichen Dank!\n\nWeitere Informationen:\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://biodyn.wiki \n#christusimpuls\n#rudolfsteiner\n#anthroposophie",
      "channel_slug": "anthroworld"
     }
@@ -468,6 +468,15 @@
    "name": "Rudolf Steiner und die Anthroposophie",
    "latest": [
     {
+     "video_id": "x6h97Dl94JE",
+     "title": "Das Mysterium des Todes (Dr. Milan Meder)",
+     "url": "https://www.youtube.com/watch?v=x6h97Dl94JE",
+     "thumbnail_url": "https://i1.ytimg.com/vi/x6h97Dl94JE/hqdefault.jpg",
+     "published_at": "2026-10-12T16:01:21+00:00",
+     "description": "Es ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln!\nWir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende: https://www.paypal.com/donate/?hosted_button_id=CFKZFG2WEELQY\nSpende per Banküberweisung: \nWeltenwandler e.V.\nGLS Bank\nIBAN: DE76430609677918369701\nBIC: GENODEM1GLS\nHerzlichen Dank!\n\nIn unserem neuen Weltenwandler ONLINE-SHOP finden Sie Kunst zum Träumen & Bücher zum Aufwachen. Besuchen Sie uns gerne unter: https://weltenwandler.shop/",
+     "channel_slug": "rs-anthroposophie-de"
+    },
+    {
      "video_id": "RDIBxqVty4o",
      "title": "Das kosmische Kreuz: Was die vier Erzengel mit uns zu tun haben",
      "url": "https://www.youtube.com/watch?v=RDIBxqVty4o",
@@ -483,15 +492,6 @@
      "thumbnail_url": "https://i3.ytimg.com/vi/BZvLdAEzfrM/hqdefault.jpg",
      "published_at": "2026-10-07T16:00:00+00:00",
      "description": "Anmeldung und weitere Infos zum \"West-Mitte-Ost-Kongress\"  - Internationaler Austausch über die Inkarnation Ahrimans:\nhttps://www.schloss-hohenfels.de/veranstaltung/west-mitte-ost-kongress-1126/\n\nInterview von Marion Selzer von \"Inspiriert Sein\" mit Michael Birnthaler\nErstausstrahlung: https://youtu.be/sLQqzCU0a28?si=b-N03L8NAk0RCxhO (mit Kapiteln)\nMehr zu Marion: https://www.inspiriert-sein.de/das-team/\n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln!\nWir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende: https://www.paypal.com/donate/?hosted_button_id=CFKZFG2WEELQY\nSpende per Banküberweisung: \nWeltenwandler e.V.\nGLS Bank\nIBAN: DE76430609677918369701\nBIC: GENODEM1GLS\nHerzlichen Dank!\n\nIn unserem neuen Weltenwandler ONLINE-SHOP finden Sie Kunst zum Träumen & Bücher zum Aufwachen. Besuchen Sie uns gerne unter: https://weltenwandler.shop/",
-     "channel_slug": "rs-anthroposophie-de"
-    },
-    {
-     "video_id": "328FFDcJtjs",
-     "title": "KI,  Moralische Technik,  Paul Emberson, Strader-Maschine und Äther-Energie (H.J. Schäuble)",
-     "url": "https://www.youtube.com/watch?v=328FFDcJtjs",
-     "thumbnail_url": "https://i4.ytimg.com/vi/328FFDcJtjs/hqdefault.jpg",
-     "published_at": "2026-10-05T16:00:36+00:00",
-     "description": "*Paul Emberson Tage Berlin Sa. 31. Oktober – So. 01. November 2026*\nhttps://agberlin.de/wp-content/uploads/2026/07/Emberson-Tage.pdf\n\nInterview mit Hans-Jürgen Schäuble, Betriebswirt (Ökonomie, Finanzen, Demokratie, soziale Dreigliederung) Er gründete 2024 die Paul-Emberson-Forschungsgruppe in der Anthroposophischen Gesellschaft am Arbeitszentrum Berlin. \nZur Forschungsgruppe: https://michaeliten.org/initiative/paul-emberson-forschungsgruppe-neue-zukunfts-technik/\nZur Person: https://www.edition-immanente.de/autor/a/hans-j%C3%BCrgen-sch%C3%A4uble\n\n*Buch: Maschinen - Geschöpfe des Menschen*\nhttps://www.edition-immanente.de/produkt/p/maschinen-gesch%C3%B6pfe-des-menschen\nhttps://www.amazon.de/Maschinen-Gesch%C3%B6pfe-Menschen-Hans-J%C3%BCrgen-Sch%C3%A4uble/dp/3942754487\n\n*Zur Veranstaltung KI – verlieren wir das Menschsein?*\nhttps://www.schloss-hohenfels.de/veranstaltung/kuenstliche-intelligenz-1126/\n\n*Online-Kongress: KI, Transhumanismus: 7.-28.11.2026* www.weltenwandel.vision \n\nIm Interview werden die Gefahren der ahrimanischen Kräfte in Technik und KI beleuchtet, und welche Alternativen es gibt: Die Weiterentwicklung der bewussten Nutzung der Äther-Kräfte hin - mit der Voraussetzung eines moralischen Fundaments. \n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln!\nWir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende: h",
      "channel_slug": "rs-anthroposophie-de"
     }
    ]
