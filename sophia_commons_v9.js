@@ -1553,7 +1553,7 @@ async function doSignIn() {
 
   let result;
   if (authMode === 'signup') {
-    result = await _sb.auth.signUp({ email, password });
+    result = await _sb.auth.signUp({ email, password, options: { emailRedirectTo: 'https://sophiacommons.org/' } });
   } else {
     result = await _sb.auth.signInWithPassword({ email, password });
   }
@@ -1562,19 +1562,18 @@ async function doSignIn() {
   btn.textContent = authMode === 'signin' ? t('modal.btn_signin') : t('modal.btn_signup');
 
   if (result.error) {
-    errEl.textContent = result.error.message;
+    errEl.textContent = /not confirmed/i.test(result.error.message)
+      ? t('auth.not_confirmed', 'Please confirm your email first. Check your inbox for the link we sent.')
+      : result.error.message;
     errEl.style.display = 'block';
     return;
   }
 
-  // If signup succeeded but no session, auto-sign in
+  // Email confirmation is on: sign-up returns no session until the link in the email is clicked.
   if (authMode === 'signup' && !result.data.session) {
-    result = await _sb.auth.signInWithPassword({ email, password });
-    if (result.error) {
-      errEl.textContent = result.error.message;
-      errEl.style.display = 'block';
-      return;
-    }
+    errEl.textContent = t('auth.check_email', 'Account created. Check your email and click the confirmation link, then sign in.');
+    errEl.style.display = 'block';
+    return;
   }
 
   username = email.split('@')[0];
@@ -2416,10 +2415,9 @@ async function handleNewsletterSignup(emailId, btnSelector, confirmId) {
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
       body: JSON.stringify({ action: 'subscribe', email: v })
     }).catch(function() { return null; });
-    if (!fnRes || fnRes.status === 404) {
-      // Function not deployed yet: store as unconfirmed; nobody is emailed until they confirm.
-      var { error } = await _sb.from('newsletter_subscribers').insert({ email: v, confirmed: false });
-      if (error && error.code !== '23505') throw error;
+    if (!fnRes) {
+      // Network failure. Browsers cannot write subscribers directly (double opt-in goes through the function).
+      throw new Error('newsletter function unreachable');
     } else if (!fnRes.ok) {
       var body = await fnRes.json().catch(function() { return {}; });
       if (body.error === 'email_not_configured' || body.error === 'send_failed') {
