@@ -81,11 +81,10 @@ serve(async (req: Request) => {
     return jsonResponse({ error: "Invalid or expired token" }, 401);
   }
 
-  // Admin = app_metadata.role "admin" (same rule as the database RLS), or a listed address
-  // that has actually been confirmed (an unconfirmed sign-up with an admin address is refused).
+  // Admin = app_metadata.role "admin" only (same rule as the database RLS). Users cannot set
+  // app_metadata themselves; an email address alone is not proof, since sign-ups can be auto-confirmed.
   const isRoleAdmin = user.app_metadata?.role === "admin";
-  const isListedAdmin = !!user.email && ADMIN_EMAILS.includes(user.email.toLowerCase()) && !!user.email_confirmed_at;
-  if (!isRoleAdmin && !isListedAdmin) {
+  if (!isRoleAdmin) {
     return jsonResponse({ error: "Forbidden: admin access required" }, 403);
   }
 

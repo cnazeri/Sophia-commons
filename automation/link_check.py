@@ -22,7 +22,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR = os.path.join(ROOT, "crawl_reports")
 UA = {"User-Agent": "Mozilla/5.0 (compatible; SophiaCommonsLinkCheck/1.0; +https://sophiacommons.org)",
       "Accept": "text/html,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.8"}
-TIMEOUT, WORKERS = 20, 12
+TIMEOUT, WORKERS = 20, 24  # 24 parallel: the directory adds ~3,400 sites
 # Sites that answer bots with 403/429/999 even though they are fine in a browser
 SOFT_HOSTS = ("amazon.", "facebook.com", "instagram.com", "linkedin.com", "x.com", "twitter.com", "youtube.com")
 SKIP_PREFIX = ("mailto:", "tel:", "javascript:", "#", "/", "data:")
@@ -57,19 +57,28 @@ def collect():
         for c in json.load(open(cj, encoding="utf-8"))["channels"]:
             add(c["url"], "youtube_channels.json")
 
-    # Supabase directory (anon key is public by design; parse it from the shipped HTML)
-    html = read(os.path.join(ROOT, "index.html")) if os.path.exists(os.path.join(ROOT, "index.html")) else ""
+    # Supabase directory (anon key is public by design; parse it from the shipped sb-init.js)
+    init_js = os.path.join(ROOT, "sb-init.js")
+    html = read(init_js) if os.path.exists(init_js) else ""
     mu = re.search(r"SUPABASE_URL\s*=\s*'([^']+)'", html)
     mk = re.search(r"SUPABASE_ANON_KEY\s*=\s*'([^']+)'", html)
     if mu and mk:
         try:
-            r = requests.get(mu.group(1) + "/rest/v1/directory_entries", timeout=30,
-                             params={"select": "name,website_url", "website_url": "not.is.null", "limit": "2000"},
-                             headers={"apikey": mk.group(1), "Authorization": "Bearer " + mk.group(1)})
-            r.raise_for_status()
-            for row in r.json():
-                if row.get("website_url", "").startswith("http"):
-                    add(row["website_url"], "directory: " + (row.get("name") or "?"))
+            # Supabase returns at most 1000 rows per request, so page through the table.
+            offset = 0
+            while True:
+                r = requests.get(mu.group(1) + "/rest/v1/directory_entries", timeout=30,
+                                 params={"select": "organization_name,website_url", "website_url": "not.is.null",
+                                         "status": "eq.approved", "order": "id", "limit": "1000", "offset": str(offset)},
+                                 headers={"apikey": mk.group(1), "Authorization": "Bearer " + mk.group(1)})
+                r.raise_for_status()
+                rows = r.json()
+                for row in rows:
+                    if (row.get("website_url") or "").startswith("http"):
+                        add(row["website_url"], "directory: " + (row.get("organization_name") or "?"))
+                if len(rows) < 1000:
+                    break
+                offset += 1000
         except Exception as e:
             print("directory fetch skipped:", e)
     return urls

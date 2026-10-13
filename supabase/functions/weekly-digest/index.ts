@@ -174,7 +174,7 @@ export function buildHtml(d: Awaited<ReturnType<typeof gather>>): string {
 
 async function adminUserId(sb: SupabaseClient): Promise<string | null> {
   const { data } = await sb.auth.admin.listUsers({ perPage: 200 });
-  const u = (data?.users ?? []).find((x) => x.email && ADMIN_EMAILS.includes(x.email.toLowerCase()) && x.email_confirmed_at);
+  const u = (data?.users ?? []).find((x) => x.app_metadata?.role === "admin");
   return u?.id ?? null;
 }
 
@@ -209,8 +209,8 @@ serve(async (req: Request) => {
   if (!isCron) {
     const { data: { user }, error } = await sb.auth.getUser(token);
     if (error || !user) return jsonResponse({ error: "Invalid or expired token" }, 401);
-    const ok = user.app_metadata?.role === "admin" ||
-      (!!user.email && ADMIN_EMAILS.includes(user.email.toLowerCase()) && !!user.email_confirmed_at);
+    // Role only: an admin-looking email is not proof while sign-ups can be auto-confirmed.
+    const ok = user.app_metadata?.role === "admin";
     if (!ok) return jsonResponse({ error: "Forbidden: admin access required" }, 403);
     callerId = user.id;
   }
