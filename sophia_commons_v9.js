@@ -691,6 +691,19 @@ async function _firstClassBlock() {
     + '</div></div>';
 }
 
+// PostgREST returns at most 1,000 rows per request, whatever .limit() asks for. Page until a
+// short page comes back. makeQuery() must build a fresh query with a stable order (end on id).
+async function _sbAllRows(makeQuery) {
+  var rows = [], PAGE = 1000;
+  for (var from = 0; from < 20000; from += PAGE) {
+    var res = await makeQuery().range(from, from + PAGE - 1);
+    if (res.error) throw res.error;
+    rows = rows.concat(res.data || []);
+    if (!res.data || res.data.length < PAGE) break;
+  }
+  return rows;
+}
+
 async function loadCategoryPage(catKey, dirCat, opts) {
   opts = opts || {};
   var container = document.getElementById('cat-page-content');
@@ -700,13 +713,14 @@ async function loadCategoryPage(catKey, dirCat, opts) {
   var dirEntries = [];
   if (sbReady() && dirCat) {
     try {
-      var q0 = _sb.from('directory_entries')
-        .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags, category, city, latitude, longitude, badges, photo_url')
-        .eq('status', 'approved');
-      q0 = Array.isArray(dirCat) ? q0.in('category', dirCat) : q0.eq('category', dirCat);
-      var { data } = await q0.order('is_verified', { ascending: false }).order('organization_name').limit(500);
-      if (data) dirEntries = data;
-    } catch(e) {}
+      dirEntries = await _sbAllRows(function() {
+        var q0 = _sb.from('directory_entries')
+          .select('id, organization_name, description, website_url, location, country, is_verified, address, phone, email, tags, category, city, latitude, longitude, badges, photo_url')
+          .eq('status', 'approved');
+        q0 = Array.isArray(dirCat) ? q0.in('category', dirCat) : q0.eq('category', dirCat);
+        return q0.order('is_verified', { ascending: false }).order('organization_name').order('id');
+      });
+    } catch(e) { console.warn("category: directory listings unavailable", e); }
   }
 
   // Groups: the School of Spiritual Science, First Class (blue card holders) gets its own section first
@@ -1013,12 +1027,13 @@ async function showRegion(key, skipPush, opts) {
   if (!skipPush && location.pathname + location.search !== path) history.pushState({ type: 'region', key: key, q: opts.q || '' }, '', path);
   if (!sbReady()) { container.innerHTML = '<div class="empty-note">The directory is offline right now. Please try again shortly.</div>'; return; }
   try {
-    var q = _sb.from('directory_entries')
-      .select('id, organization_name, description, location, country, is_verified, tags, category, city, latitude, longitude, photo_url')
-      .eq('status', 'approved');
-    q = r.verified ? q.eq('is_verified', true) : q.in('country', r.countries);
-    var res = await q.order('category').order('organization_name').limit(1000);
-    var list = res.data || [];
+    var list = await _sbAllRows(function() {
+      var q = _sb.from('directory_entries')
+        .select('id, organization_name, description, location, country, is_verified, tags, category, city, latitude, longitude, photo_url')
+        .eq('status', 'approved');
+      q = r.verified ? q.eq('is_verified', true) : q.in('country', r.countries);
+      return q.order('category').order('organization_name').order('id');
+    });
     if (!list.length) {
       container.innerHTML = '<div class="empty-note">' + esc(t('region.empty', 'No listings here yet.')) + ' <a href="#" onclick="showSubmitForm();return false;">' + esc(t('region.add_first', 'Add the first one')) + '</a></div>';
       return;
@@ -1039,10 +1054,11 @@ async function loadEldercareLive() {
   var box = document.getElementById('eldercare-live');
   if (!box) return;
   try {
-    var res = await _sb.from('directory_entries')
-      .select('id, organization_name, description, location, country, is_verified, tags, photo_url')
-      .eq('status', 'approved').eq('category', 'eldercare').order('country').order('organization_name').limit(500);
-    var list = res.data || [];
+    var list = await _sbAllRows(function() {
+      return _sb.from('directory_entries')
+        .select('id, organization_name, description, location, country, is_verified, tags, photo_url')
+        .eq('status', 'approved').eq('category', 'eldercare').order('country').order('organization_name').order('id');
+    });
     if (!list.length) return;
     _eldercareLoaded = true;
     var byCountry = {};
@@ -2681,13 +2697,15 @@ function _mapCatFor(e) {
 async function _loadDirectoryMapLocs() {
   if (!sbReady()) return;
   try {
-    var r = await _sb.from('directory_entries')
-      .select('organization_name, category, latitude, longitude, city, country, website_url, tags')
-      .eq('status', 'approved').not('latitude', 'is', null).limit(5000);
-    if (r.error || !r.data) return;
+    var rows = await _sbAllRows(function() {
+      return _sb.from('directory_entries')
+        .select('id, organization_name, category, latitude, longitude, city, country, website_url, tags')
+        .eq('status', 'approved').not('latitude', 'is', null).order('id');
+    });
+    if (!rows.length) return;
     var known = {};
     mapLocs.forEach(function(l) { known[l.name.toLowerCase()] = true; });
-    _mapDbLocs = r.data.filter(function(e) { return !known[e.organization_name.toLowerCase()]; }).map(function(e) {
+    _mapDbLocs = rows.filter(function(e) { return !known[e.organization_name.toLowerCase()]; }).map(function(e) {
       return { name: e.organization_name, cat: _mapCatFor(e), lat: e.latitude, lng: e.longitude,
         city: [e.city, e.country].filter(Boolean).join(', '), url: e.website_url || '' };
     });
@@ -4704,6 +4722,21 @@ function _categorySlug(label) {
   return map[k] || k || 'community';
 }
 
+// Town-level coordinates for a new listing, or null for online groups and places too vague to pin.
+async function _geocodePlace(place, category) {
+  place = String(place || '').trim();
+  if (!place || /online|social/i.test(category || '') || /\b(online|virtual|facebook|international|worldwide)\b/i.test(place)) return null;
+  try {
+    var r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=' + encodeURIComponent(place));
+    var j = await r.json();
+    if (!j || !j.length || /^(continent|country|state|region|province)$/.test(j[0].addresstype || '')) return null;
+    return { lat: parseFloat(j[0].lat), lng: parseFloat(j[0].lon) };
+  } catch (e) {
+    console.warn('approve: place lookup failed, the daily job will retry', e);
+    return null;
+  }
+}
+
 async function adminApproveListing(id) {
   if (!sbReady()) return;
   try {
@@ -4721,6 +4754,9 @@ async function adminApproveListing(id) {
       status: 'approved',
       user_id: window._supabaseUser ? window._supabaseUser.id : null  // required (NOT NULL + RLS)
     };
+    // Put it on the map straight away (the daily job retries anything this misses and adds a picture)
+    var pin = await _geocodePlace(data.location, data.category);
+    if (pin) { entry.latitude = pin.lat; entry.longitude = pin.lng; }
     var { data: dirEntry, error: insertErr } = await _sb.from('directory_entries').insert(entry).select('id').single();
     if (insertErr) { alert('Error adding to directory: ' + insertErr.message); return; }
     // Update status and link directory entry
