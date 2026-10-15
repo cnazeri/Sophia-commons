@@ -12,6 +12,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { englishOnly } from "./translate.ts";
 
 const ADMIN_EMAILS = ["cameron.nazeri@gmail.com", "cameron@sophiacommons.org", "admin@sophiacommons.org"];  // keep in sync with sophia_commons_v9.js
 const SITE = "https://sophiacommons.org";
@@ -119,6 +120,8 @@ async function gather(sb: SupabaseClient) {
   };
 }
 
+type Digest = Awaited<ReturnType<typeof gather>>;
+
 // Email-safe HTML: inline styles, absolute links, no tables (the site's News view keeps only
 // simple tags, so the same body reads well on the site and in the inbox).
 const H3 = 'style="font-family:Georgia,serif;font-size:18px;color:#2E2A24;margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid #E8E2DA"';
@@ -126,7 +129,7 @@ const LI = 'style="margin:0 0 14px;padding:0;list-style:none"';
 const LINK = 'style="color:#7F6116;font-weight:bold;text-decoration:none"';
 const MUTED = 'style="color:#6F665B;font-size:13px"';
 
-export function buildHtml(d: Awaited<ReturnType<typeof gather>>): string {
+export function buildHtml(d: Digest): string {
   let h = `<div style="max-width:600px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#2E2A24">`;
   h += `<h2 style="font-family:Georgia,serif;font-size:24px;margin:0 0 4px">Sophia Commons: the week of ${esc(d.weekOf)}</h2>`;
   h += `<p ${MUTED}>New videos, upcoming events and new listings from the anthroposophical world.</p>`;
@@ -219,11 +222,12 @@ serve(async (req: Request) => {
   try { preview = !!(await req.json()).preview; } catch (_) { /* empty body */ }
 
   try {
-    const data = await gather(sb);
+    const { digest: data, translated, reason } = await englishOnly(await gather(sb), Deno.env.get("ANTHROPIC_API_KEY"));
     const html = buildHtml(data);
-    const counts = `${data.videos.length} videos, ${data.events.length} events, ${data.listings.length} new listings`;
+    const counts = `${data.videos.length} videos, ${data.events.length} events, ${data.listings.length} new listings`
+      + (translated ? "" : `; NOT translated to English (${reason})`);
     const title = `Sophia Commons weekly: ${data.weekOf}`;
-    if (preview) return jsonResponse({ title, html, counts });
+    if (preview) return jsonResponse({ title, html, counts, translated });
 
     // one draft per week: the Monday run and a manual click do not stack up drafts
     const { data: existing } = await sb.from("news").select("id, title").eq("status", "pending")
