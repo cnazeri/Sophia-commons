@@ -65,7 +65,7 @@
   "sidebar.category_housing_count": "54",
   "sidebar.category_jobs": "jobs & volunteering",
   "sidebar.category_jobs_count": "176",
-  "sidebar.category_groups": "groups, seminars & retreats",
+  "sidebar.category_groups": "groups & seminars",
   "sidebar.category_groups_count": "111",
   "sidebar.category_podcasts": "podcasts & media",
   "sidebar.category_podcasts_count": "23",
@@ -573,7 +573,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.60.0",
+  "footer.version": "v1.61.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -906,5 +906,7 @@
   "common.close": "Close",
   "common.send": "Send",
   "podcasts.media_count": "channels, pages and shows",
-  "dir.near_placeholder": "Town or postcode"
+  "dir.near_placeholder": "Town or postcode",
+  "newsletter.card_heading": "Get the weekly digest",
+  "newsletter.card_desc": "New events, videos and places from the anthroposophical world, once a week in English. Free, and you can unsubscribe anytime."
 }

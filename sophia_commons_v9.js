@@ -171,6 +171,7 @@ function renderDirectoryDetail(d) {
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'directory\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + (typeof claimBoxHtml === 'function' ? claimBoxHtml(d) : '')
     + '</div>'
+    + _nlCardHtml()
     + renderCommentsSection('directory', d.id)
     + '<div id="related-listings"></div>';
 }
@@ -300,6 +301,7 @@ function renderEventDetail(ev) {
     + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'event\',\'' + ev.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + '</div>'
+    + _nlCardHtml()
     + renderCommentsSection('event', ev.id)
     + '<div id="related-listings"></div>';
 }
@@ -2511,6 +2513,20 @@ async function handleNewsletterLink(action, token) {
 function doSignup() { handleNewsletterSignup('signup-email', '.signup-box button', 'rsignup-ok'); }
 function doFtSignup() { handleNewsletterSignup('ft-email', '.ftnl button', 'ft-ok'); }
 function doRbSignup() { handleNewsletterSignup('rb-email', '.rb-nl button', 'rb-ok'); }
+
+// Newsletter card at the end of listing and event pages. The sidebar signup is hidden on phones,
+// where most visitors arrive from search; this gives them the same double opt-in form.
+function _nlCardHtml() {
+  return '<section class="nl-card" aria-labelledby="nl-card-h">'
+    + '<h3 id="nl-card-h">' + esc(t('newsletter.card_heading', 'Get the weekly digest')) + '</h3>'
+    + '<p>' + esc(t('newsletter.card_desc', 'New events, videos and places from the anthroposophical world, once a week in English. Free, and you can unsubscribe anytime.')) + '</p>'
+    + '<div class="nl-card-row"><label for="dt-nl-email" class="sr-only">' + esc(t('footer.newsletter_label', 'Your email address')) + '</label>'
+    + '<input type="email" id="dt-nl-email" autocomplete="email" aria-describedby="dt-nl-email-err" placeholder="' + esc(t('newsletter.placeholder', 'your@email.com')) + '">'
+    + '<button type="button" id="dt-nl-btn" onclick="handleNewsletterSignup(\'dt-nl-email\', \'#dt-nl-btn\', \'dt-nl-ok\')">' + esc(t('newsletter.subscribe_btn', 'subscribe')) + '</button></div>'
+    + '<div id="dt-nl-email-err" class="rb-nl-err" role="alert" style="display:none;"></div>'
+    + '<div id="dt-nl-ok" class="rb-nl-ok" role="status">' + esc(t('newsletter.check_inbox', 'Almost done: check your inbox and click the link to confirm.')) + '</div>'
+    + '</section>';
+}
 
 // ── DIRECTORY MAP ──
 const mapLocs = [
@@ -4800,6 +4816,7 @@ function adminSwitchTab(tab) {
   else if (tab === 'activity') loadAdminActivity();
   else if (tab === 'blog' && typeof loadAdminBlog === 'function') loadAdminBlog();
   else if (tab === 'claims' && typeof loadAdminClaims === 'function') loadAdminClaims();
+  else if (tab === 'outreach') loadAdminOutreach();
 }
 
 function adminEsc(s) { return esc(s); }
@@ -5064,67 +5081,98 @@ function initAdminPanel() {
   checkAdminPendingCounts();
 }
 
+// Pending work per Admin tab. Each count shows as a number bubble above that tab, and the
+// total shows on the Admin link in the top bar. A table that is missing just counts as 0.
+var ADMIN_PENDING = [
+  { tab: 'listings',  table: 'listings_pending',  q: function (x) { return x.or('status.is.null,status.eq.pending'); } },
+  { tab: 'events',    table: 'events',            q: function (x) { return x.eq('status', 'pending'); } },
+  { tab: 'memorials', table: 'memorials_pending', q: function (x) { return x.eq('status', 'pending'); } },
+  { tab: 'reports',   table: 'reports',           q: function (x) { return x.eq('status', 'pending'); } },
+  { tab: 'claims',    table: 'listing_claims',    q: function (x) { return x.eq('status', 'pending'); } },
+  { tab: 'digest',    table: 'news',              q: function (x) { return x.eq('status', 'pending').contains('tags', ['weekly-digest']); } },
+  { tab: 'newsq',     table: 'news',              q: function (x) { return x.eq('status', 'pending').contains('tags', ['roundup']); } },
+  { tab: 'outreach',  table: 'outreach_queue',    q: function (x) { return x.eq('status', 'queued'); } }
+];
+
 async function checkAdminPendingCounts() {
   if (!sbReady()) return;
-  try {
-    // Check pending/approved listings for admin review
-    var { count: listingsCount } = await _sb.from('listings_pending')
-      .select('id', { count: 'exact', head: true })
-      .or('status.is.null,status.eq.pending');
-    highlightAdminTab('listings', listingsCount || 0);
-
-    // Check pending events
-    var { count: eventsCount } = await _sb.from('events')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'pending');
-    highlightAdminTab('events', eventsCount || 0);
-
-    // Check pending memorials
-    var { count: memorialsCount } = await _sb.from('memorials_pending')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'pending');
-    highlightAdminTab('memorials', memorialsCount || 0);
-
-    // Highlight top bar admin link if anything is pending
-    var totalPending = (listingsCount || 0) + (eventsCount || 0) + (memorialsCount || 0);
-    var adminLink = document.getElementById('adminlink');
-    if (adminLink) {
-      var existingBadge = adminLink.querySelector('.admin-pending-badge');
-      if (existingBadge) existingBadge.remove();
-      if (totalPending > 0) {
-        adminLink.style.color = '#c0392b';
-        adminLink.style.fontWeight = '700';
-        var b = document.createElement('span');
-        b.className = 'admin-pending-badge';
-        b.textContent = totalPending;
-        adminLink.appendChild(b);
-      } else {
-        adminLink.style.color = '';
-        adminLink.style.fontWeight = '';
-      }
-    }
-  } catch(e) {
-    // Tables may not exist yet
+  var counts = await Promise.all(ADMIN_PENDING.map(async function (p) {
+    try {
+      var r = await p.q(_sb.from(p.table).select('id', { count: 'exact', head: true }));
+      return r.error ? 0 : (r.count || 0);
+    } catch (e) { return 0; }
+  }));
+  var total = 0;
+  ADMIN_PENDING.forEach(function (p, i) { highlightAdminTab(p.tab, counts[i]); total += counts[i]; });
+  var adminLink = document.getElementById('adminlink');
+  if (!adminLink) return;
+  var old = adminLink.querySelector('.admin-pending-badge');
+  if (old) old.remove();
+  adminLink.classList.toggle('has-pending', total > 0);
+  if (total > 0) {
+    var b = document.createElement('span');
+    b.className = 'admin-pending-badge';
+    b.textContent = total > 99 ? '99+' : total;
+    b.setAttribute('aria-label', total + ' pending');
+    adminLink.appendChild(b);
   }
 }
 
 function highlightAdminTab(tabName, count) {
-  var btn = document.querySelector('.admin-tab[onclick*="' + tabName + '"]');
+  var btn = document.querySelector('.admin-tab[onclick*="\'' + tabName + '\'"]');
   if (!btn) return;
-  // Remove existing badge
   var existing = btn.querySelector('.admin-pending-badge');
   if (existing) existing.remove();
+  btn.classList.toggle('has-pending', count > 0);
   if (count > 0) {
-    btn.style.color = '#c0392b';
-    btn.style.fontWeight = '700';
     var badge = document.createElement('span');
     badge.className = 'admin-pending-badge';
-    badge.textContent = count;
+    badge.textContent = count > 99 ? '99+' : count;
+    badge.setAttribute('aria-label', count + ' pending');
     btn.appendChild(badge);
-  } else {
-    btn.style.color = '';
-    btn.style.fontWeight = '';
   }
+}
+
+// ── Outreach queue (Admin > Outreach) ──
+// Never sends: "Open in Gmail" opens a compose window in the owner's personal account.
+var OUTREACH_GMAIL = 'cameron.nazeri@gmail.com';
+var _outreachRows = [];
+
+async function loadAdminOutreach() {
+  var el = document.getElementById('admin-outreach-list');
+  if (!el || !isAdmin() || !sbReady()) return;
+  var status = (document.getElementById('outreach-filter') || {}).value || 'queued';
+  el.innerHTML = '<div class="admin-empty">Loading...</div>';
+  var r = await _sb.from('outreach_queue').select('id, entry_id, to_email, organization, country, category, subject, body, batch, status, sent_at')
+    .eq('status', status).order('created_at', { ascending: true }).limit(500);
+  if (r.error) { el.innerHTML = '<div class="admin-empty">Could not load: ' + esc(r.error.message) + '</div>'; return; }
+  _outreachRows = r.data || [];
+  if (!_outreachRows.length) { el.innerHTML = '<div class="admin-empty">Nothing ' + esc(status) + '.</div>'; return; }
+  el.innerHTML = '<div class="adm-note">' + _outreachRows.length + ' ' + esc(status) + '</div>' + _outreachRows.map(function (o, i) {
+    var gmail = 'https://mail.google.com/mail/?authuser=' + encodeURIComponent(OUTREACH_GMAIL) + '&view=cm&fs=1&to=' + encodeURIComponent(o.to_email)
+      + '&su=' + encodeURIComponent(o.subject) + '&body=' + encodeURIComponent(o.body);
+    return '<div class="adm-post outreach-row">'
+      + '<div><strong>' + esc(o.organization || o.to_email) + '</strong> <span class="adm-post-meta">' + esc([o.country, o.category, o.batch].filter(Boolean).join(' \u00b7 ')) + '</span></div>'
+      + '<div class="adm-post-meta">' + esc(o.to_email) + (o.sent_at ? ' \u00b7 sent ' + esc(new Date(o.sent_at).toLocaleDateString()) : '') + '</div>'
+      + '<details><summary>' + esc(o.subject) + '</summary><p>' + esc(o.body) + '</p></details>'
+      + '<div class="adm-post-acts">'
+      + (o.status === 'queued'
+        ? '<a class="adm-btn" href="' + escUrl(gmail) + '" target="_blank" rel="noopener">Open in Gmail</a> '
+          + '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'sent\')">Mark sent</button> '
+          + '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'skipped\')">Skip</button>'
+        : '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'queued\')">Back to queue</button>')
+      + (o.entry_id ? ' <a class="adm-btn" href="/listing/' + esc(o.entry_id) + '" target="_blank" rel="noopener">View listing</a>' : '')
+      + '</div></div>';
+  }).join('');
+}
+
+async function setOutreachStatus(i, status) {
+  var o = _outreachRows[i];
+  if (!o) return;
+  var r = await _sb.from('outreach_queue').update({ status: status, sent_at: status === 'sent' ? new Date().toISOString() : null }).eq('id', o.id);
+  if (r.error) { scNotify('Could not update: ' + r.error.message); return; }
+  loadAdminOutreach();
+  checkAdminPendingCounts();
 }
 
 // ── REPORTS / MODERATION ──

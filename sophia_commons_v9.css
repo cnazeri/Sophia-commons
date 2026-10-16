@@ -2404,18 +2404,22 @@ footer {
 
 /* ── ADMIN PENDING BADGE ── */
 .admin-pending-badge {
-  display: inline-block;
-  background: #c0392b;
+  position: absolute;
+  top: -9px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #B3261E;          /* white on this red: 6.5:1 */
   color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  min-width: 18px;
-  height: 18px;
-  line-height: 18px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 20px;
   text-align: center;
-  border-radius: 50%;
-  margin-left: 6px;
-  vertical-align: middle;
+  box-shadow: 0 0 0 2px var(--bg);
+  pointer-events: none;
 }
 
 /* ── MEMORIAL CARDS (clickable) ── */
@@ -3693,3 +3697,27 @@ footer li a { display: inline-block; padding: 10px 0; }
 .suggest-form button[type=submit]:disabled { opacity: .6; cursor: wait; }
 .suggest-msg { margin: 0; font-size: 13px; color: var(--sage); }
 .suggest-msg.is-error { color: var(--error); }
+
+/* ══════════════════ v1.61: newsletter card on listing/event pages, typography polish ══════════════════ */
+.nl-card { margin: 24px 0; padding: 20px 22px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--surface); }
+.nl-card h3 { margin: 0 0 4px; font-family: 'Lora', Georgia, serif; font-size: 18px; color: var(--text-primary); }
+.nl-card p { margin: 0 0 12px; font-size: 14px; line-height: 1.5; color: var(--text-secondary); max-width: 60ch; }
+.nl-card-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.nl-card-row input { flex: 1 1 220px; min-height: 44px; padding: 0 14px; border: 1px solid var(--border); border-radius: 999px; font: inherit; font-size: 14px; background: var(--bg); color: var(--text-primary); }
+.nl-card-row button { min-height: 44px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--gold); color: var(--on-gold); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+.nl-card-row button:hover { background: var(--gold-hover); }
+.nl-card-row button:active { transform: scale(0.98); }
+
+/* Headings and titles: no single word stranded on the last line */
+h1, h2, h3, h4, h5, .ltitle, .feat-ev-body h5, .detail-title { text-wrap: balance; }
+p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
+/* Dates, counts and badges: same-width digits so columns line up */
+.evdate, .sb-ev-date, .cbadge, .podcast-count, .home-ev-grid .dy, .yt-cat h4 span, #media-count, .admin-pending-badge { font-variant-numeric: tabular-nums; }
+
+/* Admin tabs and the top-bar Admin link carry a pending-count bubble above them */
+.admin-tab, #adminlink { position: relative; }
+.admin-tabs { padding-top: 12px; row-gap: 16px !important; }
+.admin-tab.has-pending { color: var(--text-primary); }
+.outreach-row details { margin: 6px 0; }
+.outreach-row summary { cursor: pointer; color: var(--gold-text); font-size: 13px; }
+.outreach-row details p { white-space: pre-line; font-size: 13px; color: var(--text-secondary); }
