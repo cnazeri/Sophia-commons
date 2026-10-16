@@ -48,6 +48,37 @@ try {
     await ctx.close();
   }
 
+  // Small phones (360px): a category page full of placeholders plus the listings most likely to
+  // push the page sideways (longest name, web address, email, address). Names the widest culprit.
+  {
+    const ctx = await browser.newContext({ viewport: { width: 360, height: 760 }, serviceWorkers: 'block' });
+    const page = await ctx.newPage();
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+    const culprit = () => {
+      const over = [...document.querySelectorAll('body *')].filter(el => el.getBoundingClientRect().right > innerWidth + 1 && el.offsetParent);
+      const el = over.sort((a, b) => b.getBoundingClientRect().right - a.getBoundingClientRect().right)[0];
+      return el ? `${el.tagName.toLowerCase()}.${[...el.classList].join('.')} "${(el.textContent || '').trim().slice(0, 30)}"` : '';
+    };
+    const ids = await page.evaluate(async () => {
+      if (typeof _sb === 'undefined' || !_sb) return [];
+      const { data } = await _sb.from('directory_entries').select('id, organization_name, website_url, email, address')
+        .eq('status', 'approved').order('updated_at', { ascending: false }).limit(1000);
+      const by = f => [...(data || [])].sort((a, b) => (b[f] || '').length - (a[f] || '').length)[0]?.id;
+      return [...new Set(['organization_name', 'website_url', 'email', 'address'].map(by).filter(Boolean))];
+    });
+    await page.evaluate(() => showCategory('waldorf & education'));
+    await page.waitForTimeout(1500);
+    let over = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    check(over <= 0, `[360px] category page: no horizontal scroll (${over}px) ${over > 0 ? await page.evaluate(culprit) : ''}`);
+    for (const id of ids) {
+      await page.evaluate(i => showDetail('directory', i), id);
+      await page.waitForTimeout(1200);
+      over = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      check(over <= 0, `[360px] listing ${id.slice(0, 8)}: no horizontal scroll (${over}px) ${over > 0 ? await page.evaluate(culprit) : ''}`);
+    }
+    await ctx.close();
+  }
+
   const ctx = await browser.newContext({ serviceWorkers: 'block' });
   const page = await ctx.newPage();
 

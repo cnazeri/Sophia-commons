@@ -3494,8 +3494,10 @@ footer li a { display: inline-block; padding: 10px 0; }
 .dir-row-body { min-width: 0; flex: 1 1 auto; }
 .dir-thumb { flex: 0 0 72px; width: 72px; height: 72px; border-radius: 10px; object-fit: cover; background: var(--muted-bg); border: 1px solid var(--border-subtle); display: block; }
 .dir-thumb.is-logo { object-fit: contain; background: #fff; padding: 6px; box-sizing: border-box; }
-.dir-thumb.ph { display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 30px; font-weight: 600;
-  color: var(--gold-text); background: var(--gold-light, #f6efdc); }
+.dir-thumb.ph { display: flex; align-items: center; justify-content: center; --ph: var(--gold-text);
+  color: color-mix(in srgb, var(--ph) 80%, #1E1810); background: color-mix(in srgb, var(--ph) 11%, #FDFBF7);
+  border-color: color-mix(in srgb, var(--ph) 18%, #FDFBF7); }
+.dir-thumb.ph svg { width: 44%; height: 44%; }
 .hl-item .dir-thumb { float: right; width: 140px; height: 96px; flex: none; margin: 0 0 8px 12px; }
 .hl-item::after { content: ''; display: block; clear: both; }
 .detail-pic { margin: 0 0 14px; }
@@ -3792,3 +3794,18 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 }
 .nl-card-home { margin: 0 0 16px; }
 .nl-card-home { margin: 0 0 16px; }
+
+/* Admin > Members: newsletter signups per week */
+.adm-weekly { margin: 4px 0 16px; padding: 14px 16px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--elevated); }
+.adm-weekly-title { font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; }
+.adm-weekly-bars { display: flex; align-items: flex-end; gap: 6px; height: 130px; }
+.adm-wk { flex: 1 1 0; min-width: 0; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+.adm-wk-n { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; min-height: 15px; }
+.adm-wk-bar { width: 100%; max-width: 34px; min-height: 2px; background: color-mix(in srgb, var(--gold) 30%, #fff); border-radius: 4px 4px 0 0; display: flex; align-items: flex-end; overflow: hidden; }
+.adm-wk-bar > span { display: block; width: 100%; background: var(--gold-text); }
+.adm-wk-l { font-size: 10px; color: var(--text-muted); margin-top: 4px; white-space: nowrap; }
+.adm-weekly-key { font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+.adm-weekly-key span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.adm-weekly-key .k-conf { background: var(--gold-text); }
+.adm-weekly-key .k-pend { background: color-mix(in srgb, var(--gold) 30%, #fff); margin-left: 8px; }
+@media (max-width: 600px) { .adm-wk:nth-child(-n+4) { display: none; } .adm-wk-l { font-size: 9px; } }

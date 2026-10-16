@@ -920,15 +920,35 @@ function _setCatFilter(v) {
 
 var _catFilterTimer = null;
 // Listing picture: the organization's own share image (stored in listing-photos). '#contain' marks a
-// logo, shown whole on white instead of cropped. Listings without one get a lettered placeholder.
+// logo, shown whole on white instead of cropped. Listings without one get their category's line icon
+// on a soft tint of the category's map color (catColors), so a page of them still reads at a glance.
+var DIR_PH_ICONS = {
+  waldorf: '<path d="M4 11l8-6 8 6"/><path d="M6 10v9h12v-9"/><path d="M10 19v-4h4v4"/><circle cx="12" cy="10.5" r="1.2"/>',
+  biodynamic: '<path d="M12 20v-8"/><path d="M12 12c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 14c0-3-2.5-5-6-5 0 3 2.5 5 6 5z"/><path d="M7 20h10"/>',
+  christian_community: '<path d="M7 5h10c0 4-2 7-5 7s-5-3-5-7z"/><path d="M12 12v5"/><path d="M8.5 19h7"/>',
+  camphill: '<circle cx="12" cy="7.5" r="2.3"/><circle cx="6.5" cy="10" r="1.9"/><circle cx="17.5" cy="10" r="1.9"/><path d="M8 19c0-3 1.8-5.5 4-5.5s4 2.5 4 5.5"/><path d="M3.5 18c0-2.3 1.3-4 3-4"/><path d="M20.5 18c0-2.3-1.3-4-3-4"/>',
+  eurythmy: '<circle cx="12" cy="5" r="1.8"/><path d="M12 8c-1 3-1 6 0 12"/><path d="M12 10c3-2 5-2 7-4"/><path d="M12 10c-3 0-5 2-7 1"/><path d="M12 15c2 1 3 3 3 5"/>',
+  medicine: '<path d="M12 4c3 4 5 7 5 10a5 5 0 0 1-10 0c0-3 2-6 5-10z"/><path d="M12 11v6M9 14h6"/>',
+  societies: '<path d="M4 6.5c2.5-1 5.5-1 8 .5v12c-2.5-1.5-5.5-1.5-8-.5z"/><path d="M20 6.5c-2.5-1-5.5-1-8 .5v12c2.5-1.5 5.5-1.5 8-.5z"/>',
+  online: '<circle cx="12" cy="12" r="8"/><path d="M4 12h16"/><path d="M12 4c2.5 2.5 3.5 5 3.5 8s-1 5.5-3.5 8c-2.5-2.5-3.5-5-3.5-8s1-5.5 3.5-8z"/>',
+  eldercare: '<path d="M12 19s-7-4.3-7-9.2A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 1.8c0 4.9-7 9.2-7 9.2z"/>',
+  science: '<path d="M10 4h4"/><path d="M11 4v6l-5 8.5c-.4.8.1 1.5 1 1.5h10c.9 0 1.4-.7 1-1.5L13 10V4"/><path d="M8.5 15h7"/>',
+  social_media: '<path d="M5 6h14v9H10l-4 3v-3H5z"/>'
+};
+var DIR_PH_ALIAS = { community: 'camphill' };
+function _dirPlaceholderHtml(d) {
+  var cat = DIR_PH_ALIAS[d.category] || d.category;
+  var icon = DIR_PH_ICONS[cat] || DIR_PH_ICONS.societies;
+  var color = catColors[cat === 'christian_community' ? 'cc' : cat] || 'var(--gold-text)';
+  return '<span class="dir-thumb ph" style="--ph:' + color + '" aria-hidden="true"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + icon + '</svg></span>';
+}
 function _dirThumbHtml(d, width) {
   var url = d.photo_url || '';
   if (url) {
     var logo = url.indexOf('#contain') !== -1;
     return '<img class="dir-thumb' + (logo ? ' is-logo' : '') + '" src="' + escUrl(_imgSized(url.split('#')[0], width || 160)) + '" alt="" loading="lazy" decoding="async" width="72" height="72">';
   }
-  var letter = String(d.organization_name || '?').replace(/^(the|die|der|la|le|les|el|a)\s+/i, '').charAt(0).toUpperCase();
-  return '<span class="dir-thumb ph" aria-hidden="true">' + esc(letter) + '</span>';
+  return _dirPlaceholderHtml(d);
 }
 
 function _applyCatFilter(q) {
@@ -6507,12 +6527,51 @@ async function loadAdminMembers() {
   else { _admMembers = res[0].data || []; renderAdminMembers(); }
   if (res[1].error) { subsEl.innerHTML = '<div class="admin-empty">Could not load subscribers.</div>'; return; }
   _admSubs = res[1].data || [];
+  renderSubscriberWeeks(_admSubs);
   subsEl.innerHTML = _admSubs.length ? '<table class="adm-table"><thead><tr><th>Email</th><th>Name</th><th>Status</th><th>Signed up</th></tr></thead><tbody>'
     + _admSubs.map(function (s) {
       var st = s.unsubscribed_at ? 'unsubscribed' : (s.confirmed ? 'subscribed' : 'unconfirmed');
       return '<tr><td><a href="mailto:' + esc(s.email) + '">' + esc(s.email) + '</a></td><td>' + esc(s.name || '') + '</td>'
         + '<td><span class="adm-pill adm-' + st + '">' + st + '</span></td><td>' + esc(_admDate(s.created_at)) + '</td></tr>';
     }).join('') + '</tbody></table>' : '<div class="admin-empty">No subscribers yet.</div>';
+}
+
+// Newsletter growth: totals plus signups per week (Monday start) for the last SUB_WEEKS weeks.
+// A bar's dark part is signups that went on to confirm; the light part never clicked the email link.
+var SUB_WEEKS = 12;
+function _weekStart(d) {
+  var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return x;
+}
+function renderSubscriberWeeks(subs) {
+  var active = subs.filter(function (s) { return s.confirmed && !s.unsubscribed_at; }).length;
+  var pending = subs.filter(function (s) { return !s.confirmed && !s.unsubscribed_at; }).length;
+  var gone = subs.filter(function (s) { return s.unsubscribed_at; }).length;
+  document.getElementById('adm-subs-stats').innerHTML = '<div><b>' + active + '</b> subscribed</div><div><b>' + pending
+    + '</b> waiting to confirm</div><div><b>' + gone + '</b> unsubscribed</div>';
+  var first = _weekStart(new Date());
+  first.setDate(first.getDate() - 7 * (SUB_WEEKS - 1));
+  var weeks = [];
+  for (var i = 0; i < SUB_WEEKS; i++) {
+    var start = new Date(first.getFullYear(), first.getMonth(), first.getDate() + 7 * i);
+    weeks.push({ start: start, total: 0, confirmed: 0 });
+  }
+  subs.forEach(function (s) {
+    var idx = Math.floor((_weekStart(new Date(s.created_at)) - first) / (7 * 864e5) + 0.5);
+    if (idx < 0 || idx >= SUB_WEEKS) return;
+    weeks[idx].total++;
+    if (s.confirmed) weeks[idx].confirmed++;
+  });
+  var max = Math.max.apply(null, weeks.map(function (w) { return w.total; }).concat([1]));
+  document.getElementById('adm-subs-weekly').innerHTML = '<div class="adm-weekly-title">Signups per week</div><div class="adm-weekly-bars">'
+    + weeks.map(function (w) {
+      var label = localDate(w.start.toISOString(), { month: 'short', day: 'numeric' });
+      var tip = 'Week of ' + label + ': ' + w.total + ' signed up, ' + w.confirmed + ' confirmed';
+      return '<div class="adm-wk" title="' + esc(tip) + '"><span class="adm-wk-n">' + (w.total || '') + '</span>'
+        + '<span class="adm-wk-bar" style="height:' + Math.round(w.total / max * 100) + '%"><span style="height:'
+        + (w.total ? Math.round(w.confirmed / w.total * 100) : 0) + '%"></span></span><span class="adm-wk-l">' + esc(label) + '</span></div>';
+    }).join('') + '</div><div class="adm-weekly-key"><span class="k-conf"></span>confirmed <span class="k-pend"></span>not confirmed yet</div>';
 }
 
 function _admPosts(m) { return (m.comments || 0) + (m.chat || 0) + (m.events || 0) + (m.listings || 0) + (m.reviews || 0); }
