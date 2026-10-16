@@ -17,13 +17,14 @@ from datetime import datetime, timedelta, timezone
 from os import environ
 from urllib.parse import urljoin
 import requests
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageStat
 
 LOOKBACK_DAYS = 14
 BUCKET = "listing-photos"
 MAX_W = 480
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"}
 NOMINATIM = "https://nominatim.openstreetmap.org/search"
+STOCK_IMAGE = re.compile(r"lovable\.dev/opengraph|/default[-_]?(og|share|social)[-_.]|placeholder", re.I)
 NOMINATIM_UA = {"User-Agent": "SophiaCommonsBot/1.0 (+https://sophiacommons.org)"}
 
 
@@ -93,7 +94,9 @@ def share_image_url(page_url):
     for tag in META_IMG.findall(r.text[:300000]):
         m = CONTENT.search(tag)
         if m:
-            return urljoin(r.url, html.unescape(m.group(1).strip()))
+            url = urljoin(r.url, html.unescape(m.group(1).strip()))
+            # website builders' stock share images (not the site's own picture)
+            return None if STOCK_IMAGE.search(url) else url
     return None
 
 
@@ -117,6 +120,9 @@ def prepare_image(img_url):
         return None
     im = ImageOps.exif_transpose(im)
     if im.width < 150 or im.height < 100:
+        return None
+    # A flat image (one solid colour) is a placeholder, not a picture of the place
+    if ImageStat.Stat(im.convert("L")).stddev[0] < 6:
         return None
     logo = is_logo(im)
     if im.width > MAX_W:

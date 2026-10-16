@@ -48,11 +48,25 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python3 automation/new_listings.py
 
+      - name: Facebook page and picture for new listings
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python3 automation/facebook_daily.py
+        continue-on-error: true      # Facebook can rate-limit; never block the rest of the job
+
       - name: Collect news from anthroposophical feeds (pending until the admin publishes)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python3 automation/news_roundup.py
+
+      - name: Tell search engines about new and changed pages (IndexNow)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python3 automation/indexnow.py --recent
+        continue-on-error: true
 
       - name: Check every outbound link and resource
         if: steps.when.outputs.links == 'true'

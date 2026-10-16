@@ -1277,6 +1277,7 @@ function showSec(id, skipPush) {
   // Sections that are not built at startup render when first opened (and refresh on later opens)
   if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); }
   if (id === 'books' && typeof renderTop50Books === 'function') renderTop50Books();
+  if (id === 'books') _ensureBooksLoaded();
   if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
   if (id === 'podcasts' && typeof renderFacebookPages === 'function') renderFacebookPages();
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
@@ -4259,7 +4260,7 @@ function _featBannerHtml(feat) {
     + '<h5><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
     + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
     + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(feat.desc, 160)) + '</p>' : '')
-    + (join ? '<a class="feat-ev-join" href="' + escUrl(join[1]) + '" target="_blank" rel="noopener">' + esc(join[0]) + '</a>' : '')
+    + (join ? '<a class="feat-ev-join" href="' + escUrl(join[1]) + '" target="_blank" rel="noopener">' + esc(/zoom/i.test(join[0]) ? t('events.join_zoom', 'Join on Zoom') : t('events.join_online', 'Join online')) + '</a>' : '')
     + '</div></div>';
 }
 
@@ -4514,6 +4515,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── BOOKS: Load from Supabase ──
+// The full book list (up to 1,000 titles, ~2,400 elements) used to be built at startup into the
+// hidden Books page, the biggest single cost on a phone's first load. It now loads on first open.
+var _booksLoading = null;
+function _ensureBooksLoaded() {
+  if (!sbReady()) return null;   // not connected yet: _loadAllSupabaseData retries if Books is open
+  if (!_booksLoading) _booksLoading = loadBooksFromSupabase();
+  return _booksLoading;
+}
+
 async function loadBooksFromSupabase() {
   if (!sbReady()) return;
   try {
@@ -4588,6 +4598,7 @@ function rerenderForLang() {
   if (!activeSection) return;
   var id = activeSection.id.replace('sec-', '');
   if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); renderSidebarUpcoming(); }
+  if (id === 'home') { renderSidebarUpcoming(); renderCotsWidget(); }   // home events box, slider and verse widget
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
   if (id === 'marketplace') { renderMarketplace(); }
@@ -4615,9 +4626,9 @@ function _loadAllSupabaseData() {
     loadEventsFromSupabase(),
     loadNewsFromSupabase(),
     loadDirectoryFromSupabase(),
-    loadBooksFromSupabase(),
     loadMarketplace()
   ]).catch(function(e) { console.warn('Data load error:', e); });
+  if (_secVisible('books')) _ensureBooksLoaded();
   renderPodcastSection();
   _applyLiveCounts().then(_markEmptyClassifieds);
 }

@@ -573,7 +573,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.63.0",
+  "footer.version": "v1.64.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -908,5 +908,7 @@
   "podcasts.media_count": "channels, pages and shows",
   "dir.near_placeholder": "Town or postcode",
   "newsletter.card_heading": "Get the weekly digest",
-  "newsletter.card_desc": "New events, videos and places from the anthroposophical world, once a week in English. Free, and you can unsubscribe anytime."
+  "newsletter.card_desc": "New events, videos and places from the anthroposophical world, once a week in English. Free, and you can unsubscribe anytime.",
+  "events.join_zoom": "Join on Zoom",
+  "events.join_online": "Join online"
 }
