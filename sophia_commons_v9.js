@@ -4104,7 +4104,7 @@ function renderSidebarUpcoming() {
     var dy = d.getDate();
     html += '<div class="sb-ev">';
     html += '<div class="sb-ev-date">' + mo + '<br>' + dy + '</div>';
-    html += '<div class="sb-ev-info"><h6>' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title)) + '</h6>' + (ev.loc ? '<span>' + esc(ev.loc) + '</span>' : '') + '</div>';
+    html += '<div class="sb-ev-info"><h6 aria-level="3">' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title)) + '</h6>' + (ev.loc ? '<span>' + esc(ev.loc) + '</span>' : '') + '</div>';
     html += '</div>';
   });
   container.innerHTML = html || '<div class="sb-empty">' + esc(t('events.none_yet', 'No upcoming events yet.')) + '</div>';
@@ -4133,8 +4133,8 @@ function renderHomeUpcoming() {
   var now = rest.filter(function(e) { return e.date <= today; }).slice(0, 4);
   var next = rest.filter(function(e) { return e.date > today; }).slice(0, now.length ? 4 : 6);
   var gridHtml = '<div class="home-ev-grid' + (now.length ? '' : ' no-now') + '">'
-    + (now.length ? '<div class="home-ev-col"><h4 class="home-ev-sub"><span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) + '</h4>' + now.map(_homeEvRow).join('') + '</div>' : '')
-    + '<div class="home-ev-col"><h4 class="home-ev-sub">' + esc(t('home.coming_up', 'Coming up')) + '</h4><div class="home-ev-rows">' + next.map(_homeEvRow).join('') + '</div></div>'
+    + (now.length ? '<div class="home-ev-col"><h4 class="home-ev-sub" aria-level="3"><span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) + '</h4>' + now.map(_homeEvRow).join('') + '</div>' : '')
+    + '<div class="home-ev-col"><h4 class="home-ev-sub" aria-level="3">' + esc(t('home.coming_up', 'Coming up')) + '</h4><div class="home-ev-rows">' + next.map(_homeEvRow).join('') + '</div></div>'
     + '</div>';
   // The deploy writes the featured banner into the page so it shows with the first paint. Keep that
   // node (same event, English) rather than redrawing it, which phones would count as a late paint.
@@ -4257,7 +4257,7 @@ function _featBannerHtml(feat) {
   return '<div class="feat-ev" data-id="' + esc(feat.id) + '">'
     + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(_imgSized(feat.img.src, 200)) + '" alt="" width="96" height="116">' : '')
     + '<div class="feat-ev-body"><div class="etag">' + esc(t('home.featured_event', 'Featured event')) + '</div>'
-    + '<h5><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
+    + '<h5 aria-level="3"><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
     + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
     + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(feat.desc, 160)) + '</p>' : '')
     + (join ? '<a class="feat-ev-join" href="' + escUrl(join[1]) + '" target="_blank" rel="noopener">' + esc(/zoom/i.test(join[0]) ? t('events.join_zoom', 'Join on Zoom') : t('events.join_online', 'Join online')) + '</a>' : '')
@@ -4273,7 +4273,7 @@ function _homeEvRow(ev) {
   var meta = _evMeta(ev);
   return '<div class="evrow">'
     + '<div class="evdate"><div class="mo">' + esc(localDate(ev.date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
-    + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5>' + titleHtml + '</h5>'
+    + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5 aria-level="3">' + titleHtml + '</h5>'
     + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
 }
 
@@ -7082,7 +7082,7 @@ function renderNewVideoCard(v, count, kicker, rating) {
        : '<span class="stars off-all" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span>' + esc(t('channel.rate_short', 'Rate')) + '</span>') + '</button>';
   return '<div class="new-video">'
     + '<a class="nv-thumb" href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(v.video_thumbnail) + '" alt="" loading="lazy" width="320" height="180"></a>'
-    + '<div class="nv-body"><h5><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(v.video_title) + '</a></h5>'
+    + '<div class="nv-body"><h5 aria-level="3"><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(v.video_title) + '</a></h5>'
     + '<div class="nv-meta"><span class="etag">' + esc(kicker || t('video.new_video', 'New video')) + (v.published_at ? ' &middot; ' + esc(ytAgo(v.published_at)) : '') + '</span>' + rate + '</div>'
     + ch
     + '<div class="video-actions"><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(t('video.watch', 'Watch')) + ' &rarr;</a>'

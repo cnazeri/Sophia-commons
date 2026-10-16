@@ -55,7 +55,11 @@ export function emailShell({ subject, preheader = "", kicker = "", body, unsubsc
     <tr><td class="card" style="background:${C.card};border:1px solid ${C.rule};border-radius:12px;padding:32px 32px 28px;font-family:${SANS};font-size:15px;line-height:1.6;color:${C.ink}">
 ${body}
     </td></tr>
-    <tr><td align="center" style="padding:24px 16px 8px;font-family:${SANS};font-size:13px;line-height:1.6;color:${C.muted}">
+    <tr><td align="center" style="padding:22px 16px 4px;font-family:${SANS};font-size:14px;line-height:1.6;color:${C.ink}">
+      Know someone who'd enjoy this? Forward it to them.<br>
+      <span style="color:${C.muted};font-size:13px">Got this from a friend? ${footLink(`${SITE}/?subscribe=1#home-nl-email`, "Get your own copy")}, free each week.</span>
+    </td></tr>
+    <tr><td align="center" style="padding:14px 16px 8px;font-family:${SANS};font-size:13px;line-height:1.6;color:${C.muted}">
       ${footLink(`${SITE}/directory`, "Directory")} &nbsp;&middot;&nbsp; ${footLink(`${SITE}/events`, "Events")} &nbsp;&middot;&nbsp; ${footLink(`${SITE}/podcasts`, "Podcasts &amp; Media")}
     </td></tr>
     <tr><td align="center" style="padding:8px 16px 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.muted}">
