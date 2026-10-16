@@ -6673,8 +6673,10 @@ async function generateWeeklyDigest() {
   btn.disabled = true;
   _digestStatus('Building draft...');
   try {
+    var keepNote = await _latestDraftNote();
     var out = await _digestCall('weekly-digest', {});
-    _digestStatus('Draft ready (' + out.counts + '). Review it under Awaiting Your Approval.', 'var(--gold-text)');
+    if (keepNote && out.id) await _writeDigestNote(out.id, keepNote);
+    _digestStatus('Draft ready (' + out.counts + ')' + (keepNote ? ', with your note' : '') + '. Review it under Awaiting Your Approval.', 'var(--gold-text)');
     loadDigestDrafts();
   } catch (e) { _digestStatus('Error: ' + e.message, 'var(--error,#c0392b)'); }
   btn.disabled = false;
@@ -6712,6 +6714,59 @@ async function deleteDigest(id) {
   } catch (e) { scNotify('Error: ' + (e.message || 'Unknown')); }
 }
 
+// ── Personal note at the top of a digest draft ──
+// Stored inside the draft body between <!--note--> markers (comments: invisible in email, and the
+// site's sanitizer drops them). The first notes were added by hand without markers; those are
+// recognized by their "Dear Friends," opening and replaced the same way.
+var DIGEST_NOTE_P = 'style="margin:0 0 14px;color:#1E1810"';
+var DIGEST_NOTE_RE = /<!--note-->[\s\S]*?<!--\/note-->|<div style="margin:0 0 28px;padding:0 0 22px[^"]*"><p[^>]*>Dear Friends,<\/p>[\s\S]*?Cameron<\/p><\/div>/;
+
+function _digestNoteText(body) {
+  var m = String(body || '').match(DIGEST_NOTE_RE);
+  if (!m) return '';
+  var paras = (m[0].match(/<p[^>]*>[\s\S]*?<\/p>/g) || []).map(function (p) {
+    var div = document.createElement('div');
+    div.innerHTML = p.replace(/<br\s*\/?>/gi, '\n');
+    return div.textContent.trim();
+  });
+  return paras.filter(function (t) { return t && t !== 'Dear Friends,' && !/^Warmly,/.test(t) && t !== 'Cameron'; }).join('\n\n');
+}
+
+function _digestNoteHtml(text) {
+  var paras = String(text || '').trim().split(/\n\s*\n/).map(function (p) { return p.trim(); }).filter(Boolean);
+  if (!paras.length) return '';
+  return '<!--note--><div style="margin:0 0 28px;padding:0 0 22px;border-bottom:1px solid #E8E2DA">'
+    + '<p ' + DIGEST_NOTE_P + '>Dear Friends,</p>'
+    + paras.map(function (p) { return '<p ' + DIGEST_NOTE_P + '>' + esc(p).replace(/\n/g, '<br>') + '</p>'; }).join('')
+    + '<p style="margin:0;color:#1E1810">Warmly,<br>Cameron</p></div><!--/note-->';
+}
+
+async function _writeDigestNote(id, text) {
+  var r = await _sb.from('news').select('body').eq('id', id).eq('status', 'pending').single();
+  if (r.error) throw r.error;
+  var body = String(r.data.body || '').replace(DIGEST_NOTE_RE, '');
+  var note = _digestNoteHtml(text);
+  if (note) { var i = body.indexOf('>') + 1; body = body.slice(0, i) + note + body.slice(i); }
+  var u = await _sb.from('news').update({ body: body }).eq('id', id).eq('status', 'pending');
+  if (u.error) throw u.error;
+}
+
+async function _latestDraftNote() {
+  var r = await _sb.from('news').select('body').eq('status', 'pending').contains('tags', ['weekly-digest'])
+    .order('created_at', { ascending: false }).limit(1);
+  return r.data && r.data[0] ? _digestNoteText(r.data[0].body) : '';
+}
+
+async function saveDigestNote(id) {
+  if (!isAdmin()) return;
+  var el = document.getElementById('dn-' + id);
+  try {
+    await _writeDigestNote(id, el ? el.value : '');
+    _digestStatus('Note saved.', 'var(--gold-text)');
+    loadDigestDrafts();
+  } catch (e) { _digestStatus('Error: ' + (e.message || 'could not save the note'), 'var(--error,#c0392b)'); }
+}
+
 async function loadDigestDrafts() {
   var el = document.getElementById('digest-drafts');
   if (!el || !sbReady()) return;
@@ -6729,6 +6784,9 @@ async function loadDigestDrafts() {
       return '<div class="digest-draft">'
         + '<div class="digest-draft-head"><strong>' + esc(d.title) + '</strong><span>' + esc(date) + '</span></div>'
         + '<div class="digest-draft-sub">' + esc(d.excerpt || '') + '</div>'
+        + '<label class="digest-note-label" for="dn-' + esc(d.id) + '">Your note (shown at the top, after "Dear Friends,", signed "Warmly, Cameron"). Leave empty for no note.</label>'
+        + '<textarea class="digest-note" id="dn-' + esc(d.id) + '" rows="5">' + esc(_digestNoteText(d.body || '')) + '</textarea>'
+        + '<div class="digest-draft-actions"><button class="admin-btn" onclick="saveDigestNote(\'' + id + '\')">Save note</button></div>'
         + '<details><summary>Preview the email</summary>' + _digestFrame(d.body || '') + '</details>'
         + '<div class="digest-draft-actions">'
         + '<button class="admin-btn admin-btn-approve" onclick="approveDigest(\'' + id + '\', true)">Approve &amp; email</button>'

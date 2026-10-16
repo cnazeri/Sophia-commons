@@ -3721,3 +3721,7 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .outreach-row details { margin: 6px 0; }
 .outreach-row summary { cursor: pointer; color: var(--gold-text); font-size: 13px; }
 .outreach-row details p { white-space: pre-line; font-size: 13px; color: var(--text-secondary); }
+
+/* Admin > Weekly Digest: personal note box on each draft */
+.digest-note-label { display: block; margin: 10px 0 4px; font-size: 12px; color: var(--text-secondary); }
+.digest-note { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font: inherit; font-size: 14px; line-height: 1.5; background: var(--bg); color: var(--text-primary); resize: vertical; }
