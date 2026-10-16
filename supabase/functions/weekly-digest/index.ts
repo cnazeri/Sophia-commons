@@ -122,56 +122,82 @@ async function gather(sb: SupabaseClient) {
 
 type Digest = Awaited<ReturnType<typeof gather>>;
 
-// Email-safe HTML: inline styles, absolute links, no tables (the site's News view keeps only
-// simple tags, so the same body reads well on the site and in the inbox).
-const H3 = 'style="font-family:Georgia,serif;font-size:18px;color:#2E2A24;margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid #E8E2DA"';
-const LI = 'style="margin:0 0 14px;padding:0;list-style:none"';
-const LINK = 'style="color:#7F6116;font-weight:bold;text-decoration:none"';
-const MUTED = 'style="color:#6F665B;font-size:13px"';
+// Email-safe HTML: inline styles and absolute links, built only from tags the site's News view
+// keeps (h3, p, div, span, a, strong, br; images just drop out there), so the same body reads well
+// on the site and in the inbox. send-newsletter wraps it in the email frame (logo, footer).
+const INK = "#1E1810", MUTED_C = "#6F665B", GOLD = "#7F6116", GOLD_FILL = "#C9A035", RULE = "#E8E2DA";
+const H3 = `style="font-family:Georgia,serif;font-size:20px;font-weight:normal;color:${INK};margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid ${RULE}"`;
+const ITEM = `style="margin:0 0 18px"`;
+const LINK = `style="color:${GOLD};font-weight:bold;text-decoration:none"`;
+const MUTED = `style="color:${MUTED_C};font-size:13px"`;
+const BODY = `style="font-size:14px;color:#3A332A;margin-top:2px"`;
+const CATEGORY_LABEL: Record<string, string> = {
+  waldorf: "Waldorf education", biodynamic: "Biodynamic farming", camphill: "Camphill",
+  christian_community: "The Christian Community", medicine: "Anthroposophic medicine",
+  eurythmy: "Eurythmy", eldercare: "Eldercare", societies: "Anthroposophical society",
+};
+
+function plural(n: number, one: string, many: string) { return `${n} ${n === 1 ? one : many}`; }
+
+function videoHtml(v: Digest["videos"][number]): string {
+  // mqdefault is YouTube's 16:9 thumbnail; hqdefault is 4:3 with black bars top and bottom
+  const src = (v.thumbnail_url || "").replace(/\/(hq|sd|)default\.jpg$/, "/mqdefault.jpg");
+  const thumb = src
+    ? `<a href="${esc(v.url)}"><img class="vthumb" src="${esc(src)}" width="160" height="90" align="left" alt="" style="display:block;float:left;width:160px;height:90px;object-fit:cover;border:0;border-radius:6px;margin:2px 16px 6px 0"></a>`
+    : "";
+  return `<div ${ITEM}>${thumb}<a href="${esc(v.url)}" ${LINK}>${esc(v.title)}</a>`
+    + `<div ${MUTED}>${esc(v.channel)} &middot; ${esc(shortDate(v.published_at))}</div>`
+    + (v.summary ? `<div ${BODY}>${esc(v.summary)}</div>` : "")
+    + `<div style="clear:both;font-size:0;line-height:0">&nbsp;</div></div>`;
+}
+
+function eventHtml(e: Digest["events"][number]): string {
+  const d = new Date(e.start_date);
+  const where = e.is_online ? "Online" : (e.location_name || [e.city, e.country].filter(Boolean).join(", "));
+  return `<div ${ITEM}>`
+    + `<span style="display:inline-block;vertical-align:top;width:50px;margin-right:14px;padding:5px 0;text-align:center;border:1px solid ${RULE};border-radius:8px;background:#FBF8F2">`
+    + `<span style="display:block;font-size:11px;letter-spacing:.06em;color:${GOLD};font-weight:bold">${MONTHS[d.getUTCMonth()].slice(0, 3).toUpperCase()}</span>`
+    + `<span style="display:block;font-family:Georgia,serif;font-size:20px;line-height:1.1;color:${INK}">${d.getUTCDate()}</span></span>`
+    + `<span style="display:inline-block;vertical-align:top;max-width:420px">`
+    + `<a href="${SITE}/event/${esc(e.id)}" ${LINK}>${esc(e.title)}</a>`
+    + (where ? `<br><span ${MUTED}>${esc(where)}</span>` : "")
+    + `</span></div>`;
+}
+
+function listingHtml(l: Digest["listings"][number]): string {
+  const where = [l.city, l.country].filter(Boolean).join(", ");
+  const meta = [CATEGORY_LABEL[l.category] ?? "", where].filter(Boolean).join(" \u00b7 ");
+  return `<div style="margin:0 0 12px"><a href="${SITE}/listing/${esc(l.id)}" ${LINK}>${esc(l.organization_name)}</a>`
+    + (meta ? `<br><span ${MUTED}>${esc(meta)}</span>` : "") + `</div>`;
+}
 
 export function buildHtml(d: Digest): string {
-  let h = `<div style="max-width:600px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#2E2A24">`;
-  h += `<h2 style="font-family:Georgia,serif;font-size:24px;margin:0 0 4px">Sophia Commons: the week of ${esc(d.weekOf)}</h2>`;
-  h += `<p ${MUTED}>New videos, upcoming events and new listings from the anthroposophical world.</p>`;
+  const parts = [
+    d.videos.length ? plural(d.videos.length, "new video", "new videos") : "",
+    d.events.length ? plural(d.events.length, "event coming up", "events coming up") : "",
+    d.listings.length ? plural(d.listings.length, "new place in the directory", "new places in the directory") : "",
+  ].filter(Boolean);
+  let h = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${INK}">`;
+  h += `<p style="font-family:Georgia,serif;font-size:19px;line-height:1.45;margin:0 0 6px;color:${INK}">This week across the anthroposophical world</p>`;
+  h += `<p style="margin:0;color:#3A332A">${parts.length ? `Here's what's new: ${parts.join(", ").replace(/, ([^,]*)$/, " and $1")}. Videos in other languages are marked; their titles and summaries are translated.` : "A quiet week."}</p>`;
 
-  if (d.videos.length) {
-    h += `<h3 ${H3}>New videos</h3><ul style="padding:0;margin:0">`;
-    for (const v of d.videos) {
-      h += `<li ${LI}><a href="${esc(v.url)}" ${LINK}>${esc(v.title)}</a><br><span ${MUTED}>${esc(v.channel)} &middot; ${esc(shortDate(v.published_at))}</span>`;
-      if (v.summary) h += `<br><span style="font-size:14px">${esc(v.summary)}</span>`;
-      h += `</li>`;
-    }
-    h += `</ul>`;
-  }
   if (d.events.length) {
-    h += `<h3 ${H3}>Coming up</h3><ul style="padding:0;margin:0">`;
-    for (const e of d.events) {
-      const where = e.is_online ? "Online" : (e.location_name || [e.city, e.country].filter(Boolean).join(", "));
-      h += `<li ${LI}><strong style="color:#7F6116">${esc(shortDate(e.start_date))}</strong> &nbsp;<a href="${SITE}/event/${esc(e.id)}" ${LINK}>${esc(e.title)}</a>`;
-      if (where) h += `<br><span ${MUTED}>${esc(where)}</span>`;
-      h += `</li>`;
-    }
-    h += `</ul><p style="font-size:14px"><a href="${SITE}/events" ${LINK}>See the full calendar</a></p>`;
+    h += `<h3 ${H3}>Coming up</h3>` + d.events.map(eventHtml).join("");
+    h += `<p style="margin:4px 0 0;font-size:14px"><a href="${SITE}/events" ${LINK}>See the full calendar &rarr;</a></p>`;
   }
+  if (d.videos.length) h += `<h3 ${H3}>New videos</h3>` + d.videos.map(videoHtml).join("");
   if (d.listings.length) {
-    h += `<h3 ${H3}>New in the directory</h3><ul style="padding:0;margin:0">`;
-    for (const l of d.listings) {
-      const where = [l.city, l.country].filter(Boolean).join(", ");
-      h += `<li ${LI}><a href="${SITE}/listing/${esc(l.id)}" ${LINK}>${esc(l.organization_name)}</a>${where ? `<br><span ${MUTED}>${esc(where)}</span>` : ""}</li>`;
-    }
-    h += `</ul>`;
+    h += `<h3 ${H3}>New in the directory</h3>` + d.listings.map(listingHtml).join("");
   }
   if (d.news.length) {
-    h += `<h3 ${H3}>News</h3><ul style="padding:0;margin:0">`;
-    for (const n of d.news) {
-      h += `<li ${LI}><a href="${SITE}/article/${esc(n.id)}" ${LINK}>${esc(n.title)}</a>${n.excerpt ? `<br><span style="font-size:14px">${esc(shortDescription(n.excerpt, 160))}</span>` : ""}</li>`;
-    }
-    h += `</ul>`;
+    h += `<h3 ${H3}>News</h3>` + d.news.map((n) => `<div ${ITEM}><a href="${SITE}/article/${esc(n.id)}" ${LINK}>${esc(n.title)}</a>`
+      + (n.excerpt ? `<div ${BODY}>${esc(shortDescription(n.excerpt, 160))}</div>` : "") + `</div>`).join("");
   }
   if (!d.videos.length && !d.events.length && !d.listings.length && !d.news.length) {
-    h += `<p>A quiet week. Browse the <a href="${SITE}/directory" ${LINK}>directory</a> or the <a href="${SITE}/events" ${LINK}>calendar</a>.</p>`;
+    h += `<p>Browse the <a href="${SITE}/directory" ${LINK}>directory</a> or the <a href="${SITE}/events" ${LINK}>calendar</a>.</p>`;
   }
-  h += `<p style="margin-top:28px"><a href="${SITE}" ${LINK}>Visit Sophia Commons</a></p></div>`;
+  h += `<div style="margin:32px 0 4px;text-align:center"><a href="${SITE}" style="display:inline-block;background:${GOLD_FILL};color:${INK};font-weight:bold;text-decoration:none;padding:12px 26px;border-radius:999px">Explore Sophia Commons</a></div>`;
+  h += `</div>`;
   return h;
 }
 

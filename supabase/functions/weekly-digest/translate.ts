@@ -14,10 +14,38 @@ export interface Translated {
 
 const PROMPT = `You translate short items for an English-language newsletter about anthroposophy (Rudolf Steiner, Waldorf education, biodynamic farming, eurythmy, the Christian Community).
 
-You get a JSON array of strings. Return ONLY a JSON array of the same length, in the same order, where each item is {"en": "...", "language": "..."}:
+You get a JSON array of strings. Return the translations with the translations tool: an array of the same length, in the same order, where each item is {"en": "...", "language": "..."}:
 - "en": the text in natural English. If it is already English, copy it unchanged. Keep names of people, organizations, places and book titles as they are; you may add a short English gloss in parentheses for a book or lecture title.
 - "language": the original language as an English word, e.g. "English", "German", "Spanish", "Russian".
 Use plain keyboard punctuation only: straight quotes, regular hyphens, no em or en dashes.`;
+
+const ATTEMPTS = 2;
+const TOOL = {
+  name: "translations",
+  description: "Return one translation per input string, same order and same count.",
+  input_schema: {
+    type: "object",
+    properties: {
+      items: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: { en: { type: "string" }, language: { type: "string" } },
+          required: ["en", "language"],
+        },
+      },
+    },
+    required: ["items"],
+  },
+};
+
+// Read a Messages API reply: the forced tool call's input, or (older replies) a JSON array in text.
+export function fromReply(body: unknown, expected: number): Translated[] | null {
+  const content = ((body as { content?: unknown[] })?.content ?? []) as { type?: string; input?: { items?: unknown }; text?: string }[];
+  const call = content.find((c) => c.type === "tool_use");
+  if (call) return parseTranslations(JSON.stringify(call.input?.items ?? null), expected);
+  return parseTranslations(content.map((c) => c.text ?? "").join(""), expected);
+}
 
 // Parse the model's reply; returns null unless it is an array of the expected length and shape.
 export function parseTranslations(reply: string, expected: number): Translated[] | null {
@@ -49,25 +77,32 @@ export async function translateToEnglish(
   const idx = texts.map((t, i) => (t.trim() ? i : -1)).filter((i) => i !== -1);
   if (!idx.length) return { items: keep(texts), ok: true };
   if (!apiKey) return { items: keep(texts), ok: false, reason: "ANTHROPIC_API_KEY is not set" };
+  // The reply is forced through a tool schema, so the API hands back parsed JSON instead of text
+  // that may not parse. One retry covers a reply with the wrong number of items.
+  let reason = "translation reply was not usable";
   try {
-    const res = await fetchFn(API_URL, {
-      method: "POST",
-      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({
-        model: TRANSLATE_MODEL,
-        max_tokens: 8000,
-        system: PROMPT,
-        messages: [{ role: "user", content: JSON.stringify(idx.map((i) => texts[i])) }],
-      }),
-    });
-    if (!res.ok) return { items: keep(texts), ok: false, reason: `translation API returned ${res.status}` };
-    const body = await res.json();
-    const reply = (body?.content ?? []).map((c: { text?: string }) => c.text ?? "").join("");
-    const got = parseTranslations(reply, idx.length);
-    if (!got) return { items: keep(texts), ok: false, reason: "translation reply was not usable" };
-    const items = keep(texts);
-    idx.forEach((orig, j) => { items[orig] = got[j]; });
-    return { items, ok: true };
+    for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
+      const res = await fetchFn(API_URL, {
+        method: "POST",
+        headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+        body: JSON.stringify({
+          model: TRANSLATE_MODEL,
+          max_tokens: 8000,
+          system: PROMPT,
+          tools: [TOOL],
+          tool_choice: { type: "tool", name: TOOL.name },
+          messages: [{ role: "user", content: JSON.stringify(idx.map((i) => texts[i])) }],
+        }),
+      });
+      if (!res.ok) { reason = `translation API returned ${res.status}`; if (res.status < 500) break; continue; }
+      const body = await res.json();
+      const got = fromReply(body, idx.length);
+      if (!got) continue;
+      const items = keep(texts);
+      idx.forEach((orig, j) => { items[orig] = got[j]; });
+      return { items, ok: true };
+    }
+    return { items: keep(texts), ok: false, reason };
   } catch (e) {
     return { items: keep(texts), ok: false, reason: `translation failed: ${(e as Error).message}` };
   }

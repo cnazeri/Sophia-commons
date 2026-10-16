@@ -8,6 +8,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { emailShell } from "./email_shell.ts";
 
 // Server key: the new secret key Supabase injects (SUPABASE_SECRET_KEYS, JSON by key name),
 // falling back to the legacy service_role key until legacy keys are disabled.
@@ -36,12 +37,6 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
-}
-
-function unsubscribeFooter(token: string) {
-  return `<p style="margin-top:32px;padding-top:12px;border-top:1px solid #E8E2DA;font-size:12px;color:#6F665B;font-family:Arial,sans-serif">
-You're receiving this because you subscribed at sophiacommons.org.
-<a href="${SITE}/newsletter/unsubscribe?t=${token}" style="color:#7F6116">Unsubscribe</a></p>`;
 }
 
 function sleep(ms: number) {
@@ -92,6 +87,8 @@ serve(async (req: Request) => {
   let subject: string;
   let html_content: string;
   let newsId: string | null = null;
+  let preheader = "";
+  let kicker = "";
 
   try {
     const body = await req.json();
@@ -108,11 +105,13 @@ serve(async (req: Request) => {
     const { data: claimed, error: claimError } = await supabaseClient.from("news")
       .update({ emailed_at: new Date().toISOString() })
       .eq("id", newsId).is("emailed_at", null).contains("tags", ["weekly-digest"])
-      .select("id, title, body, email_subject").maybeSingle();
+      .select("id, title, body, email_subject, excerpt").maybeSingle();
     if (claimError) return jsonResponse({ error: "Could not load digest: " + claimError.message }, 500);
     if (!claimed) return jsonResponse({ error: "This digest was already emailed (or is not a weekly digest)." }, 409);
     subject = (claimed.email_subject || claimed.title || "").trim();
     html_content = (claimed.body || "").trim();
+    preheader = (claimed.excerpt || "").trim();
+    kicker = "Weekly digest \u00b7 " + subject.replace(/^.*?:\s*/, "");
   }
 
   if (!subject || !html_content) {
@@ -151,7 +150,8 @@ serve(async (req: Request) => {
       to: [subscriber.email],
       subject: subject,
       // Every newsletter carries a one-click unsubscribe link (required by CAN-SPAM / GDPR)
-      html: html_content + unsubscribeFooter(subscriber.unsubscribe_token),
+      html: emailShell({ subject, preheader, kicker, body: html_content,
+        unsubscribeUrl: `${SITE}/newsletter/unsubscribe?t=${subscriber.unsubscribe_token}` }),
       headers: {
         "List-Unsubscribe": `<${SITE}/newsletter/unsubscribe?t=${subscriber.unsubscribe_token}>, <mailto:hello@sophiacommons.org?subject=unsubscribe>`,
       },

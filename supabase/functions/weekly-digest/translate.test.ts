@@ -1,7 +1,7 @@
 // Run: node --test translate.test.ts   (Node 23.6+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { englishOnly, parseTranslations, translateToEnglish } from "./translate.ts";
+import { englishOnly, fromReply, parseTranslations, translateToEnglish } from "./translate.ts";
 
 const digest = {
   weekOf: "October 19, 2026",
@@ -63,4 +63,10 @@ test("parseTranslations rejects wrong shapes", () => {
   assert.equal(parseTranslations("not json", 1), null);
   assert.equal(parseTranslations('[{"en":""}]', 1), null);
   assert.deepEqual(parseTranslations('Here: [{"en":"Hi","language":"German"}]', 1), [{ en: "Hi", language: "German" }]);
+});
+
+test("fromReply reads the forced tool call and rejects a wrong count", () => {
+  const body = { content: [{ type: "tool_use", name: "translations", input: { items: [{ en: "Karma", language: "German" }] } }] };
+  assert.deepEqual(fromReply(body, 1), [{ en: "Karma", language: "German" }]);
+  assert.equal(fromReply(body, 2), null);
 });
