@@ -15,7 +15,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
   ],
   "en": [
    "When out of cosmic distances",
-   "The sun speaks to the human mind",
+   "The sun speaks to the senses of the human being",
    "And gladness from the depths of soul",
    "Unites with light in looking,",
    "Then from the shell of selfhood",
@@ -79,8 +79,8 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
    "So speaks feeling,",
    "Which in the sunlit world",
    "Unites with floods of light;",
-   "It wants to give warmth",
-   "To thinking, toward clarity,",
+   "It wants to give to thinking",
+   "Warmth along with clarity,",
    "And bind the human being and the world",
    "Firmly in oneness."
   ]
@@ -138,7 +138,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
   "en": [
    "My self threatens to escape,",
    "Drawn strongly by the light of the world.",
-   "Now, my intuition, step in",
+   "Now, my presentiment, step in",
    "With strength into your rights,",
    "Take for me the place of thinking's power,",
    "Which in the semblance of the senses",
@@ -178,12 +178,12 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
    "Verliere dich, um dich zu finden."
   ],
   "en": [
-   "Forgetting the self-will of my will,",
+   "Forgetting my will's own separateness,",
    "The world's warmth, announcing summer,",
    "Fills my spirit and soul;",
    "To lose myself in the light",
-   "Is what spirit beholding asks of me,",
-   "And intuition tells me with strength:",
+   "Spirit beholding commands of me,",
+   "And presentiment tells me with strength:",
    "Lose yourself, in order to find yourself."
   ]
  },
@@ -222,7 +222,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
    "In this hour of the sun",
    "It is for you to grasp this wise teaching:",
    "Given over to the beauty of the world,",
-   "To live through it, feeling yourself within:",
+   "To feel yourself and live fully within yourself:",
    "The human I can lose itself",
    "And find itself in the world's I."
   ]
@@ -240,7 +240,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
   "en": [
    "The radiant beauty of the world",
    "Compels me, from the depths of soul,",
-   "To set free the god-given powers of my own life",
+   "To set free the divine powers of my own life",
    "For flight into the world;",
    "To leave myself behind,",
    "Trusting, seeking myself only",
@@ -279,8 +279,8 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
    "I lost the drive of my own being;",
    "The dream of thought seemed,",
    "Numbing, to rob me of my self,",
-   "Yet already, awakening, there draws near",
-   "In the senses' shining the thinking of the world."
+   "Yet already, awakening, there draws near to me,",
+   "In the semblance of the senses, the thinking of the world."
   ]
  },
  "15": {
@@ -313,7 +313,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
   ],
   "en": [
    "To keep the spirit's gift within",
-   "Is my intuition's strict command,",
+   "My presentiment strictly bids me,",
    "So that, ripening, the gifts of God,",
    "Bearing fruit in the soul's ground,",
    "Bring forth the fruits of selfhood."
@@ -401,7 +401,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
    "I feel a power not my own, bearing fruit,",
    "Growing stronger and giving me to myself;",
    "I feel the seed ripening",
-   "And intuition weaving, full of light,",
+   "And presentiment weaving, full of light,",
    "Within, at the power of selfhood."
   ]
  },
@@ -514,7 +514,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
   ],
   "en": [
    "To press into the depths of my being",
-   "Stirs a longing full of intuition",
+   "Stirs a longing full of presentiment",
    "That I find myself, in looking at myself,",
    "As the gift of the summer sun, which as a seed",
    "Lives on, warming, in the mood of autumn",
@@ -538,7 +538,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
    "From the power of the soul's sun",
    "To solve the riddles of life,",
    "And grant fulfilment to many a wish",
-   "Whose wings hope had already let fall."
+   "Whose wings hope had already lamed."
   ]
  },
  "29": {
@@ -553,7 +553,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
   "en": [
    "To kindle the shining of thinking",
    "Strongly within myself,",
-   "Reading what I have lived through with meaning",
+   "Finding the meaning in what I have lived through",
    "From the world spirit's spring of strength,",
    "Is now my summer inheritance,",
    "Is autumn's rest and also winter's hope."
@@ -700,7 +700,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
   ],
   "en": [
    "To carry spirit light into the world's winter night",
-   "Is my heart's blessed striving,",
+   "The impulse of my heart strives blissfully,",
    "So that shining seeds of soul",
    "Take root in the ground of the world,",
    "And the word of God, in the darkness of the senses,",
@@ -723,7 +723,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
    "In the brightness of the heart",
    "The holy word of the world has begotten",
    "The heavenly fruit of hope,",
-   "Which grows, rejoicing, into cosmic distances",
+   "That grows in jubilation toward the far reaches of the world",
    "From the divine ground of my being."
   ]
  },
@@ -812,7 +812,7 @@ export const VERSES: Record<number, { de: string[]; en: string[] }> = {
    "Through the forces of the heart",
    "It gives the world's appearance the powers of existence;",
    "Growing strong, the soul's fire within the human being",
-   "Stands against the cold of the world."
+   "Defies the cold of the world."
   ]
  },
  "44": {
