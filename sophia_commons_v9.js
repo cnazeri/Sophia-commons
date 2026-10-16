@@ -129,10 +129,8 @@ function renderDirectoryDetail(d) {
   if (d.category) badges += '<span class="detail-badge category">' + esc(d.category) + '</span>';
 
   var meta = '';
-  if (d.address) meta += '<span>&#128205; ' + esc(d.address) + ', ' + esc(d.location || '') + '</span>';
-  else if (d.location) meta += '<span>&#128205; ' + esc(d.location) + '</span>';
+  if (d.location) meta += '<span>&#128205; ' + esc(d.location) + '</span>';
   if (d.country) meta += '<span>&#127758; ' + esc(d.country) + '</span>';
-  if (d.phone) meta += '<span>&#9742; ' + esc(d.phone) + '</span>';
 
   var tags = '';
   if (d.tags && d.tags.length) {
@@ -168,6 +166,7 @@ function renderDirectoryDetail(d) {
     + (d.phone ? '<p><strong>' + t('detail.phone') + ':</strong> <a href="tel:' + esc(d.phone) + '">' + esc(d.phone) + '</a></p>' : '')
     + (d.email ? '<p><strong>' + t('detail.email') + ':</strong> <a href="mailto:' + esc(d.email) + '">' + esc(d.email) + '</a></p>' : '')
     + (d.website_url ? '<p><strong>' + t('detail.website') + ':</strong> <a href="' + escUrl(d.website_url) + '" target="_blank">' + esc(d.website_url.replace('https://','').replace('http://','')) + '</a></p>' : '')
+    + (d.facebook_url ? '<p><strong>Facebook:</strong> <a href="' + escUrl(d.facebook_url) + '" target="_blank" rel="noopener">' + esc(d.facebook_url.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, '')) + '</a></p>' : '')
     + '<p><strong>' + t('detail.status') + ':</strong> ' + (d.is_verified ? '<span style="color:var(--sage);font-weight:700;">&#10003; ' + t('detail.verified') + '</span>' : t('detail.listed')) + '</p>'
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'directory\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + (typeof claimBoxHtml === 'function' ? claimBoxHtml(d) : '')
@@ -847,7 +846,7 @@ function _dirListShell(entries, q) {
     +   '<input type="search" id="cat-filter" aria-label="' + esc(t('dir.filter_aria', 'Filter these listings')) + '" placeholder="' + esc(t('dir.filter_placeholder', 'Filter {count} listings by name, place or topic').replace('{count}', entries.length)) + '" value="' + esc(q) + '" oninput="_applyCatFilter(this.value)">'
     +   '<div class="dir-near" role="search">'
     +     '<label for="cat-near" class="sr-only">' + esc(t('dir.near_label', 'Town or postcode')) + '</label>'
-    +     '<input type="text" id="cat-near" autocomplete="postal-code" placeholder="' + esc(t('dir.near_placeholder', 'Town or postcode, to sort by distance')) + '" onkeydown="if(event.key===\'Enter\'){_catNearSearch(this.value);}">'
+    +     '<input type="text" id="cat-near" autocomplete="postal-code" placeholder="' + esc(t('dir.near_placeholder', 'Town or postcode')) + '" onkeydown="if(event.key===\'Enter\'){_catNearSearch(this.value);}">'
     +     '<button type="button" class="dir-near-btn" onclick="_catNearSearch(document.getElementById(\'cat-near\').value)">' + esc(t('dir.near_btn', 'Find nearest')) + '</button>'
     +     '<button type="button" class="dir-near-btn dir-near-geo" onclick="_catNearGeo()">' + esc(t('dir.near_geo', 'Use my location')) + '</button>'
     +   '</div>'
@@ -1277,6 +1276,7 @@ function showSec(id, skipPush) {
   if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); }
   if (id === 'books' && typeof renderTop50Books === 'function') renderTop50Books();
   if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
+  if (id === 'podcasts' && typeof renderFacebookPages === 'function') renderFacebookPages();
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   if (_toNews) setTimeout(function() { var n = document.getElementById('sec-news'); if (n) n.scrollIntoView({ block: 'start' }); }, 50);
@@ -1792,7 +1792,7 @@ async function deleteMsg(msgId, btn) {
   try {
     var res = await _sb.from('chat_messages').delete().eq('id', msgId).select('id');
     if (res.error || !res.data || !res.data.length) {
-      alert('This message could not be deleted.');
+      scNotify('This message could not be deleted.');
       return;
     }
     var row = btn.closest('.msg');
@@ -1854,6 +1854,28 @@ function safeUrl(u) {
   } catch (e) { return '#'; }
 }
 function escUrl(u) { return esc(safeUrl(u)); }
+
+// On-page message in place of window.alert(): does not block the page, is read out by screen
+// readers (role=status), closes itself after a while and can be dismissed.
+var SC_NOTIFY_MS = 7000;
+function scNotify(msg) {
+  if (!msg) return;
+  var box = document.getElementById('sc-notify');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'sc-notify';
+    box.setAttribute('role', 'status');
+    box.setAttribute('aria-live', 'polite');
+    document.body.appendChild(box);
+  }
+  var item = document.createElement('div');
+  item.className = 'sc-notify-item';
+  item.innerHTML = '<span>' + esc(String(msg)) + '</span><button type="button" aria-label="' + esc(t('common.close', 'Close')) + '">&times;</button>';
+  var remove = function () { if (item.parentNode) item.parentNode.removeChild(item); };
+  item.querySelector('button').onclick = remove;
+  box.appendChild(item);
+  setTimeout(remove, SC_NOTIFY_MS);
+}
 // Escape a value for use inside a single-quoted JS string within an HTML attribute.
 function escJs(s) {
   return esc(String(s === null || s === undefined ? '' : s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' '));
@@ -2302,12 +2324,12 @@ async function submitMemorial() {
   const name = document.getElementById('mem-name').value.trim();
   const bio = document.getElementById('mem-bio').value.trim();
   if (!name || !bio) {
-    alert(t('error.fill_name_tribute'));
+    scNotify(t('error.fill_name_tribute'));
     return;
   }
   var memEmail = (document.getElementById('mem-email').value || '').trim();
   if (memEmail && !_isEmail(memEmail)) {   // validate before uploading the photo (avoids orphaned uploads)
-    alert('Please enter a valid email address.');
+    scNotify('Please enter a valid email address.');
     return;
   }
 
@@ -2373,7 +2395,7 @@ async function submitMemorial() {
   }
   if (!memOk) {
     // Previously the success message showed even when nothing was saved.
-    alert('Sorry, the tribute could not be submitted. Please try again, or email hello@sophiacommons.org.');
+    scNotify('Sorry, the tribute could not be submitted. Please try again, or email hello@sophiacommons.org.');
     return;
   }
 
@@ -2766,7 +2788,7 @@ function _normalizeUrl(v) {
 }
 function _formMsg(id, msg, ok) {
   var el = document.getElementById(id);
-  if (!el) { if (msg && !ok) alert(msg); return; }
+  if (!el) { if (msg && !ok) scNotify(msg); return; }
   el.textContent = msg || '';
   el.style.display = msg ? 'block' : 'none';
   el.style.color = ok ? 'var(--verified)' : 'var(--error)';
@@ -4087,8 +4109,9 @@ function renderHomeUpcoming() {
     box.innerHTML = '<div class="empty-note">' + esc(t('events.none_yet', 'No upcoming events yet.')) + ' <a href="#" onclick="showSec(\'events\');showEventForm();return false;">' + esc(t('events.submit_one', 'Submit one')) + '</a></div>';
     return;
   }
-  var feat = live.filter(function(e) { return e.featured; })[0];
-  var rest = live.filter(function(e) { return e !== feat; });
+  var slides = _featSlides(live);
+  var feat = slides[0];
+  var rest = live.filter(function(e) { return slides.indexOf(e) === -1; });
   // Happening now: started on or before today and not yet over (multi-day conferences, tours)
   var now = rest.filter(function(e) { return e.date <= today; }).slice(0, 4);
   var next = rest.filter(function(e) { return e.date > today; }).slice(0, now.length ? 4 : 6);
@@ -4099,12 +4122,117 @@ function renderHomeUpcoming() {
   // The deploy writes the featured banner into the page so it shows with the first paint. Keep that
   // node (same event, English) rather than redrawing it, which phones would count as a late paint.
   var kept = feat && (typeof SC_I18N === 'undefined' || SC_I18N.getLang() === 'en') ? box.querySelector('.feat-ev[data-id="' + feat.id + '"]') : null;
+  if (kept && kept.closest('.feat-slider')) kept = null;   // a re-render rebuilds the slider
   if (kept) {
     Array.prototype.slice.call(box.children).forEach(function(c) { if (c !== kept) c.remove(); });
     kept.insertAdjacentHTML('afterend', gridHtml);
   } else {
     box.innerHTML = (feat ? _featBannerHtml(feat) : '') + gridHtml;
   }
+  if (slides.length > 1) _mountFeatSlider(box.querySelector('.feat-ev'), slides);
+}
+
+// ── Featured events slider ──
+// Featured events first, then the next upcoming events that have a picture, up to FEAT_MAX.
+// The first slide is the banner already on the page (no repaint); the rest are added beside it.
+// Moves every FEAT_INTERVAL_MS; stops on hover, keyboard focus, the pause button, or when the
+// visitor prefers reduced motion. Swipe works on touch screens.
+var FEAT_MAX = 6;
+var FEAT_INTERVAL_MS = 6500;
+var _featTimer = null;
+
+function _featSlides(live) {
+  var featured = live.filter(function(e) { return e.featured; });
+  var pictured = live.filter(function(e) { return !e.featured && e.img && e.img.src; });
+  return featured.concat(pictured).slice(0, FEAT_MAX);
+}
+
+function _mountFeatSlider(first, slides) {
+  if (!first || first.closest('.feat-slider')) return;
+  var n = slides.length;
+  var label = function(i) { return (i + 1) + ' / ' + n; };
+  var slider = document.createElement('div');
+  slider.className = 'feat-slider';
+  slider.setAttribute('role', 'region');
+  slider.setAttribute('aria-roledescription', 'carousel');
+  slider.setAttribute('aria-label', t('home.featured_events', 'Featured events'));
+  first.parentNode.insertBefore(slider, first);
+  var view = document.createElement('div');
+  view.className = 'feat-view';
+  var track = document.createElement('div');
+  track.className = 'feat-track';
+  view.appendChild(track);
+  slider.appendChild(view);
+  track.appendChild(first);
+  track.insertAdjacentHTML('beforeend', slides.slice(1).map(_featBannerHtml).join(''));
+  Array.prototype.forEach.call(track.children, function(el, i) {
+    el.setAttribute('role', 'group');
+    el.setAttribute('aria-roledescription', 'slide');
+    el.setAttribute('aria-label', label(i));
+    var tag = el.querySelector('.etag');
+    if (tag && i > 0 && !slides[i].featured) tag.textContent = t('home.coming_up', 'Coming up');
+  });
+  var dots = slides.map(function(ev, i) {
+    return '<button type="button" class="feat-dot" aria-label="' + esc(label(i) + ': ' + ev.title) + '" onclick="featGo(' + i + ', true)"></button>';
+  }).join('');
+  slider.insertAdjacentHTML('beforeend', '<div class="feat-ctrl">'
+    + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.previous', 'Previous')) + '" onclick="featGo(_featIdx - 1, true)">&#8249;</button>'
+    + '<div class="feat-dots">' + dots + '</div>'
+    + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.next', 'Next')) + '" onclick="featGo(_featIdx + 1, true)">&#8250;</button>'
+    + '<button type="button" class="feat-pause" aria-pressed="false" onclick="featTogglePause()">' + esc(t('common.pause', 'Pause')) + '</button>'
+    + '</div>');
+  _featIdx = 0;
+  _featPaused = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  _featSyncPause();
+  featGo(0, false);
+  slider.addEventListener('mouseenter', function() { _featHold = true; });
+  slider.addEventListener('mouseleave', function() { _featHold = false; });
+  slider.addEventListener('focusin', function() { _featHold = true; });
+  slider.addEventListener('focusout', function() { _featHold = false; });
+  var x0 = null;
+  view.addEventListener('touchstart', function(e) { x0 = e.touches[0].clientX; }, { passive: true });
+  view.addEventListener('touchend', function(e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    x0 = null;
+    if (Math.abs(dx) > 40) featGo(_featIdx + (dx < 0 ? 1 : -1), true);
+  }, { passive: true });
+  clearInterval(_featTimer);
+  _featTimer = setInterval(function() {
+    if (!_featPaused && !_featHold && !document.hidden && document.body.contains(slider)) featGo(_featIdx + 1, false);
+  }, FEAT_INTERVAL_MS);
+}
+
+var _featIdx = 0, _featPaused = false, _featHold = false;
+
+function featGo(i, byUser) {
+  var slider = document.querySelector('.feat-slider');
+  if (!slider) return;
+  var slides = slider.querySelectorAll('.feat-track > .feat-ev');
+  var n = slides.length;
+  _featIdx = ((i % n) + n) % n;
+  slider.querySelector('.feat-track').style.transform = 'translateX(' + (-100 * _featIdx) + '%)';
+  Array.prototype.forEach.call(slides, function(el, k) {
+    var on = k === _featIdx;
+    el.setAttribute('aria-hidden', on ? 'false' : 'true');
+    Array.prototype.forEach.call(el.querySelectorAll('a, button'), function(a) { a.tabIndex = on ? 0 : -1; });
+  });
+  Array.prototype.forEach.call(slider.querySelectorAll('.feat-dot'), function(d, k) {
+    d.setAttribute('aria-current', k === _featIdx ? 'true' : 'false');
+  });
+  if (byUser) { _featPaused = true; _featSyncPause(); }
+}
+
+function featTogglePause() {
+  _featPaused = !_featPaused;
+  _featSyncPause();
+}
+
+function _featSyncPause() {
+  var b = document.querySelector('.feat-pause');
+  if (!b) return;
+  b.setAttribute('aria-pressed', _featPaused ? 'true' : 'false');
+  b.textContent = _featPaused ? t('common.play', 'Play') : t('common.pause', 'Pause');
 }
 
 function _featBannerHtml(feat) {
@@ -4178,9 +4306,9 @@ function _parseStartTime(txt) {
 async function submitEvent(btn) {
   var title = document.getElementById('esm-title').value.trim();
   var date = document.getElementById('esm-date').value;
-  if (!title || !date) { alert(t('error.fill_title_date')); return; }
+  if (!title || !date) { scNotify(t('error.fill_title_date')); return; }
 
-  if (!sbReady()) { alert('We could not reach the server. Please try again in a moment.'); return; }
+  if (!sbReady()) { scNotify('We could not reach the server. Please try again in a moment.'); return; }
   var userId = window._supabaseUser ? window._supabaseUser.id : null;
   if (!userId) {
     // events.user_id is required, so anonymous submissions always failed silently before.
@@ -4193,14 +4321,14 @@ async function submitEvent(btn) {
 
   var description = document.getElementById('esm-desc').value.trim();
   var endDate = document.getElementById('esm-end').value;
-  if (endDate && endDate < date) { alert('The end date is before the start date.'); return; }
+  if (endDate && endDate < date) { scNotify('The end date is before the start date.'); return; }
   var time = document.getElementById('esm-time').value.trim();
   var cat = document.getElementById('esm-cat').value;
   var loc = document.getElementById('esm-loc').value.trim() || 'TBD';
   var org = document.getElementById('esm-org').value.trim();
   var rawUrl = document.getElementById('esm-url').value.trim();
   var url = _normalizeUrl(rawUrl);
-  if (rawUrl && !url) { alert('Please enter a valid event link (for example https://example.org).'); return; }
+  if (rawUrl && !url) { scNotify('Please enter a valid event link (for example https://example.org).'); return; }
 
   var catToEventType = {
     'study': 'study_group', 'conference': 'conference', 'community': 'other',
@@ -4237,9 +4365,9 @@ async function submitEvent(btn) {
     if (row.status === 'upcoming') {
       calEvents.push({ date: date, title: title, cat: cat, loc: loc, org: org, time: time });
       renderCalendar(); renderEventList(); renderMiniCal(); renderSidebarUpcoming(); updateHeaderCalendar();
-      alert('Thank you! Your event has been added to the calendar.');
+      scNotify('Thank you! Your event has been added to the calendar.');
     } else {
-      alert('Thank you! Your event was submitted and will appear once it has been reviewed.');
+      scNotify('Thank you! Your event was submitted and will appear once it has been reviewed.');
     }
     closeEventForm();
     ['esm-title','esm-date','esm-end','esm-time','esm-loc','esm-org','esm-desc','esm-url'].forEach(function(id) {
@@ -4247,7 +4375,7 @@ async function submitEvent(btn) {
     });
   } catch (e) {
     console.warn('Event submit error:', e);
-    alert('Sorry, the event could not be saved (' + (e.message || 'unknown error') + '). Please try again.');
+    scNotify('Sorry, the event could not be saved (' + (e.message || 'unknown error') + '). Please try again.');
   } finally {
     if (btn) btn.disabled = false;
   }
@@ -4447,7 +4575,7 @@ function rerenderForLang() {
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
   if (id === 'marketplace') { renderMarketplace(); }
-  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); }
+  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); renderFacebookPages(); }
   if (id === 'books') { renderTop50Books(); }
   if (id === 'directory' && !_allDataLoaded) { _loadAllSupabaseData(); }
   if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
@@ -4742,7 +4870,7 @@ async function adminApproveListing(id) {
   try {
     // Fetch the pending listing
     var { data, error } = await _sb.from('listings_pending').select('*').eq('id', id).single();
-    if (error || !data) { alert(t('error.could_not_find_listing')); return; }
+    if (error || !data) { scNotify(t('error.could_not_find_listing')); return; }
     // Insert into directory_entries
     var entry = {
       organization_name: data.name,
@@ -4758,17 +4886,17 @@ async function adminApproveListing(id) {
     var pin = await _geocodePlace(data.location, data.category);
     if (pin) { entry.latitude = pin.lat; entry.longitude = pin.lng; }
     var { data: dirEntry, error: insertErr } = await _sb.from('directory_entries').insert(entry).select('id').single();
-    if (insertErr) { alert('Error adding to directory: ' + insertErr.message); return; }
+    if (insertErr) { scNotify('Error adding to directory: ' + insertErr.message); return; }
     // Update status and link directory entry
     var upd = await _sb.from('listings_pending').update({ status: 'approved', directory_entry_id: dirEntry ? dirEntry.id : null }).eq('id', id);
-    if (upd.error) { alert('Added to directory, but could not update the queue: ' + upd.error.message); }
+    if (upd.error) { scNotify('Added to directory, but could not update the queue: ' + upd.error.message); }
     var card = document.getElementById('admin-listing-' + id);
     if (card) card.remove();
     // Check if empty
     if (!document.querySelector('#admin-listings-list .admin-card')) {
       document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_listings') + '</div>';
     }
-  } catch(e) { alert('Error: ' + e.message); }
+  } catch(e) { scNotify('Error: ' + e.message); }
 }
 
 async function adminRejectListing(id) {
@@ -4779,16 +4907,16 @@ async function adminRejectListing(id) {
     var { data: pending } = await _sb.from('listings_pending').select('directory_entry_id').eq('id', id).single();
     if (pending && pending.directory_entry_id) {
       var del4 = await _sb.from('directory_entries').delete().eq('id', pending.directory_entry_id);
-      if (del4.error) { alert('Error removing the directory entry: ' + del4.error.message); return; }
+      if (del4.error) { scNotify('Error removing the directory entry: ' + del4.error.message); return; }
     }
     var rej = await _sb.from('listings_pending').update({ status: 'rejected' }).eq('id', id);
-    if (rej.error) { alert('Error: ' + rej.error.message); return; }
+    if (rej.error) { scNotify('Error: ' + rej.error.message); return; }
     var card = document.getElementById('admin-listing-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-listings-list .admin-card')) {
       document.getElementById('admin-listings-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_listings') + '</div>';
     }
-  } catch(e) { alert('Error: ' + e.message); }
+  } catch(e) { scNotify('Error: ' + e.message); }
 }
 
 async function loadAdminEvents() {
@@ -4824,13 +4952,13 @@ async function adminApproveEvent(id) {
   if (!sbReady()) return;
   try {
     var ap = await _sb.from('events').update({ status: 'upcoming' }).eq('id', id);
-    if (ap.error) { alert('Error: ' + ap.error.message); return; }
+    if (ap.error) { scNotify('Error: ' + ap.error.message); return; }
     var card = document.getElementById('admin-event-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-events-list .admin-card')) {
       document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_events') + '</div>';
     }
-  } catch(e) { alert('Error: ' + e.message); }
+  } catch(e) { scNotify('Error: ' + e.message); }
 }
 
 async function adminRejectEvent(id) {
@@ -4839,13 +4967,13 @@ async function adminRejectEvent(id) {
   try {
     // 'rejected' is not an allowed events.status value; 'cancelled' hides it from the public calendar.
     var rj = await _sb.from('events').update({ status: 'cancelled' }).eq('id', id);
-    if (rj.error) { alert('Error: ' + rj.error.message); return; }
+    if (rj.error) { scNotify('Error: ' + rj.error.message); return; }
     var card = document.getElementById('admin-event-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-events-list .admin-card')) {
       document.getElementById('admin-events-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_events') + '</div>';
     }
-  } catch(e) { alert('Error: ' + e.message); }
+  } catch(e) { scNotify('Error: ' + e.message); }
 }
 
 async function loadAdminMemorials() {
@@ -4887,23 +5015,23 @@ async function adminApproveMemorial(id) {
   try {
     // Fetch the pending memorial
     var { data: mem, error: fetchErr } = await _sb.from('memorials_pending').select('*').eq('id', id).single();
-    if (fetchErr || !mem) { alert('Error fetching memorial'); return; }
+    if (fetchErr || !mem) { scNotify('Error fetching memorial'); return; }
     // Insert into public memorials table
     var { error: insertErr } = await _sb.from('memorials').insert({
       name: mem.name, years: mem.years, location: mem.location,
       bio: mem.bio, photo_url: mem.photo_url, status: 'approved'
     });
-    if (insertErr) { alert('Error approving: ' + insertErr.message); return; }
+    if (insertErr) { scNotify('Error approving: ' + insertErr.message); return; }
     // Remove from pending
     var del1 = await _sb.from('memorials_pending').delete().eq('id', id);
-    if (del1.error) { alert('Approved, but could not clear it from the queue: ' + del1.error.message); }
+    if (del1.error) { scNotify('Approved, but could not clear it from the queue: ' + del1.error.message); }
     var card = document.getElementById('admin-memorial-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-memorials-list .admin-card')) {
       document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_memorials') + '</div>';
     }
     checkAdminPendingCounts();
-  } catch(e) { alert('Error: ' + e.message); }
+  } catch(e) { scNotify('Error: ' + e.message); }
 }
 
 async function adminRejectMemorial(id) {
@@ -4919,14 +5047,14 @@ async function adminRejectMemorial(id) {
     }
     // Delete from pending table
     var del2 = await _sb.from('memorials_pending').delete().eq('id', id);
-    if (del2.error) { alert('Error: ' + del2.error.message); return; }
+    if (del2.error) { scNotify('Error: ' + del2.error.message); return; }
     var card = document.getElementById('admin-memorial-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-memorials-list .admin-card')) {
       document.getElementById('admin-memorials-list').innerHTML = '<div class="admin-empty">' + t('admin.no_pending_memorials') + '</div>';
     }
     checkAdminPendingCounts();
-  } catch(e) { alert('Error: ' + e.message); }
+  } catch(e) { scNotify('Error: ' + e.message); }
 }
 
 // Load admin data when admin section is shown
@@ -5065,9 +5193,9 @@ async function updateReportStatus(reportId, newStatus) {
   if (!sbReady()) return;
   try {
     var { error } = await _sb.from('reports').update({ status: newStatus }).eq('id', reportId);
-    if (error) { alert('Error updating report: ' + error.message); return; }
+    if (error) { scNotify('Error updating report: ' + error.message); return; }
     loadAdminReports(_currentReportFilter);
-  } catch (e) { alert('Error: ' + e.message); }
+  } catch (e) { scNotify('Error: ' + e.message); }
 }
 
 async function dismissReport(reportId) {
@@ -5079,7 +5207,7 @@ async function viewReportedItem(itemType, itemId) {
   if (itemType === 'channel_review') {
     var r = await _sb.from('channel_reviews').select('channel_slug').eq('id', itemId).maybeSingle();
     if (r.data) { showSec('podcasts'); openChannel(r.data.channel_slug); }
-    else alert('That review no longer exists.');
+    else scNotify('That review no longer exists.');
     return;
   }
   showDetail(itemType, itemId);
@@ -5103,17 +5231,17 @@ async function loadNewsletterSubscriberCount() {
 }
 
 async function sendNewsletter() {
-  if (!isAdmin()) { alert(t('error.admin_required')); return; }
-  if (!sbReady()) { alert(t('error.supabase_not_connected')); return; }
+  if (!isAdmin()) { scNotify(t('error.admin_required')); return; }
+  if (!sbReady()) { scNotify(t('error.supabase_not_connected')); return; }
 
   var subject = (document.getElementById('newsletter-subject').value || '').trim();
   var htmlContent = (document.getElementById('newsletter-html').value || '').trim();
 
-  if (!subject) { alert(t('error.enter_subject')); return; }
-  if (!htmlContent) { alert(t('error.enter_html')); return; }
+  if (!subject) { scNotify(t('error.enter_subject')); return; }
+  if (!htmlContent) { scNotify(t('error.enter_html')); return; }
 
   if (_newsletterSubscriberCount === 0) {
-    alert(t('error.no_subscribers'));
+    scNotify(t('error.no_subscribers'));
     return;
   }
 
@@ -5374,11 +5502,11 @@ async function submitComment(postType, postId, parentId) {
     if (parentId) row.parent_id = parentId;
 
     var { error } = await _sb.from('comments').insert(row);
-    if (error) { alert('Error posting comment: ' + error.message); return; }
+    if (error) { scNotify('Error posting comment: ' + error.message); return; }
 
     await loadComments(postType, postId);
   } catch (e) {
-    alert('Error: ' + e.message);
+    scNotify('Error: ' + e.message);
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = parentId ? 'Reply' : 'Comment'; }
   }
@@ -5440,13 +5568,13 @@ async function saveEdit(commentId) {
 
   try {
     var { error } = await _sb.from('comments').update({ content: content, is_edited: true }).eq('id', commentId);
-    if (error) { alert('Error saving edit: ' + error.message); return; }
+    if (error) { scNotify('Error saving edit: ' + error.message); return; }
 
     var section = document.getElementById('comments-section');
     if (section && section.dataset.postType && section.dataset.postId) {
       await loadComments(section.dataset.postType, section.dataset.postId);
     }
-  } catch (e) { alert('Error: ' + e.message); }
+  } catch (e) { scNotify('Error: ' + e.message); }
 }
 
 async function deleteComment(commentId, postType, postId) {
@@ -5455,9 +5583,9 @@ async function deleteComment(commentId, postType, postId) {
 
   try {
     var { error } = await _sb.from('comments').update({ is_deleted: true, content: '' }).eq('id', commentId);
-    if (error) { alert('Error deleting comment: ' + error.message); return; }
+    if (error) { scNotify('Error deleting comment: ' + error.message); return; }
     await loadComments(postType, postId);
-  } catch (e) { alert('Error: ' + e.message); }
+  } catch (e) { scNotify('Error: ' + e.message); }
 }
 
 async function voteComment(commentId, vote, postType, postId) {
@@ -5690,12 +5818,12 @@ async function submitClassifiedListing() {
   var tags = (document.getElementById('cl-tags').value || '').trim();
 
   if (!title || !desc || !listingType) {
-    alert(t('marketplace.error_required'));
+    scNotify(t('marketplace.error_required'));
     return;
   }
 
   var uid = window._supabaseUser ? window._supabaseUser.id : null;
-  if (!uid) { alert(t('error.not_authenticated')); return; }
+  if (!uid) { scNotify(t('error.not_authenticated')); return; }
 
   try {
     var { error } = await _sb.from('listings').insert({
@@ -5715,7 +5843,7 @@ async function submitClassifiedListing() {
     setTimeout(function() { closeListingForm(); document.getElementById('cl-success').style.display = 'none'; }, 2500);
     loadMarketplace();
   } catch(e) {
-    alert(t('marketplace.error_submit') + ': ' + e.message);
+    scNotify(t('marketplace.error_submit') + ': ' + e.message);
   }
 }
 
@@ -6281,7 +6409,7 @@ async function loadNewsQueue() {
 async function newsQueueSet(id, status) {
   if (!isAdmin()) return;
   var r = await _sb.from('news').update({ status: status }).eq('id', id);   // published_at keeps the article's own date
-  if (r.error) { alert('Error: ' + r.error.message); return; }
+  if (r.error) { scNotify('Error: ' + r.error.message); return; }
   var row = document.getElementById('nq-' + id); if (row) row.remove();
   if (status === 'published') loadNewsFromSupabase();
 }
@@ -6290,7 +6418,7 @@ async function newsQueueAll(status) {
   if (!isAdmin()) return;
   if (!confirm((status === 'published' ? 'Publish' : 'Reject') + ' every article in the queue?')) return;
   var r = await _sb.from('news').update({ status: status }).eq('status', 'pending').contains('tags', ['roundup']);
-  if (r.error) { alert('Error: ' + r.error.message); return; }
+  if (r.error) { scNotify('Error: ' + r.error.message); return; }
   loadNewsQueue();
   if (status === 'published') loadNewsFromSupabase();
 }
@@ -6363,8 +6491,8 @@ function _admEmails(which) {
 
 async function copyAdminEmails(which) {
   var emails = _admEmails(which);
-  if (!emails.length) { alert('No emails to copy.'); return; }
-  try { await navigator.clipboard.writeText(emails.join(', ')); alert('Copied ' + emails.length + ' email address(es).'); }
+  if (!emails.length) { scNotify('No emails to copy.'); return; }
+  try { await navigator.clipboard.writeText(emails.join(', ')); scNotify('Copied ' + emails.length + ' email address(es).'); }
   catch (e) { prompt('Copy these addresses:', emails.join(', ')); }
 }
 
@@ -6442,7 +6570,7 @@ async function moderateAdminPost(kind, id) {
   var verb = kind === 'review' ? 'Hide this review' : (kind === 'comment' ? 'Remove this comment (replies stay)' : 'Permanently delete this ' + kind);
   if (!confirm(verb + '?')) return;
   var r = await _sb.rpc('admin_moderate', { post_kind: kind, post_id: id });
-  if (r.error) { alert('Error: ' + r.error.message); return; }
+  if (r.error) { scNotify('Error: ' + r.error.message); return; }
   loadAdminActivity();
 }
 
@@ -6533,7 +6661,7 @@ async function deleteDigest(id) {
     var del = await _sb.from('news').delete().eq('id', id);
     if (del.error) throw del.error;
     loadDigestDrafts();
-  } catch (e) { alert('Error: ' + (e.message || 'Unknown')); }
+  } catch (e) { scNotify('Error: ' + (e.message || 'Unknown')); }
 }
 
 async function loadDigestDrafts() {
@@ -6876,7 +7004,7 @@ async function renderYouTubeChannels() {
   var html = '<div class="listblock"><div class="listblock-head"><h3>' + t('podcasts.youtube_heading', 'YouTube Channels') + '</h3>'
     + '<span class="podcast-count">' + rows.length + ' ' + t('podcasts.channels', 'channels') + '</span></div><div class="listblock-body">'
     + '<div class="yt-toolbar"><span>' + t('podcasts.youtube_note2', 'Curated anthroposophical channels, refreshed daily. Tap a channel\'s stars to see details, rate it and read reviews.') + '</span>'
-    + '<a href="#" onclick="suggestYouTubeChannel();return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>'
+    + '<a href="#" aria-expanded="false" onclick="openSuggest(\'youtube\', this);return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>'
     + '<div class="yt-grid">';
   order.forEach(function (cat) {
     html += '<div class="yt-cat"><h4>' + esc(YT_CATEGORIES[cat] || cat) + ' <span>' + groups[cat].length + '</span></h4>';
@@ -6886,6 +7014,7 @@ async function renderYouTubeChannels() {
   });
   html += '</div></div></div>';
   el.innerHTML = html;
+  updateMediaCount();
 }
 
 function _ytRowHtml(r, rt, isWeek) {
@@ -7035,14 +7164,14 @@ async function saveChannelReview(slug) {
 async function deleteChannelReview(slug, id) {
   if (!confirm(t('channel.delete_confirm', 'Delete your review of this channel?'))) return;
   var r = await _sb.from('channel_reviews').delete().eq('id', id);
-  if (r.error) { alert(t('channel.save_error', 'Could not save. Please try again.')); return; }
+  if (r.error) { scNotify(t('channel.save_error', 'Could not save. Please try again.')); return; }
   _afterReviewChange(slug);
 }
 
 async function hideChannelReview(id, hide) {
   if (!isAdmin()) return;
   var r = await _sb.from('channel_reviews').update({ is_hidden: hide }).eq('id', id).select('channel_slug').single();
-  if (r.error) { alert('Error: ' + r.error.message); return; }
+  if (r.error) { scNotify('Error: ' + r.error.message); return; }
   _afterReviewChange(r.data.channel_slug);
 }
 
@@ -7057,15 +7186,130 @@ async function _afterReviewChange(slug) {
   renderVideoSpotlight();
 }
 
-async function suggestYouTubeChannel() {
-  var url = prompt(t('video.suggest_prompt', 'Paste the YouTube channel link (youtube.com/@...):'));
-  if (!url) return;
-  url = url.trim();
-  if (!/^https:\/\/(www\.|m\.)?youtube\.com\//i.test(url)) { alert(t('video.suggest_invalid', 'Please paste a youtube.com channel link.')); return; }
-  if (!sbReady()) { location.href = 'mailto:hello@sophiacommons.org?subject=' + encodeURIComponent('YouTube channel suggestion') + '&body=' + encodeURIComponent(url); return; }
-  var note = prompt(t('video.suggest_note', 'Anything we should know? (optional)')) || null;
-  var r = await _sb.from('youtube_channels_pending').insert({ url: url, note: note, source: 'visitor' });
-  alert(r.error ? t('video.suggest_dupe', 'Thanks! That channel is already on our list to review.') : t('video.suggest_ok', 'Thank you! We review suggestions within a week.'));
+
+// Podcasts & Media heading: live total of channels, pages and the listed shows.
+function updateMediaCount() {
+  var el = document.getElementById('media-count');
+  var sec = document.getElementById('sec-podcasts');
+  if (!el || !sec) return;
+  var n = sec.querySelectorAll('.yt-row, .lrow').length + (_fbRows ? Math.max(0, _fbRows.length - sec.querySelectorAll('#fb-pages-block .yt-row').length) : 0);
+  el.textContent = n ? ' \u00b7 ' + n.toLocaleString() + ' ' + t('podcasts.media_count', 'channels, pages and shows') : '';
+}
+
+// ── Facebook pages and groups ──
+// Rows come from facebook_pages (loaded by scripts/load_facebook_pages.py). Same row style as
+// the YouTube list; a Pages / Groups filter and a per-category "show more" keep it short.
+var FB_CATEGORIES = {"anthroposophy": "Anthroposophy & Rudolf Steiner", "waldorf": "Waldorf / Steiner Education", "biodynamic": "Biodynamic Farming", "christian_community": "The Christian Community", "camphill": "Camphill & Social Therapy", "eurythmy": "Eurythmy & Arts", "medicine": "Anthroposophic Medicine", "other": "Other"};
+var FB_PER_CAT = 12;
+var _fbRows = null, _fbKind = 'all', _fbOpen = {};
+
+async function _fbFetch() {
+  if (_fbRows) return _fbRows;
+  if (!sbReady()) return [];
+  var rows = [];
+  try {
+    for (var from = 0; ; from += 1000) {
+      var r = await _sb.from('facebook_pages').select('slug,name,url,kind,category,country,language,description,members_text,avatar_url,listing_count,verified').order('name').range(from, from + 999);
+      if (r.error) throw r.error;
+      rows = rows.concat(r.data || []);
+      if (!r.data || r.data.length < 1000) break;
+    }
+  } catch (e) { console.warn('facebook pages unavailable', e); return []; }
+  _fbRows = rows;
+  return rows;
+}
+
+function setFbKind(kind) { _fbKind = kind; renderFacebookPages(); }
+function toggleFbCat(cat) { _fbOpen[cat] = !_fbOpen[cat]; renderFacebookPages(); }
+
+async function renderFacebookPages() {
+  var el = document.getElementById('fb-pages-block');
+  if (!el) return;
+  var all = await _fbFetch();
+  if (!all.length) { el.innerHTML = ''; return; }
+  var rows = all.filter(function (r) { return _fbKind === 'all' || r.kind === _fbKind; });
+  var groups = {};
+  rows.forEach(function (r) { (groups[r.category] = groups[r.category] || []).push(r); });
+  var order = Object.keys(FB_CATEGORIES).filter(function (k) { return groups[k]; }).concat(Object.keys(groups).filter(function (k) { return !FB_CATEGORIES[k]; }));
+  var nGroups = all.filter(function (r) { return r.kind === 'group'; }).length;
+  var chip = function (kind, label) {
+    return '<button type="button" class="fb-chip' + (_fbKind === kind ? ' on' : '') + '" aria-pressed="' + (_fbKind === kind) + '" onclick="setFbKind(\'' + kind + '\')">' + label + '</button>';
+  };
+  var html = '<div class="listblock"><div class="listblock-head"><h3>' + t('podcasts.facebook_heading', 'Facebook Pages & Groups') + '</h3>'
+    + '<span class="podcast-count">' + (all.length - nGroups) + ' ' + t('podcasts.fb_pages', 'pages') + ' &middot; ' + nGroups + ' ' + t('podcasts.fb_groups', 'groups') + '</span></div><div class="listblock-body">'
+    + '<div class="yt-toolbar"><span>' + t('podcasts.facebook_note', 'Facebook pages and groups for anthroposophy, Waldorf education and biodynamic farming, gathered from the organizations\' own websites.') + '</span>'
+    + '<a href="#" aria-expanded="false" onclick="openSuggest(\'facebook\', this);return false;">+ ' + t('podcasts.fb_suggest', 'suggest a page or group') + '</a></div>'
+    + '<div class="fb-chips" role="group" aria-label="' + esc(t('podcasts.fb_filter', 'Show')) + '">'
+    + chip('all', t('podcasts.fb_all', 'All')) + chip('page', t('podcasts.fb_pages_cap', 'Pages')) + chip('group', t('podcasts.fb_groups_cap', 'Groups')) + '</div>'
+    + '<div class="yt-grid">';
+  order.forEach(function (cat) {
+    var list = groups[cat].sort(function (a, b) { return (b.listing_count || 0) - (a.listing_count || 0) || a.name.localeCompare(b.name); });
+    var shown = _fbOpen[cat] ? list : list.slice(0, FB_PER_CAT);
+    html += '<div class="yt-cat"><h4>' + esc(FB_CATEGORIES[cat] || cat) + ' <span>' + list.length + '</span></h4>';
+    shown.forEach(function (r) { html += _fbRowHtml(r); });
+    if (list.length > FB_PER_CAT) {
+      html += '<button type="button" class="fb-more" onclick="toggleFbCat(\'' + escJs(cat) + '\')">'
+        + (_fbOpen[cat] ? t('podcasts.fb_less', 'show fewer') : t('podcasts.fb_more', 'show all') + ' ' + list.length) + '</button>';
+    }
+    html += '</div>';
+  });
+  html += '</div></div></div>';
+  el.innerHTML = html;
+  updateMediaCount();
+}
+
+function _fbRowHtml(r) {
+  var kind = r.kind === 'group' ? t('podcasts.fb_group', 'Group') : t('podcasts.fb_page', 'Page');
+  var meta = [kind, esc(r.country || ''), esc(r.members_text || '')].filter(Boolean).join(' &middot; ');
+  return '<div class="yt-row">'
+    + (r.avatar_url ? '<img class="yt-ava" src="' + escUrl(r.avatar_url) + '" alt="" width="32" height="32" loading="lazy">' : '<span class="yt-ava fb-ava" aria-hidden="true">f</span>')
+    + '<div class="yt-main"><div><a class="ltitle" href="' + escUrl(r.url) + '" target="_blank" rel="noopener" title="' + esc(r.description || '') + '">' + esc(r.name) + '</a>'
+    + (r.verified ? '<span class="lv">&#10003;</span>' : '') + '</div>'
+    + '<span class="lmeta">' + meta + '</span></div></div>';
+}
+
+// Inline "suggest" form shown under a list's toolbar (YouTube channels, Facebook pages).
+// One shared form; the kind decides the table, the URL rule and the wording.
+var SUGGEST_KINDS = {
+  youtube: { table: 'youtube_channels_pending', re: /^https:\/\/(www\.|m\.)?youtube\.com\//i, subject: 'YouTube channel suggestion',
+    label: function () { return t('video.suggest_prompt', 'Paste the YouTube channel link (youtube.com/@...):'); },
+    invalid: function () { return t('video.suggest_invalid', 'Please paste a youtube.com channel link.'); },
+    dupe: function () { return t('video.suggest_dupe', 'Thanks! That channel is already on our list to review.'); } },
+  facebook: { table: 'facebook_pages_pending', re: /^https:\/\/(www\.|m\.)?facebook\.com\//i, subject: 'Facebook page suggestion',
+    label: function () { return t('podcasts.fb_suggest_prompt', 'Paste the Facebook page or group link (facebook.com/...):'); },
+    invalid: function () { return t('podcasts.fb_suggest_invalid', 'Please paste a facebook.com link.'); },
+    dupe: function () { return t('podcasts.fb_suggest_dupe', 'Thanks! That page is already on our list to review.'); } }
+};
+
+function openSuggest(kind, link) {
+  var bar = link.closest('.yt-toolbar');
+  var existing = bar.nextElementSibling;
+  if (existing && existing.classList.contains('suggest-form')) { existing.remove(); link.setAttribute('aria-expanded', 'false'); return; }
+  var k = SUGGEST_KINDS[kind], id = 'suggest-' + kind;
+  bar.insertAdjacentHTML('afterend', '<form class="suggest-form" onsubmit="sendSuggest(\'' + kind + '\', this);return false;" novalidate>'
+    + '<label for="' + id + '-url">' + esc(k.label()) + '</label>'
+    + '<input type="url" id="' + id + '-url" required maxlength="300" placeholder="https://">'
+    + '<label for="' + id + '-note">' + esc(t('video.suggest_note', 'Anything we should know? (optional)')) + '</label>'
+    + '<input type="text" id="' + id + '-note" maxlength="1000">'
+    + '<div class="suggest-actions"><button type="submit">' + esc(t('common.send', 'Send')) + '</button>'
+    + '<p class="suggest-msg" role="status" aria-live="polite"></p></div></form>');
+  link.setAttribute('aria-expanded', 'true');
+  document.getElementById(id + '-url').focus();
+}
+
+async function sendSuggest(kind, form) {
+  var k = SUGGEST_KINDS[kind];
+  var urlEl = form.querySelector('input[type=url]'), msg = form.querySelector('.suggest-msg');
+  var url = urlEl.value.trim(), note = form.querySelector('input[type=text]').value.trim() || null;
+  var say = function (text, bad) { msg.textContent = text; msg.classList.toggle('is-error', !!bad); };
+  if (!k.re.test(url)) { say(k.invalid(), true); urlEl.focus(); return; }
+  if (!sbReady()) { location.href = 'mailto:hello@sophiacommons.org?subject=' + encodeURIComponent(k.subject) + '&body=' + encodeURIComponent(url); return; }
+  var btn = form.querySelector('button');
+  btn.disabled = true;
+  var r = await _sb.from(k.table).insert({ url: url, note: note, source: 'visitor' });
+  btn.disabled = false;
+  say(r.error ? k.dupe() : t('video.suggest_ok', 'Thank you! We review suggestions within a week.'), false);
+  if (!r.error) form.reset();
 }
 
 // ── Top 50 books ──

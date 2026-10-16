@@ -147,6 +147,6 @@ async function loadAdminClaims() {
 async function adminDecideClaim(id, approve) {
   if (!isAdmin()) return;
   var r = await _sb.rpc('admin_decide_claim', { claim_id: id, approve: approve });
-  if (r.error) { alert('Error: ' + r.error.message); return; }
+  if (r.error) { scNotify('Error: ' + r.error.message); return; }
   loadAdminClaims();
 }

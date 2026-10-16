@@ -127,13 +127,13 @@ async function adminBlogSet(id, status) {
   var patch = { status: status };
   if (status === 'published') patch.published_at = new Date().toISOString();
   var r = await _sb.from('blog_posts').update(patch).eq('id', id);
-  if (r.error) { alert('Error: ' + r.error.message); return; }
+  if (r.error) { scNotify('Error: ' + r.error.message); return; }
   loadAdminBlog();
 }
 
 async function adminBlogDelete(id) {
   if (!isAdmin() || !confirm('Delete this article for good?')) return;
   var r = await _sb.from('blog_posts').delete().eq('id', id);
-  if (r.error) { alert('Error: ' + r.error.message); return; }
+  if (r.error) { scNotify('Error: ' + r.error.message); return; }
   var row = document.getElementById('ab-' + id); if (row) row.remove();
 }

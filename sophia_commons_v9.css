@@ -3650,3 +3650,46 @@ footer li a { display: inline-block; padding: 10px 0; }
 /* v1.56: highlight the target of a shared #anchor link */
 .anchor-flash { animation: anchorFlash 2.6s ease-out; }
 @keyframes anchorFlash { 0%, 40% { background: var(--gold-light); box-shadow: 0 0 0 3px var(--gold); } 100% { background: transparent; box-shadow: none; } }
+
+/* Facebook pages & groups (shares the .yt-* row styles) */
+.fb-chips { display: flex; gap: 6px; margin: 0 0 10px; flex-wrap: wrap; }
+.fb-chip { min-height: 44px; padding: 0 14px; border: 1px solid var(--border-subtle); border-radius: 999px; background: transparent; color: var(--text-primary); font: inherit; font-size: 12px; cursor: pointer; }
+.fb-chip.on { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+.fb-ava { display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-family: Arial, sans-serif; color: var(--text-muted); }
+.fb-more { min-height: 44px; padding: 0; border: 0; background: none; color: var(--gold-text); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+/* ══════════════════ v1.60: featured events slider ══════════════════ */
+.feat-slider { border-bottom: 1px solid var(--border-subtle); margin-bottom: 4px; }
+.feat-view { overflow: hidden; }
+.feat-track { display: flex; transition: transform 0.55s cubic-bezier(.22,.61,.36,1); will-change: transform; }
+.feat-track > .feat-ev { flex: 0 0 100%; min-width: 0; border-bottom: 0; margin-bottom: 0; }
+.feat-ctrl { display: flex; align-items: center; gap: 4px; padding: 0 0 6px; }
+.feat-dots { display: flex; align-items: center; }
+.feat-dot { width: 44px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.feat-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); transition: width 0.25s, background 0.25s; }
+.feat-dot[aria-current="true"]::before { width: 20px; border-radius: 4px; background: var(--gold); }
+.feat-arrow { flex: 0 0 44px; width: 44px; height: 44px; border: 1px solid var(--border-subtle); border-radius: 50%; background: var(--surface); color: var(--text-primary); font-size: 20px; line-height: 1; cursor: pointer; transition: background 0.2s; }
+.feat-arrow:hover { background: var(--muted-bg); }
+.feat-arrow:active, .feat-dot:active { transform: scale(0.96); }
+.feat-pause { flex: 0 0 auto; margin-left: auto; min-height: 44px; padding: 0 12px; border: 0; background: none; color: var(--gold-text); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .feat-track { transition: none; } }
+@media (max-width: 480px) { .feat-dot { width: 28px; } .feat-ctrl { gap: 2px; } }
+
+/* On-page messages (replace browser alert boxes) */
+#sc-notify { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 8px; width: min(520px, calc(100vw - 32px)); }
+.sc-notify-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 8px 12px 16px; border-radius: 10px; background: var(--text-primary); color: var(--bg); font-size: 14px; line-height: 1.45; box-shadow: 0 8px 24px rgba(44,36,24,.22); animation: sc-notify-in 0.25s ease-out; }
+.sc-notify-item span { flex: 1; padding-top: 2px; }
+.sc-notify-item button { flex: 0 0 44px; height: 44px; margin: -10px 0; border: 0; background: none; color: inherit; font-size: 22px; cursor: pointer; }
+@keyframes sc-notify-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .sc-notify-item { animation: none; } }
+
+/* Inline suggest form (YouTube channels, Facebook pages) */
+.suggest-form { display: grid; gap: 6px; max-width: 520px; margin: 0 0 14px; padding: 12px 14px; border: 1px solid var(--border-subtle); border-radius: 10px; background: var(--surface); }
+.suggest-form label { font-size: 12px; color: var(--text-secondary); }
+.suggest-form input { min-height: 44px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; font: inherit; font-size: 14px; background: var(--bg); color: var(--text-primary); }
+.suggest-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.suggest-form button[type=submit] { min-height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--gold); color: var(--on-gold); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.suggest-form button[type=submit]:hover { background: var(--gold-hover); }
+.suggest-form button[type=submit]:disabled { opacity: .6; cursor: wait; }
+.suggest-msg { margin: 0; font-size: 13px; color: var(--sage); }
+.suggest-msg.is-error { color: var(--error); }
