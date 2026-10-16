@@ -3788,5 +3788,5 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
    near (measured: about 18% less layout work on a phone's first load). */
 #sec-home > *:nth-child(n+3), #rightbar > .rb-sec:nth-child(n+3), #leftbar > *:nth-child(n+4), footer {
   content-visibility: auto;
-  contain-intrinsic-size: auto 700px;
+  contain-intrinsic-block-size: auto 700px;   /* height only: a width here made phones scroll sideways */
 }
