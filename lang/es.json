@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.64.1",
+  "footer.version": "v1.64.2",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -971,5 +971,6 @@
   "sidebar.category_cc": "la comunidad de cristianos",
   "catmeta.the_christian_community_name": "La Comunidad de Cristianos",
   "events.join_zoom": "Unirse por Zoom",
-  "events.join_online": "Unirse en línea"
+  "events.join_online": "Unirse en línea",
+  "about2.sponsor_p": "Sophia Commons cuenta con el patrocinio del Christ and Michael Foundation Trust, una organización religiosa 508(c)(1)(A)."
 }

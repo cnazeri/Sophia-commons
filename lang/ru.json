@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.64.1",
+  "footer.version": "v1.64.2",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -971,5 +971,6 @@
   "sidebar.category_cc": "христианская община",
   "catmeta.the_christian_community_name": "Христианская община",
   "events.join_zoom": "Подключиться в Zoom",
-  "events.join_online": "Подключиться онлайн"
+  "events.join_online": "Подключиться онлайн",
+  "about2.sponsor_p": "Sophia Commons поддерживается фондом Christ and Michael Foundation Trust, религиозной организацией по статусу 508(c)(1)(A)."
 }

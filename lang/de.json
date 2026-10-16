@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.64.1",
+  "footer.version": "v1.64.2",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -971,5 +971,6 @@
   "sidebar.category_cc": "die christengemeinschaft",
   "catmeta.the_christian_community_name": "Die Christengemeinschaft",
   "events.join_zoom": "Per Zoom teilnehmen",
-  "events.join_online": "Online teilnehmen"
+  "events.join_online": "Online teilnehmen",
+  "about2.sponsor_p": "Sophia Commons wird vom Christ and Michael Foundation Trust getragen, einer glaubensbasierten Organisation nach 508(c)(1)(A)."
 }
