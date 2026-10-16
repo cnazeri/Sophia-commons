@@ -18,6 +18,7 @@ import { soulVerseHtml } from "./soul_calendar.ts";
 const ADMIN_EMAILS = ["cameron.nazeri@gmail.com", "cameron@sophiacommons.org", "admin@sophiacommons.org"];  // keep in sync with sophia_commons_v9.js
 const SITE = "https://sophiacommons.org";
 const FROM_ADDRESS = "Sophia Commons <newsletter@sophiacommons.org>";
+const REPLY_TO = "hello@sophiacommons.org";   // forwarded to the owner's inbox (Namecheap email forwarding)
 const DAY = 86400000;
 
 const corsHeaders = {
@@ -216,7 +217,7 @@ async function notifyAdmins(title: string, counts: string) {
     method: "POST",
     headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      from: FROM_ADDRESS,
+      from: FROM_ADDRESS, reply_to: REPLY_TO,
       to: [ADMIN_EMAILS[0]],
       subject: `Ready for your approval: ${title}`,
       html: `<p>This week's digest draft is ready (${esc(counts)}).</p>

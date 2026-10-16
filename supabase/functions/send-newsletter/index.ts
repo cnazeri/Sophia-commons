@@ -24,6 +24,7 @@ const ADMIN_EMAILS = ["cameron.nazeri@gmail.com", "cameron@sophiacommons.org", "
 const BATCH_SIZE = 100;   // Resend batch endpoint maximum
 const BATCH_DELAY_MS = 600;  // stay under 2 requests/second
 const FROM_ADDRESS = "Sophia Commons <newsletter@sophiacommons.org>";
+const REPLY_TO = "hello@sophiacommons.org";   // forwarded to the owner's inbox (Namecheap email forwarding)
 
 const SITE = "https://sophiacommons.org";
 const corsHeaders = {
@@ -146,7 +147,7 @@ serve(async (req: Request) => {
   for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
     const batch = subscribers.slice(i, i + BATCH_SIZE);
     const payload = batch.map((subscriber) => ({
-      from: FROM_ADDRESS,
+      from: FROM_ADDRESS, reply_to: REPLY_TO,
       to: [subscriber.email],
       subject: subject,
       // Every newsletter carries a one-click unsubscribe link (required by CAN-SPAM / GDPR)

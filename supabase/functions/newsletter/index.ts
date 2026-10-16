@@ -23,6 +23,7 @@ function serviceKey(): string {
 
 const SITE = "https://sophiacommons.org";
 const FROM_ADDRESS = "Sophia Commons <newsletter@sophiacommons.org>";
+const REPLY_TO = "hello@sophiacommons.org";   // forwarded to the owner's inbox (Namecheap email forwarding)
 const RESEND_COOLDOWN_MIN = 60; // don't send another confirmation to the same address within an hour
 const ALLOWED_ORIGINS = [SITE, "https://www.sophiacommons.org", "http://localhost:8080"];
 
@@ -99,7 +100,7 @@ serve(async (req: Request) => {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: FROM_ADDRESS, to: [email], subject: "Confirm your Sophia Commons subscription", html: confirmEmailHtml(confirmUrl) }),
+      body: JSON.stringify({ from: FROM_ADDRESS, reply_to: REPLY_TO, to: [email], subject: "Confirm your Sophia Commons subscription", html: confirmEmailHtml(confirmUrl) }),
     });
     if (!res.ok) return json(req, { error: "send_failed" }, 502);
     return json(req, { ok: true, status: "pending_confirmation" });
