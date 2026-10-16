@@ -48,7 +48,7 @@ export function emailShell({ subject, preheader = "", kicker = "", body, unsubsc
 <tr><td align="center" style="padding:28px 12px">
   <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px">
     <tr><td align="center" style="padding:0 0 20px">
-      <a href="${SITE}" style="text-decoration:none"><img src="${LOGO}" width="44" height="44" alt="" style="display:block;border:0;margin:0 auto 8px"></a>
+      <a href="${SITE}" style="text-decoration:none"><img src="${LOGO}" width="72" height="72" alt="Sophia Commons" style="display:block;border:0;margin:0 auto 10px"></a>
       <div style="font-family:${SERIF};font-size:26px;line-height:1.2;color:${C.ink}">Sophia Commons</div>
       ${kicker ? `<div style="font-family:${SANS};font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${C.gold};margin-top:6px">${esc(kicker)}</div>` : ""}
     </td></tr>
