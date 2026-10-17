@@ -3817,4 +3817,5 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .adm-src-none{color:var(--text-muted,#665);margin:0}
 
 /* Sign-up modal: newsletter note */
-.modal-nl-note { font-size: 13px; color: var(--text-muted, #6F665B); margin: 4px 0 12px; line-height: 1.5; }
+.modal-nl-note { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; font-size: 13px; color: var(--text-muted, #6F665B); margin: 4px 0 12px; line-height: 1.5; cursor: pointer; }
+.modal-nl-note input { width: 18px; height: 18px; margin: 2px 0 0; flex: none; accent-color: var(--gold); cursor: pointer; }

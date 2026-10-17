@@ -569,7 +569,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.68.0",
+  "footer.version": "v1.68.1",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -973,5 +973,5 @@
   "events.join_zoom": "Unirse por Zoom",
   "events.join_online": "Unirse en línea",
   "about2.sponsor_p": "Sophia Commons cuenta con el patrocinio del Christ and Michael Foundation Trust, una organización religiosa 508(c)(1)(A).",
-  "modal.newsletter_note": "Tu cuenta incluye el boletín semanal de Sophia Commons por correo. Puedes darte de baja desde cualquier envío."
+  "modal.newsletter_opt_in": "Envíame el boletín semanal de Sophia Commons por correo. Puedes darte de baja desde cualquier envío."
 }

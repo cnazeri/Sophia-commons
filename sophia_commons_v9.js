@@ -1557,7 +1557,7 @@ function toggleAuthMode(e) {
     document.getElementById('auth-btn').textContent = t('modal.btn_signup');
     document.getElementById('toggle-signup').style.display = 'none';
     document.getElementById('toggle-signin').style.display = 'inline';
-    document.getElementById('modal-nl-note').style.display = 'block';
+    document.getElementById('modal-nl-note').style.display = 'flex';
   } else {
     authMode = 'signin';
     document.getElementById('modal-title').textContent = t('modal.title_signin');
@@ -1594,7 +1594,10 @@ async function doSignIn() {
 
   let result;
   if (authMode === 'signup') {
-    result = await _sb.auth.signUp({ email, password, options: { emailRedirectTo: 'https://sophiacommons.org/' } });
+    // The newsletter flag rides along in user metadata; a database trigger subscribes the member
+    // once they confirm their email (backend/migrations/RUN_THIS_2026-10-16_members_newsletter.sql).
+    const newsletter = document.getElementById('signup-newsletter').checked;
+    result = await _sb.auth.signUp({ email, password, options: { emailRedirectTo: 'https://sophiacommons.org/', data: { newsletter } } });
   } else {
     result = await _sb.auth.signInWithPassword({ email, password });
   }

@@ -1,12 +1,13 @@
 -- =============================================================================
--- Sophia Commons :: Members get the newsletter
+-- Sophia Commons :: Members who tick "Send me the weekly digest" get the newsletter
 -- Run once in Supabase Dashboard -> SQL Editor (idempotent; safe to re-run).
 --
--- When a member confirms their account email, they are added to newsletter_subscribers as
--- confirmed (the account confirmation already proved they own the address, so no second
--- confirmation email). Source is recorded as "member".
+-- The sign-up form stores the checkbox as user metadata (newsletter: true/false). When a
+-- member who ticked it confirms their account email, they are added to newsletter_subscribers
+-- as confirmed (the account confirmation already proved they own the address, so no second
+-- confirmation email). Source is recorded as "member". Unticked = nothing happens.
 -- Anyone who unsubscribed stays unsubscribed: the rule never touches a row with unsubscribed_at.
--- The last block adds the members who already exist.
+-- The members who existed on 2026-10-16 were added by hand, so there is no backfill here.
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION public.subscribe_confirmed_member()
@@ -16,7 +17,8 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF NEW.email IS NULL OR NEW.email_confirmed_at IS NULL THEN
+  IF NEW.email IS NULL OR NEW.email_confirmed_at IS NULL
+     OR coalesce(NEW.raw_user_meta_data ->> 'newsletter', 'false') <> 'true' THEN
     RETURN NEW;
   END IF;
   IF TG_OP = 'UPDATE' AND OLD.email_confirmed_at IS NOT NULL AND OLD.email = NEW.email THEN
@@ -45,19 +47,5 @@ CREATE TRIGGER on_member_email_confirmed
   AFTER INSERT OR UPDATE OF email_confirmed_at, email ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.subscribe_confirmed_member();
 
--- Existing members
-INSERT INTO public.newsletter_subscribers (email, confirmed, confirmed_at, preferences)
-SELECT lower(u.email), true, now(), jsonb_build_object('source', 'member')
-FROM auth.users u
-WHERE u.email IS NOT NULL AND u.email_confirmed_at IS NOT NULL
-ON CONFLICT (email) DO UPDATE
-  SET confirmed = true,
-      confirmed_at = coalesce(newsletter_subscribers.confirmed_at, now()),
-      confirm_token = NULL
-  WHERE newsletter_subscribers.unsubscribed_at IS NULL;
-
--- Check: every confirmed member should now be on the list (expect 0)
-SELECT count(*) AS members_not_subscribed
-FROM auth.users u
-LEFT JOIN public.newsletter_subscribers s ON s.email = lower(u.email)
-WHERE u.email_confirmed_at IS NOT NULL AND s.id IS NULL;
+-- Check: the trigger exists (expect 1 row)
+SELECT tgname FROM pg_trigger WHERE tgname = 'on_member_email_confirmed';
