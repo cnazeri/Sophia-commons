@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════
 //  Sophia Commons - Newsletter opt-in Edge Function
 //  POST /functions/v1/newsletter
-//  Body: { action: "subscribe", email }            -> sends a confirmation email
+//  Body: { action: "subscribe", email, source? }   -> sends a confirmation email (source = which form)
 //        { action: "confirm", token }              -> confirms the subscription
 //        { action: "unsubscribe", token }          -> unsubscribes (token from any newsletter)
 //  Public endpoint (no login). Deploy with:  supabase functions deploy newsletter --no-verify-jwt
@@ -58,13 +58,19 @@ function confirmEmailHtml(confirmUrl: string) {
 // (function instances are short-lived, so an in-memory counter would not hold).
 const CONFIRM_EMAILS_PER_WINDOW = 30;
 const CONFIRM_WINDOW_MS = 10 * 60000;   // 10 minutes
+const SOURCES = ["listing", "event", "home", "sidebar", "footer", "signup_page"];
+
+// Which signup form was used, from a fixed list so the column never holds arbitrary input
+function signupSource(s: unknown): string {
+  return SOURCES.includes(String(s)) ? String(s) : "other";
+}
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors(req) });
   if (req.method !== "POST") return json(req, { error: "Method not allowed" }, 405);
 
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, serviceKey());
-  let body: { action?: string; email?: string; token?: string };
+  let body: { action?: string; email?: string; token?: string; source?: string };
   try { body = await req.json(); } catch { return json(req, { error: "Invalid JSON" }, 400); }
 
   // ── Subscribe: create or refresh a pending row, email a confirmation link ──
@@ -91,7 +97,7 @@ serve(async (req: Request) => {
     const row = { email, confirmed: false, confirm_token: token, confirm_sent_at: new Date().toISOString(), unsubscribed_at: null };
     const { error: upErr } = existing
       ? await supabase.from("newsletter_subscribers").update(row).eq("id", existing.id)
-      : await supabase.from("newsletter_subscribers").insert(row);
+      : await supabase.from("newsletter_subscribers").insert({ ...row, preferences: { source: signupSource(body.source) } });
     if (upErr) return json(req, { error: "save_failed" }, 500);
 
     const resendKey = Deno.env.get("RESEND_API_KEY");

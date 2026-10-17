@@ -171,7 +171,7 @@ function renderDirectoryDetail(d) {
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'directory\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + (typeof claimBoxHtml === 'function' ? claimBoxHtml(d) : '')
     + '</div>'
-    + _nlCardHtml()
+    + _nlCardHtml('listing')
     + renderCommentsSection('directory', d.id)
     + '<div id="related-listings"></div>';
 }
@@ -301,7 +301,7 @@ function renderEventDetail(ev) {
     + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'event\',\'' + ev.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + '</div>'
-    + _nlCardHtml()
+    + _nlCardHtml('event')
     + renderCommentsSection('event', ev.id)
     + '<div id="related-listings"></div>';
 }
@@ -2438,7 +2438,8 @@ function _isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-async function handleNewsletterSignup(emailId, btnSelector, confirmId) {
+// source says which form was used (sidebar, footer, home, listing, event); Admin > Members counts them.
+async function handleNewsletterSignup(emailId, btnSelector, confirmId, source) {
   var inp = document.getElementById(emailId);
   var v = inp.value.trim();
   var errId = emailId + '-err';
@@ -2474,7 +2475,7 @@ async function handleNewsletterSignup(emailId, btnSelector, confirmId) {
     var fnRes = await fetch(SUPABASE_URL + '/functions/v1/newsletter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-      body: JSON.stringify({ action: 'subscribe', email: v })
+      body: JSON.stringify({ action: 'subscribe', email: v, source: source || 'other' })
     }).catch(function() { return null; });
     if (!fnRes) {
       // Network failure. Browsers cannot write subscribers directly (double opt-in goes through the function).
@@ -2531,19 +2532,19 @@ async function handleNewsletterLink(action, token) {
   }
 }
 
-function doSignup() { handleNewsletterSignup('signup-email', '.signup-box button', 'rsignup-ok'); }
-function doFtSignup() { handleNewsletterSignup('ft-email', '.ftnl button', 'ft-ok'); }
-function doRbSignup() { handleNewsletterSignup('rb-email', '.rb-nl button', 'rb-ok'); }
+function doSignup() { handleNewsletterSignup('signup-email', '.signup-box button', 'rsignup-ok', 'signup_page'); }
+function doFtSignup() { handleNewsletterSignup('ft-email', '.ftnl button', 'ft-ok', 'footer'); }
+function doRbSignup() { handleNewsletterSignup('rb-email', '.rb-nl button', 'rb-ok', 'sidebar'); }
 
 // Newsletter card at the end of listing and event pages. The sidebar signup is hidden on phones,
 // where most visitors arrive from search; this gives them the same double opt-in form.
-function _nlCardHtml() {
+function _nlCardHtml(source) {
   return '<section class="nl-card" aria-labelledby="nl-card-h">'
     + '<h3 id="nl-card-h">' + esc(t('newsletter.card_heading', 'Get the weekly digest')) + '</h3>'
     + '<p>' + esc(t('newsletter.card_desc', 'New events, videos and places from the anthroposophical world, once a week in English. Free, and you can unsubscribe anytime.')) + '</p>'
     + '<div class="nl-card-row"><label for="dt-nl-email" class="sr-only">' + esc(t('footer.newsletter_label', 'Your email address')) + '</label>'
     + '<input type="email" id="dt-nl-email" autocomplete="email" aria-describedby="dt-nl-email-err" placeholder="' + esc(t('newsletter.placeholder', 'your@email.com')) + '">'
-    + '<button type="button" id="dt-nl-btn" onclick="handleNewsletterSignup(\'dt-nl-email\', \'#dt-nl-btn\', \'dt-nl-ok\')">' + esc(t('newsletter.subscribe_btn', 'subscribe')) + '</button></div>'
+    + '<button type="button" id="dt-nl-btn" onclick="handleNewsletterSignup(\'dt-nl-email\', \'#dt-nl-btn\', \'dt-nl-ok\', \'' + source + '\')">' + esc(t('newsletter.subscribe_btn', 'subscribe')) + '</button></div>'
     + '<div id="dt-nl-email-err" class="rb-nl-err" role="alert" style="display:none;"></div>'
     + '<div id="dt-nl-ok" class="rb-nl-ok" role="status">' + esc(t('newsletter.check_inbox', 'Almost done: check your inbox and click the link to confirm.')) + '</div>'
     + '</section>';
@@ -6521,7 +6522,7 @@ async function loadAdminMembers() {
   if (!isAdmin() || !sbReady()) { list.innerHTML = '<div class="admin-empty">Admins only.</div>'; return; }
   var res = await Promise.all([
     _sb.rpc('admin_list_users'),
-    _sb.from('newsletter_subscribers').select('email, name, confirmed, created_at, confirmed_at, unsubscribed_at').order('created_at', { ascending: false })
+    _sb.from('newsletter_subscribers').select('email, name, confirmed, created_at, confirmed_at, unsubscribed_at, preferences').order('created_at', { ascending: false })
   ]);
   if (res[0].error) { list.innerHTML = '<div class="admin-empty">Could not load members: ' + esc(res[0].error.message) + '</div>'; }
   else { _admMembers = res[0].data || []; renderAdminMembers(); }
@@ -6571,7 +6572,25 @@ function renderSubscriberWeeks(subs) {
       return '<div class="adm-wk" title="' + esc(tip) + '"><span class="adm-wk-n">' + (w.total || '') + '</span>'
         + '<span class="adm-wk-bar" style="height:' + Math.round(w.total / max * 100) + '%"><span style="height:'
         + (w.total ? Math.round(w.confirmed / w.total * 100) : 0) + '%"></span></span><span class="adm-wk-l">' + esc(label) + '</span></div>';
-    }).join('') + '</div><div class="adm-weekly-key"><span class="k-conf"></span>confirmed <span class="k-pend"></span>not confirmed yet</div>';
+    }).join('') + '</div><div class="adm-weekly-key"><span class="k-conf"></span>confirmed <span class="k-pend"></span>not confirmed yet</div>'
+    + _subSourcesHtml(subs, first);
+}
+
+var SUB_SOURCE_LABELS = { listing: 'Listing pages', event: 'Event pages', home: 'Home page', sidebar: 'Sidebar',
+  footer: 'Footer', signup_page: 'Signup page', other: 'Other' };
+
+// Which form people used, over the same 12 weeks. Older signups have no source and are left out.
+function _subSourcesHtml(subs, since) {
+  var counts = {};
+  subs.forEach(function (s) {
+    var src = s.preferences && s.preferences.source;
+    if (src && new Date(s.created_at) >= since) counts[src] = (counts[src] || 0) + 1;
+  });
+  var keys = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+  if (!keys.length) return '<div class="adm-src"><div class="adm-weekly-title">Where people signed up</div><p class="adm-src-none">No tracked signups yet (tracking started with v1.67.0).</p></div>';
+  return '<div class="adm-src"><div class="adm-weekly-title">Where people signed up</div><ul>' + keys.map(function (k) {
+    return '<li><span>' + esc(SUB_SOURCE_LABELS[k] || k) + '</span><b>' + counts[k] + '</b></li>';
+  }).join('') + '</ul></div>';
 }
 
 function _admPosts(m) { return (m.comments || 0) + (m.chat || 0) + (m.events || 0) + (m.listings || 0) + (m.reviews || 0); }

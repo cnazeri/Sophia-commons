@@ -3809,3 +3809,9 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .adm-weekly-key .k-conf { background: var(--gold-text); }
 .adm-weekly-key .k-pend { background: color-mix(in srgb, var(--gold) 30%, #fff); margin-left: 8px; }
 @media (max-width: 600px) { .adm-wk:nth-child(-n+4) { display: none; } .adm-wk-l { font-size: 9px; } }
+
+/* Admin > Members: signups by form */
+.adm-src{margin-top:var(--sp-3,24px)}
+.adm-src ul{list-style:none;margin:0;padding:0;max-width:360px}
+.adm-src li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border,#e6dfd2)}
+.adm-src-none{color:var(--text-muted,#665);margin:0}
