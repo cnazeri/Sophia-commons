@@ -1557,6 +1557,7 @@ function toggleAuthMode(e) {
     document.getElementById('auth-btn').textContent = t('modal.btn_signup');
     document.getElementById('toggle-signup').style.display = 'none';
     document.getElementById('toggle-signin').style.display = 'inline';
+    document.getElementById('modal-nl-note').style.display = 'block';
   } else {
     authMode = 'signin';
     document.getElementById('modal-title').textContent = t('modal.title_signin');
@@ -1564,6 +1565,7 @@ function toggleAuthMode(e) {
     document.getElementById('auth-btn').textContent = t('modal.btn_signin');
     document.getElementById('toggle-signup').style.display = 'inline';
     document.getElementById('toggle-signin').style.display = 'none';
+    document.getElementById('modal-nl-note').style.display = 'none';
   }
 }
 
@@ -6577,7 +6579,7 @@ function renderSubscriberWeeks(subs) {
 }
 
 var SUB_SOURCE_LABELS = { listing: 'Listing pages', event: 'Event pages', home: 'Home page', sidebar: 'Sidebar',
-  footer: 'Footer', signup_page: 'Signup page', other: 'Other' };
+  footer: 'Footer', signup_page: 'Signup page', member: 'New members', other: 'Other' };
 
 // Which form people used, over the same 12 weeks. Older signups have no source and are left out.
 function _subSourcesHtml(subs, since) {

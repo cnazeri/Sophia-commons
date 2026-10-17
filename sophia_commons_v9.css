@@ -3815,3 +3815,6 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .adm-src ul{list-style:none;margin:0;padding:0;max-width:360px}
 .adm-src li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border,#e6dfd2)}
 .adm-src-none{color:var(--text-muted,#665);margin:0}
+
+/* Sign-up modal: newsletter note */
+.modal-nl-note { font-size: 13px; color: var(--text-muted, #6F665B); margin: 4px 0 12px; line-height: 1.5; }
