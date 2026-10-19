@@ -3281,7 +3281,7 @@ footer li a { display: inline-block; padding: 10px 0; }
 .ev-more { display: block; width: 100%; min-height: 44px; margin: 12px 0 4px; border: 1px solid var(--gold); background: transparent; color: var(--gold-text); border-radius: 50px; font-family: 'Nunito Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
 .ev-more:hover { background: var(--gold-light); }
 /* Reserve space for boxes filled after load (reduces layout shift, CLS) */
-#home-upcoming { min-height: 540px; }
+#home-upcoming { min-height: 340px; }   /* phones: room for the featured slider and its controls (no "Coming up" list since v1.71.3) */
 @media (min-width: 761px) { #home-upcoming { min-height: 0; } }   /* two-column layout: size to content (no empty band) */
 @media (min-width: 1025px) { #video-spotlight { min-height: 320px; } }
 .feat-ev-img { aspect-ratio: 96 / 116; }
@@ -3388,11 +3388,13 @@ footer li a { display: inline-block; padding: 10px 0; }
 .home-ev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; margin-top: 6px; }
 .home-ev-grid.no-now { grid-template-columns: 1fr; }
 .home-ev-grid.no-now .home-ev-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+.home-ev-grid.only-now { grid-template-columns: 1fr; }
+.home-ev-grid.only-now .home-ev-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
 .home-ev-sub { display: flex; align-items: center; gap: 6px; font-family: 'Nunito Sans', sans-serif; font-size: 11px; font-weight: 700;
   text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin: 8px 0 2px; }
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success, #3b7d3b); flex: 0 0 8px; }
 @media (max-width: 760px) {
-  .home-ev-grid, .home-ev-grid.no-now .home-ev-rows { grid-template-columns: 1fr; }
+  .home-ev-grid, .home-ev-grid.no-now .home-ev-rows, .home-ev-grid.only-now .home-ev-rows { grid-template-columns: 1fr; }
 }
 @media (max-width: 760px) { .home-ev-rows .evrow:nth-child(n+5) { display: none; } }   /* phones: 4 events, then "full calendar" */
 
@@ -3856,3 +3858,9 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .adm-sub { font-size: 13px; font-weight: 700; margin: 8px 0; }
 .adm-row { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); overflow-wrap: anywhere; }
 .adm-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 50px; background: #e3efe2; color: #2f5d2b; }
+/* Phone menu: about and post a listing (the top bar hides these on phones) */
+#leftbar .lb-site { display: none; }
+@media (max-width: 768px) {
+  #leftbar .lb-site { display: block; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-subtle); }
+  #leftbar .lb-site a { font-weight: 600; }
+}

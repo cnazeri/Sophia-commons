@@ -157,7 +157,6 @@ function homeGrid(feat) {
   const rest = events.filter(ev => ev !== feat && dayOf(ev.end_date || ev.start_date) >= today)
     .sort((a, b) => a.start_date.localeCompare(b.start_date));
   const now = rest.filter(ev => dayOf(ev.start_date) <= today).slice(0, 4);
-  const next = rest.filter(ev => dayOf(ev.start_date) > today).slice(0, now.length ? 4 : 6);
   const fmt = (iso, o) => new Date(iso).toLocaleDateString('en-US', { timeZone: tz, ...o });
   const row = ev => {
     const multi = ev.end_date && dayOf(ev.end_date) !== dayOf(ev.start_date);
@@ -170,9 +169,11 @@ function homeGrid(feat) {
       + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5 aria-level="3"><a href="/event/' + attr(ev.id) + '">' + esc(ev.title) + '</a></h5>'
       + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
   };
-  return '<div class="home-ev-grid' + (now.length ? '' : ' no-now') + '">'
-    + (now.length ? '<div class="home-ev-col"><h4 class="home-ev-sub"><span class="live-dot" aria-hidden="true"></span>Happening now</h4>' + now.map(row).join('') + '</div>' : '')
-    + '<div class="home-ev-col"><h4 class="home-ev-sub">Coming up</h4><div class="home-ev-rows">' + next.map(row).join('') + '</div></div></div>';
+  // Only "Happening now" under the featured event (no "Coming up" list), same as the app
+  return now.length
+    ? '<div class="home-ev-grid only-now"><div class="home-ev-col"><h4 class="home-ev-sub" aria-level="3"><span class="live-dot" aria-hidden="true"></span>Happening now</h4>'
+      + '<div class="home-ev-rows">' + now.map(row).join('') + '</div></div></div>'
+    : '';
 }
 
 console.log(`prerender: ${written.length} pages, sitemap ${urls.length} URLs (${dir.length} listings, ${events.length} events)`);

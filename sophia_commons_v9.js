@@ -4229,11 +4229,12 @@ function renderHomeUpcoming() {
   var rest = live.filter(function(e) { return slides.indexOf(e) === -1; });
   // Happening now: started on or before today and not yet over (multi-day conferences, tours)
   var now = rest.filter(function(e) { return e.date <= today; }).slice(0, 4);
-  var next = rest.filter(function(e) { return e.date > today; }).slice(0, now.length ? 4 : 6);
-  var gridHtml = '<div class="home-ev-grid' + (now.length ? '' : ' no-now') + '">'
-    + (now.length ? '<div class="home-ev-col"><h4 class="home-ev-sub" aria-level="3"><span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) + '</h4>' + now.map(_homeEvRow).join('') + '</div>' : '')
-    + '<div class="home-ev-col"><h4 class="home-ev-sub" aria-level="3">' + esc(t('home.coming_up', 'Coming up')) + '</h4><div class="home-ev-rows">' + next.map(_homeEvRow).join('') + '</div></div>'
-    + '</div>';
+  // Under the featured slider only "Happening now" (the "Coming up" list was removed, owner 2026-10-18;
+  // the full list is one tap away on Events & News)
+  var gridHtml = now.length
+    ? '<div class="home-ev-grid only-now"><div class="home-ev-col"><h4 class="home-ev-sub" aria-level="3"><span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) + '</h4>'
+      + '<div class="home-ev-rows">' + now.map(_homeEvRow).join('') + '</div></div></div>'
+    : '';
   // The deploy writes the featured banner into the page so it shows with the first paint. Keep that
   // node (same event, English) rather than redrawing it, which phones would count as a late paint.
   var kept = feat && (typeof SC_I18N === 'undefined' || SC_I18N.getLang() === 'en') ? box.querySelector('.feat-ev[data-id="' + feat.id + '"]') : null;
