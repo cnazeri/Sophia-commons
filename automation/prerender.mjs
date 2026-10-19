@@ -134,12 +134,19 @@ if (feat) {
   const join = feat.online_url ? `<a class="feat-ev-join" href="${attr(feat.online_url)}" target="_blank" rel="noopener">${/zoom\./i.test(feat.online_url) ? 'Join on Zoom' : 'Join online'}</a>` : '';
   const banner = `<div class="feat-ev" data-id="${attr(feat.id)}">`
     + (img ? `<img class="feat-ev-img" src="${attr(img)}" alt="" width="96" height="116" fetchpriority="high">` : '')
-    + `<div class="feat-ev-body"><div class="etag">Featured event</div><h5><a href="/event/${attr(feat.id)}">${esc(feat.title)}</a></h5>`
+    + `<div class="feat-ev-body"><div class="etag">Featured event</div><h5 aria-level="3"><a href="/event/${attr(feat.id)}">${esc(feat.title)}</a></h5>`
     + `<div class="emeta">${esc(when)}</div>` + (feat.description ? `<p class="feat-ev-desc">${esc(short(feat.description, 160))}</p>` : '') + join + '</div></div>';
   const homeFile = path.join(OUT, 'index.html');
   const home = fs.readFileSync(homeFile, 'utf8');
   const placeholder = /(<div class="listblock-body" id="home-upcoming"[^>]*>)\s*<div class="empty-note">[^<]*<\/div>/;
-  if (placeholder.test(home)) fs.writeFileSync(homeFile, home.replace(placeholder, (m, open) => open + banner + homeGrid(feat)));
+  if (placeholder.test(home)) fs.writeFileSync(homeFile, home.replace(placeholder, (m, open) => open + featFrame(banner) + homeGrid(feat)));
+}
+
+// The slider frame is written too, so the app adds slides beside the banner instead of moving it
+// (a moved element repaints, and phones then count the banner as a late largest paint).
+function featFrame(banner) {
+  return '<div class="feat-slider" role="region" aria-roledescription="carousel" aria-label="Featured events">'
+    + '<div class="feat-view"><div class="feat-track">' + banner + '</div></div></div>';
 }
 
 // Same markup as renderHomeUpcoming() in the app, so the live redraw does not move the page.
@@ -160,7 +167,7 @@ function homeGrid(feat) {
     const cat = ev.event_type === 'first_class' ? 'first class (blue card)' : String(ev.category_name || ev.event_type || 'community').toLowerCase();
     const meta = [time, loc, ev.organizer_name].filter(x => x && String(x).trim()).map(esc).join(' &middot; ');
     return '<div class="evrow"><div class="evdate"><div class="mo">' + esc(fmt(ev.start_date, { month: 'short' })) + '</div><div class="dy">' + fmt(ev.start_date, { day: 'numeric' }) + '</div></div>'
-      + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5><a href="/event/' + attr(ev.id) + '">' + esc(ev.title) + '</a></h5>'
+      + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5 aria-level="3"><a href="/event/' + attr(ev.id) + '">' + esc(ev.title) + '</a></h5>'
       + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
   };
   return '<div class="home-ev-grid' + (now.length ? '' : ' no-now') + '">'

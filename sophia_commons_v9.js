@@ -1235,7 +1235,7 @@ const roomHistory = {};
 const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
   directory: '/directory', books: '/books', podcasts: '/podcasts',
-  memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', privacy: '/privacy', terms: '/terms', about: '/about'
+  memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', chat: '/chat', privacy: '/privacy', terms: '/terms', about: '/about'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
@@ -1252,6 +1252,7 @@ function _getSecMeta() {
     podcasts:  { title: t('meta.podcasts_title', 'Podcasts & Media | Sophia Commons'), desc: t('meta.podcasts_desc', 'Anthroposophical podcasts, YouTube channels, archives and media.') },
     memorial:  { title: t('meta.memorial_title', "In Memoriam | Sophia Commons"), desc: t('meta.memorial_desc', 'Honoring members of the anthroposophical community who have crossed the threshold.') },
     marketplace: { title: t('meta.marketplace_title', "Marketplace | Sophia Commons"), desc: t('meta.marketplace_desc', 'Buy, sell, share and swap within the anthroposophical community: books, crafts, biodynamic goods and more.') },
+    chat:      { title: t('meta.chat_title', 'Community Chat | Sophia Commons'), desc: t('meta.chat_desc', 'Live conversation rooms for members of the anthroposophical community.') },
     about:     { title: 'About | Sophia Commons', desc: 'Sophia Commons is a free, community-maintained directory for the anthroposophical world.' },
     privacy:   { title: 'Privacy | Sophia Commons', desc: 'What Sophia Commons collects, why, and how to have your data corrected or deleted.' },
     terms:     { title: 'Terms of use | Sophia Commons', desc: 'The simple terms for using and contributing to the Sophia Commons directory.' }
@@ -1304,6 +1305,7 @@ function showSec(id, skipPush) {
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   if (_toNews) setTimeout(function() { var n = document.getElementById('sec-news'); if (n) n.scrollIntoView({ block: 'start' }); }, 50);
   closeMobileMenu();
+  _syncMainNav();
   // Update SEO meta
   var secMeta = _getSecMeta();
   var meta = secMeta[id];
@@ -1342,6 +1344,30 @@ function toggleMobileMenu() {
   _setMobileMenu(!(lb && lb.classList.contains('mobile-open')));
 }
 function closeMobileMenu() { _setMobileMenu(false); }
+// Outside links and email open elsewhere, so close the phone menu behind them
+document.addEventListener('click', function(e) {
+  if (e.target.closest && e.target.closest('#leftbar a[target="_blank"], #leftbar a[href^="mailto:"]')) closeMobileMenu();
+});
+
+// Phone nav strip scrolls sideways: keep the current button in view, hide the hint at the end
+function _syncMainNav() {
+  var nav = document.getElementById('mainnav'), wrap = document.getElementById('mainnav-wrap');
+  if (!nav || !wrap) return;
+  var btn = nav.querySelector('button.active');
+  if (btn && nav.scrollWidth > nav.clientWidth) {
+    var left = btn.offsetLeft - nav.offsetLeft, right = left + btn.offsetWidth;
+    if (left < nav.scrollLeft || right > nav.scrollLeft + nav.clientWidth - 44) nav.scrollLeft = Math.max(0, left - 20);
+  }
+  wrap.classList.toggle('at-end', nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 4);
+}
+(function() {
+  var nav = document.getElementById('mainnav');
+  if (nav) nav.addEventListener('scroll', function() {
+    var wrap = document.getElementById('mainnav-wrap');
+    if (wrap) wrap.classList.toggle('at-end', nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 4);
+  }, { passive: true });
+  window.addEventListener('resize', _syncMainNav);
+})();
 
 // ── STICKY NAV SCROLL ──
 var _scrollTicking = false;
@@ -1366,13 +1392,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => _armReveal(el, observer));
+  // Measure every box first, then change classes: mixing the two forced a fresh layout per box
+  const els = Array.prototype.filter.call(document.querySelectorAll('.reveal'), el => !el.classList.contains('visible'));
+  const tops = els.map(el => el.getBoundingClientRect().top);
+  els.forEach((el, i) => _armReveal(el, observer, tops[i]));
 });
 
 // Fade in only boxes that start below the first screen; anything already in view stays as painted.
-function _armReveal(el, observer) {
+function _armReveal(el, observer, top) {
   if (el.classList.contains('visible')) return;
-  if (el.getBoundingClientRect().top < window.innerHeight) { el.classList.add('visible'); return; }
+  if (top === undefined) top = el.getBoundingClientRect().top;
+  if (top < window.innerHeight) { el.classList.add('visible'); return; }
   el.classList.add('armed');
   observer.observe(el);
 }
@@ -3742,8 +3772,12 @@ function _festivalTime(d) {
 }
 
 // Images from Wikimedia Commons (free licenses), keyed by festival; filled in FESTIVAL_IMAGES below
+// date|title of everything in calEvents, built once per _injectAnthroHolidays call (a scan per festival was slow)
+var _festSeen = null;
 function _addFestival(key, dateStr, title, cat, desc, src, time) {
-  var exists = calEvents.some(function(e) { return e.date === dateStr && e.title === title; });
+  var k = dateStr + '|' + title;
+  var exists = _festSeen ? _festSeen[k] : calEvents.some(function(e) { return e.date === dateStr && e.title === title; });
+  if (_festSeen) _festSeen[k] = true;
   if (!exists) calEvents.push({ date: dateStr, title: title, cat: cat, loc: '', org: '', time: time || '', desc: desc || '', src: src || [], img: FESTIVAL_IMAGES[key] || null });
 }
 
@@ -3755,6 +3789,11 @@ var _SEASONS = [
 ];
 
 function _injectAnthroHolidays(yr) {
+  _festSeen = {};
+  calEvents.forEach(function(e) { _festSeen[e.date + '|' + e.title] = true; });
+  try { _injectAnthroHolidaysYear(yr); } finally { _festSeen = null; }
+}
+function _injectAnthroHolidaysYear(yr) {
   ANTHRO_HOLIDAYS.forEach(function(h) {
     _addFestival(h.key, yr + '-' + String(h.month).padStart(2, '0') + '-' + String(h.day).padStart(2, '0'), h.title, 'festival', h.desc, h.src);
   });
@@ -3820,7 +3859,11 @@ function _injectMemorialDates(yr) {
 }
 
 var _curYear = new Date().getFullYear();
-for (var _y = _curYear - 1; _y <= _curYear + 5; _y++) { _injectMemorialDates(_y); _injectAnthroHolidays(_y); }
+// Last year to next year now (what the home page and sidebar show); the later years at the first idle moment
+for (var _y = _curYear - 1; _y <= _curYear + 1; _y++) { _injectMemorialDates(_y); _injectAnthroHolidays(_y); }
+(window.requestIdleCallback || function(f) { return setTimeout(f, 2000); })(function() {
+  for (var y = _curYear + 2; y <= _curYear + 5; y++) { _injectMemorialDates(y); _injectAnthroHolidays(y); }
+}, { timeout: 5000 });
 
 var _calNow = new Date();
 var calMonth = _calNow.getMonth();
@@ -4163,10 +4206,12 @@ function renderHomeUpcoming() {
   // The deploy writes the featured banner into the page so it shows with the first paint. Keep that
   // node (same event, English) rather than redrawing it, which phones would count as a late paint.
   var kept = feat && (typeof SC_I18N === 'undefined' || SC_I18N.getLang() === 'en') ? box.querySelector('.feat-ev[data-id="' + feat.id + '"]') : null;
-  if (kept && kept.closest('.feat-slider')) kept = null;   // a re-render rebuilds the slider
+  // A slider that is already running gets rebuilt; the deploy's empty frame (no controls yet) is kept
+  if (kept && kept.closest('.feat-slider') && kept.closest('.feat-slider').querySelector('.feat-ctrl')) kept = null;
   if (kept) {
-    Array.prototype.slice.call(box.children).forEach(function(c) { if (c !== kept) c.remove(); });
-    kept.insertAdjacentHTML('afterend', gridHtml);
+    var keptRoot = kept.closest('.feat-slider') || kept;
+    Array.prototype.slice.call(box.children).forEach(function(c) { if (c !== keptRoot) c.remove(); });
+    keptRoot.insertAdjacentHTML('afterend', gridHtml);
   } else {
     box.innerHTML = (feat ? _featBannerHtml(feat) : '') + gridHtml;
   }
@@ -4189,22 +4234,31 @@ function _featSlides(live) {
 }
 
 function _mountFeatSlider(first, slides) {
-  if (!first || first.closest('.feat-slider')) return;
+  if (!first) return;
+  var slider = first.closest('.feat-slider');
+  if (slider && slider.querySelector('.feat-ctrl')) return;   // already running
   var n = slides.length;
   var label = function(i) { return (i + 1) + ' / ' + n; };
-  var slider = document.createElement('div');
-  slider.className = 'feat-slider';
-  slider.setAttribute('role', 'region');
-  slider.setAttribute('aria-roledescription', 'carousel');
+  var view, track;
+  if (slider) {
+    // Frame written by the deploy: the first slide is already in place, so it is not moved or repainted
+    view = slider.querySelector('.feat-view');
+    track = slider.querySelector('.feat-track');
+  } else {
+    slider = document.createElement('div');
+    slider.className = 'feat-slider';
+    slider.setAttribute('role', 'region');
+    slider.setAttribute('aria-roledescription', 'carousel');
+    first.parentNode.insertBefore(slider, first);
+    view = document.createElement('div');
+    view.className = 'feat-view';
+    track = document.createElement('div');
+    track.className = 'feat-track';
+    view.appendChild(track);
+    slider.appendChild(view);
+    track.appendChild(first);
+  }
   slider.setAttribute('aria-label', t('home.featured_events', 'Featured events'));
-  first.parentNode.insertBefore(slider, first);
-  var view = document.createElement('div');
-  view.className = 'feat-view';
-  var track = document.createElement('div');
-  track.className = 'feat-track';
-  view.appendChild(track);
-  slider.appendChild(view);
-  track.appendChild(first);
   track.insertAdjacentHTML('beforeend', slides.slice(1).map(_featBannerHtml).join(''));
   Array.prototype.forEach.call(track.children, function(el, i) {
     el.setAttribute('role', 'group');

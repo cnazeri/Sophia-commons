@@ -1640,7 +1640,10 @@ footer {
   header { flex-wrap: wrap; }
   #statsbar { display: none; }
   #mainnav { overflow-x: auto; -webkit-overflow-scrolling: touch; position: relative; }
-  #mainnav::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 30px; background: linear-gradient(to right, transparent, var(--bg)); pointer-events: none; }
+  /* "More this way" hint on the fixed wrapper (inside the scroller it would scroll away); hidden at the end */
+  #mainnav-wrap { position: relative; }
+  #mainnav-wrap::after { content: '\203A'; position: absolute; right: 0; top: 1px; bottom: 0; width: 44px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 22px; color: var(--text-muted); background: linear-gradient(to right, transparent, var(--bg) 65%); pointer-events: none; transition: opacity .2s; }
+  #mainnav-wrap.at-end::after { opacity: 0; }
   #mainnav button { padding: 12px 14px; font-size: 12px; }
 }
 
