@@ -7599,7 +7599,7 @@ async function renderFacebookPages() {
   var el = document.getElementById('fb-pages-block');
   if (!el) return;
   var all = await _fbFetch();
-  if (!all.length) { el.innerHTML = ''; return; }
+  if (!all.length) { el.innerHTML = '<div class="listblock" id="social-list"><div class="listblock-head"><h3>' + t('podcasts.social_heading', 'Social Media') + '</h3></div><div class="listblock-body">' + _socialExtraHtml() + '</div></div>'; return; }
   var rows = all.filter(function (r) { return _fbKind === 'all' || r.kind === _fbKind; });
   var groups = {};
   rows.forEach(function (r) { (groups[r.category] = groups[r.category] || []).push(r); });
@@ -7632,9 +7632,20 @@ async function renderFacebookPages() {
   // Short list: the pages and groups the most listings link to
   var top = rows.slice().sort(byLinks).slice(0, MEDIA_FIRST).map(_fbRowHtml);
   html += _mediaListHtml('social', top, full, rows.length, _fbListOpen, '_fbListOpen', t('podcasts.show_all_social', 'Show all {n}'), t('podcasts.most_linked', 'Most linked'))
-    + '</div></div>';
+    + _socialExtraHtml() + '</div></div>';
   el.innerHTML = html;
   updateMediaCount();
+}
+
+// "Video & Social": hand-picked links on other platforms (Goetheanum TV, Instagram, ...), kept in the
+// <template id="social-extra"> in index.html and shown at the end of the Social Media block.
+function _socialExtraHtml() {
+  var tpl = document.getElementById('social-extra');
+  if (!tpl) return '';
+  var box = document.createElement('div');
+  box.appendChild(tpl.content.cloneNode(true));
+  box.querySelectorAll('[data-i18n]').forEach(function (n) { var k = n.getAttribute('data-i18n'), v = t(k); if (v && v !== k) n.textContent = v; });
+  return box.innerHTML;
 }
 
 function _fbRowHtml(r) {

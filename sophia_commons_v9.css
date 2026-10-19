@@ -3103,6 +3103,7 @@ footer { color: rgba(250,247,242,0.78); }
     border-left: none; border-top: 1px solid var(--border); padding: 20px 16px 28px;
   }
   #rightbar .rb-links { display: none; }       /* duplicated in the footer and header */
+  #page:has(#sec-home.active) #rightbar .rb-nl { display: none; }   /* the home page has its own digest card right above */
   #rightbar .rb-sec h5 { margin-top: 0; }
 }
 @media (max-width: 540px) {
@@ -3863,4 +3864,30 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 @media (max-width: 768px) {
   #leftbar .lb-site { display: block; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-subtle); }
   #leftbar .lb-site a { font-weight: 600; }
+}
+/* Video & Social links at the end of the Social Media block */
+.social-extra { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--border-subtle); }
+.social-extra .media-top-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.social-extra .media-top-h a { text-transform: none; letter-spacing: 0; font-family: 'Nunito Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--gold-text); }
+
+/* ══════════════════ v1.72: larger text on phones (owner, 2026-10-18) ══════════════════
+   Measured at 390px: 79% of the text was under 14px. Body text 15px, list titles 16px, meta lines
+   14px, small tags 12px. Tight spots (calendar cells, count badges, the nav strip) keep their size. */
+@media (max-width: 768px) {
+  #center .dir-row-desc, #center .feat-ev-desc, #center .dx-text, #center .top50-blurb, #center .companion-desc,
+  #center .sf-text, #center .trend-story p, #center .video-meta, #center .detail-desc, #center .catblock li,
+  #center .catblock li a, #center .legal-page p, #center .top50-intro, #center .ev-desc, #center .spotlight-title { font-size: 15px; line-height: 1.55; }
+  #center a.ltitle, #center .evinfo h5, #center .evinfo h5 a, #center .dir-row-name, #center .yt-row .ltitle,
+  #center .seminar-card h5, #center .new-video .nv-body h5, #center .feat-ev-body h5 { font-size: 16px; line-height: 1.4; }
+  #center .lmeta, #center .emeta, #center .top50-author, #center .cots-meta, #center .dx-daily, #center .sem-meta,
+  #center .nv-meta, #center .nv-ch, #center .video-actions, #center .yt-toolbar, #center .spotlight-note, #center .dir-tag,
+  #center .trend-readers, #center .seclabel, #center .home-ev-sub, #center .media-top-h, #center .sf-note,
+  #center .top50-amz, #center .ev-later, #center .fb-more, #rightbar .rs-note, #rightbar .cots-note, #rightbar figcaption,
+  #rightbar .rb-sec p, #rightbar .sb-ev-title, #rightbar .sb-ev-meta, #rightbar .dx-daily, #rightbar .cots-meta { font-size: 14px; line-height: 1.5; }
+  #center .ltag, #center .etag, #center .lv, #center .spotlight-kicker, #center .video-kicker, #center .sem-tag { font-size: 12px; }
+  #leftbar ul li a { font-size: 16px; }
+  /* listing rows: the check stays beside a long name; the place goes on its own line */
+  #center .dir-row-main .ltitle { flex: 1 1 0; min-width: 0; }
+  #center .dir-row-main .lmeta { flex-basis: 100%; }
+  footer, footer a { font-size: 14px; }
 }
