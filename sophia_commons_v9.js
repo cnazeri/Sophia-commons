@@ -1283,7 +1283,7 @@ function updateSEOMeta(title, desc, path) {
 
 function showSec(id, skipPush) {
   var oldLd = document.getElementById('detail-jsonld'); if (oldLd) oldLd.remove();
-  // News lives inside the combined News & Events page
+  // News lives inside the combined Events & News page (below the events)
   var _toNews = (id === 'news');
   if (_toNews) id = 'events';
   if (!document.getElementById('sec-' + id)) id = 'home';
@@ -3216,6 +3216,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
 }
 
 // ── NEWS: Load from Supabase ──
+var _newsListOpen = false;
 async function loadNewsFromSupabase() {
   if (!sbReady()) return;
   try {
@@ -3256,14 +3257,14 @@ async function loadNewsFromSupabase() {
       html += `<div class="listblock reveal visible">
         <div class="listblock-head"><h3>${t('news.latest_stories')}</h3></div>
         <div class="listblock-body">
-          ${regular.map(n => {
+          ${_moreListHtml(regular.map(n => {
             const tag = (n.tags && n.tags[0]) || '';
             return `<div class="lrow">
               <a class="ltitle" href="#" onclick="showDetail('news','${n.id}');return false;">${esc(n.title)}</a>
               ${tag ? '<span class="ltag">' + esc(tag) + '</span>' : ''}
               <span class="lmeta">${esc(n.source_name || '')}</span>
             </div>`;
-          }).join('')}
+          }), 'news-more-rows', _newsListOpen, t('news.show_n_more', 'Show {n} more stories'), '_newsListOpen')}
         </div>
       </div>`;
     }
@@ -4014,6 +4015,31 @@ function _evMeta(ev) {
 }
 
 var _evListDays = 120;   // the list shows this many days ahead; "Show more" extends it
+var _evListOpen = false;  // the list shows MORE_LIST_FIRST events until the visitor expands it
+
+// Long lists (events, news) show the first few rows; the rest sit behind a "Show n more" button.
+// stateVar names the global that remembers the choice across re-renders (language switch, new data).
+var MORE_LIST_FIRST = 5;
+function _moreListHtml(rows, id, open, moreLabel, stateVar, tail) {
+  var rest = rows.slice(MORE_LIST_FIRST);
+  if (!rest.length) return rows.join('') + (tail || '');
+  var more = moreLabel.replace('{n}', rest.length), less = t('common.show_fewer', 'Show fewer');
+  return rows.slice(0, MORE_LIST_FIRST).join('')
+    + '<div id="' + id + '" class="more-rows"' + (open ? '' : ' hidden') + '>' + rest.join('') + (tail || '') + '</div>'
+    + '<button type="button" class="ev-more more-toggle" aria-controls="' + id + '" aria-expanded="' + (open ? 'true' : 'false') + '"'
+    + ' data-more="' + esc(more) + '" data-less="' + esc(less) + '" onclick="' + stateVar + ' = _moreToggle(this)">'
+    + esc(open ? less : more) + '</button>';
+}
+function _moreToggle(btn) {
+  var box = document.getElementById(btn.getAttribute('aria-controls'));
+  var open = btn.getAttribute('aria-expanded') !== 'true';
+  if (box) box.hidden = !open;
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  btn.textContent = open ? btn.getAttribute('data-less') : btn.getAttribute('data-more');
+  // Collapsing a long list would leave the visitor far below it: bring its heading back into view
+  if (!open) { var blk = btn.closest('.listblock'); if (blk && blk.getBoundingClientRect().top < 0) blk.scrollIntoView({ block: 'start' }); }
+  return open;
+}
 
 // Series key: events from one organizer whose titles share a "Prefix:" (e.g. "Mani Webinar: ...")
 function _evSeriesKey(ev) {
@@ -4056,21 +4082,25 @@ function renderEventList() {
   // Collapse series: keep the first upcoming session, list the later dates under it
   var series = {};
   shown.forEach(function(e) { var k = _evSeriesKey(e); if (k) (series[k] = series[k] || []).push(e); });
-  var html = '', lastMonth = '';
+  var rows = [], lastMonth = '';
   shown.forEach(function(ev) {
     var k = _evSeriesKey(ev), group = k && series[k].length >= 3 ? series[k] : null;
     if (group && group[0] !== ev) return;
+    var html = '';
     var month = localDate(ev.date, { month: 'long', year: 'numeric' });
     if (month !== lastMonth) { html += '<h4 class="ev-month">' + esc(month) + '</h4>'; lastMonth = month; }
     var sName = group ? /^([^:]+):/.exec(ev.title)[1] : '';
     // Generic prefixes ("Study", "Zoom talk") need the organizer to make sense; series with shared artwork do not
     if (group && ev.org && !(ev.img && group.every(function(x) { return x.img && x.img.src === ev.img.src; }))) sName += ' (' + ev.org.replace(/\s*\(.*\)$/, '') + ')';
     html += _evRowHtml(ev, group ? { name: sName, count: group.length, later: group.slice(1) } : null);
+    rows.push(html);
   });
-  if (!shown.length) html = '<div class="empty-note">' + esc(t('events.none_yet', 'No upcoming events yet.')) + '</div>';
-  if (upcoming.length > shown.length) {
-    html += '<button type="button" class="ev-more" onclick="_evListDays += 180; renderEventList();">' + esc(t('events.show_more', 'Show more events')) + '</button>';
-  }
+  var later = upcoming.length > shown.length
+    ? '<button type="button" class="ev-more ev-later" onclick="_evListDays += 180; _evListOpen = true; renderEventList();">' + esc(t('events.show_later', 'Show events further ahead')) + '</button>'
+    : '';
+  var html = rows.length
+    ? _moreListHtml(rows, 'ev-more-rows', _evListOpen, t('events.show_n_more', 'Show {n} more events'), '_evListOpen', later)
+    : '<div class="empty-note">' + esc(t('events.none_yet', 'No upcoming events yet.')) + '</div>' + later;
   container.innerHTML = html;
 
   // Re-observe for scroll animations
@@ -4675,7 +4705,7 @@ function rerenderForLang() {
   var activeSection = document.querySelector('.pagesec.active');
   if (!activeSection) return;
   var id = activeSection.id.replace('sec-', '');
-  if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); renderSidebarUpcoming(); }
+  if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); renderSidebarUpcoming(); loadNewsFromSupabase(); }   // news sits on this page too
   if (id === 'home') { renderSidebarUpcoming(); renderCotsWidget(); }   // home events box, slider and verse widget
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }

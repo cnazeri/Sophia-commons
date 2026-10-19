@@ -59,6 +59,18 @@ try {
     await page.waitForTimeout(800);
     const st = await page.evaluate(() => ({ sec: document.querySelector('.pagesec.active')?.id, open: document.getElementById('leftbar').classList.contains('mobile-open') }));
     check(!err && st.sec === 'sec-category' && !st.open, `[mobile] menu link opens its page and closes the menu (${err || JSON.stringify(st)})`);
+    // Events & News: calendar first, then events, then news; long lists show 5 rows and expand
+    await page.locator('#nav-events').tap();
+    await page.waitForTimeout(3000);
+    const ev = await page.evaluate(() => {
+      const top = q => document.querySelector(q).getBoundingClientRect().top;
+      const shown = q => [...document.querySelectorAll(q + ' > *')].filter(e => e.offsetParent && !/^(H4|BUTTON)$/.test(e.tagName)).length;
+      const btn = document.querySelector('#event-list > .more-toggle');
+      const before = shown('#event-list');
+      if (btn) btn.click();
+      return { order: top('.calendar-full') < top('#event-list') && top('#event-list') < top('#sec-news'), before, opened: btn ? !document.getElementById('ev-more-rows').hidden : 'no button' };
+    });
+    check(ev.order && ev.before <= 5 && ev.opened !== false, `[mobile] events page: calendar, events, news in order; 5 events then expand (${JSON.stringify(ev)})`);
     await ctx.close();
   }
 

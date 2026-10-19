@@ -222,7 +222,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.69.0">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.70.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -358,7 +358,7 @@
 <nav aria-label="Main navigation" id="mainnav-wrap">
 <div id="mainnav">
   <button class="active" id="nav-home"      onclick="showSec('home')" data-i18n="nav.home">home</button>
-  <button id="nav-events"    onclick="showSec('events')" data-i18n="nav.news_events">news &amp; events</button>
+  <button id="nav-events"    onclick="showSec('events')" data-i18n="nav.news_events">events &amp; news</button>
   <button id="nav-podcasts"  onclick="showSec('podcasts')" data-i18n="nav.podcasts">podcasts &amp; media</button>
   <button id="nav-directory" onclick="showSec('directory')" data-i18n="nav.directory">directory</button>
   <button id="nav-books"     onclick="showSec('books')" data-i18n="nav.books">books &amp; library</button>
@@ -707,8 +707,38 @@
 
 <!-- ═══ EVENTS ═══ -->
 <div class="pagesec" id="sec-events">
+  <div class="seclabel" id="events-seclabel" style="margin-bottom:10px;">Events &amp; Calendar</div>
+
+  <!-- Visual Calendar -->
+  <div class="calendar-full reveal">
+    <div class="cal-header">
+      <button onclick="calNavMonth(-1)" aria-label="Previous month">&larr;</button>
+      <h3 id="cal-month-label" aria-live="polite"></h3>
+      <button onclick="calNavMonth(1)" aria-label="Next month">&rarr;</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <!-- Upcoming Events List -->
+  <div class="listblock reveal">
+    <div class="listblock-head">
+      <h3 data-i18n="events.upcoming_events">Upcoming Events</h3>
+      <a href="#" onclick="showEventForm();return false;" data-i18n="submit_event.submit_link">submit an event →</a>
+    </div>
+    <div class="listblock-body" id="event-list" style="padding:4px 10px 8px;"></div>
+  </div>
+
+  <!-- Seminars & Retreats -->
+  <div class="listblock reveal" style="margin-top:16px;">
+    <div class="listblock-head">
+      <h3 data-i18n="events.seminars_retreats">Seminars &amp; Retreats</h3>
+    </div>
+    <div id="seminars-area" class="seminars-grid" style="padding:0 10px 10px;"></div>
+  </div>
+
+  <!-- News (below the events since v1.70) -->
 <div id="sec-news" class="news-part">
-  <div class="seclabel" style="margin-bottom:10px;">News &amp; Announcements</div>
+  <div class="seclabel" style="margin:20px 0 10px;">News &amp; Announcements</div>
   <!-- featured (static placeholder content; hidden automatically once the news table has published articles) -->
   <div class="trendblock reveal static-news" style="margin-bottom:14px;">
     <div class="trendblock-head"><h3 data-i18n="news.most_read_today">Current Events: Most Read Today</h3><span class="tlabel">featured</span></div>
@@ -742,35 +772,6 @@
     </div>
   </div>
 </div>
-
-  <div class="seclabel" id="events-seclabel" style="margin-bottom:10px;">Events &amp; Calendar</div>
-
-  <!-- Visual Calendar -->
-  <div class="calendar-full reveal">
-    <div class="cal-header">
-      <button onclick="calNavMonth(-1)" aria-label="Previous month">&larr;</button>
-      <h3 id="cal-month-label" aria-live="polite"></h3>
-      <button onclick="calNavMonth(1)" aria-label="Next month">&rarr;</button>
-    </div>
-    <div class="cal-grid" id="cal-grid"></div>
-  </div>
-
-  <!-- Upcoming Events List -->
-  <div class="listblock reveal">
-    <div class="listblock-head">
-      <h3 data-i18n="events.upcoming_events">Upcoming Events</h3>
-      <a href="#" onclick="showEventForm();return false;" data-i18n="submit_event.submit_link">submit an event →</a>
-    </div>
-    <div class="listblock-body" id="event-list" style="padding:4px 10px 8px;"></div>
-  </div>
-
-  <!-- Seminars & Retreats -->
-  <div class="listblock reveal" style="margin-top:16px;">
-    <div class="listblock-head">
-      <h3 data-i18n="events.seminars_retreats">Seminars &amp; Retreats</h3>
-    </div>
-    <div id="seminars-area" class="seminars-grid" style="padding:0 10px 10px;"></div>
-  </div>
 </div>
 
 <!-- Event Submission Modal -->
@@ -1594,8 +1595,8 @@
   <h3 data-i18n="about2.dir_h">The directory</h3>
   <p data-i18n-html="about2.dir_p">More than 4,500 organizations in 77 countries: Waldorf and Steiner schools, kindergartens and teacher trainings, biodynamic and Demeter farms, Camphill communities and curative education, anthroposophic doctors, clinics and therapists, eurythmy schools and ensembles, Christian Community congregations, anthroposophical societies and branches, eldercare, and a new science and technology section. Each listing has its contact details and, where we could find one, a picture. You can browse by category or region, see everything on the world map, or use "Find near me" to sort listings by distance. Open the <a href="/directory" onclick="showSec('directory');return false;">Directory</a> to start, or try the links to related directories on that page.</p>
 
-  <h3 data-i18n="about2.news_h">News and events</h3>
-  <p data-i18n-html="about2.news_p">The <a href="/events" onclick="showSec('events');return false;">News &amp; Events</a> page brings together news from the movement and a shared calendar of conferences, courses, study groups, webinars and the festivals of the year. Every event can be added to your own Google, Outlook, Microsoft 365 or Apple calendar with one click. Members of the School of Spiritual Science will find First Class gatherings under Blue Card Holders on the Groups &amp; Circles page.</p>
+  <h3 data-i18n="about2.news_h">Events and news</h3>
+  <p data-i18n-html="about2.news_p">The <a href="/events" onclick="showSec('events');return false;">Events &amp; News</a> page brings together news from the movement and a shared calendar of conferences, courses, study groups, webinars and the festivals of the year. Every event can be added to your own Google, Outlook, Microsoft 365 or Apple calendar with one click. Members of the School of Spiritual Science will find First Class gatherings under Blue Card Holders on the Groups &amp; Circles page.</p>
 
   <h3 data-i18n="about2.media_h">Podcasts and media</h3>
   <p data-i18n-html="about2.media_p"><a href="/podcasts" onclick="showSec('podcasts');return false;">Podcasts &amp; Media</a> follows about 70 anthroposophical YouTube channels and checks them every day for new videos. The newest one shows up on the home page as the video of the day. You can rate and review the channels, and you'll also find podcasts, video archives and the movement's accounts on X.</p>
@@ -2092,18 +2093,18 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.69.0</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.70.0</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.69.0"></script>
-<script defer src="/i18n.js?v=1.69.0"></script>
-<script defer src="/sophia_commons_v9.js?v=1.69.0"></script>
-<script defer src="/blog.js?v=1.69.0"></script>
-<script defer src="/claims.js?v=1.69.0"></script>
+<script defer src="/sb-init.js?v=1.70.0"></script>
+<script defer src="/i18n.js?v=1.70.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.70.0"></script>
+<script defer src="/blog.js?v=1.70.0"></script>
+<script defer src="/claims.js?v=1.70.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
