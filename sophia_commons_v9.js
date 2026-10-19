@@ -1068,6 +1068,70 @@ async function showRegion(key, skipPush, opts) {
   }
 }
 
+// ── COUNTRY AND CATEGORY-IN-COUNTRY PAGES ──
+// The deploy writes static copies of these (automation/prerender.mjs, same labels); this shows the
+// live list when the page is opened in the app. Keep PLACE_CATS in step with automation/seo_html.mjs.
+var PLACE_CATS = {
+  'waldorf-education': ['Waldorf & Steiner Schools', ['waldorf']],
+  'biodynamic-agriculture': ['Biodynamic & Demeter Farms', ['biodynamic']],
+  'the-christian-community': ['The Christian Community', ['christian_community']],
+  'community-camphill': ['Camphill & Social Therapy', ['camphill', 'community']],
+  'anthroposophic-medicine': ['Anthroposophic Medicine', ['medicine']],
+  'arts-eurythmy': ['Eurythmy & the Arts', ['eurythmy']],
+  'societies-organizations': ['Anthroposophical Societies & Branches', ['societies']],
+  'science-technology': ['Goethean Science & Technology', ['science']],
+  'online-resources': ['Anthroposophical Resources', ['online']]
+};
+var COUNTRY_SLUG_ALIAS = { 'united-states': ['USA', 'United States'], 'united-kingdom': ['UK', 'United Kingdom'] };
+var COUNTRY_LABEL = { USA: 'United States', UK: 'United Kingdom' };
+var COUNTRY_WITH_THE = ['United States', 'United Kingdom', 'Netherlands', 'Czech Republic', 'Philippines', 'Dominican Republic', 'United Arab Emirates'];
+
+async function showPlace(catSlug, cSlug, skipPush) {
+  var pc = catSlug ? PLACE_CATS[catSlug] : null;
+  if (catSlug && !pc) { showSec('directory', skipPush); return; }
+  captureCurrentSection('category');
+  var container = document.getElementById('cat-page-content');
+  var guess = COUNTRY_SLUG_ALIAS[cSlug] ? (COUNTRY_LABEL[COUNTRY_SLUG_ALIAS[cSlug][0]]) : cSlug.split('-').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+  var setHead = function(L) {
+    var Lin = (COUNTRY_WITH_THE.indexOf(L) !== -1 ? 'the ' : '') + L;
+    var label = pc ? pc[0] + ' ' + t('place.in', 'in') + ' ' + Lin : t('place.anthroposophy_in', 'Anthroposophy in {country}').replace('{country}', Lin);
+    document.getElementById('cat-page-label').textContent = label;
+    document.getElementById('cat-page-desc').textContent = t('region.desc', 'Anthroposophical schools, farms, clinics, communities and resources in {region}.').replace('{region}', L);
+    if (!keepStatic) updateSEOMeta(label + ' | Sophia Commons', document.getElementById('cat-page-desc').textContent, path);
+  };
+  var path = catSlug ? '/category/' + catSlug + '/' + cSlug : '/country/' + cSlug;
+  // Opened straight from the deploy's static copy: keep its fuller title and description
+  var canon = document.querySelector('link[rel="canonical"]');
+  var keepStatic = !!(skipPush && canon && canon.getAttribute('href') === 'https://sophiacommons.org' + path);
+  setHead(guess);
+  container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + t('common.loading') + '</div>';
+  showSec('category', true);
+  if (!skipPush && location.pathname !== path) history.pushState({ type: 'place', cat: catSlug || '', country: cSlug }, '', path);
+  if (!sbReady()) { container.innerHTML = '<div class="empty-note">The directory is offline right now. Please try again shortly.</div>'; return; }
+  try {
+    var list = await _sbAllRows(function() {
+      var q = _sb.from('directory_entries')
+        .select('id, organization_name, description, location, country, is_verified, tags, category, city, latitude, longitude, photo_url')
+        .eq('status', 'approved');
+      // the slug drops accents and punctuation, so match the country name loosely (czech-republic -> czech%republic)
+      q = COUNTRY_SLUG_ALIAS[cSlug] ? q.in('country', COUNTRY_SLUG_ALIAS[cSlug]) : q.ilike('country', cSlug.replace(/-/g, '%'));
+      if (pc) q = q.in('category', pc[1]);
+      return q.order('category').order('organization_name').order('id');
+    });
+    if (!list.length) {
+      container.innerHTML = '<div class="empty-note">' + esc(t('region.empty', 'No listings here yet.')) + ' <a href="#" onclick="showSubmitForm();return false;">' + esc(t('region.add_first', 'Add the first one')) + '</a></div>';
+      return;
+    }
+    setHead(COUNTRY_LABEL[list[0].country] || list[0].country);
+    window._catGroupByCategory = !pc;
+    window._catEntries = list;
+    container.innerHTML = _dirListShell(list, '');
+    _applyCatFilter('');
+  } catch (e) {
+    container.innerHTML = '<div class="empty-note">Could not load this page. Please try again.</div>';
+  }
+}
+
 // ── ELDERCARE: real directory listings instead of placeholder names ──
 var _eldercareLoaded = false;
 async function loadEldercareLive() {
@@ -1420,6 +1484,13 @@ function routeFromPath(pathname, isPopstate) {
   }
 
   // Category route: /category/:slug
+  // Country and category-in-country pages: /country/germany, /category/waldorf-education/germany
+  var placeMatch = p.match(/^\/country\/([a-z0-9-]+)$/) || p.match(/^\/category\/([a-z0-9-]+)\/([a-z0-9-]+)$/);
+  if (placeMatch) {
+    if (placeMatch[2]) showPlace(placeMatch[1], placeMatch[2], skip); else showPlace(null, placeMatch[1], skip);
+    return;
+  }
+
   var catMatch = p.match(/^\/category\/([^\/]+)$/);
   if (catMatch) {
     var catRaw = catMatch[1];

@@ -7,7 +7,8 @@
 // Reads only public data with the publishable key from sb-init.js. Never writes anything.
 import fs from 'node:fs';
 import path from 'node:path';
-import { SITE, esc, attr, CATEGORIES, entryList, applySeo } from './seo_html.mjs';
+import { SITE, esc, attr, CATEGORIES, entryList, applySeo, NOT_COUNTRIES, countryLabel, countrySlug, PLACE_CATS, placeCatOf,
+  MIN_COUNTRY, MIN_COMBO, fmtN, breadcrumbLd, countryIn } from './seo_html.mjs';
 
 const OUT = process.argv[2] || '_deploy';
 const template = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
@@ -64,8 +65,8 @@ function itemListLd(name, url, entries) {
   };
 }
 
-function render(route, title, desc, bodyHtml, ld) {
-  const h = applySeo(template, { route, title, desc, bodyHtml, ld });
+function render(route, title, desc, bodyHtml, ld, h1 = '') {
+  const h = applySeo(template, { route, title, desc, bodyHtml, ld, h1 });
   // Write <route>.html, not <route>/index.html: Netlify serves /events from events.html with a 200,
   // while a directory index would 301-redirect /events to /events/ (mismatching canonicals and sitemap).
   const file = path.join(OUT, decodeURIComponent(route.replace(/^\//, '')) + '.html');
@@ -80,20 +81,78 @@ const dir = await allDirectory();
 const events = await rest('/rest/v1/rpc/get_upcoming_events', { method: 'POST', body: JSON.stringify({ days_ahead: 365, limit_n: 100 }) }).catch(() => []);
 const written = [];
 
+// Countries with enough listings get a page; category-in-country pages need MIN_COMBO listings
+const byCountry = new Map();
+for (const e of dir) if (e.country && !NOT_COUNTRIES.includes(e.country)) (byCountry.get(e.country) || byCountry.set(e.country, []).get(e.country)).push(e);
+const countries = [...byCountry.entries()].filter(([, l]) => l.length >= MIN_COUNTRY).sort((a, b) => b[1].length - a[1].length);
+const combos = [];   // { pc, country, list }
+for (const [country, list] of countries) for (const pc of PLACE_CATS) {
+  const sub = list.filter(e => pc[2].includes(e.category));
+  if (sub.length >= MIN_COMBO) combos.push({ pc, country, list: sub });
+}
+const comboRoute = (pc, country) => `/category/${pc[0]}/${countrySlug(country)}`;
+const hasCombo = (pc, country) => combos.some(c => c.pc === pc && c.country === country);
+const countryLink = c => `<a href="/country/${countrySlug(c)}">${esc(countryLabel(c))}</a>`;
+const topCities = (list, n) => {
+  const m = new Map();
+  for (const e of list) if (e.city) m.set(e.city, (m.get(e.city) || 0) + 1);
+  return [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, n);
+};
+const citiesHtml = list => { const c = topCities(list, 20); return c.length ? `<h2>Cities and towns</h2><p>${c.map(([n, k]) => `${esc(n)} (${k})`).join(', ')}</p>` : ''; };
+
 for (const [slug, label, cats, desc] of CATEGORIES) {
   const list = dir.filter(e => cats.includes(e.category));
-  written.push(render(`/category/${slug}`, `${label} | Sophia Commons Directory`, desc + ` ${list.length} listings.`, entryList(list), itemListLd(label, `${SITE}/category/${slug}`, list)));
+  const pc = PLACE_CATS.find(p => p[0] === slug);
+  const mine = pc ? combos.filter(c => c.pc === pc).sort((a, b) => b.list.length - a.list.length) : [];
+  const byC = mine.length ? `<h2>${esc(label)} by country</h2><ul>` + mine.map(c => `<li><a href="${comboRoute(pc, c.country)}">${esc(pc[1])} in ${esc(countryIn(c.country))}</a> (${fmtN(c.list.length)})</li>`).join('') + '</ul>' : '';
+  written.push(render(`/category/${slug}`, `${label} | Sophia Commons Directory`, desc + ` ${list.length} listings.`, byC + entryList(list), itemListLd(label, `${SITE}/category/${slug}`, list)));
 }
-for (const [slug, label, countries] of REGIONS) {
-  const list = dir.filter(e => countries.includes(e.country));
+for (const [slug, label, regionCountries] of REGIONS) {
+  const list = dir.filter(e => regionCountries.includes(e.country));
   const desc = `Anthroposophical schools, farms, clinics, congregations, communities and resources in ${label}: ${list.length} listings.`;
-  written.push(render(`/region/${slug}`, `${label} | Sophia Commons Directory`, desc, entryList(list), itemListLd(label, `${SITE}/region/${slug}`, list)));
+  const inRegion = countries.filter(([c]) => regionCountries.includes(c));
+  const byC = inRegion.length ? '<h2>Countries</h2><ul>' + inRegion.map(([c, l]) => `<li>${countryLink(c)} (${fmtN(l.length)})</li>`).join('') + '</ul>' : '';
+  written.push(render(`/region/${slug}`, `${label} | Sophia Commons Directory`, desc, byC + entryList(list), itemListLd(label, `${SITE}/region/${slug}`, list)));
+}
+
+// /country/<slug>: everything in one country, by category, with links to the category-in-country pages
+for (const [country, list] of countries) {
+  const L = countryLabel(country), Lin = countryIn(country), route = `/country/${countrySlug(country)}`;
+  const parts = PLACE_CATS.map(pc => ({ pc, sub: list.filter(e => pc[2].includes(e.category)) })).filter(x => x.sub.length).sort((a, b) => b.sub.length - a.sub.length);
+  const other = list.filter(e => !placeCatOf(e.category));
+  const short = parts.slice(0, 2).map(x => x.pc[3]);
+  const title = `Anthroposophy in ${Lin}${short.length ? ': ' + short.join(', ') + ' and More' : ''} | Sophia Commons`;
+  const desc = `${fmtN(list.length)} anthroposophical listings in ${Lin}: ` + parts.slice(0, 3).map(x => `${fmtN(x.sub.length)} ${x.pc[4]}`).join(', ') + '. Addresses, websites and a map.';
+  let body = '<h2>By category</h2><ul>' + parts.map(x => `<li>${hasCombo(x.pc, country) ? `<a href="${comboRoute(x.pc, country)}">${esc(x.pc[1])} in ${esc(Lin)}</a>` : `<a href="/category/${x.pc[0]}">${esc(x.pc[1])}</a>`}: ${fmtN(x.sub.length)}</li>`).join('') + '</ul>'
+    + citiesHtml(list);
+  for (const x of parts) {
+    const big = hasCombo(x.pc, country) && x.sub.length > 25;
+    body += `<h2>${esc(x.pc[1])} in ${esc(Lin)}</h2>` + entryList(big ? x.sub.slice(0, 20) : x.sub)
+      + (big ? `<p><a href="${comboRoute(x.pc, country)}">All ${fmtN(x.sub.length)} ${esc(x.pc[1])} in ${esc(Lin)}</a></p>` : '');
+  }
+  if (other.length) body += `<h2>More in ${esc(Lin)}</h2>` + entryList(other);
+  body += '<p><a href="/directory">The world directory and map</a></p>';
+  written.push(render(route, title, desc, body, [itemListLd(`Anthroposophy in ${Lin}`, SITE + route, list), breadcrumbLd([['Home', '/'], ['Directory', '/directory'], [L, route]])], `Anthroposophy in ${Lin}`));
+}
+
+// /category/<cat>/<country>: e.g. Waldorf & Steiner Schools in Germany
+for (const { pc, country, list } of combos) {
+  const L = countryLabel(country), Lin = countryIn(country), route = comboRoute(pc, country);
+  const cities = topCities(list, 3).map(([n]) => n);
+  const title = `${pc[1]} in ${Lin} (${fmtN(list.length)}) | Sophia Commons`;
+  const desc = `${fmtN(list.length)} ${pc[4]} in ${Lin}${cities.length ? ', including ' + cities.join(', ') : ''}. Addresses, websites and a map in the free Sophia Commons directory.`;
+  const siblings = combos.filter(c => c.pc === pc && c.country !== country).sort((a, b) => b.list.length - a.list.length);
+  const body = citiesHtml(list) + `<h2>All ${fmtN(list.length)} listings</h2>` + entryList(list)
+    + (siblings.length ? `<h2>${esc(pc[1])} in other countries</h2><ul>` + siblings.map(c => `<li><a href="${comboRoute(pc, c.country)}">${esc(countryLabel(c.country))}</a> (${fmtN(c.list.length)})</li>`).join('') + '</ul>' : '')
+    + `<p><a href="/category/${pc[0]}">${esc(pc[1])} worldwide</a> &middot; <a href="/country/${countrySlug(country)}">Everything in ${esc(Lin)}</a></p>`;
+  written.push(render(route, title, desc, body, [itemListLd(`${pc[1]} in ${Lin}`, SITE + route, list), breadcrumbLd([['Home', '/'], [pc[1], `/category/${pc[0]}`], [L, route]])], `${pc[1]} in ${Lin}`));
 }
 for (const [slug, label, desc] of SECTIONS) {
   let body = '';
   if (slug === 'directory' || slug === 'browse') {
     body = '<h2>Categories</h2><ul>' + CATEGORIES.map(([s, l, c]) => `<li><a href="/category/${s}">${esc(l)}</a> (${dir.filter(e => c.includes(e.category)).length})</li>`).join('') + '</ul>'
-      + '<h2>Regions</h2><ul>' + REGIONS.map(([s, l]) => `<li><a href="/region/${s}">${esc(l)}</a></li>`).join('') + '</ul>';
+      + '<h2>Regions</h2><ul>' + REGIONS.map(([s, l]) => `<li><a href="/region/${s}">${esc(l)}</a></li>`).join('') + '</ul>'
+      + '<h2>Countries</h2><ul>' + countries.map(([c, l]) => `<li>${countryLink(c)} (${fmtN(l.length)})</li>`).join('') + '</ul>';
   } else if (slug === 'events') {
     body = '<h2>Upcoming events</h2><ul>' + events.map(ev => `<li>${esc(day(ev.start_date))}: <a href="/event/${attr(ev.id)}">${esc(ev.title)}</a>${ev.organizer_name ? ' (' + esc(ev.organizer_name) + ')' : ''}${ev.is_online ? ', online' : ev.city ? ', ' + esc([ev.city, ev.country].filter(Boolean).join(', ')) : ''}</li>`).join('') + '</ul>';
   } else if (slug === 'eldercare') {
@@ -176,4 +235,5 @@ function homeGrid(feat) {
     : '';
 }
 
+console.log(`prerender: ${countries.length} country pages, ${combos.length} category-in-country pages`);
 console.log(`prerender: ${written.length} pages, sitemap ${urls.length} URLs (${dir.length} listings, ${events.length} events)`);

@@ -92,7 +92,8 @@ export function listingPage(e, related = []) {
   ].join('');
   const bodyHtml = (about.length > desc.length ? `<p>${esc(about)}</p>` : '')
     + `<ul>${facts}</ul>`
-    + (related.length ? `<h2>More ${esc(catLabel)}${e.country ? ' in ' + esc(e.country) : ''}</h2>` + entryList(related) : '');
+    + (related.length ? `<h2>More ${esc(catLabel)}${e.country ? ' in ' + esc(e.country) : ''}</h2>` + entryList(related) : '')
+    + placeLinks(e, related.length);
 
   const route = '/listing/' + e.id;
   const ld = {
@@ -187,4 +188,47 @@ export function articlePage(n) {
     ...(n.published_at ? { datePublished: n.published_at } : {}), ...(n.updated_at ? { dateModified: n.updated_at } : {}),
     ...(src ? { isBasedOn: src } : {}), publisher: { '@type': 'Organization', name: 'Sophia Commons', url: SITE } };
   return { route, title: `${name} | Sophia Commons`, desc, bodyHtml, ld, ldId: 'detail-jsonld', robots: roundup ? 'noindex, follow' : '' };
+}
+
+// ── Country and category-in-country pages (/country/<slug>, /category/<cat>/<country>) ──
+// Keep COUNTRY_ALIAS and PLACE_CATS in step with PLACE_CATS / _placeCountry() in sophia_commons_v9.js.
+export const COUNTRY_LABEL = { USA: 'United States', UK: 'United Kingdom' };
+export const NOT_COUNTRIES = ['Online', 'International'];
+export const countryLabel = c => COUNTRY_LABEL[c] || c;
+export const slugify = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  .replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+export const countrySlug = c => slugify(countryLabel(c));
+const WITH_THE = new Set(['United States', 'United Kingdom', 'Netherlands', 'Czech Republic', 'Philippines', 'Dominican Republic', 'United Arab Emirates']);
+export const countryIn = c => (WITH_THE.has(countryLabel(c)) ? 'the ' : '') + countryLabel(c);   // "in the Netherlands"
+export const MIN_COUNTRY = 3;   // listings needed for a country page
+export const MIN_COMBO = 5;     // listings needed for a category-in-country page
+// [category slug, page label, directory categories, short name, counted noun]
+export const PLACE_CATS = [
+  ['waldorf-education', 'Waldorf & Steiner Schools', ['waldorf'], 'Waldorf Schools', 'Waldorf schools and kindergartens'],
+  ['biodynamic-agriculture', 'Biodynamic & Demeter Farms', ['biodynamic'], 'Biodynamic Farms', 'biodynamic farms and initiatives'],
+  ['the-christian-community', 'The Christian Community', ['christian_community'], 'Christian Community', 'Christian Community congregations'],
+  ['community-camphill', 'Camphill & Social Therapy', ['camphill', 'community'], 'Camphill', 'Camphill and social therapy places'],
+  ['anthroposophic-medicine', 'Anthroposophic Medicine', ['medicine'], 'Anthroposophic Medicine', 'doctors, clinics and therapists'],
+  ['arts-eurythmy', 'Eurythmy & the Arts', ['eurythmy'], 'Eurythmy', 'eurythmy and arts initiatives'],
+  ['societies-organizations', 'Anthroposophical Societies & Branches', ['societies'], 'Anthroposophical Society', 'societies, branches and groups'],
+  ['science-technology', 'Goethean Science & Technology', ['science'], 'Goethean Science', 'science initiatives'],
+  ['online-resources', 'Anthroposophical Resources', ['online'], 'Resources', 'publishers and other resources'],
+];
+export const placeCatOf = dirCat => PLACE_CATS.find(p => p[2].includes(dirCat)) || null;
+export const fmtN = n => Number(n).toLocaleString('en-US');
+
+export function breadcrumbLd(items) {
+  return { '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: items.map(([name, route], i) => ({ '@type': 'ListItem', position: i + 1, name, item: SITE + route })) };
+}
+
+// Links from a listing up to its country page and category-in-country page. `sameCatCount` is how
+// many other listings share its category and country (the edge function asks for up to 8), so
+// >= MIN_COMBO - 1 means the category-in-country page exists and >= MIN_COUNTRY - 1 the country page.
+export function placeLinks(e, sameCatCount) {
+  if (!e.country || NOT_COUNTRIES.includes(e.country) || sameCatCount < MIN_COUNTRY - 1) return '';
+  const L = countryIn(e.country), pc = placeCatOf(e.category), links = [];
+  if (pc && sameCatCount >= MIN_COMBO - 1) links.push(`<a href="/category/${pc[0]}/${countrySlug(e.country)}">${esc(pc[1])} in ${esc(L)}</a>`);
+  links.push(`<a href="/country/${countrySlug(e.country)}">Everything in ${esc(L)}</a>`);
+  return `<p>${links.join(' &middot; ')}</p>`;
 }
