@@ -33,7 +33,7 @@ export function entryList(entries) {
   return '<ul>' + entries.map(e => `<li><a href="/listing/${attr(e.id)}">${esc(e.organization_name)}</a>${place(e) ? ' (' + esc(place(e)) + ')' : ''}${e.website_url && /^https?:\/\//.test(e.website_url) ? ` <a href="${attr(e.website_url)}" rel="nofollow noopener">website</a>` : ''}</li>`).join('') + '</ul>';
 }
 
-export function applySeo(template, { route, title, desc, bodyHtml = '', ld = null, ldId = 'prerender-jsonld', image = '' }) {
+export function applySeo(template, { route, title, desc, bodyHtml = '', ld = null, ldId = 'prerender-jsonld', image = '', robots = '', h1 = '' }) {
   const url = SITE + route;
   let h = template;
   const set = (re, val) => { h = h.replace(re, () => val); };
@@ -46,6 +46,7 @@ export function applySeo(template, { route, title, desc, bodyHtml = '', ld = nul
   set(/<meta name="twitter:url" content="[^"]*">/, `<meta name="twitter:url" content="${attr(url)}">`);
   set(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${attr(title)}">`);
   set(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${attr(desc)}">`);
+  if (robots) set(/<meta name="robots" content="[^"]*">/, `<meta name="robots" content="${attr(robots)}">`);
   if (image) {
     set(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${attr(image)}">`);
     set(/<meta name="twitter:image" content="[^"]*">/, `<meta name="twitter:image" content="${attr(image)}">`);
@@ -54,7 +55,7 @@ export function applySeo(template, { route, title, desc, bodyHtml = '', ld = nul
   h = h.replace(/<h1 class="sr-only"([^>]*)>([^<]*)<\/h1>/, '<p class="sr-only"$1>$2</p>');
   // The app's own JSON-LD for detail pages uses id="detail-jsonld" and replaces this one on load.
   const ldTag = ld ? `\n<script type="application/ld+json" id="${ldId}">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>` : '';
-  const block = `<div id="prerender" class="prerender-summary"><h1>${esc(title.replace(/ \| Sophia Commons.*$/, ''))}</h1><p>${esc(desc)}</p>${bodyHtml}</div>${ldTag}\n`;
+  const block = `<div id="prerender" class="prerender-summary"><h1>${esc(h1 || title.replace(/ \| Sophia Commons.*$/, ''))}</h1><p>${esc(desc)}</p>${bodyHtml}</div>${ldTag}\n`;
   if (!h.includes('<footer')) throw new Error('template has no <footer>');
   return h.replace('<footer', () => block + '<footer');
 }
@@ -108,4 +109,82 @@ export function listingPage(e, related = []) {
   };
 
   return { route, title: `${name}${e.city || e.location ? ', ' + (e.city || e.location) : ''} | Sophia Commons`, desc, bodyHtml, ld, ldId: 'detail-jsonld', image };
+}
+
+// ── Events and news (/event/<id>, /article/<id>) ──
+export const EVENT_COLUMNS = 'id,title,description,start_date,end_date,is_all_day,location_name,address,city,region,country,is_online,online_url,organizer_name,organizer_url,image_url,ticket_url,ticket_price,is_free,event_type,status,updated_at';
+export const NEWS_COLUMNS = 'id,title,excerpt,body,source_name,source_url,tags,published_at,updated_at,status';
+
+// Event dates are stored in UTC. Show the day in a zone near the event, so an evening talk in
+// California or a morning one in Europe is not shown on the wrong day.
+const TZ_BY_COUNTRY = { USA: 'America/Chicago', 'United States': 'America/Chicago', US: 'America/Chicago', Canada: 'America/Toronto',
+  Mexico: 'America/Mexico_City', Brazil: 'America/Sao_Paulo', Argentina: 'America/Argentina/Buenos_Aires', Australia: 'Australia/Sydney',
+  'New Zealand': 'Pacific/Auckland', Japan: 'Asia/Tokyo', India: 'Asia/Kolkata', 'South Africa': 'Africa/Johannesburg', UK: 'Europe/London',
+  'United Kingdom': 'Europe/London', Ireland: 'Europe/Dublin' };
+function eventDay(iso, country, withYear = true) {
+  const tz = TZ_BY_COUNTRY[country] || (country ? 'Europe/Berlin' : 'UTC');
+  try { return new Date(iso).toLocaleDateString('en-US', { timeZone: tz, weekday: 'short', month: 'short', day: 'numeric', ...(withYear ? { year: 'numeric' } : {}) }); }
+  catch (e) { return String(iso).slice(0, 10); }
+}
+const httpUrl = u => (u && /^https?:\/\//.test(u) ? u : '');
+
+// Everything applySeo needs for /event/<id>. `others` = a few upcoming events to link to.
+export function eventPage(ev, others = []) {
+  const name = ev.title || 'Event';
+  const when = eventDay(ev.start_date, ev.country) + (ev.end_date && String(ev.end_date).slice(0, 10) !== String(ev.start_date).slice(0, 10) ? ' to ' + eventDay(ev.end_date, ev.country) : '');
+  const where = ev.is_online ? 'Online' + (ev.location_name && !/online|zoom/i.test(ev.location_name) ? ' (' + ev.location_name + ')' : '') : [ev.location_name, ev.city, ev.country].filter(Boolean).join(', ');
+  const about = String(ev.description || '').replace(/\s+/g, ' ').trim();
+  const fallback = `${when}${where ? ', ' + where : ''}.${ev.organizer_name ? ' Organized by ' + ev.organizer_name + '.' : ''} Details and add-to-calendar on Sophia Commons.`;
+  const desc = shorten(about ? `${eventDay(ev.start_date, ev.country, false)}${where ? ', ' + where : ''}: ${about}` : fallback, 158);
+  const image = ev.image_url && /^https:\/\//.test(ev.image_url) ? ev.image_url : '';
+  const ticket = httpUrl(ev.ticket_url), online = httpUrl(ev.online_url), orgUrl = httpUrl(ev.organizer_url);
+  const cancelled = ev.status === 'cancelled';
+  const facts = [
+    `<li>When: ${esc(when)}</li>`,
+    where ? `<li>Where: ${esc(where)}${ev.address && !ev.is_online ? ', ' + esc(ev.address) : ''}</li>` : '',
+    ev.organizer_name ? `<li>Organizer: ${orgUrl ? `<a href="${attr(orgUrl)}" rel="nofollow noopener">${esc(ev.organizer_name)}</a>` : esc(ev.organizer_name)}</li>` : '',
+    ev.is_free ? '<li>Admission: free</li>' : (ev.ticket_price ? `<li>Price: ${esc(ev.ticket_price)}</li>` : ''),
+    ticket ? `<li><a href="${attr(ticket)}" rel="nofollow noopener">Tickets and registration</a></li>` : '',
+    cancelled ? '<li>This event has been cancelled.</li>' : '',
+  ].join('');
+  const bodyHtml = (about ? `<p>${esc(about)}</p>` : '') + `<ul>${facts}</ul>`
+    + (others.length ? '<h2>More upcoming events</h2><ul>' + others.map(o => `<li>${esc(eventDay(o.start_date, o.country, false))}: <a href="/event/${attr(o.id)}">${esc(o.title)}</a></li>`).join('') + '</ul>' : '')
+    + '<p><a href="/events">All events and the calendar</a></p>';
+
+  const route = '/event/' + ev.id;
+  const location = ev.is_online
+    ? { '@type': 'VirtualLocation', url: online || SITE + route }
+    : { '@type': 'Place', name: ev.location_name || ev.city || name,
+        address: { '@type': 'PostalAddress', ...(ev.address ? { streetAddress: ev.address } : {}), ...(ev.city ? { addressLocality: ev.city } : {}), ...(ev.region ? { addressRegion: ev.region } : {}), ...(ev.country ? { addressCountry: ev.country } : {}) } };
+  const ld = {
+    '@context': 'https://schema.org', '@type': 'Event', name, url: SITE + route,
+    startDate: ev.start_date, ...(ev.end_date ? { endDate: ev.end_date } : {}),
+    eventStatus: cancelled ? 'https://schema.org/EventCancelled' : 'https://schema.org/EventScheduled',
+    eventAttendanceMode: ev.is_online ? 'https://schema.org/OnlineEventAttendanceMode' : 'https://schema.org/OfflineEventAttendanceMode',
+    location,
+    ...(about ? { description: shorten(about, 500) } : {}),
+    ...(image ? { image: [image] } : {}),
+    ...(ev.organizer_name ? { organizer: { '@type': 'Organization', name: ev.organizer_name, ...(orgUrl ? { url: orgUrl } : {}) } } : {}),
+    ...(ev.is_free || ticket ? { offers: { '@type': 'Offer', url: ticket || SITE + route, ...(ev.is_free ? { price: 0, priceCurrency: 'USD' } : {}), availability: 'https://schema.org/InStock' } } : {}),
+  };
+  const city = ev.is_online ? 'Online' : (ev.city || ev.country || '');
+  return { route, title: `${name} | ${eventDay(ev.start_date, ev.country, false)}${city ? ', ' + city : ''} | Sophia Commons`, desc, bodyHtml, ld, ldId: 'detail-jsonld', image, h1: name };
+}
+
+// Everything applySeo needs for /article/<id>. Roundup items summarize another site's article, so
+// they get their own title but stay out of search results (noindex, follow) and out of the sitemap.
+export function articlePage(n) {
+  const name = n.title || 'News';
+  const text = String(n.excerpt || n.body || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const src = httpUrl(n.source_url);
+  const roundup = Array.isArray(n.tags) && n.tags.includes('roundup');
+  const desc = shorten(text || `${name}${n.source_name ? ', from ' + n.source_name : ''}.`, 158);
+  const bodyHtml = (text ? `<p>${esc(shorten(text, 600))}</p>` : '')
+    + (src ? `<p>Source: <a href="${attr(src)}" rel="nofollow noopener">${esc(n.source_name || src)}</a></p>` : '')
+    + '<p><a href="/news">More news</a></p>';
+  const route = '/article/' + n.id;
+  const ld = { '@context': 'https://schema.org', '@type': 'NewsArticle', headline: shorten(name, 110), url: SITE + route,
+    ...(n.published_at ? { datePublished: n.published_at } : {}), ...(n.updated_at ? { dateModified: n.updated_at } : {}),
+    ...(src ? { isBasedOn: src } : {}), publisher: { '@type': 'Organization', name: 'Sophia Commons', url: SITE } };
+  return { route, title: `${name} | Sophia Commons`, desc, bodyHtml, ld, ldId: 'detail-jsonld', robots: roundup ? 'noindex, follow' : '' };
 }
