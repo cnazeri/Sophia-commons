@@ -1301,6 +1301,7 @@ function showSec(id, skipPush) {
   if (id === 'books') _ensureBooksLoaded();
   if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
   if (id === 'podcasts' && typeof renderFacebookPages === 'function') renderFacebookPages();
+  if (id === 'podcasts') { renderVideoSpotlight(); renderSocialFeatured(); }
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   if (_toNews) setTimeout(function() { var n = document.getElementById('sec-news'); if (n) n.scrollIntoView({ block: 'start' }); }, 50);
@@ -4710,7 +4711,7 @@ function rerenderForLang() {
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
   if (id === 'marketplace') { renderMarketplace(); }
-  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); renderFacebookPages(); }
+  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); renderFacebookPages(); renderVideoSpotlight(); renderSocialFeatured(); }
   if (id === 'books') { renderTop50Books(); }
   if (id === 'directory' && !_allDataLoaded) { _loadAllSupabaseData(); }
   if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
@@ -4936,9 +4937,69 @@ function adminSwitchTab(tab) {
   else if (tab === 'blog' && typeof loadAdminBlog === 'function') loadAdminBlog();
   else if (tab === 'claims' && typeof loadAdminClaims === 'function') loadAdminClaims();
   else if (tab === 'outreach') loadAdminOutreach();
+  else if (tab === 'featpost') loadAdminFeatPost();
 }
 
 function adminEsc(s) { return esc(s); }
+
+// ── Admin: featured social post ──
+async function loadAdminFeatPost() {
+  var el = document.getElementById('admin-featpost-list');
+  if (!el || !sbReady()) return;
+  var urlIn = document.getElementById('fp-url');
+  if (urlIn && !urlIn._wired) {
+    urlIn._wired = true;
+    // Fill in the page name from our Facebook list when the link belongs to a known page
+    urlIn.addEventListener('change', async function () {
+      var pg = _fbPageFor(urlIn.value.trim(), await _fbFetch());
+      var name = document.getElementById('fp-page');
+      if (pg && name && !name.value) name.value = pg.name;
+      var plat = document.getElementById('fp-platform');
+      if (plat) plat.value = /instagram\.com/i.test(urlIn.value) ? 'instagram' : /(t\.me|telegram\.)/i.test(urlIn.value) ? 'telegram' : /facebook\.com|fb\.watch/i.test(urlIn.value) ? 'facebook' : 'other';
+    });
+  }
+  var r = await _sb.from('featured_posts').select('id, platform, url, excerpt, page_name, active, created_at').order('created_at', { ascending: false }).limit(20);
+  if (r.error) {
+    el.innerHTML = '<div class="admin-empty">The featured_posts table is not set up yet. Run backend/migrations/RUN_THIS_2026-10-18_featured_posts.sql in the Supabase SQL editor.</div>';
+    return;
+  }
+  var rows = r.data || [];
+  var liveId = (rows.filter(function (x) { return x.active; })[0] || {}).id;
+  el.innerHTML = rows.length ? rows.map(function (x) {
+    return '<div class="adm-row"><div><b>' + esc(x.page_name || SOCIAL_PLATFORMS[x.platform] || x.platform) + '</b>'
+      + (x.id === liveId ? ' <span class="adm-tag">on the site now</span>' : '')
+      + '<div class="adm-note"><a href="' + escUrl(x.url) + '" target="_blank" rel="noopener">' + esc(x.url) + '</a> &middot; ' + esc(localDate(x.created_at, { month: 'short', day: 'numeric', year: 'numeric' })) + '</div>'
+      + (x.excerpt ? '<div class="adm-note">' + esc(_shortText(x.excerpt, 140)) + '</div>' : '') + '</div>'
+      + '<div class="adm-tools">' + (x.id === liveId ? '<button type="button" class="adm-btn" onclick="setFeatPost(\'' + escJs(x.id) + '\', false)">Stop featuring</button>'
+        : '<button type="button" class="adm-btn" onclick="setFeatPost(\'' + escJs(x.id) + '\', true)">Feature again</button>') + '</div></div>';
+  }).join('') : '<div class="admin-empty">None yet. The site is showing a Page of the day.</div>';
+}
+
+async function saveFeatPost() {
+  var msg = document.getElementById('fp-msg');
+  var val = function (id) { return (document.getElementById(id).value || '').trim(); };
+  var url = val('fp-url'), img = val('fp-image');
+  if (!/^https:\/\/\S+$/i.test(url)) { msg.textContent = 'Please paste the post link (starting with https://).'; return; }
+  if (img && !/^https:\/\/\S+$/i.test(img)) { msg.textContent = 'The image link must start with https://.'; return; }
+  msg.textContent = 'Saving...';
+  // One featured post at a time: retire the current one, keep it as history
+  var off = await _sb.from('featured_posts').update({ active: false }).eq('active', true);
+  if (off.error) { msg.textContent = 'Could not save: ' + off.error.message; return; }
+  var r = await _sb.from('featured_posts').insert({ url: url, platform: val('fp-platform') || 'facebook', page_name: val('fp-page') || null, excerpt: val('fp-excerpt') || null, image_url: img || null, active: true });
+  if (r.error) { msg.textContent = 'Could not save: ' + r.error.message; return; }
+  document.getElementById('featpost-form').reset();
+  msg.textContent = 'Featured. It is on the Podcasts & Media page now.';
+  _featPostPromise = null;
+  loadAdminFeatPost();
+}
+
+async function setFeatPost(id, on) {
+  if (on) { var off = await _sb.from('featured_posts').update({ active: false }).eq('active', true); if (off.error) { scNotify(off.error.message); return; } }
+  var r = await _sb.from('featured_posts').update({ active: on }).eq('id', id);
+  if (r.error) { scNotify(r.error.message); return; }
+  _featPostPromise = null;
+  loadAdminFeatPost();
+}
 
 async function loadAdminListings() {
   var el = document.getElementById('admin-listings-list');
@@ -7259,19 +7320,21 @@ var _newVidOffset = 0;
 
 // Home page video: a channel's upload from the last 3 days ("New video"), otherwise the channel of
 // the day with its latest video ("Video of the day"). Shown on every screen size.
+// The same card shows on the home page and at the top of Podcasts & Media.
 async function renderVideoSpotlight() {
-  var home = document.getElementById('home-video-spotlight');
-  if (!home) return;
+  var boxes = ['home-video-spotlight', 'pod-video-spotlight'].map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  if (!boxes.length) return;
   var both = await Promise.all([_ytFetchLatest(), _loadChannelRatings()]);
   var rows = both[0], ratings = both[1];
-  var fresh = _freshVideos(rows);
+  var fresh = _freshVideos(rows), html;
   if (fresh.length) {
     var v = fresh[_newVidOffset % fresh.length];
-    home.innerHTML = renderNewVideoCard(v, fresh.length, null, ratings[v.slug]);
-    return;
+    html = renderNewVideoCard(v, fresh.length, null, ratings[v.slug]);
+  } else {
+    var ch = weeklyChannel(rows, _ytOffset);
+    html = ch && ch.video_id ? renderNewVideoCard(ch, 0, t('video.of_the_day', 'Video of the day'), ratings[ch.slug]) : renderVideoCard(ch);
   }
-  var ch = weeklyChannel(rows, _ytOffset);
-  home.innerHTML = ch && ch.video_id ? renderNewVideoCard(ch, 0, t('video.of_the_day', 'Video of the day'), ratings[ch.slug]) : renderVideoCard(ch);
+  boxes.forEach(function (b) { b.innerHTML = html; });
 }
 
 async function renderYouTubeChannels() {
@@ -7283,21 +7346,48 @@ async function renderYouTubeChannels() {
   var groups = {};
   rows.forEach(function (r) { (groups[r.category] = groups[r.category] || []).push(r); });
   var order = Object.keys(YT_CATEGORIES).filter(function (k) { return groups[k]; }).concat(Object.keys(groups).filter(function (k) { return !YT_CATEGORIES[k]; }));
-  var html = '<div class="listblock"><div class="listblock-head"><h3>' + t('podcasts.youtube_heading', 'YouTube Channels') + '</h3>'
+  var html = '<div class="listblock" id="yt-list"><div class="listblock-head"><h3>' + t('podcasts.youtube_heading', 'YouTube Channels') + '</h3>'
     + '<span class="podcast-count">' + rows.length + ' ' + t('podcasts.channels', 'channels') + '</span></div><div class="listblock-body">'
     + '<div class="yt-toolbar"><span>' + t('podcasts.youtube_note2', 'Curated anthroposophical channels, refreshed daily. Tap a channel\'s stars to see details, rate it and read reviews.') + '</span>'
     + '<a href="#" aria-expanded="false" onclick="openSuggest(\'youtube\', this);return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>'
-    + '<div class="yt-grid">';
+  ;
+  var byNewest = function (a, b) { return (b.published_at || '').localeCompare(a.published_at || '') || a.name.localeCompare(b.name); };
+  var full = '<div class="yt-grid">';
   order.forEach(function (cat) {
-    html += '<div class="yt-cat"><h4>' + esc(YT_CATEGORIES[cat] || cat) + ' <span>' + groups[cat].length + '</span></h4>';
-    groups[cat].sort(function (a, b) { return (b.published_at || '').localeCompare(a.published_at || '') || a.name.localeCompare(b.name); });
-    groups[cat].forEach(function (r) { html += _ytRowHtml(r, ratings[r.slug], week && r.slug === week.slug); });
-    html += '</div>';
+    full += '<div class="yt-cat"><h4>' + esc(YT_CATEGORIES[cat] || cat) + ' <span>' + groups[cat].length + '</span></h4>';
+    groups[cat].sort(byNewest);
+    groups[cat].forEach(function (r) { full += _ytRowHtml(r, ratings[r.slug], week && r.slug === week.slug); });
+    full += '</div>';
   });
-  html += '</div></div></div>';
+  full += '</div>';
+  // Short list: the channels with the newest videos
+  var top = rows.slice().sort(byNewest).slice(0, MEDIA_FIRST).map(function (r) { return _ytRowHtml(r, ratings[r.slug], week && r.slug === week.slug); });
+  html += _mediaListHtml('yt', top, full, rows.length, _ytOpen, '_ytOpen', t('podcasts.show_all_channels', 'Show all {n} channels'), t('podcasts.newest_videos', 'Newest videos'))
+    + '</div></div>';
   el.innerHTML = html;
   updateMediaCount();
 }
+
+// Media lists (YouTube, social media): the first MEDIA_FIRST entries as a short list; "Show all n"
+// swaps it for the full list grouped by category. stateVar remembers the choice across re-renders.
+var MEDIA_FIRST = 10;
+function _mediaListHtml(id, topRows, fullHtml, total, open, stateVar, allLabel, topHeading) {
+  if (total <= MEDIA_FIRST) return fullHtml;
+  var more = allLabel.replace('{n}', total), less = t('common.show_fewer', 'Show fewer');
+  return '<div id="' + id + '-top"' + (open ? ' hidden' : '') + '>' + (topHeading ? '<h4 class="media-top-h">' + esc(topHeading) + '</h4>' : '')
+    + '<div class="yt-grid yt-top">' + topRows.join('') + '</div></div>'
+    + '<div id="' + id + '-all"' + (open ? '' : ' hidden') + '>' + fullHtml + '</div>'
+    + '<button type="button" class="ev-more more-toggle" aria-controls="' + id + '-all" aria-expanded="' + (open ? 'true' : 'false') + '"'
+    + ' data-more="' + esc(more) + '" data-less="' + esc(less) + '" onclick="' + stateVar + ' = _mediaToggle(this, \'' + id + '\')">'
+    + esc(open ? less : more) + '</button>';
+}
+function _mediaToggle(btn, id) {
+  var top = document.getElementById(id + '-top');
+  var open = _moreToggle(btn);   // shows or hides the full list and updates the button
+  if (top) top.hidden = open;
+  return open;
+}
+var _ytOpen = false, _fbListOpen = false;
 
 function _ytRowHtml(r, rt, isWeek) {
   var meta = [esc(r.language || ''), esc(_subsText(r)), r.published_at ? esc(ytAgo(r.published_at)) : ''].filter(Boolean).join(' &middot; ');
@@ -7517,25 +7607,31 @@ async function renderFacebookPages() {
   var chip = function (kind, label) {
     return '<button type="button" class="fb-chip' + (_fbKind === kind ? ' on' : '') + '" aria-pressed="' + (_fbKind === kind) + '" onclick="setFbKind(\'' + kind + '\')">' + label + '</button>';
   };
-  var html = '<div class="listblock"><div class="listblock-head"><h3>' + t('podcasts.facebook_heading', 'Facebook Pages & Groups') + '</h3>'
+  var html = '<div class="listblock" id="social-list"><div class="listblock-head"><h3>' + t('podcasts.social_heading', 'Social Media') + '</h3>'
     + '<span class="podcast-count">' + (all.length - nGroups) + ' ' + t('podcasts.fb_pages', 'pages') + ' &middot; ' + nGroups + ' ' + t('podcasts.fb_groups', 'groups') + '</span></div><div class="listblock-body">'
-    + '<div class="yt-toolbar"><span>' + t('podcasts.facebook_note', 'Facebook pages and groups for anthroposophy, Waldorf education and biodynamic farming, gathered from the organizations\' own websites.') + '</span>'
+    + '<div class="yt-toolbar"><span>' + t('podcasts.social_note', 'Social media pages and groups for anthroposophy, Waldorf education and biodynamic farming, gathered from the organizations\' own websites.') + '</span>'
     + '<a href="#" aria-expanded="false" onclick="openSuggest(\'facebook\', this);return false;">+ ' + t('podcasts.fb_suggest', 'suggest a page or group') + '</a></div>'
     + '<div class="fb-chips" role="group" aria-label="' + esc(t('podcasts.fb_filter', 'Show')) + '">'
     + chip('all', t('podcasts.fb_all', 'All')) + chip('page', t('podcasts.fb_pages_cap', 'Pages')) + chip('group', t('podcasts.fb_groups_cap', 'Groups')) + '</div>'
-    + '<div class="yt-grid">';
+  ;
+  var byLinks = function (a, b) { return (b.listing_count || 0) - (a.listing_count || 0) || a.name.localeCompare(b.name); };
+  var full = '<div class="yt-grid">';
   order.forEach(function (cat) {
-    var list = groups[cat].sort(function (a, b) { return (b.listing_count || 0) - (a.listing_count || 0) || a.name.localeCompare(b.name); });
+    var list = groups[cat].sort(byLinks);
     var shown = _fbOpen[cat] ? list : list.slice(0, FB_PER_CAT);
-    html += '<div class="yt-cat"><h4>' + esc(FB_CATEGORIES[cat] || cat) + ' <span>' + list.length + '</span></h4>';
-    shown.forEach(function (r) { html += _fbRowHtml(r); });
+    full += '<div class="yt-cat"><h4>' + esc(FB_CATEGORIES[cat] || cat) + ' <span>' + list.length + '</span></h4>';
+    shown.forEach(function (r) { full += _fbRowHtml(r); });
     if (list.length > FB_PER_CAT) {
-      html += '<button type="button" class="fb-more" onclick="toggleFbCat(\'' + escJs(cat) + '\')">'
+      full += '<button type="button" class="fb-more" onclick="toggleFbCat(\'' + escJs(cat) + '\')">'
         + (_fbOpen[cat] ? t('podcasts.fb_less', 'show fewer') : t('podcasts.fb_more', 'show all') + ' ' + list.length) + '</button>';
     }
-    html += '</div>';
+    full += '</div>';
   });
-  html += '</div></div></div>';
+  full += '</div>';
+  // Short list: the pages and groups the most listings link to
+  var top = rows.slice().sort(byLinks).slice(0, MEDIA_FIRST).map(_fbRowHtml);
+  html += _mediaListHtml('social', top, full, rows.length, _fbListOpen, '_fbListOpen', t('podcasts.show_all_social', 'Show all {n}'), t('podcasts.most_linked', 'Most linked'))
+    + '</div></div>';
   el.innerHTML = html;
   updateMediaCount();
 }
@@ -7548,6 +7644,88 @@ function _fbRowHtml(r) {
     + '<div class="yt-main"><div><a class="ltitle" href="' + escUrl(r.url) + '" target="_blank" rel="noopener" title="' + esc(r.description || '') + '">' + esc(r.name) + '</a>'
     + (r.verified ? '<span class="lv">&#10003;</span>' : '') + '</div>'
     + '<span class="lmeta">' + meta + '</span></div></div>';
+}
+
+// ── Featured social post (top of Social Media) ──
+// The admin picks a post in Admin > Featured post (table featured_posts; the newest active row wins).
+// Facebook does not let a site read a page's posts, so the card shows the admin's excerpt and link;
+// the official embed loads only when the visitor asks for it (Facebook sets cookies).
+// With no post chosen (or before the table exists) the card shows a "Page of the day" instead.
+var SOCIAL_PLATFORMS = { facebook: 'Facebook', instagram: 'Instagram', telegram: 'Telegram', other: '' };
+var _featPostPromise = null;
+function _loadFeaturedPost() {
+  if (!_featPostPromise) _featPostPromise = (async function () {
+    if (!sbReady()) return null;
+    try {
+      var r = await _sb.from('featured_posts').select('id, platform, url, excerpt, image_url, page_name')
+        .eq('active', true).order('created_at', { ascending: false }).limit(1);
+      return r.error || !r.data || !r.data.length ? null : r.data[0];
+    } catch (e) { return null; }
+  })();
+  return _featPostPromise;
+}
+
+function _fbPageFor(url, pages) {
+  var u = String(url || '').toLowerCase().replace(/^https:\/\/(www\.|m\.)?/, '').replace(/\/+$/, '');
+  var best = null;
+  pages.forEach(function (p) {
+    var pu = String(p.url || '').toLowerCase().replace(/^https:\/\/(www\.|m\.)?/, '').replace(/\/+$/, '');
+    if (pu && (u === pu || u.indexOf(pu + '/') === 0) && (!best || pu.length > best._len)) best = Object.assign({ _len: pu.length }, p);
+  });
+  return best;
+}
+
+async function renderSocialFeatured() {
+  var el = document.getElementById('social-featured');
+  if (!el) return;
+  var both = await Promise.all([_loadFeaturedPost(), _fbFetch()]);
+  var post = both[0], pages = both[1];
+  if (post) { el.innerHTML = _socialPostHtml(post, _fbPageFor(post.url, pages)); return; }
+  var pool = pages.filter(function (p) { return p.kind === 'page' && p.avatar_url && p.description; })
+    .sort(function (a, b) { return a.slug.localeCompare(b.slug); });
+  if (!pool.length) { el.innerHTML = ''; return; }
+  el.innerHTML = _socialPageOfDayHtml(pool[Math.floor(Date.now() / 864e5) % pool.length]);
+}
+
+function _socialHead(kicker, page, name) {
+  return '<div class="sf-page">' + (page && page.avatar_url ? '<img src="' + escUrl(page.avatar_url) + '" alt="" width="40" height="40" loading="lazy">' : '<span class="yt-ava fb-ava" aria-hidden="true">f</span>')
+    + '<div><span class="etag">' + esc(kicker) + '</span><b>' + esc(name || (page && page.name) || '') + '</b>'
+    + (page && page.members_text ? '<span class="lmeta">' + esc(page.members_text) + '</span>' : '') + '</div></div>';
+}
+
+function _socialPostHtml(post, page) {
+  var plat = SOCIAL_PLATFORMS[post.platform] || '';
+  var canEmbed = post.platform === 'facebook' && /^https:\/\/(www\.|m\.)?facebook\.com\//i.test(post.url);
+  return '<div class="listblock social-feat"><div class="sf-body">'
+    + (post.image_url ? '<a class="sf-img" href="' + escUrl(post.url) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(post.image_url) + '" alt="" loading="lazy"></a>' : '')
+    + '<div class="sf-main">' + _socialHead(t('social.featured_post', 'Featured post') + (plat ? ' \u00b7 ' + plat : ''), page, post.page_name)
+    + (post.excerpt ? '<p class="sf-text">' + esc(post.excerpt) + '</p>' : '')
+    + '<div class="video-actions"><a href="' + escUrl(post.url) + '" target="_blank" rel="noopener">' + esc(t('social.view_on', 'View on {platform}').replace('{platform}', plat || t('social.the_site', 'the site'))) + ' &rarr;</a>'
+    + (canEmbed ? '<button type="button" class="sf-load" onclick="loadSocialEmbed(this, \'' + escJs(post.url) + '\')">' + esc(t('social.load_embed', 'Show the post here')) + '</button>' : '')
+    + '</div>' + (canEmbed ? '<p class="sf-note">' + esc(t('social.embed_note', 'Showing it here loads the post from Facebook, which may set cookies.')) + '</p><div class="sf-embed"></div>' : '')
+    + '</div></div></div>';
+}
+
+function _socialPageOfDayHtml(p) {
+  return '<div class="listblock social-feat"><div class="sf-body"><div class="sf-main">'
+    + _socialHead(t('social.page_of_day', 'Page of the day'), p)
+    + '<p class="sf-text">' + esc(_shortText(p.description, 220)) + '</p>'
+    + '<div class="video-actions"><a href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(t('social.view_on', 'View on {platform}').replace('{platform}', 'Facebook')) + ' &rarr;</a></div>'
+    + '</div></div></div>';
+}
+
+function loadSocialEmbed(btn, url) {
+  var box = btn.closest('.sf-main').querySelector('.sf-embed');
+  if (!box || box.firstChild) return;
+  var f = document.createElement('iframe');
+  f.src = 'https://www.facebook.com/plugins/post.php?href=' + encodeURIComponent(url) + '&show_text=true&width=500';
+  f.title = t('social.featured_post', 'Featured post');
+  f.loading = 'lazy';
+  f.setAttribute('allow', 'encrypted-media; picture-in-picture; web-share');
+  box.appendChild(f);
+  btn.remove();
+  var note = box.parentNode.querySelector('.sf-note');
+  if (note) note.remove();
 }
 
 // Inline "suggest" form shown under a list's toolbar (YouTube channels, Facebook pages).
