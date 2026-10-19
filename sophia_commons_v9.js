@@ -1249,7 +1249,7 @@ function _getSecMeta() {
     browse:    { title: t('meta.browse_title', "Browse Categories | Sophia Commons"), desc: t('meta.browse_desc', 'Browse Waldorf schools, biodynamic farms, Camphill communities, eurythmy programs, anthroposophic medicine, and more by category.') },
     directory: { title: t('meta.directory_title', "Global Directory | Sophia Commons"), desc: t('meta.directory_desc', 'Interactive map and directory of 430+ anthroposophical organizations across 30+ countries worldwide.') },
     books:     { title: t('meta.books_title', 'Books & Library | Sophia Commons'), desc: t('meta.books_desc', 'Rudolf Steiner catalog and the top 50 anthroposophical books.') },
-    podcasts:  { title: t('meta.podcasts_title', 'Podcasts & Media | Sophia Commons'), desc: t('meta.podcasts_desc', 'Anthroposophical podcasts, YouTube channels, archives and media.') },
+    podcasts:  { title: t('meta.podcasts_title', 'Social Media | Sophia Commons'), desc: t('meta.podcasts_desc', 'Anthroposophical podcasts, YouTube channels, archives and media.') },
     memorial:  { title: t('meta.memorial_title', "In Memoriam | Sophia Commons"), desc: t('meta.memorial_desc', 'Honoring members of the anthroposophical community who have crossed the threshold.') },
     marketplace: { title: t('meta.marketplace_title', "Marketplace | Sophia Commons"), desc: t('meta.marketplace_desc', 'Buy, sell, share and swap within the anthroposophical community: books, crafts, biodynamic goods and more.') },
     chat:      { title: t('meta.chat_title', 'Community Chat | Sophia Commons'), desc: t('meta.chat_desc', 'Live conversation rooms for members of the anthroposophical community.') },
@@ -4989,7 +4989,7 @@ async function saveFeatPost() {
   var r = await _sb.from('featured_posts').insert({ url: url, platform: val('fp-platform') || 'facebook', page_name: val('fp-page') || null, excerpt: val('fp-excerpt') || null, image_url: img || null, active: true });
   if (r.error) { msg.textContent = 'Could not save: ' + r.error.message; return; }
   document.getElementById('featpost-form').reset();
-  msg.textContent = 'Featured. It is on the Podcasts & Media page now.';
+  msg.textContent = 'Featured. It is on the Social Media page now.';
   _featPostPromise = null;
   loadAdminFeatPost();
 }
@@ -7599,7 +7599,7 @@ async function renderFacebookPages() {
   var el = document.getElementById('fb-pages-block');
   if (!el) return;
   var all = await _fbFetch();
-  if (!all.length) { el.innerHTML = '<div class="listblock" id="social-list"><div class="listblock-head"><h3>' + t('podcasts.social_heading', 'Social Media') + '</h3></div><div class="listblock-body">' + _socialExtraHtml() + '</div></div>'; return; }
+  if (!all.length) { el.innerHTML = '<div class="listblock" id="social-list"><div class="listblock-head"><h3>' + t('podcasts.social_heading', 'Pages & Groups') + '</h3></div><div class="listblock-body">' + _socialExtraHtml() + '</div></div>'; return; }
   var rows = all.filter(function (r) { return _fbKind === 'all' || r.kind === _fbKind; });
   var groups = {};
   rows.forEach(function (r) { (groups[r.category] = groups[r.category] || []).push(r); });
@@ -7608,7 +7608,7 @@ async function renderFacebookPages() {
   var chip = function (kind, label) {
     return '<button type="button" class="fb-chip' + (_fbKind === kind ? ' on' : '') + '" aria-pressed="' + (_fbKind === kind) + '" onclick="setFbKind(\'' + kind + '\')">' + label + '</button>';
   };
-  var html = '<div class="listblock" id="social-list"><div class="listblock-head"><h3>' + t('podcasts.social_heading', 'Social Media') + '</h3>'
+  var html = '<div class="listblock" id="social-list"><div class="listblock-head"><h3>' + t('podcasts.social_heading', 'Pages & Groups') + '</h3>'
     + '<span class="podcast-count">' + (all.length - nGroups) + ' ' + t('podcasts.fb_pages', 'pages') + ' &middot; ' + nGroups + ' ' + t('podcasts.fb_groups', 'groups') + '</span></div><div class="listblock-body">'
     + '<div class="yt-toolbar"><span>' + t('podcasts.social_note', 'Social media pages and groups for anthroposophy, Waldorf education and biodynamic farming, gathered from the organizations\' own websites.') + '</span>'
     + '<a href="#" aria-expanded="false" onclick="openSuggest(\'facebook\', this);return false;">+ ' + t('podcasts.fb_suggest', 'suggest a page or group') + '</a></div>'

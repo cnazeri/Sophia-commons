@@ -50,7 +50,7 @@ const SECTIONS = [
   ['news', 'News', 'News from the anthroposophical movement worldwide.'],
   ['blog', 'Blog', 'Articles and reflections from the anthroposophical community.'],
   ['books', 'Books & Library', 'Rudolf Steiner\'s works by GA number and the top 50 anthroposophical books, with free online texts.'],
-  ['podcasts', 'Podcasts & Media', 'Anthroposophical YouTube channels, podcasts and media, refreshed daily.'],
+  ['podcasts', 'Social Media', 'Anthroposophical YouTube channels, podcasts and media, refreshed daily.'],
   ['memorial', 'In Memoriam', 'Remembering members of the anthroposophical community.'],
   ['eldercare', 'Eldercare', 'Anthroposophical eldercare, senior living and nursing care.'],
   ['about', 'About', 'Sophia Commons is a free directory and resource hub for the anthroposophical community.'],
