@@ -7320,9 +7320,9 @@ var _newVidOffset = 0;
 
 // Home page video: a channel's upload from the last 3 days ("New video"), otherwise the channel of
 // the day with its latest video ("Video of the day"). Shown on every screen size.
-// The same card shows on the home page and at the top of Podcasts & Media.
+// Video of the day: the top of Podcasts & Media (it left the home page in v1.71.1).
 async function renderVideoSpotlight() {
-  var boxes = ['home-video-spotlight', 'pod-video-spotlight'].map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  var boxes = ['pod-video-spotlight'].map(function (id) { return document.getElementById(id); }).filter(Boolean);
   if (!boxes.length) return;
   var both = await Promise.all([_ytFetchLatest(), _loadChannelRatings()]);
   var rows = both[0], ratings = both[1];
@@ -7811,8 +7811,7 @@ function renderTop50Books() {
 document.addEventListener('DOMContentLoaded', function () {
   // Books and Podcasts are hidden on most first visits; showSec() renders them when opened
   if (_secVisible('books')) renderTop50Books();
-  renderVideoSpotlight();
-  if (_secVisible('podcasts')) renderYouTubeChannels();
+  if (_secVisible('podcasts')) { renderVideoSpotlight(); renderYouTubeChannels(); }
 });
 
 // Static pages built at deploy time (automation/prerender.mjs) carry a crawler summary in #prerender.
