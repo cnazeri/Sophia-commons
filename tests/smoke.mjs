@@ -48,6 +48,20 @@ try {
     await ctx.close();
   }
 
+  // Phone menu: links must be tappable (the dim overlay once sat on top of the menu and ate every tap)
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: 'block' });
+    const page = await ctx.newPage();
+    await page.goto(BASE + '/', { waitUntil: 'load' });
+    await page.locator('#hamburger-btn').tap();
+    let err = '';
+    try { await page.locator('#leftbar a[data-i18n="sidebar.category_biodynamic"]').tap({ timeout: 4000 }); } catch (e) { err = e.message.split('\n')[0]; }
+    await page.waitForTimeout(800);
+    const st = await page.evaluate(() => ({ sec: document.querySelector('.pagesec.active')?.id, open: document.getElementById('leftbar').classList.contains('mobile-open') }));
+    check(!err && st.sec === 'sec-category' && !st.open, `[mobile] menu link opens its page and closes the menu (${err || JSON.stringify(st)})`);
+    await ctx.close();
+  }
+
   // Small phones (360px): a category page full of placeholders plus the listings most likely to
   // push the page sideways (longest name, web address, email, address). Names the widest culprit.
   {

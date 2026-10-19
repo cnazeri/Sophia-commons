@@ -968,6 +968,9 @@ header {
   z-index: 1;
 }
 
+/* Phone menu overlay: hidden on desktop so it never takes a grid column */
+.menu-overlay { display: none; }
+
 /* ── LEFT SIDEBAR ── */
 #leftbar {
   border-right: 1px solid var(--border-subtle);
@@ -1618,14 +1621,15 @@ footer {
   #leftbar {
     display: none;
     position: fixed; top: 0; left: 0; bottom: 0;
-    width: 280px; z-index: 200;
+    width: 280px; z-index: 1101;
     background: var(--elevated);
     box-shadow: 4px 0 20px rgba(44,36,24,0.15);
     overflow-y: auto;
-    padding-top: 80px;
+    padding-top: 16px;
   }
   #leftbar.mobile-open { display: block; }
-  .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 199; display: none; }
+  /* Inside #page (its own stacking layer, below the sticky header), above the map's panes */
+  .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 1100; display: none; }
   .menu-overlay.active { display: block; }
   #rightbar { display: none; }
   .catgrid { grid-template-columns: 1fr 1fr; }

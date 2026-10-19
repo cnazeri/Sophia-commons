@@ -1303,12 +1303,7 @@ function showSec(id, skipPush) {
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   if (_toNews) setTimeout(function() { var n = document.getElementById('sec-news'); if (n) n.scrollIntoView({ block: 'start' }); }, 50);
-  const leftbar = document.getElementById('leftbar');
-  const hamburger = document.getElementById('hamburger-btn');
-  const ov = document.getElementById('menu-overlay');
-  if (leftbar) leftbar.classList.remove('mobile-open');
-  if (hamburger) hamburger.classList.remove('active');
-  if (ov) ov.classList.remove('active');
+  closeMobileMenu();
   // Update SEO meta
   var secMeta = _getSecMeta();
   var meta = secMeta[id];
@@ -1328,17 +1323,25 @@ function handleChat() {
 }
 
 // ── MOBILE MENU ──
-function toggleMobileMenu() {
+function _setMobileMenu(open) {
   var lb = document.getElementById('leftbar');
   var hb = document.getElementById('hamburger-btn');
   var ov = document.getElementById('menu-overlay');
-  lb.classList.toggle('mobile-open');
-  hb.classList.toggle('active');
-  if (ov) ov.classList.toggle('active');
-  var expanded = lb.classList.contains('mobile-open');
-  hb.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-  hb.setAttribute('aria-label', expanded ? t('a11y.close_nav') : t('a11y.open_nav'));
+  var hdr = document.getElementById('site-header');
+  if (!lb || !hb || open === lb.classList.contains('mobile-open')) return;
+  // The menu sits below the sticky header, so start it where the header ends
+  if (open && hdr) lb.style.top = Math.max(0, Math.round(hdr.getBoundingClientRect().bottom)) + 'px';
+  lb.classList.toggle('mobile-open', open);
+  hb.classList.toggle('active', open);
+  if (ov) ov.classList.toggle('active', open);
+  hb.setAttribute('aria-expanded', open ? 'true' : 'false');
+  hb.setAttribute('aria-label', open ? t('a11y.close_nav') : t('a11y.open_nav'));
 }
+function toggleMobileMenu() {
+  var lb = document.getElementById('leftbar');
+  _setMobileMenu(!(lb && lb.classList.contains('mobile-open')));
+}
+function closeMobileMenu() { _setMobileMenu(false); }
 
 // ── STICKY NAV SCROLL ──
 var _scrollTicking = false;
@@ -2887,12 +2890,7 @@ function doSearch() {
   var q = document.getElementById('searchinput').value.trim();
   if (!q) return;
 
-  var leftbar = document.getElementById('leftbar');
-  var hamburger = document.getElementById('hamburger-btn');
-  var menuOverlay = document.getElementById('menu-overlay');
-  if (leftbar) leftbar.classList.remove('mobile-open');
-  if (hamburger) hamburger.classList.remove('active');
-  if (menuOverlay) menuOverlay.classList.remove('active');
+  closeMobileMenu();
 
   if (sbReady()) {
     // The search_all RPC (V2) does not match the live function signature and does not
