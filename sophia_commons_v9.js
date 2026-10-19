@@ -705,6 +705,26 @@ async function _sbAllRows(makeQuery) {
   return rows;
 }
 
+async function _classifiedBlock(catId) {
+  try {
+    var r = await _sb.from('listings').select('id, title, description, location, country, website_url, listing_type, created_at')
+      .eq('status', 'active').eq('category_id', catId).order('created_at', { ascending: false }).limit(60);
+    var ads = r.error ? [] : (r.data || []);
+    if (!ads.length) return '';
+    return '<div class="listblock"><div class="listblock-head"><h3>' + esc(t('classifieds.current', 'Current posts')) + '</h3>'
+      + '<span class="podcast-count">' + ads.length + '</span></div><div class="listblock-body">'
+      + ads.map(function(a) {
+          var meta = [[a.location, a.country].filter(Boolean).join(', '), localDate(a.created_at, { month: 'short', day: 'numeric' })].filter(Boolean).join(' \u00b7 ');
+          return '<div class="dir-row"><div class="dir-row-body"><div class="dir-row-main">'
+            + '<a class="ltitle" href="/classified/' + esc(a.id) + '" onclick="showDetail(\'listing\',\'' + escJs(a.id) + '\');return false;">' + esc(a.title) + '</a>'
+            + '<span class="lmeta">' + esc(meta) + '</span></div>'
+            + (a.description ? '<div class="dir-row-desc">' + esc(_shortText(a.description, 200)) + '</div>' : '')
+            + (a.website_url ? '<a class="dir-tag" href="' + escUrl(a.website_url) + '" target="_blank" rel="noopener">' + esc(t('classifieds.original', 'see the original post')) + ' &rarr;</a>' : '')
+            + '</div></div>';
+        }).join('') + '</div></div>';
+  } catch (e) { return ''; }
+}
+
 async function loadCategoryPage(catKey, dirCat, opts) {
   opts = opts || {};
   var container = document.getElementById('cat-page-content');
@@ -733,6 +753,9 @@ async function loadCategoryPage(catKey, dirCat, opts) {
   if (dirEntries.length > 0) {
     html += _dirListShell(dirEntries, opts.q || '');
   }
+
+  // Classified sections (Jobs, Housing, Marketplace): their ads from the listings table
+  if (sbReady() && CLASSIFIED_CAT_IDS[catKey]) html += await _classifiedBlock(CLASSIFIED_CAT_IDS[catKey]);
 
   // ── 2. Related Events ──
   var events = [];
@@ -1255,15 +1278,22 @@ _wirePlaceholderLinks();
 
 // Classified sections (Free & Sharing, Jobs, Housing, Marketplace) have no posts yet. Say so
 // plainly and invite the first post, instead of showing invented counts.
+// Classified sections and their categories.id (Free & Sharing has no category yet, so it stays empty)
+var CLASSIFIED_CAT_IDS = { 'jobs & volunteering': 11, 'housing & room rent': 10, 'marketplace': 9 };
+
 async function _markEmptyClassifieds() {
   if (!sbReady()) return;
   try {
-    var r = await _sb.from('listings').select('id', { count: 'exact', head: true }).eq('status', 'active');
-    if (r.error || (r.count || 0) > 0) return;
+    var r = await _sb.from('listings').select('category_id').eq('status', 'active').limit(1000);
+    if (r.error) return;
+    var counts = {};
+    (r.data || []).forEach(function(x) { counts[x.category_id] = (counts[x.category_id] || 0) + 1; });
     document.querySelectorAll('.catblock').forEach(function(block) {
       var name = _catNameForBlock(block);
       var meta = name && catMeta[name.toLowerCase()];
       if (!meta || meta.dirCat || block.querySelector('.catblock-empty')) return;
+      var n = counts[CLASSIFIED_CAT_IDS[name.toLowerCase()]] || 0;
+      if (n) { var cb = block.querySelector('.catblock-head .alllink'); if (cb) { cb.hidden = false; cb.textContent = n + ' \u2192'; } return; }
       block.classList.add('is-empty');
       var badge = block.querySelector('.catblock-head .alllink');
       if (badge) { badge.hidden = false; badge.textContent = t('classifieds.new', 'new'); badge.classList.add('badge-new'); }
@@ -3003,6 +3033,51 @@ function doSearch() {
   }
 }
 
+// Search YouTube channels and social media pages by name and description (all words, in order:
+// "steiner lectures" -> *steiner*lectures*). Channels also match their group's name, so
+// "Steiner lectures" finds the whole "Rudolf Steiner Lectures & Readings" group. Never throws.
+async function _mediaSearch(table, cols, q, withGroups) {
+  var words = q.trim().split(/\s+/).map(function(w) { return w.replace(/[^\p{L}\p{N}]/gu, ''); }).filter(Boolean);
+  if (!words.length) return [];
+  var pat = '*' + words.join('*') + '*';
+  var ors = ['name.ilike.' + pat, 'description.ilike.' + pat];
+  if (withGroups) {
+    var re = new RegExp(words.map(function(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('.*'), 'i');
+    var groups = Object.keys(YT_CATEGORIES).filter(function(k) { return re.test(YT_CATEGORIES[k]); });
+    if (groups.length) ors.push('category.in.(' + groups.join(',') + ')');
+  }
+  try {
+    var r = await _sb.from(table).select(cols).or(ors.join(',')).order('name').limit(12);
+    return r.error ? [] : (r.data || []);
+  } catch (e) { return []; }
+}
+
+function _mediaResultsHtml(yt, fb) {
+  var head = function(label, n) { return '<div class="sr-media-h">' + esc(label) + ' (' + n + ')</div>'; };
+  var html = '';
+  if (yt.length) {
+    html += '<div class="sr-media">' + head(t('podcasts.youtube_heading', 'YouTube Channels'), yt.length);
+    yt.forEach(function(c) {
+      html += '<div class="sr-media-row"><a class="ltitle" href="' + escUrl(c.url) + '" target="_blank" rel="noopener">' + esc(c.name) + '</a>'
+        + ' <span class="lmeta">' + esc([c.language, YT_CATEGORIES[c.category]].filter(Boolean).join(' \u00b7 ')) + '</span>'
+        + ' <a href="#" class="sr-media-more" onclick="openChannel(\'' + escJs(c.slug) + '\', this);return false;">' + esc(t('channel.details', 'details, ratings and reviews')) + '</a>'
+        + (c.description ? '<div class="sr-media-desc">' + esc(_shortText(c.description, 140)) + '</div>' : '') + '</div>';
+    });
+    html += '</div>';
+  }
+  if (fb.length) {
+    html += '<div class="sr-media">' + head(t('podcasts.social_heading', 'Pages & Groups'), fb.length);
+    fb.forEach(function(p) {
+      var kind = p.kind === 'group' ? t('podcasts.fb_group', 'Group') : t('podcasts.fb_page', 'Page');
+      html += '<div class="sr-media-row"><a class="ltitle" href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.name) + '</a>'
+        + ' <span class="lmeta">' + esc(['Facebook', kind, p.country].filter(Boolean).join(' \u00b7 ')) + '</span>'
+        + (p.description ? '<div class="sr-media-desc">' + esc(_shortText(p.description, 140)) + '</div>' : '') + '</div>';
+    });
+    html += '</div>';
+  }
+  return html;
+}
+
 async function _doSupabaseSearch(q) {
   var tsQuery = q.trim().split(/\s+/).map(function(w) { return w.replace(/[^\p{L}\p{N}]/gu, ''); }).filter(Boolean).join(' & ');  // keep accented letters (König, Dornach)
   if (!tsQuery) { _doLocalSearch(q.toLowerCase()); return; }
@@ -3022,13 +3097,16 @@ async function _doSupabaseSearch(q) {
       _sb.from('news')
         .select('id, title, excerpt, source_name, tags')
         .textSearch('search_vector', tsQuery)
-        .limit(15)
+        .limit(15),
+      _mediaSearch('youtube_channels', 'slug, name, description, url, language, category', q, true),
+      _mediaSearch('facebook_pages', 'slug, name, description, url, kind, country', q, false)
     ]);
 
     var dirResults = (!results[0].error && results[0].data) ? results[0].data : [];
     var evResults = (!results[1].error && results[1].data) ? results[1].data : [];
     var newsResults = (!results[2].error && results[2].data) ? results[2].data : [];
-    var totalCount = dirResults.length + evResults.length + newsResults.length;
+    var ytResults = results[3], fbResults = results[4];
+    var totalCount = dirResults.length + evResults.length + newsResults.length + ytResults.length + fbResults.length;
 
     if (totalCount === 0) {
       _showSearchResults(q, '<div style="text-align:center;padding:32px 0;color:var(--text-muted);">' +
@@ -3086,6 +3164,7 @@ async function _doSupabaseSearch(q) {
       html += '</div>';
     }
 
+    html += _mediaResultsHtml(ytResults, fbResults);
     _showSearchResults(q, html, totalCount);
   } catch(e) {
     console.warn('Supabase search error, falling back to local:', e);

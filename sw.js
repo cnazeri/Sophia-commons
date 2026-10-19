@@ -1,4 +1,4 @@
-var CACHE_NAME = 'sophia-commons-v1.74.0';
+var CACHE_NAME = 'sophia-commons-v1.75.0';
 var STATIC_ASSETS = [
   '/',
   '/sophia_commons_v9.css',
@@ -7,7 +7,9 @@ var STATIC_ASSETS = [
   '/claims.js',
   '/i18n.js',
   '/lang/en.json',
-  '/manifest.json'
+  '/manifest.json',
+  '/offline.html',
+  '/img/logo-mark-112.webp'
 ];
 
 self.addEventListener('install', function(event) {
@@ -67,9 +69,10 @@ self.addEventListener('fetch', function(event) {
       // Serve from cache when offline
       return caches.match(event.request, { ignoreSearch: true }).then(function(cached) {
         if (cached) return cached;
-        // For navigation requests, serve the cached index
+        // Navigations: the home page works from cache; any other page gets a clear offline page
+        // (the app shell alone would sit on "Loading..." without the database)
         if (event.request.mode === 'navigate') {
-          return caches.match('/');
+          return url.pathname === '/' ? caches.match('/') : caches.match('/offline.html');
         }
       });
     })

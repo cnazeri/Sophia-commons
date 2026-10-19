@@ -4,8 +4,8 @@
   "description": "The free global directory for the anthroposophical community",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FAF6EE",
-  "theme_color": "#B8923A",
+  "background_color": "#FDFBF7",
+  "theme_color": "#FDFBF7",
   "orientation": "any",
   "scope": "/",
   "icons": [

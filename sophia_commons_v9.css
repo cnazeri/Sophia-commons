@@ -3891,3 +3891,11 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
   #center .dir-row-main .lmeta { flex-basis: 100%; }
   footer, footer a { font-size: 14px; }
 }
+/* Search results: YouTube channels and social media pages */
+.sr-media { margin-bottom: 16px; }
+.sr-media-h { font-size: 11px; text-transform: uppercase; color: var(--gold-text); font-weight: 700; letter-spacing: .08em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border-subtle); }
+.sr-media-row { padding: 8px 0; border-bottom: 1px solid var(--border-subtle); }
+.sr-media-row .ltitle { font-family: Lora, serif; font-weight: 700; font-size: 14px; color: var(--text-primary); }
+.sr-media-more { font-size: 12px; color: var(--gold-text); font-weight: 600; margin-left: 6px; }
+.sr-media-desc { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+@media (max-width: 768px) { .sr-media-row .ltitle { font-size: 16px; } .sr-media-desc { font-size: 14px; } }

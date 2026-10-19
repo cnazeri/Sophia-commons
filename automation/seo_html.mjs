@@ -25,7 +25,7 @@ export const CATEGORIES = [
 ];
 
 // Columns a listing page needs (public, anon-readable; email deliberately left out of static HTML)
-export const LISTING_COLUMNS = 'id,organization_name,description,category,address,city,region,location,country,website_url,phone,tags,photo_url,latitude,longitude,is_verified,updated_at';
+export const LISTING_COLUMNS = 'id,organization_name,description,category,address,city,region,location,country,website_url,facebook_url,phone,tags,photo_url,latitude,longitude,is_verified,updated_at';
 
 export function place(e) { return [e.city || e.location, e.country].filter(Boolean).join(', '); }
 
@@ -72,7 +72,7 @@ export function categoryOf(e) {
 }
 
 // Everything applySeo needs for /listing/<id>. `related` = a few other listings to link to.
-export function listingPage(e, related = []) {
+export function listingPage(e, related = [], nearby = []) {
   const [catUrl, catLabel] = categoryOf(e);
   const where = place(e);
   const name = e.organization_name || 'Listing';
@@ -80,6 +80,7 @@ export function listingPage(e, related = []) {
   const fallback = `${catLabel}${where ? ' in ' + where : ''}. Address, website and details in the Sophia Commons directory.`;
   const desc = shorten(about || fallback, 158);
   const website = e.website_url && /^https?:\/\//.test(e.website_url) ? e.website_url : '';
+  const facebook = e.facebook_url && /^https:\/\/(www\.|m\.)?facebook\.com\//i.test(e.facebook_url) ? e.facebook_url : '';
   const image = e.photo_url && /^https:\/\//.test(e.photo_url) ? e.photo_url.split('#')[0] : '';
   const tags = Array.isArray(e.tags) ? e.tags.filter(Boolean) : [];
   const addr = [e.address, e.region, e.country].filter(Boolean).join(', ');
@@ -88,11 +89,15 @@ export function listingPage(e, related = []) {
     `<li>Category: <a href="${catUrl}">${esc(catLabel)}</a></li>`,
     addr ? `<li>Address: ${esc(addr)}</li>` : (where ? `<li>Location: ${esc(where)}</li>` : ''),
     website ? `<li>Website: <a href="${attr(website)}" rel="nofollow noopener">${esc(website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a></li>` : '',
+    e.phone ? `<li>Phone: ${esc(e.phone)}</li>` : '',
+    facebook ? `<li>Facebook: <a href="${attr(facebook)}" rel="nofollow noopener">${esc(facebook.replace(/^https:\/\/(www\.|m\.)?facebook\.com\//i, '').replace(/\/$/, '') || 'page')}</a></li>` : '',
     tags.length ? `<li>Topics: ${tags.map(esc).join(', ')}</li>` : '',
+    `<li>${e.is_verified ? 'Details checked by the Sophia Commons team' : 'Listed in the Sophia Commons directory'}${e.updated_at ? ', last updated ' + esc(String(e.updated_at).slice(0, 10)) : ''}</li>`,
   ].join('');
   const bodyHtml = (about.length > desc.length ? `<p>${esc(about)}</p>` : '')
     + `<ul>${facts}</ul>`
     + (related.length ? `<h2>More ${esc(catLabel)}${e.country ? ' in ' + esc(e.country) : ''}</h2>` + entryList(related) : '')
+    + nearbyHtml(e, nearby)
     + placeLinks(e, related.length);
 
   const route = '/listing/' + e.id;
@@ -102,7 +107,7 @@ export function listingPage(e, related = []) {
     name,
     url: SITE + route,
     ...(about ? { description: shorten(about, 300) } : {}),
-    ...(website ? { sameAs: [website] } : {}),
+    ...(website || facebook ? { sameAs: [website, facebook].filter(Boolean) } : {}),
     ...(image ? { image } : {}),
     ...(e.phone ? { telephone: e.phone } : {}),
     ...(addr || where ? { address: { '@type': 'PostalAddress', ...(e.address ? { streetAddress: e.address } : {}), ...(e.city || e.location ? { addressLocality: e.city || e.location } : {}), ...(e.region ? { addressRegion: e.region } : {}), ...(e.country ? { addressCountry: e.country } : {}) } } : {}),
@@ -231,4 +236,19 @@ export function placeLinks(e, sameCatCount) {
   if (pc && sameCatCount >= MIN_COMBO - 1) links.push(`<a href="/category/${pc[0]}/${countrySlug(e.country)}">${esc(pc[1])} in ${esc(L)}</a>`);
   links.push(`<a href="/country/${countrySlug(e.country)}">Everything in ${esc(L)}</a>`);
   return `<p>${links.join(' &middot; ')}</p>`;
+}
+
+// Nearby listings of any kind (within about 60 km), nearest first, with the distance.
+export function kmBetween(a, b) {
+  const r = Math.PI / 180, dLat = (b.latitude - a.latitude) * r, dLng = (b.longitude - a.longitude) * r;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.latitude * r) * Math.cos(b.latitude * r) * Math.sin(dLng / 2) ** 2;
+  return 12742 * Math.asin(Math.sqrt(h));
+}
+export function nearbyHtml(e, nearby) {
+  if (!nearby.length) return '';
+  const near = e.city || e.location || e.organization_name;
+  return `<h2>Nearby${near ? ': around ' + esc(near) : ''}</h2><ul>` + nearby.map(n => {
+    const km = n._km < 1 ? 'under 1 km' : Math.round(n._km) + ' km';
+    return `<li><a href="/listing/${attr(n.id)}">${esc(n.organization_name)}</a> (${esc([n.city || n.location, categoryOf(n)[1]].filter(Boolean).join(', '))}, ${km})</li>`;
+  }).join('') + '</ul>';
 }

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FDFBF7">
+<title>You're offline | Sophia Commons</title>
+<style>
+  :root { --bg: #FDFBF7; --ink: #2C2418; --muted: #6B5E4B; --gold: #C9A23A; --gold-text: #7A5C12; --border: #E6DCC8; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+         background: var(--bg); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 420px; text-align: center; }
+  img { width: 56px; height: auto; margin-bottom: 12px; }
+  h1 { font-size: 24px; margin: 0 0 8px; }
+  p { color: var(--muted); margin: 0 0 18px; }
+  button { min-height: 48px; padding: 0 28px; border: 0; border-radius: 50px; background: var(--gold); color: var(--ink);
+           font: inherit; font-weight: 700; cursor: pointer; }
+  button:focus-visible { outline: 3px solid var(--gold-text); outline-offset: 3px; }
+  a { color: var(--gold-text); font-weight: 600; }
+  .home { display: block; margin-top: 16px; font-size: 15px; }
+</style>
+</head>
+<body>
+<main>
+  <img src="/img/logo-mark-112.webp" alt="" width="73" height="112">
+  <h1>You're offline</h1>
+  <p>This page needs an internet connection. Pages you opened recently may still work. Everything else comes back as soon as you're online again.</p>
+  <button type="button" onclick="location.reload()">Try again</button>
+  <a class="home" href="/">Go to the home page</a>
+</main>
+<script>window.addEventListener('online', function () { location.reload(); });</script>
+</body>
+</html>
