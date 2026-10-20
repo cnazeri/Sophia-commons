@@ -1386,6 +1386,7 @@ function showSec(id, skipPush) {
   document.getElementById('sec-' + id).classList.add('active');
   const btn = document.getElementById('nav-' + id);
   if (btn) btn.classList.add('active');
+  _promoteSecH1(document.getElementById('sec-' + id));
   window.scrollTo(0,0);
   if (id === 'directory' && !mapLoaded) loadMap();
   if (id === 'eldercare') loadEldercareLive();
@@ -1412,6 +1413,23 @@ function showSec(id, skipPush) {
       history.pushState({ type: 'section', id: id }, '', path);
     }
   }
+}
+
+// One visible H1 per page: the open section's label (e.g. "Waldorf & education") becomes the H1 and
+// the previous one goes back to a div. All sections share one document, so a fixed H1 in each would
+// put a dozen H1s on every page. Home keeps its own (sr-only) H1; detail pages render theirs.
+function _swapTag(el, tag) {
+  var n = document.createElement(tag);
+  Array.prototype.forEach.call(el.attributes, function (a) { n.setAttribute(a.name, a.value); });
+  while (el.firstChild) n.appendChild(el.firstChild);
+  el.replaceWith(n);
+  return n;
+}
+function _promoteSecH1(sec) {
+  document.querySelectorAll('h1.seclabel').forEach(function (h) { _swapTag(h, 'div'); });
+  if (!sec || sec.id === 'sec-home' || sec.id === 'sec-detail') return;
+  var lab = sec.querySelector('.seclabel');
+  if (lab) _swapTag(lab, 'h1');
 }
 
 function handleChat() {

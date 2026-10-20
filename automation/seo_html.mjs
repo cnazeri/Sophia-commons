@@ -51,6 +51,10 @@ export function applySeo(template, { route, title, desc, bodyHtml = '', ld = nul
     set(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${attr(image)}">`);
     set(/<meta name="twitter:image" content="[^"]*">/, `<meta name="twitter:image" content="${attr(image)}">`);
   }
+  // The home page's JSON-LD blocks describe the home page: its FAQ and nav breadcrumb do not belong on
+  // other pages, and the catalog only on /directory. WebSite + Organization stay everywhere.
+  h = h.replace(/<script type="application\/ld\+json">([\s\S]*?)<\/script>\n?/g, (m, body) =>
+    /"@type": ?"(FAQPage|BreadcrumbList)"/.test(body) || (/"@type": ?"DataCatalog"/.test(body) && route !== '/directory') ? '' : m);
   // One H1 per page: the summary below carries it, so the home page's hidden H1 becomes a paragraph.
   h = h.replace(/<h1 class="sr-only"([^>]*)>([^<]*)<\/h1>/, '<p class="sr-only"$1>$2</p>');
   // The app's own JSON-LD for detail pages uses id="detail-jsonld" and replaces this one on load.
@@ -71,19 +75,50 @@ export function categoryOf(e) {
   return c ? ['/category/' + c[0], c[1]] : ['/directory', 'Directory'];
 }
 
+// schema.org type from the category and the name (Google reads School, Preschool, MedicalClinic ...
+// better than a generic LocalBusiness). Plain word checks in the main languages of the directory.
+const KINDER = /kinder ?garten|kindergarden|preschool|pre-school|nursery|playgroup|spielgruppe|barnehage|förskola|forskole|jardin d'enfants|jard[ií]n de infan|kleuter|детский сад/i;
+const SCHOOL = /school|schule|skole|skola|[ée]cole|escuela|escola|colegio|scuola|liceo|iskola|škola|schoul|gakuen|campus|szkoła|школа|academy|college|lyceum|gymnas/i;
+const ASSOC = /association|verband|society|gesellschaft|federation|network|council|vereniging|förening/i;
+const ENSEMBLE = /ensemble|b[üu]hne|stage|company|compagnie|theater|theatre/i;
+const CLINIC = /klinik|clinic|hospital|krankenhaus|spital|ziekenhuis|sjukhus|praxis|practice|centre m[ée]dical|medical cent/i;
+const PHARMACY = /apotheke|pharmacy|pharmacie|farmacia/i;
+export function schemaTypeOf(e) {
+  const name = e.organization_name || '', n = [name, ...(Array.isArray(e.tags) ? e.tags : [])].join(' ');
+  switch (e.category) {
+    case 'waldorf': return SCHOOL.test(name) ? 'School' : KINDER.test(n) ? 'Preschool' : SCHOOL.test(n) ? 'School' : 'EducationalOrganization';
+    case 'medicine': return ASSOC.test(name) ? 'MedicalOrganization' : PHARMACY.test(n) ? 'Pharmacy' : /hospital|krankenhaus|spital|ziekenhuis|sjukhus/i.test(n) ? 'Hospital' : CLINIC.test(n) ? 'MedicalClinic' : 'MedicalOrganization';
+    case 'christian_community': return 'Church';
+    case 'eurythmy': return ENSEMBLE.test(name) ? 'PerformingGroup' : 'EducationalOrganization';
+    case 'biodynamic': case 'eldercare': case 'camphill': case 'community': return 'LocalBusiness';
+    default: return 'Organization';
+  }
+}
+
+// Search snippet: the listing's own text, then what the page offers, so even a one-line listing
+// gets a useful 120-158 character description. Only mentions what is really on the page.
+function listingDesc(about, { catLabel, where, addr, phone, website, facebook, nearbyN, relatedN, country }) {
+  const lead = about || `${catLabel}${where ? ' in ' + where : ''}.`;
+  if (lead.length >= 120) return shorten(lead, 158);
+  const has = [addr ? 'address' : '', phone ? 'phone' : '', website ? 'website' : '', facebook ? 'Facebook page' : ''].filter(Boolean);
+  const list = has.length > 1 ? has.slice(0, -1).join(', ') + ' and ' + has[has.length - 1] : has[0] || 'details';
+  const more = nearbyN ? `, plus ${nearbyN} nearby place${nearbyN > 1 ? 's' : ''} within 60 km` : relatedN ? `, plus more ${catLabel.toLowerCase()}${country ? ' in ' + country : ''}` : '';
+  const tail = `${list[0].toUpperCase() + list.slice(1)} on Sophia Commons${more}.`;
+  return shorten((/[.!?]$/.test(lead) ? lead : lead + '.') + ' ' + tail, 158);
+}
+
 // Everything applySeo needs for /listing/<id>. `related` = a few other listings to link to.
 export function listingPage(e, related = [], nearby = []) {
   const [catUrl, catLabel] = categoryOf(e);
   const where = place(e);
   const name = e.organization_name || 'Listing';
   const about = String(e.description || '').replace(/\s+/g, ' ').trim();
-  const fallback = `${catLabel}${where ? ' in ' + where : ''}. Address, website and details in the Sophia Commons directory.`;
-  const desc = shorten(about || fallback, 158);
   const website = e.website_url && /^https?:\/\//.test(e.website_url) ? e.website_url : '';
   const facebook = e.facebook_url && /^https:\/\/(www\.|m\.)?facebook\.com\//i.test(e.facebook_url) ? e.facebook_url : '';
   const image = e.photo_url && /^https:\/\//.test(e.photo_url) ? e.photo_url.split('#')[0] : '';
   const tags = Array.isArray(e.tags) ? e.tags.filter(Boolean) : [];
   const addr = [e.address, e.region, e.country].filter(Boolean).join(', ');
+  const desc = listingDesc(about, { catLabel, where, addr: e.address, phone: e.phone, website, facebook, nearbyN: nearby.length, relatedN: related.length, country: e.country });
 
   const facts = [
     `<li>Category: <a href="${catUrl}">${esc(catLabel)}</a></li>`,
@@ -103,7 +138,7 @@ export function listingPage(e, related = [], nearby = []) {
   const route = '/listing/' + e.id;
   const ld = {
     '@context': 'https://schema.org',
-    '@type': e.is_verified ? 'Organization' : 'LocalBusiness',
+    '@type': schemaTypeOf(e),
     name,
     url: SITE + route,
     ...(about ? { description: shorten(about, 300) } : {}),
