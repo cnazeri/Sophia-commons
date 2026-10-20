@@ -61,12 +61,12 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python3 automation/news_roundup.py
 
-      - name: Mark events that have ended as completed (their pages stay readable)
+      - name: Mark events that have ended as past (their pages stay readable)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python3 automation/mark_past_events.py --apply
-        continue-on-error: true      # stops by itself (changing nothing) until the read policy allows 'completed'
+        continue-on-error: true      # stops by itself (changing nothing) until the read policy allows past
 
       - name: Tell search engines about new and changed pages (IndexNow)
         env:

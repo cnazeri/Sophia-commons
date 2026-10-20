@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Mark events that have ended as 'completed' (they otherwise stay 'upcoming' forever).
+Mark events that have ended as 'past' (they otherwise stay 'upcoming' forever).
 
 An event has ended when its end_date (or, without one, its start_date) is more than 12 hours ago,
 so an evening talk in California is not closed while it is still the same day there.
 
 Safety: past event pages must stay readable, which needs the public read policy from
-backend/migrations/RUN_THIS_2026-10-20_completed_events.sql. The script marks one event first and
+backend/migrations/RUN_THIS_2026-10-20_past_events.sql. The script marks one event first and
 reads it back with the public (anon) key; if the public cannot see it, it puts that one back and stops.
 
 Usage: python3 automation/mark_past_events.py            (preview)
@@ -35,7 +35,7 @@ def anon_key() -> str:
     return m.group(1)
 
 
-def public_can_read_completed(event_id: str) -> bool:
+def public_can_read_past(event_id: str) -> bool:
     k = anon_key()
     r = requests.get(URL + '/rest/v1/events', timeout=20, params={'select': 'id', 'id': 'eq.' + event_id},
                      headers={'apikey': k, 'Authorization': 'Bearer ' + k})
@@ -58,17 +58,17 @@ def main() -> None:
     # Mark one, confirm the public can still read it, then the rest (undo the first if not)
     first = ended[0]['id']
     requests.patch(URL + '/rest/v1/events', headers=H, timeout=20, params={'id': 'eq.' + first},
-                   json={'status': 'completed'}).raise_for_status()
-    if not public_can_read_completed(first):
+                   json={'status': 'past'}).raise_for_status()
+    if not public_can_read_past(first):
         requests.patch(URL + '/rest/v1/events', headers=H, timeout=20, params={'id': 'eq.' + first},
                        json={'status': 'upcoming'}).raise_for_status()
-        sys.exit('Stopped: the public cannot read completed events yet. Run '
-                 'backend/migrations/RUN_THIS_2026-10-20_completed_events.sql first. Nothing changed.')
+        sys.exit('Stopped: the public cannot read past events yet. Run '
+                 'backend/migrations/RUN_THIS_2026-10-20_past_events.sql first. Nothing changed.')
     ids = ','.join(e['id'] for e in ended[1:])
     if ids:
         requests.patch(URL + '/rest/v1/events', headers=H, timeout=30, params={'id': f'in.({ids})'},
-                       json={'status': 'completed'}).raise_for_status()
-    print(f'Marked {len(ended)} as completed')
+                       json={'status': 'past'}).raise_for_status()
+    print(f'Marked {len(ended)} as past')
 
 
 if __name__ == '__main__':
