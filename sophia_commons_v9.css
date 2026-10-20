@@ -3908,6 +3908,15 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
   #cat-page-desc { font-size: 16px !important; }       /* inline style in index.html */
   #center .nv-rate { font-size: 14px; }
 }
+/* "Find us on Sophia Commons" badge box on listing pages */
+.badge-box { margin-top: 12px; border: 1px solid var(--border-subtle); border-radius: 10px; padding: 10px 12px; background: var(--surface); }
+.badge-box summary { cursor: pointer; font-weight: 600; color: var(--gold-text); min-height: 32px; display: flex; align-items: center; }
+.badge-box p { font-size: 13px; color: var(--text-secondary); margin: 6px 0 10px; }
+.badge-opt { display: block; margin-top: 10px; }
+.badge-opt img { display: block; margin-bottom: 6px; }
+.badge-opt textarea { width: 100%; font: 11px/1.4 ui-monospace, Menlo, monospace; padding: 6px; border: 1px solid var(--border-subtle); border-radius: 6px; resize: none; background: var(--bg); color: var(--text-primary); }
+.badge-copy { margin-top: 6px; }
+@media (max-width: 768px) { .badge-box p { font-size: 15px; } .badge-opt textarea { font-size: 13px; } }
 /* Search results: YouTube channels and social media pages */
 .sr-media { margin-bottom: 16px; }
 .sr-media-h { font-size: 11px; text-transform: uppercase; color: var(--gold-text); font-weight: 700; letter-spacing: .08em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border-subtle); }

@@ -27,6 +27,30 @@ function claimBoxHtml(d) {
     + '<button type="button" class="claim-btn" onclick="openClaimForm()">' + esc(t('claim.claim', 'Claim this listing')) + '</button></div>';
 }
 
+// "Find us on Sophia Commons" badge: a ready-made link from the organization's own website back to
+// its listing (a backlink for search engines, a referral for visitors). Light and dark images in /img.
+function _badgeCode(d, dark) {
+  var url = 'https://sophiacommons.org/listing/' + d.id;
+  return '<a href="' + url + '" title="' + esc(d.organization_name) + ' on Sophia Commons">'
+    + '<img src="https://sophiacommons.org/img/badge-listed' + (dark ? '-dark' : '') + '.svg" alt="Find us on Sophia Commons" width="200" height="56"></a>';
+}
+function badgeBoxHtml(d) {
+  var code = function (dark) {
+    return '<label class="badge-opt"><img src="/img/badge-listed' + (dark ? '-dark' : '') + '.svg" alt="" width="160" height="45" loading="lazy">'
+      + '<textarea readonly rows="3" onfocus="this.select()">' + esc(_badgeCode(d, dark)) + '</textarea></label>'
+      + '<button type="button" class="claim-btn badge-copy" onclick="copyBadgeCode(this)">' + esc(t('badge.copy', 'Copy code')) + '</button>';
+  };
+  return '<details class="badge-box"><summary>' + esc(t('badge.summary', 'Add a badge to your website')) + '</summary>'
+    + '<p>' + esc(t('badge.pitch', 'Paste this code into your website so visitors can find your listing here. Free, no sign-up.')) + '</p>'
+    + code(false) + code(true) + '</details>';
+}
+function copyBadgeCode(btn) {
+  var ta = btn.previousElementSibling.querySelector('textarea');
+  var done = function () { btn.textContent = t('badge.copied', 'Copied'); setTimeout(function () { btn.textContent = t('badge.copy', 'Copy code'); }, 2000); };
+  if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(done, function () { ta.select(); });
+  else { ta.select(); document.execCommand('copy'); done(); }
+}
+
 function _claimModal(inner) {
   var m = document.getElementById('claim-modal');
   if (!m) {

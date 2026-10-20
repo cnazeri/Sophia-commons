@@ -170,6 +170,7 @@ function renderDirectoryDetail(d) {
     + '<p><strong>' + t('detail.status') + ':</strong> ' + (d.is_verified ? '<span style="color:var(--sage);font-weight:700;">&#10003; ' + t('detail.verified') + '</span>' : t('detail.listed')) + '</p>'
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'directory\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + (typeof claimBoxHtml === 'function' ? claimBoxHtml(d) : '')
+    + (typeof badgeBoxHtml === 'function' ? badgeBoxHtml(d) : '')
     + '</div>'
     + _nlCardHtml('listing')
     + renderCommentsSection('directory', d.id)
