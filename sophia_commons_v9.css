@@ -3908,17 +3908,6 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
   #cat-page-desc { font-size: 16px !important; }       /* inline style in index.html */
   #center .nv-rate { font-size: 14px; }
 }
-/* Homepage intro and search, phones only (v1.80) */
-.home-intro { display: none; }
-@media (max-width: 768px) {
-  .home-intro { display: block; margin: 4px 0 16px; }
-  .home-tagline { font-family: 'Lora', Georgia, serif; font-size: 19px; line-height: 1.4; font-weight: 600; color: var(--text-primary); margin: 0 0 4px; text-wrap: balance; }
-  .home-tagline-sub { font-size: 15px; color: var(--text-secondary); margin: 0 0 12px; }
-  .home-search { display: flex; gap: 8px; }
-  .home-search input { flex: 1; min-width: 0; min-height: 48px; padding: 10px 16px; font: inherit; font-size: 16px; border: 1px solid var(--border); border-radius: 50px; background: var(--surface); color: var(--text-primary); }
-  .home-search input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
-  .home-search button { min-height: 48px; padding: 0 20px; border: 0; border-radius: 50px; background: var(--gold); color: var(--on-gold); font: inherit; font-size: 15px; font-weight: 700; text-transform: capitalize; cursor: pointer; }
-}
 /* Category lists: country filter and Show more (v1.79) */
 .dir-country { display: block; width: 100%; min-height: 44px; margin: 8px 0; padding: 8px 12px; border: 1px solid var(--border); border-radius: 50px; background: var(--bg); color: var(--text-primary); font: inherit; font-size: 14px; }
 .cat-more { margin: 12px 14px 4px; width: calc(100% - 28px); }

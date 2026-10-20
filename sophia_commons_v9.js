@@ -3080,16 +3080,6 @@ document.getElementById('submit-overlay').addEventListener('click', function(e) 
 document.getElementById('searchinput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') doSearch();
 });
-// Homepage search box (phones): same search as the sidebar box
-function homeSearch(ev) {
-  if (ev) ev.preventDefault();
-  var v = (document.getElementById('home-search-input') || {}).value || '';
-  var side = document.getElementById('searchinput');
-  if (!v.trim() || !side) return;
-  side.value = v.trim();
-  doSearch();
-}
-
 function doSearch() {
   var q = document.getElementById('searchinput').value.trim();
   if (!q) return;
