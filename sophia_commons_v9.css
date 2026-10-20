@@ -3908,6 +3908,10 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
   #cat-page-desc { font-size: 16px !important; }       /* inline style in index.html */
   #center .nv-rate { font-size: 14px; }
 }
+/* Category lists: country filter and Show more (v1.79) */
+.dir-country { display: block; width: 100%; min-height: 44px; margin: 8px 0; padding: 8px 12px; border: 1px solid var(--border); border-radius: 50px; background: var(--bg); color: var(--text-primary); font: inherit; font-size: 14px; }
+.cat-more { margin: 12px 14px 4px; width: calc(100% - 28px); }
+@media (max-width: 768px) { .dir-country { font-size: 16px; } }
 /* "Find us on Sophia Commons" badge box on listing pages */
 .badge-box { margin-top: 12px; border: 1px solid var(--border-subtle); border-radius: 10px; padding: 10px 12px; background: var(--surface); }
 .badge-box summary { cursor: pointer; font-weight: 600; color: var(--gold-text); min-height: 32px; display: flex; align-items: center; }

@@ -763,11 +763,14 @@ async function loadCategoryPage(catKey, dirCat, opts) {
   if (sbReady()) {
     try {
       var { data } = await _sb.from('events')
-        .select('id, title, description, start_date, city, country, organizer_name, is_free, event_type')
-        .in('status', ['upcoming', 'ongoing']).order('start_date').limit(30);
+        .select('id, title, description, start_date, end_date, city, country, organizer_name, is_free, event_type')
+        .in('status', ['upcoming', 'ongoing']).gte('start_date', new Date(Date.now() - 60 * 864e5).toISOString())
+        .order('start_date').limit(40);
       if (data) {
         var keywords = catKey.split(/[\s&,]+/).filter(function(w) { return w.length > 3; });
-        data.forEach(function(ev) {
+        var today = new Date(); today.setHours(0, 0, 0, 0);
+        // status stays 'upcoming' after an event ends, so check the date too
+        data.filter(function(ev) { return new Date(ev.end_date || ev.start_date) >= today; }).forEach(function(ev) {
           var text = (ev.title + ' ' + (ev.description || '') + ' ' + (ev.organizer_name || '')).toLowerCase();
           if (keywords.some(function(kw) { return text.includes(kw); })) {
             events.push(ev);
@@ -866,10 +869,19 @@ function _dirListShell(entries, q) {
   entries.forEach(function(d) { (d.tags || []).forEach(function(tg) { tc[tg] = (tc[tg] || 0) + 1; }); });
   var chips = Object.keys(tc).filter(function(k) { return tc[k] >= 2 && tc[k] < entries.length; })
     .sort(function(a, b) { return tc[b] - tc[a]; }).slice(0, 8);
+  window._catCountry = '';
+  var cc = {};
+  entries.forEach(function(d) { if (d.country) cc[d.country] = (cc[d.country] || 0) + 1; });
+  var countries = Object.keys(cc).sort(function(a, b) { return cc[b] - cc[a] || a.localeCompare(b); });
+  var countrySel = countries.length < 2 ? '' : '<label for="cat-country" class="sr-only">' + esc(t('dir.country_aria', 'Filter by country')) + '</label>'
+    + '<select id="cat-country" class="dir-country" onchange="window._catCountry=this.value;_applyCatFilter(document.getElementById(\'cat-filter\').value)">'
+    + '<option value="">' + esc(t('dir.all_countries', 'All countries')) + ' (' + entries.length + ')</option>'
+    + countries.map(function(c) { return '<option value="' + esc(c) + '">' + esc(COUNTRY_LABEL[c] || c) + ' (' + cc[c] + ')</option>'; }).join('') + '</select>';
   return '<div class="listblock dir-filter-block" style="margin-bottom:16px;">'
     + '<div class="listblock-head"><h3>' + t('catpage.organizations_heading') + '</h3><span class="dir-count" id="cat-count"></span></div>'
     + '<div class="dir-filter">'
     +   '<input type="search" id="cat-filter" aria-label="' + esc(t('dir.filter_aria', 'Filter these listings')) + '" placeholder="' + esc(t('dir.filter_placeholder', 'Filter {count} listings by name, place or topic').replace('{count}', entries.length)) + '" value="' + esc(q) + '" oninput="_applyCatFilter(this.value)">'
+    +   countrySel
     +   '<div class="dir-near" role="search">'
     +     '<label for="cat-near" class="sr-only">' + esc(t('dir.near_label', 'Town or postcode')) + '</label>'
     +     '<input type="text" id="cat-near" autocomplete="postal-code" placeholder="' + esc(t('dir.near_placeholder', 'Town or postcode')) + '" onkeydown="if(event.key===\'Enter\'){_catNearSearch(this.value);}">'
@@ -975,16 +987,30 @@ function _dirThumbHtml(d, width) {
   return _dirPlaceholderHtml(d);
 }
 
-function _applyCatFilter(q) {
+// Long lists show CAT_PAGE rows, then "Show more" (Waldorf & Education has 2,800+: rendering all of
+// them made the page about 470 phone screens long). Unsorted lists put the fullest listings first.
+var CAT_PAGE = 20;
+function _catRichness(d) {
+  return (d.photo_url ? 3 : 0) + ((d.description || '').length >= 120 ? 2 : 0) + (d.website_url ? 1 : 0) + (d.is_verified ? 1 : 0);
+}
+function _catShowMore() {
+  window._catShown = (window._catShown || CAT_PAGE) + CAT_PAGE;
+  var f = document.getElementById('cat-filter');
+  _applyCatFilter(f ? f.value : '', true);
+}
+function _applyCatFilter(q, more) {
   var entries = window._catEntries || [];
   var box = document.getElementById('cat-entries');
   if (!box) return;
   q = String(q || '').trim().toLowerCase();
   var words = q.split(/\s+/).filter(Boolean);
-  var list = !words.length ? entries : entries.filter(function(d) {
+  var country = window._catCountry || '';
+  var list = !words.length && !country ? entries : entries.filter(function(d) {
+    if (country && d.country !== country) return false;
     var hay = [d.organization_name, d.description, d.location, d.country, (d.tags || []).join(' ')].join(' ').toLowerCase();
     return words.every(function(w) { return hay.indexOf(w) !== -1; });
   });
+  if (!(more && box.childElementCount)) window._catShown = CAT_PAGE;   // a new filter starts at the first page
   var note = '';
   if (words.length && !list.length) {
     note = '<div class="empty-note">' + esc(t('dir.no_match_honest', 'No listings match "{q}".').replace('{q}', q))
@@ -996,6 +1022,16 @@ function _applyCatFilter(q) {
     return;
   }
   var near = window._catNear;
+  if (!near) {
+    // best first, keeping category groups together on mixed pages (in the order they first appear)
+    var catOrder = {};
+    list.forEach(function(d) { if (!(d.category in catOrder)) catOrder[d.category] = Object.keys(catOrder).length; });
+    var byGroup = window._catGroupByCategory;
+    list = list.slice().sort(function(a, b) {
+      return (byGroup ? catOrder[a.category] - catOrder[b.category] : 0) || _catRichness(b) - _catRichness(a)
+        || String(a.organization_name).localeCompare(String(b.organization_name));
+    });
+  }
   if (near) {
     list = list.map(function(d) {
       var km = (d.latitude != null && d.longitude != null) ? _distKm(near.lat, near.lng, d.latitude, d.longitude) : null;
@@ -1010,6 +1046,8 @@ function _applyCatFilter(q) {
   var groupByCat = window._catGroupByCategory && !near;
   var html = note;
   var lastCat = null;
+  var total = list.length;
+  list = list.slice(0, window._catShown || CAT_PAGE);
   list.forEach(function(d) {
     if (groupByCat && d.category !== lastCat) {
       lastCat = d.category;
@@ -1025,6 +1063,11 @@ function _applyCatFilter(q) {
       + (d.description ? '<div class="dir-row-desc">' + esc(d.description.substring(0, 170)) + (d.description.length > 170 ? '...' : '') + '</div>' : '')
       + '</div></div>';
   });
+  if (total > list.length) {
+    var next = Math.min(CAT_PAGE, total - list.length);
+    html += '<button type="button" class="ev-more more-toggle cat-more" onclick="_catShowMore()">'
+      + esc(t('dir.show_more', 'Show {n} more ({left} left)').replace('{n}', next).replace('{left}', total - list.length)) + '</button>';
+  }
   box.innerHTML = html;
   // Keep the URL in sync with the filter (no new history entries while typing)
   clearTimeout(_catFilterTimer);
