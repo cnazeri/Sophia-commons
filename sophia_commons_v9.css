@@ -3845,10 +3845,11 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .sf-load { min-height: 32px; padding: 0 12px; border: 1px solid var(--gold); border-radius: 50px; background: transparent; color: var(--gold-text); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
 .sf-load:hover { background: var(--gold-light); }
 .sf-note { font-size: 11px; color: var(--text-muted); margin: 6px 0 0; }
+.sf-place { display: block; margin: -2px 0 2px; color: var(--text-muted); font-size: 12px; }
 .sf-embed iframe { display: block; width: 100%; max-width: 500px; height: 600px; border: 0; margin-top: 10px; border-radius: 8px; background: var(--surface); }
 @media (max-width: 560px) {
   .sf-body { flex-direction: column; }
-  .sf-img { flex: none; }
+  .sf-img { flex: none; width: 100%; }
   .sf-img img { width: 100%; max-height: 220px; }
 }
 /* Admin > Featured post */
@@ -3871,25 +3872,41 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .social-extra .media-top-h a { text-transform: none; letter-spacing: 0; font-family: 'Nunito Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--gold-text); }
 
 /* ══════════════════ v1.72: larger text on phones (owner, 2026-10-18) ══════════════════
-   Measured at 390px: 79% of the text was under 14px. Body text 15px, list titles 16px, meta lines
-   14px, small tags 12px. Tight spots (calendar cells, count badges, the nav strip) keep their size. */
+   Measured at 390px: 79% of the text was under 14px. Body text 16px (v1.76), list titles 16px, meta
+   lines 15px (v1.76), small tags 14px (v1.76). Tight spots (calendar cells, count badges, the nav strip) keep their size. */
 @media (max-width: 768px) {
   #center .dir-row-desc, #center .feat-ev-desc, #center .dx-text, #center .top50-blurb, #center .companion-desc,
   #center .sf-text, #center .trend-story p, #center .video-meta, #center .detail-desc, #center .catblock li,
-  #center .catblock li a, #center .legal-page p, #center .top50-intro, #center .ev-desc, #center .spotlight-title { font-size: 15px; line-height: 1.55; }
+  #center .catblock li a, #center .legal-page p, #center .top50-intro, #center .ev-desc, #center .spotlight-title { font-size: 16px; line-height: 1.55; }
   #center a.ltitle, #center .evinfo h5, #center .evinfo h5 a, #center .dir-row-name, #center .yt-row .ltitle,
   #center .seminar-card h5, #center .new-video .nv-body h5, #center .feat-ev-body h5 { font-size: 16px; line-height: 1.4; }
   #center .lmeta, #center .emeta, #center .top50-author, #center .cots-meta, #center .dx-daily, #center .sem-meta,
   #center .nv-meta, #center .nv-ch, #center .video-actions, #center .yt-toolbar, #center .spotlight-note, #center .dir-tag,
   #center .trend-readers, #center .seclabel, #center .home-ev-sub, #center .media-top-h, #center .sf-note,
   #center .top50-amz, #center .ev-later, #center .fb-more, #rightbar .rs-note, #rightbar .cots-note, #rightbar figcaption,
-  #rightbar .rb-sec p, #rightbar .sb-ev-title, #rightbar .sb-ev-meta, #rightbar .dx-daily, #rightbar .cots-meta { font-size: 14px; line-height: 1.5; }
-  #center .ltag, #center .etag, #center .lv, #center .spotlight-kicker, #center .video-kicker, #center .sem-tag { font-size: 12px; }
+  #rightbar .rb-sec p, #rightbar .sb-ev-title, #rightbar .sb-ev-meta, #rightbar .dx-daily, #rightbar .cots-meta { font-size: 15px; line-height: 1.5; }
+  #center .ltag, #center .etag, #center .lv, #center .spotlight-kicker, #center .video-kicker, #center .sem-tag { font-size: 14px; }
   #leftbar ul li a { font-size: 16px; }
   /* listing rows: the check stays beside a long name; the place goes on its own line */
   #center .dir-row-main .ltitle { flex: 1 1 0; min-width: 0; }
   #center .dir-row-main .lmeta { flex-basis: 100%; }
   footer, footer a { font-size: 14px; }
+}
+/* v1.76: the rest of the small phone text (owner, 2026-10-20: "text looks a bit small on the iPhone").
+   Measured as an iPhone 14: buttons, counts, chips and calendar labels were 9 to 12px. Floor of 12px
+   in the calendar grid, 13px elsewhere; headings unchanged. */
+@media (max-width: 768px) {
+  #mainnav button { font-size: 15px; }
+  .lang-btn, #topbar .nav-links a.signinbtn, #postlink { font-size: 13px; }
+  #center .listblock-head > a, #center .alllink, #center .dir-count, #center .podcast-count, #center .yt-rate,
+  #center .evdate .mo { font-size: 13px; }
+  #center .dir-chip, #center .feat-ev-join, #center .feat-pause, #center .sf-load, #center .ev-more,
+  #center .more-toggle, #center .stars { font-size: 14px; }
+  #center .cal-grid .day-label { font-size: 12px; }
+  #center .cal-day .d-num { font-size: 13px; }
+  #cat-back { font-size: 15px !important; }            /* inline style in index.html */
+  #cat-page-desc { font-size: 16px !important; }       /* inline style in index.html */
+  #center .nv-rate { font-size: 14px; }
 }
 /* Search results: YouTube channels and social media pages */
 .sr-media { margin-bottom: 16px; }

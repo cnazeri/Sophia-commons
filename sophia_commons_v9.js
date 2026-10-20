@@ -7843,6 +7843,8 @@ async function renderSocialFeatured() {
   var both = await Promise.all([_loadFeaturedPost(), _fbFetch()]);
   var post = both[0], pages = both[1];
   if (post) { el.innerHTML = _socialPostHtml(post, _fbPageFor(post.url, pages)); return; }
+  var day = await _loadListingOfDay();
+  if (day) { el.innerHTML = _socialListingOfDayHtml(day, _fbPageFor(day.facebook_url, pages)); return; }
   var pool = pages.filter(function (p) { return p.kind === 'page' && p.avatar_url && p.description; })
     .sort(function (a, b) { return a.slug.localeCompare(b.slug); });
   if (!pool.length) { el.innerHTML = ''; return; }
@@ -7865,6 +7867,47 @@ function _socialPostHtml(post, page) {
     + '<div class="video-actions"><a href="' + escUrl(post.url) + '" target="_blank" rel="noopener">' + esc(t('social.view_on', 'View on {platform}').replace('{platform}', plat || t('social.the_site', 'the site'))) + ' &rarr;</a>'
     + (canEmbed ? '<button type="button" class="sf-load" onclick="loadSocialEmbed(this, \'' + escJs(post.url) + '\')">' + esc(t('social.load_embed', 'Show the post here')) + '</button>' : '')
     + '</div>' + (canEmbed ? '<p class="sf-note">' + esc(t('social.embed_note', 'Showing it here loads the post from Facebook, which may set cookies.')) + '</p><div class="sf-embed"></div>' : '')
+    + '</div></div></div>';
+}
+
+// Page of the day from the directory: a listing with a real photo (not a logo), a full description and
+// a Facebook page (about 190 in Oct 2026), so the card is full without anyone picking a post.
+// The same listing all day; two small requests (a count, then 10 rows at the day's offset).
+var _listingOfDayPromise = null;
+function _listingOfDayQuery(cols, opts) {
+  return _sb.from('directory_entries').select(cols, opts).eq('status', 'approved')
+    .like('facebook_url', 'https://%facebook.com/%').not('photo_url', 'is', null).not('photo_url', 'like', '%#contain');
+}
+function _loadListingOfDay() {
+  if (!_listingOfDayPromise) _listingOfDayPromise = (async function () {
+    if (!sbReady()) return null;
+    try {
+      var c = await _listingOfDayQuery('id', { count: 'exact', head: true });
+      if (c.error || !c.count) return null;
+      var day = Math.floor(Date.now() / 864e5);
+      for (var tries = 0; tries < 3; tries++) {
+        var start = ((day + tries * 997) * 37) % c.count;   // steps through the pool, a different block each day
+        var r = await _listingOfDayQuery('id, organization_name, facebook_url, photo_url, description, city, country')
+          .order('id').range(start, start + 9);
+        var hit = (r.data || []).filter(function (d) { return (d.description || '').length >= 100; })[0];
+        if (hit) return hit;
+      }
+    } catch (e) { /* fall back to a Page of the day from facebook_pages */ }
+    return null;
+  })();
+  return _listingOfDayPromise;
+}
+
+function _socialListingOfDayHtml(d, page) {
+  var href = '/listing/' + esc(d.id), open = 'showDetail(\'directory\',\'' + escJs(d.id) + '\');return false;';
+  var place = [d.city, d.country].filter(Boolean).join(', ');
+  return '<div class="listblock social-feat"><div class="sf-body">'
+    + '<a class="sf-img" href="' + href + '" onclick="' + open + '" aria-hidden="true" tabindex="-1"><img src="' + escUrl(_imgSized(d.photo_url.split('#')[0], 480)) + '" alt="" loading="lazy"></a>'
+    + '<div class="sf-main">' + _socialHead(t('social.page_of_day', 'Page of the day') + ' · Facebook', page, d.organization_name)
+    + (place ? '<span class="lmeta sf-place">' + esc(place) + '</span>' : '')
+    + '<p class="sf-text">' + esc(_shortText(d.description, 260)) + '</p>'
+    + '<div class="video-actions"><a href="' + escUrl(d.facebook_url) + '" target="_blank" rel="noopener">' + esc(t('social.view_on', 'View on {platform}').replace('{platform}', 'Facebook')) + ' &rarr;</a>'
+    + '<a href="' + href + '" onclick="' + open + '">' + esc(t('social.see_listing', 'See their listing')) + ' &rarr;</a></div>'
     + '</div></div></div>';
 }
 
