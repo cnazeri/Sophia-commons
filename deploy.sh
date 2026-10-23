@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 
 PUBLIC_FILES=(
   e3215b7ec0b01b92545c239d0e656f20.txt
-  index.html offline.html sophia_commons_v9.css sophia_commons_v9.js blog.js claims.js i18n.js sb-init.js sw.js manifest.json
+  index.html offline.html steiner_audio.json sophia_commons_v9.css sophia_commons_v9.js blog.js claims.js i18n.js sb-init.js sw.js manifest.json
   robots.txt llms.txt sitemap.xml _redirects googleae2ea1fc1aac5bc6.html
   logo.svg logo.png icon-192.png icon-512.png favicon.ico favicon-32.png apple-touch-icon.png og-image.jpg
 )

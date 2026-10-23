@@ -3429,6 +3429,19 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
 }
 
 // ── NEWS: Load from Supabase ──
+// "Source · Oct 18, 2026" in the page language; either part may be missing.
+function _storyMeta(n) {
+  var date = '';
+  if (n.published_at) {
+    var d = new Date(n.published_at);
+    if (!isNaN(d)) date = d.toLocaleDateString(_storyLocale(), { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  return [esc(n.source_name || ''), date ? '<time datetime="' + esc(n.published_at) + '">' + esc(date) + '</time>' : ''].filter(Boolean).join(' &middot; ');
+}
+function _storyLocale() {
+  var lang = (document.documentElement.lang || 'en').slice(0, 2);
+  return { de: 'de-DE', es: 'es-ES', ru: 'ru-RU' }[lang] || 'en-US';
+}
 var _newsListOpen = false;
 async function loadNewsFromSupabase() {
   if (!sbReady()) return;
@@ -3475,7 +3488,7 @@ async function loadNewsFromSupabase() {
             return `<div class="lrow">
               <a class="ltitle" href="#" onclick="showDetail('news','${n.id}');return false;">${esc(n.title)}</a>
               ${tag ? '<span class="ltag">' + esc(tag) + '</span>' : ''}
-              <span class="lmeta">${esc(n.source_name || '')}</span>
+              <span class="lmeta">${_storyMeta(n)}</span>
             </div>`;
           }), 'news-more-rows', _newsListOpen, t('news.show_n_more', 'Show {n} more stories'), '_newsListOpen')}
         </div>
@@ -3525,20 +3538,6 @@ async function loadDirectoryFromSupabase() {
       .limit(100);
     if (error || !data || data.length === 0) return;
 
-    // Build tag counts for popular tags
-    const tagCounts = {};
-    data.forEach(d => {
-      if (d.tags && d.tags.length) {
-        d.tags.forEach(tag => {
-          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-        });
-      }
-    });
-    // Sort by frequency, take top 20
-    const popularTags = Object.entries(tagCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 20);
-
     // Group by category
     const groups = {};
     data.forEach(d => {
@@ -3560,18 +3559,6 @@ async function loadDirectoryFromSupabase() {
       else container.appendChild(dirList);
     }
 
-    // Popular tags bar
-    let tagsHtml = '';
-    if (popularTags.length > 0) {
-      tagsHtml += '<div class="popular-tags-bar" id="dir-popular-tags">';
-      tagsHtml += '<h4>Popular Tags</h4>';
-      tagsHtml += '<div class="tag-cloud">';
-      popularTags.forEach(function(pair) {
-        tagsHtml += '<a class="dir-tag" href="#" onclick="filterByTag(\'' + escJs(pair[0]) + '\');return false;">' + esc(pair[0]) + '<span class="dir-tag-count">' + pair[1] + '</span></a>';
-      });
-      tagsHtml += '</div></div>';
-    }
-
     const catLabels = {
       societies: t('dir_cat_labels.societies'),
       waldorf: t('dir_cat_labels.waldorf'),
@@ -3587,7 +3574,8 @@ async function loadDirectoryFromSupabase() {
       other: t('dir_cat_labels.other')
     };
 
-    let html = tagsHtml + '<div id="tag-filter-bar"></div>';
+    // The Popular Tags cloud was removed (owner, 2026-10-22); tags on each entry still filter the list.
+    let html = '<div id="tag-filter-bar"></div>';
     html += '<div class="catgrid" style="grid-template-columns:repeat(3,1fr);margin-top:16px;" id="dir-catgrid">';
     for (const [cat, entries] of Object.entries(groups)) {
       const label = catLabels[cat] || cat;
@@ -4243,10 +4231,18 @@ function _moreListHtml(rows, id, open, moreLabel, stateVar, tail) {
     + ' data-more="' + esc(more) + '" data-less="' + esc(less) + '" onclick="' + stateVar + ' = _moreToggle(this)">'
     + esc(open ? less : more) + '</button>';
 }
+function _showCovers(root) {
+  root.querySelectorAll('img[data-src]').forEach(function (img) {
+    if (img.closest('[hidden]')) return;
+    img.src = img.getAttribute('data-src');
+    img.removeAttribute('data-src');
+  });
+}
 function _moreToggle(btn) {
   var box = document.getElementById(btn.getAttribute('aria-controls'));
   var open = btn.getAttribute('aria-expanded') !== 'true';
   if (box) box.hidden = !open;
+  if (box && open) _showCovers(box);
   btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   btn.textContent = open ? btn.getAttribute('data-less') : btn.getAttribute('data-more');
   // Collapsing a long list would leave the visitor far below it: bring its heading back into view
@@ -4908,6 +4904,7 @@ async function loadBooksFromSupabase() {
     var secLabel = container.querySelector('.seclabel');
     if (secLabel) secLabel.innerHTML = t('books.section_label') + ' &nbsp;&middot;&nbsp; ' + t('books.titles_count').replace('{count}', data.length);
     sbBooksList.innerHTML = html;
+    _collapseBookLists();
     console.log('Loaded ' + data.length + ' books from Supabase');
   } catch(e) {
     console.warn('Books load failed:', e);
@@ -8054,13 +8051,16 @@ function renderTop50Books() {
     + '<button class="' + (_top50Filter === 'steiner' ? 'active' : '') + '" onclick="_top50Filter=\'steiner\';renderTop50Books()">Rudolf Steiner</button>';
   cats.forEach(function (c) { html += '<button class="' + (_top50Filter === c ? 'active' : '') + '" onclick="_top50Filter=' + JSON.stringify(c).replace(/"/g, '&quot;') + ';renderTop50Books()">' + esc(c) + '</button>'; });
   html += '</div><div class="top50-list">';
+  var items = [];
   TOP50_BOOKS.forEach(function (b) {
     var show = _top50Filter === 'all' || (_top50Filter === 'steiner' ? /^Rudolf Steiner/.test(b.author) : b.category === _top50Filter);
+    if (!show) return; // other filters' books are left out rather than hidden, so the Show more count is right
+    var item = '';
     var q = b.isbn13 || (b.title.replace(/:.*$/, '') + ' ' + b.author.replace(/\s*\(.*\)$/, ''));
     var cover = b.cover
       ? '<img class="top50-cover" src="' + escUrl(b.cover) + '" alt="" width="64" height="96" loading="lazy" decoding="async">'
       : '<div class="top50-cover top50-cover-blank" aria-hidden="true"><span>' + esc(b.title.replace(/:.*$/, '')) + '</span></div>';
-    html += '<div class="top50-item' + (show ? '' : ' hidden') + '"><div class="top50-rank">' + b.rank + '</div>'
+    item += '<div class="top50-item"><div class="top50-rank">' + b.rank + '</div>'
       + '<a href="' + escUrl(amazonSearchUrl(q)) + '" target="_blank" rel="sponsored noopener" tabindex="-1">' + cover + '</a><div>'
       + '<div class="top50-title"><a href="' + escUrl(amazonSearchUrl(q)) + '" target="_blank" rel="sponsored noopener">' + esc(b.title) + '</a></div>'
       + '<div class="top50-author">' + esc(b.author) + (b.ga_number ? ' &middot; ' + esc(b.ga_number) : '') + '</div>'
@@ -8070,9 +8070,91 @@ function renderTop50Books() {
       + (b.guide_url ? '<a href="' + escUrl(b.guide_url) + '" target="_blank" rel="noopener">' + esc(b.guide_label || 'study guide') + '</a>' : '')
       + '<span class="ltag">' + esc(b.category) + '</span></div>'
       + '</div></div>';
+    items.push(item);
   });
-  html += '</div></div></div>';
+  var first = items.length <= BOOKS_FIRST + 1 ? items.length : BOOKS_FIRST; // never "Show 1 more"
+  html += items.slice(0, first).join('') + '</div>'
+    + _bookMoreHtml(items.slice(first).join(''), items.length - first, 'top50-more', _top50Open, '_top50Open') + '</div></div>';
   el.innerHTML = html;
+  _collapseBookLists();
+  _loadSteinerAudio();
+}
+
+// Rudolf Steiner Audio list (269 titles from rudolfsteineraudio.com), loaded only when Books opens
+// so it does not add to every page load. Rows then collapse to 6 like the other lists.
+var _steinerAudioLoad = null;
+function _loadSteinerAudio() {
+  var box = document.querySelector('#steiner-audio .audio-list');
+  if (!box || _steinerAudioLoad) return;
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.81.0').then(function (r) { return r.json(); }).then(function (d) {
+    var base = 'https://rudolfsteineraudio.com/';
+    var body = box.parentNode;
+    var row = function (i) {
+      var href = escUrl(base + i.u);
+      var cover = i.img
+        ? '<a href="' + href + '" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img class="audio-cover" data-src="' + escUrl(base + i.img) + '" alt="" width="40" height="60" decoding="async"></a>'
+        : '<span class="audio-cover audio-cover-blank" aria-hidden="true"></span>';
+      return '<div class="lrow audio-row">' + cover + '<span class="ltag">' + esc(i.cw ? 'CW ' + i.cw : 'Audio') + '</span><a class="ltitle" href="' + href + '" target="_blank" rel="noopener">' + esc(i.t) + '</a></div>';
+    };
+    // Same two groups as the site: Written Works and Lectures, each its own collapsible list
+    var group = function (g, label, page) {
+      var list = d.items.filter(function (i) { return i.g === g; });
+      return '<h4 class="audio-group-head"><a href="' + base + page + '" target="_blank" rel="noopener">' + esc(label) + '</a> <span>' + list.length + '</span></h4>'
+        + '<div class="listblock-body audio-group">' + list.map(row).join('') + '</div>';
+    };
+    var html = group('w', t('books.audio_written', 'Written works'), 'writtenimagebased.html')
+      + group('l', t('books.audio_lectures', 'Lectures'), 'lecturesimagebased.html');
+    box.remove();
+    body.insertAdjacentHTML('beforeend', html);
+    _collapseBookLists();
+    // Covers: the 12 visible ones load now, the rest when "Show more" opens their list
+    // (browser lazy loading did not fire for rows added after the section opened)
+    _showCovers(body);
+  }).catch(function () {
+    _steinerAudioLoad = null;
+    box.innerHTML = '<p class="muted" style="font-size:12px;">The title list could not load. <a href="https://rudolfsteineraudio.com/texttitleCWorder.html" target="_blank" rel="noopener">See all titles on rudolfsteineraudio.com</a>.</p>';
+  });
+}
+
+// Books & Library: every list shows its first 6 books, the rest open with a button (owner, 2026-10-22).
+var BOOKS_FIRST = 6;
+var _top50Open = false;
+function _bookMoreHtml(restHtml, n, id, open, stateVar) {
+  if (n <= 0 || !restHtml) return '';
+  var more = t('books.show_n_more', 'Show {n} more books').replace('{n}', n), less = t('common.show_fewer', 'Show fewer');
+  return '<div id="' + id + '" class="more-rows top50-list"' + (open ? '' : ' hidden') + '>' + restHtml + '</div>'
+    + '<button type="button" class="ev-more more-toggle" aria-controls="' + id + '" aria-expanded="' + (open ? 'true' : 'false') + '"'
+    + ' data-more="' + esc(more) + '" data-less="' + esc(less) + '" onclick="' + stateVar + ' = _moreToggle(this)">' + esc(open ? less : more) + '</button>';
+}
+// The static lists (written works, lecture cycles) and the catalog from the database:
+// rows after the sixth move into a hidden box with a toggle. Runs again safely after re-renders.
+var _bookListSeq = 0;
+function _collapseBookLists() {
+  var sec = document.getElementById('sec-books');
+  if (!sec) return;
+  sec.querySelectorAll('.listblock-body').forEach(function (body) {
+    if (body.querySelector(':scope > .more-rows')) return;
+    var rows = Array.prototype.filter.call(body.children, function (c) { return c.classList.contains('lrow'); });
+    if (rows.length <= BOOKS_FIRST + 1) return; // never offer "Show 1 more"; just show it
+    var id = 'book-more-' + (++_bookListSeq);
+    var box = document.createElement('div');
+    box.id = id;
+    box.className = 'more-rows';
+    box.hidden = true;
+    rows.slice(BOOKS_FIRST).forEach(function (row) { box.appendChild(row); });
+    body.appendChild(box);
+    var more = t('books.show_n_more', 'Show {n} more books').replace('{n}', rows.length - BOOKS_FIRST);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ev-more more-toggle';
+    btn.setAttribute('aria-controls', id);
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('data-more', more);
+    btn.setAttribute('data-less', t('common.show_fewer', 'Show fewer'));
+    btn.textContent = more;
+    btn.addEventListener('click', function () { _moreToggle(btn); });
+    body.appendChild(btn);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function () {

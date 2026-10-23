@@ -3929,3 +3929,20 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .sr-media-more { font-size: 12px; color: var(--gold-text); font-weight: 600; margin-left: 6px; }
 .sr-media-desc { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 @media (max-width: 768px) { .sr-media-row .ltitle { font-size: 16px; } .sr-media-desc { font-size: 14px; } }
+
+/* Rudolf Steiner Audio section links (Books & Library) */
+.audio-intro { font-size: 13px; color: var(--text-secondary); margin: 2px 0 10px; line-height: 1.6; }
+.audio-sections { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-bottom: 10px; }
+.audio-sections a { font-size: 12.5px; padding: 4px 10px; border: 1px solid var(--border, rgba(0,0,0,.12)); border-radius: 999px; text-decoration: none; color: var(--ink); white-space: nowrap; }
+.audio-sections a:hover { border-color: var(--gold); color: var(--gold); }
+.audio-group-head { font-size: 13px; font-weight: 600; margin: 14px 0 4px; }
+.audio-group-head a { color: var(--ink); text-decoration: none; }
+.audio-group-head a:hover { color: var(--gold); text-decoration: underline; }
+.audio-group-head span { font-weight: 400; color: var(--text-muted); font-size: 12px; }
+.listblock-body.audio-group { padding: 0; }
+.lrow.audio-row { align-items: center; gap: 10px; }
+.audio-cover { width: 40px; height: 60px; object-fit: cover; border-radius: 2px; flex: none; display: block; background: var(--gold-light); box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+/* Audio rows keep cover, tag and title on one line on phones too */
+.lrow.audio-row { flex-wrap: nowrap; }
+.lrow.audio-row .ltitle { flex: 1 1 auto; min-width: 0; }
+.lrow.audio-row .ltag { flex: none; }
