@@ -3531,38 +3531,49 @@ async function loadNewsFromSupabase() {
 }
 
 // ── DIRECTORY: Load from Supabase ──
+// Directory page: one box per category, like the home page (owner, 2026-10-22). Each box shows the
+// real total and the first 5 names; its heading and "See all" open the category's own page.
+// No tags here: tags show only on each listing's own page.
+var DIR_CARDS = [
+  ['Waldorf & Education', ['waldorf']],
+  ['Biodynamic Agriculture', ['biodynamic']],
+  ['Anthroposophic Medicine', ['medicine']],
+  ['Arts & Eurythmy', ['eurythmy']],
+  ['Community & Camphill', ['camphill', 'community']],
+  ['The Christian Community', ['christian_community']],
+  ['Societies & Organizations', ['societies']],
+  ['Eldercare', ['eldercare']],
+  ['Science & Technology', ['science']],
+  ['Online Resources', ['online']],
+  ['Social Media', ['social_media']]
+];
+var DIR_CARD_NAMES = 5;
+
+function _dirCardHtml(name, label, count, rows) {
+  var open = 'showCategory(\'' + esc(escJs(name)) + '\');return false;';
+  var href = '/category/' + esc(_catSlug(name));
+  return '<div class="catblock reveal visible dir-card">'
+    + '<div class="catblock-head" onclick="' + open.replace('return false;', '') + '" style="cursor:pointer;">'
+    +   '<h3 aria-level="2"><a href="' + href + '" onclick="event.stopPropagation();' + open + '">' + esc(label) + '</a></h3>'
+    +   '<span class="alllink">' + count + '</span></div>'
+    + '<ul>' + rows.map(function (e) {
+        return '<li><a href="/listing/' + esc(e.id) + '" onclick="showDetail(\'directory\',\'' + esc(escJs(e.id)) + '\');return false;">' + esc(e.organization_name)
+          + (e.is_verified ? '<sup>&#10003;</sup>' : '') + '</a>' + (e.location ? ' <span class="dir-card-loc">' + esc(e.location) + '</span>' : '') + '</li>';
+      }).join('') + '</ul>'
+    + '<a class="dir-seeall" href="' + href + '" onclick="' + open + '">' + esc(t('dir.see_all_n', 'See all {n}').replace('{n}', count)) + ' &rarr;</a>'
+    + '</div>';
+}
+
 async function loadDirectoryFromSupabase() {
   if (!sbReady()) return;
+  const container = document.getElementById('sec-directory');
+  if (!container) return;
   try {
-    const { data, error } = await _sb
-      .from('directory_entries')
-      .select('id, organization_name, description, category, website_url, location, country, is_verified, tags')
-      .eq('status', 'approved')
-      .order('is_verified', { ascending: false })
-      .order('organization_name')
-      .limit(100);
-    if (error || !data || data.length === 0) return;
-
-    // Group by category
-    const groups = {};
-    data.forEach(d => {
-      const cat = d.category || 'other';
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(d);
-    });
-
-    const container = document.getElementById('sec-directory');
-    if (!container) return;
-
-    let dirList = document.getElementById('sb-directory-list');
-    if (!dirList) {
-      dirList = document.createElement('div');
-      dirList.id = 'sb-directory-list';
-      // Insert after the map section
-      const mapWrap = container.querySelector('#related-dirs') || container.querySelector('.mapwrap');
-      if (mapWrap) mapWrap.insertAdjacentElement('afterend', dirList);
-      else container.appendChild(dirList);
-    }
+    const results = await Promise.all(DIR_CARDS.map(function (c) {
+      var q = _sb.from('directory_entries').select('id, organization_name, location, is_verified', { count: 'exact' }).eq('status', 'approved');
+      q = c[1].length > 1 ? q.in('category', c[1]) : q.eq('category', c[1][0]);
+      return q.order('is_verified', { ascending: false }).order('organization_name').limit(DIR_CARD_NAMES);
+    }));
 
     const catLabels = {
       societies: t('dir_cat_labels.societies'),
@@ -3576,31 +3587,34 @@ async function loadDirectoryFromSupabase() {
       christian_community: t('dir_cat_labels.christian_community', 'The Christian Community'),
       online: t('dir_cat_labels.online'),
       science: t('dir_cat_labels.science', 'Science & Technology'),
+      social_media: t('dir_cat_labels.social_media', 'Social Media'),
       other: t('dir_cat_labels.other')
     };
 
-    // The Popular Tags cloud was removed (owner, 2026-10-22); tags on each entry still filter the list.
+    let dirList = document.getElementById('sb-directory-list');
+    if (!dirList) {
+      dirList = document.createElement('div');
+      dirList.id = 'sb-directory-list';
+      // Insert after the map section
+      const mapWrap = container.querySelector('#related-dirs') || container.querySelector('.mapwrap');
+      if (mapWrap) mapWrap.insertAdjacentElement('afterend', dirList);
+      else container.appendChild(dirList);
+    }
+
     let html = '<div id="tag-filter-bar"></div>';
     html += '<div class="catgrid" style="grid-template-columns:repeat(3,1fr);margin-top:16px;" id="dir-catgrid">';
-    for (const [cat, entries] of Object.entries(groups)) {
-      const label = catLabels[cat] || cat;
-      html += `<div class="catblock reveal visible">
-        <div class="catblock-head"><h3>${esc(label)}</h3><span class="alllink">${entries.length}</span></div>
-        <ul>${entries.map(e => {
-          const v = e.is_verified ? '<sup>&#10003;</sup>' : '';
-          const loc = e.location || '';
-          const entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + escJs(tg) + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
-          return `<li><a href="#" onclick="showDetail('directory','${e.id}');return false;">${esc(e.organization_name)}${v}</a> <span style="font-size:11px;color:var(--text-muted);">${esc(loc)}</span>${entryTags}</li>`;
-        }).join('')}</ul>
-      </div>`;
-    }
+    DIR_CARDS.forEach(function (c, i) {
+      var r = results[i];
+      if (r.error || !r.count) return;
+      var label = c[1].length > 1 ? t('dir_cat_labels.camphill', c[0]) : (catLabels[c[1][0]] || c[0]);
+      html += _dirCardHtml(c[0], label, r.count, r.data || []);
+    });
     html += '</div>';
     dirList.innerHTML = html;
 
-    // Store data for tag filtering
-    window._directoryData = data;
+    // A tag picked on a listing's page filters the directory from Supabase (no local sample to filter)
+    window._directoryData = null;
     window._dirCatLabels = catLabels;
-    console.log('Loaded ' + data.length + ' directory entries from Supabase');
   } catch(e) {
     console.warn('Directory load failed:', e);
   }
@@ -3687,8 +3701,7 @@ function _renderTagFilterResults(tag, filtered) {
       + '<ul>' + entries.map(function(e) {
           var v = e.is_verified ? '<sup>&#10003;</sup>' : '';
           var loc = e.location || '';
-          var entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag' + (tg === _activeTag ? ' active' : '') + '" href="#" onclick="filterByTag(\'' + escJs(tg) + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
-          return '<li><a href="#" onclick="showDetail(\'directory\',\'' + e.id + '\');return false;">' + esc(e.organization_name) + v + '</a> <span style="font-size:11px;color:var(--text-muted);">' + esc(loc) + '</span>' + entryTags + '</li>';
+          return '<li><a href="#" onclick="showDetail(\'directory\',\'' + e.id + '\');return false;">' + esc(e.organization_name) + v + '</a> <span style="font-size:11px;color:var(--text-muted);">' + esc(loc) + '</span>' + '</li>';
         }).join('')
       + '</ul></div>';
   }
@@ -3715,49 +3728,9 @@ async function _filterByTagFromSupabase(tag) {
 
 function clearTagFilter() {
   _activeTag = null;
-  // Re-render from cached data
-  if (window._directoryData && window._directoryData.length) {
-    var dirList = document.getElementById('sb-directory-list');
-    if (!dirList) return;
-
-    // Clear filter bar
-    var filterBar = document.getElementById('tag-filter-bar');
-    if (filterBar) filterBar.innerHTML = '';
-
-    // Clear active state on tags
-    var tagLinks = dirList.querySelectorAll('.popular-tags-bar .dir-tag');
-    tagLinks.forEach(function(el) { el.classList.remove('active'); });
-
-    // Rebuild full catgrid
-    var catLabels = window._dirCatLabels || {};
-    var groups = {};
-    window._directoryData.forEach(function(d) {
-      var cat = d.category || 'other';
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(d);
-    });
-
-    var catGrid = document.getElementById('dir-catgrid');
-    if (!catGrid) return;
-
-    var html = '';
-    for (var cat in groups) {
-      var entries = groups[cat];
-      var label = catLabels[cat] || cat;
-      html += '<div class="catblock reveal visible">'
-        + '<div class="catblock-head"><h3>' + esc(label) + '</h3><span class="alllink">' + entries.length + '</span></div>'
-        + '<ul>' + entries.map(function(e) {
-            var v = e.is_verified ? '<sup>&#10003;</sup>' : '';
-            var loc = e.location || '';
-            var entryTags = (e.tags && e.tags.length) ? '<div style="margin-top:3px;">' + e.tags.slice(0, 3).map(function(tg) { return '<a class="dir-tag" href="#" onclick="filterByTag(\'' + escJs(tg) + '\');return false;">' + esc(tg) + '</a>'; }).join('') + '</div>' : '';
-            return '<li><a href="#" onclick="showDetail(\'directory\',\'' + e.id + '\');return false;">' + esc(e.organization_name) + v + '</a> <span style="font-size:11px;color:var(--text-muted);">' + esc(loc) + '</span>' + entryTags + '</li>';
-          }).join('')
-        + '</ul></div>';
-    }
-    catGrid.innerHTML = html;
-  } else {
-    loadDirectoryFromSupabase();
-  }
+  var filterBar = document.getElementById('tag-filter-bar');
+  if (filterBar) filterBar.innerHTML = '';
+  loadDirectoryFromSupabase();
 }
 
 // ── HELPER: time ago ──
@@ -4238,7 +4211,7 @@ function _moreListHtml(rows, id, open, moreLabel, stateVar, tail) {
 }
 function _showCovers(root) {
   root.querySelectorAll('img[data-src]').forEach(function (img) {
-    if (img.closest('[hidden]')) return;
+    if (img.closest('[hidden]') || img.closest('details:not([open])')) return;
     img.src = img.getAttribute('data-src');
     img.removeAttribute('data-src');
   });
@@ -4879,8 +4852,10 @@ async function loadBooksFromSupabase() {
     if (!sbBooksList) {
       sbBooksList = document.createElement('div');
       sbBooksList.id = 'sb-books-list';
+      var pull = document.getElementById('books-more-body');
       var label = document.getElementById('top50-books') || container.querySelector('.seclabel');
-      if (label) label.insertAdjacentElement('afterend', sbBooksList);
+      if (pull) pull.appendChild(sbBooksList);
+      else if (label) label.insertAdjacentElement('afterend', sbBooksList);
       else container.prepend(sbBooksList);
     }
 
@@ -8077,12 +8052,43 @@ function renderTop50Books() {
       + '</div></div>';
     items.push(item);
   });
-  var first = items.length <= BOOKS_FIRST + 1 ? items.length : BOOKS_FIRST; // never "Show 1 more"
-  html += items.slice(0, first).join('') + '</div>'
-    + _bookMoreHtml(items.slice(first).join(''), items.length - first, 'top50-more', _top50Open, '_top50Open') + '</div></div>';
+  html += items.slice(0, BOOKS_FIRST).join('') + '</div></div></div>';
   el.innerHTML = html;
+  // Everything after the first 6 books lives in one pulldown (owner, 2026-10-22)
+  var body = _ensureBooksPulldown();
+  var rest = document.getElementById('top50-rest');
+  if (rest) {
+    var more = items.slice(BOOKS_FIRST);
+    rest.innerHTML = more.length
+      ? '<div class="listblock" style="margin-bottom:16px;"><div class="listblock-head"><h3>' + esc(t('books.top50_more', 'Top 50, continued')) + '</h3></div>'
+        + '<div class="listblock-body"><div class="top50-list">' + more.join('').replace(/<img class="top50-cover" src=/g, '<img class="top50-cover" data-src=') + '</div></div></div>'
+      : '';
+  }
+  if (body) _showCovers(body);
   _collapseBookLists();
   _loadSteinerAudio();
+}
+
+// Builds the "More books and lists" pulldown once: every block in the Books page after the
+// first 6 books moves inside it. Covers inside load when it opens.
+function _ensureBooksPulldown() {
+  var sec = document.getElementById('sec-books');
+  var top = document.getElementById('top50-books');
+  if (!sec || !top) return null;
+  var body = document.getElementById('books-more-body');
+  if (body) return body;
+  var det = document.createElement('details');
+  det.className = 'books-more';
+  det.id = 'books-more';
+  det.innerHTML = '<summary><span class="bm-title">' + esc(t('books.more_pulldown', 'More books and lists')) + '</span>'
+    + '<span class="bm-hint">' + esc(t('books.more_hint', 'The rest of the Top 50, Steiner\'s written works, lecture cycles by subject, Rudolf Steiner Audio, where to buy and free reading')) + '</span></summary>'
+    + '<div id="books-more-body"><div id="top50-rest"></div></div>';
+  body = det.querySelector('#books-more-body');
+  var node = top.nextSibling;
+  while (node) { var next = node.nextSibling; body.appendChild(node); node = next; }
+  top.insertAdjacentElement('afterend', det);
+  det.addEventListener('toggle', function () { if (det.open) _showCovers(body); });
+  return body;
 }
 
 // Rudolf Steiner Audio list (269 titles from rudolfsteineraudio.com), loaded only when Books opens
@@ -8091,7 +8097,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.82.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.83.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {
@@ -8123,21 +8129,13 @@ function _loadSteinerAudio() {
 
 // Books & Library: every list shows its first 6 books, the rest open with a button (owner, 2026-10-22).
 var BOOKS_FIRST = 6;
-var _top50Open = false;
-function _bookMoreHtml(restHtml, n, id, open, stateVar) {
-  if (n <= 0 || !restHtml) return '';
-  var more = t('books.show_n_more', 'Show {n} more books').replace('{n}', n), less = t('common.show_fewer', 'Show fewer');
-  return '<div id="' + id + '" class="more-rows top50-list"' + (open ? '' : ' hidden') + '>' + restHtml + '</div>'
-    + '<button type="button" class="ev-more more-toggle" aria-controls="' + id + '" aria-expanded="' + (open ? 'true' : 'false') + '"'
-    + ' data-more="' + esc(more) + '" data-less="' + esc(less) + '" onclick="' + stateVar + ' = _moreToggle(this)">' + esc(open ? less : more) + '</button>';
-}
-// The static lists (written works, lecture cycles) and the catalog from the database:
+// The two Rudolf Steiner Audio lists (25 and 246 titles) keep a "Show more" inside the pulldown;
 // rows after the sixth move into a hidden box with a toggle. Runs again safely after re-renders.
 var _bookListSeq = 0;
 function _collapseBookLists() {
   var sec = document.getElementById('sec-books');
   if (!sec) return;
-  sec.querySelectorAll('.listblock-body').forEach(function (body) {
+  sec.querySelectorAll('#steiner-audio .listblock-body.audio-group').forEach(function (body) {
     if (body.querySelector(':scope > .more-rows')) return;
     var rows = Array.prototype.filter.call(body.children, function (c) { return c.classList.contains('lrow'); });
     if (rows.length <= BOOKS_FIRST + 1) return; // never offer "Show 1 more"; just show it

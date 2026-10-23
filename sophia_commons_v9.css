@@ -3949,3 +3949,20 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 /* Event page picture (2026-10-22) */
 .detail-img { margin: 0 0 16px; }
 .detail-img img { display: block; width: 100%; height: auto; max-height: 240px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-alt, #f3efe6); }
+/* Directory category boxes (2026-10-22): heading and See all open the category page */
+.dir-card { display: flex; flex-direction: column; }
+.dir-card .catblock-head h3 a { color: inherit; text-decoration: none; }
+.dir-card .catblock-head:hover h3 a { color: var(--gold-text); text-decoration: underline; }
+.dir-card ul { flex: 1; }
+.dir-card-loc { font-size: 11px; color: var(--text-muted); }
+.dir-seeall { display: block; padding: 0 14px 12px; font-size: 13px; font-weight: 600; color: var(--gold-text); text-decoration: none; }
+.dir-seeall:hover { text-decoration: underline; }
+/* Books & Library pulldown (2026-10-22) */
+.books-more { margin: 4px 0 20px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--surface, #fff); }
+.books-more > summary { cursor: pointer; list-style: none; padding: 14px 18px; display: flex; flex-direction: column; gap: 2px; min-height: 44px; }
+.books-more > summary::-webkit-details-marker { display: none; }
+.books-more > summary .bm-title { font-weight: 700; font-size: 15px; color: var(--gold-text); }
+.books-more > summary .bm-title::before { content: '+'; display: inline-block; width: 18px; font-weight: 700; }
+.books-more[open] > summary .bm-title::before { content: '\2212'; }
+.books-more > summary .bm-hint { font-size: 12.5px; color: var(--text-muted); padding-left: 18px; }
+#books-more-body { padding: 4px 18px 18px; }
