@@ -219,12 +219,14 @@ def fetch_channel_details(channel_id):
     img = re.search(r'<meta property="og:image" content="(https://yt3\.[^"]+)"', html)
     if img:
         out["avatar_url"] = re.sub(r"=s\d+-", "=s176-", img.group(1))
-    subs = re.search(r'"([\d.,]+[KMB]?) subscribers?"', html)
+    # The channel's own numbers sit in the page header as "content":"<n> subscribers" / "<n> videos".
+    # Featured or linked channels earlier on the page carry their own "<n> subscribers" labels, so the
+    # first match on the page can belong to another channel (e.g. a "mother" channel).
+    subs = re.search(r'"content":"([\d.,]+[KMB]?) subscribers?"', html) or re.search(r'"([\d.,]+[KMB]?) subscribers?"', html)
     if subs:
         out["subscriber_text"] = subs.group(1)
         out["subscriber_count"] = _count(subs.group(1))
-    # the header reads "<n> subscribers" then "<n> videos"; earlier "1 video" strings are playlists
-    vids = re.search(r'"([\d.,]+[KMB]?) videos?"', html[subs.end():] if subs else html)
+    vids = re.search(r'"content":"([\d.,]+[KMB]?) videos?"', html) or re.search(r'"([\d.,]+[KMB]?) videos?"', html[subs.end():] if subs else html)
     if vids:
         out["total_videos"] = _count(vids.group(1))
     if out:

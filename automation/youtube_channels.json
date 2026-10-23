@@ -707,6 +707,36 @@
       "category": "steiner-lectures",
       "description": "Rudolf Steiner lectures read by Dale Brunsvold (Rudolf Steiner Audio) and set to animated artistic images, such as the cycle Michael and the New Generation.",
       "verified": true
+    },
+    {
+      "slug": "anthroposophie-fuers-ohr",
+      "name": "Anthroposophie fürs Ohr",
+      "url": "https://www.youtube.com/@Anthroposophie-fürs-Ohr",
+      "channel_id": "UCuLlcw9fPGgv_thNuZ0itBQ",
+      "language": "DE",
+      "category": "steiner-lectures",
+      "description": "Full Rudolf Steiner lectures read aloud in German, so that passages quoted on its sister channels can be heard in the context of the whole lecture.",
+      "verified": true
+    },
+    {
+      "slug": "agenda-2033",
+      "name": "AGENDA 2033",
+      "url": "https://www.youtube.com/@AGENDA_2033",
+      "channel_id": "UCtjLJ7OhPb0pi6RYNHbHaIw",
+      "language": "DE",
+      "category": "other",
+      "description": "Independent German initiative, not tied to any party or church, grounded in Christian-humanist, ecological and spiritual values and drawing especially on anthroposophy.",
+      "verified": true
+    },
+    {
+      "slug": "dreigliederung-vision",
+      "name": "Dreigliederung »Systemalternative«",
+      "url": "https://www.youtube.com/@Dreigliederung-Vision",
+      "channel_id": "UCCgKMcR9Exvkdd1u8UIVzPw",
+      "language": "DE",
+      "category": "society",
+      "description": "Independent German channel on the threefold social order as an alternative for cultural, political and economic life.",
+      "verified": true
     }
   ]
 }
