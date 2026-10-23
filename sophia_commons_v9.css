@@ -3946,3 +3946,6 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .lrow.audio-row { flex-wrap: nowrap; }
 .lrow.audio-row .ltitle { flex: 1 1 auto; min-width: 0; }
 .lrow.audio-row .ltag { flex: none; }
+/* Event page picture (2026-10-22) */
+.detail-img { margin: 0 0 16px; }
+.detail-img img { display: block; width: 100%; height: auto; max-height: 240px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-alt, #f3efe6); }

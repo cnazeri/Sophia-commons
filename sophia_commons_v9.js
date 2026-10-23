@@ -258,11 +258,12 @@ function renderEventDetail(ev) {
   var d = new Date(ev.start_date);
   var endStr = ev.end_date ? localDate(ev.end_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'}) : '';
   var dateStr = localDate(ev.start_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'});
-  var timeStr = ev.is_all_day ? t('event_detail.all_day') : d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-  // same-day end time: "09:00 AM - 12:30 PM"
-  if (!ev.is_all_day && ev.end_date && _localDay(ev.end_date) === _localDay(ev.start_date)) {
-    timeStr += ' - ' + new Date(ev.end_date).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-  }
+  // Times are in the visitor's own time zone, so name it: "05:00 PM - 06:15 PM EST"
+  var hm = {hour:'2-digit', minute:'2-digit'}, hmz = {hour:'2-digit', minute:'2-digit', timeZoneName:'short'};
+  var sameDayEnd = !ev.is_all_day && ev.end_date && _localDay(ev.end_date) === _localDay(ev.start_date);
+  var timeStr = ev.is_all_day ? t('event_detail.all_day')
+    : sameDayEnd ? d.toLocaleTimeString('en-US', hm) + ' - ' + new Date(ev.end_date).toLocaleTimeString('en-US', hmz)
+      : d.toLocaleTimeString('en-US', hmz);
   var typeLabel = ev.event_type === 'first_class' ? t('firstclass.tag', 'Blue card admission') : String(ev.event_type || '').replace(/_/g, ' ');
 
   var badges = '';
@@ -285,7 +286,11 @@ function renderEventDetail(ev) {
   if (ev.online_url) actions += '<a class="btn-primary-detail" href="' + escUrl(ev.online_url) + '" target="_blank">' + t('event_detail.join_online') + ' &#8599;</a>';
   if (ev.organizer_url) actions += '<a class="btn-secondary-detail" href="' + escUrl(ev.organizer_url) + '" target="_blank">' + t('event_detail.organizer_website') + '</a>';
 
+  var img = ev.image_url && /^https:\/\//.test(ev.image_url)
+    ? '<figure class="detail-img"><img src="' + escUrl(_imgSized(ev.image_url, 900)) + '" alt="" width="900" height="240" decoding="async"></figure>' : '';
+
   return '<div class="detail-hero">'
+    + img
     + badges
     + '<h1>' + esc(ev.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
@@ -8086,7 +8091,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.81.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.82.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {
