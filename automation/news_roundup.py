@@ -21,6 +21,14 @@ MAX_AGE_DAYS = 21
 ADMIN_EMAILS = ['cameron.nazeri@gmail.com', 'cameron@sophiacommons.org', 'admin@sophiacommons.org']
 ATOM = '{http://www.w3.org/2005/Atom}'
 
+# Google News searches (kind "gnews" in news_sources.json) bring in recent press coverage, since the
+# movement's own feeds post only every few weeks (owner wants recent news on the home page, 2026-10-24).
+# A headline must match the source's "must" pattern and none of NOISE: the searches also return
+# obituaries, school sports, Waldorf the Maryland town and hotel, and Camp Hill, Pennsylvania.
+GNEWS = 'https://news.google.com/rss/search'
+NOISE = re.compile(r'obituar|volleyball|basketball|football|soccer|lacrosse|baseball|softball|\bNFHS\b|\bvs\.?\s|astoria|camp hill'
+                   r'|voters? guide|election|real estate|for sale|police|arrest|crash|charged', re.I)
+
 # Job and farm-opportunity posts (the Biodynamic Association UK feed carries many) go to the Jobs &
 # Volunteering classifieds instead of the news, as active ads that expire after 90 days.
 JOB_TITLE = re.compile(r'\b(wanted|vacanc\w*|jobs?|hiring|recruit\w*|apprentice\w*|assistant|tutor|grower|gardener|co-?workers?|internships?)\b'
@@ -68,7 +76,27 @@ def parse_date(s):
     return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
 
 
+def read_gnews(src):
+    from urllib.parse import urlencode
+    url = GNEWS + '?' + urlencode({'q': src['query'] + ' when:30d', 'hl': 'en-US', 'gl': 'US', 'ceid': 'US:en'})
+    r = requests.get(url, headers=UA, timeout=25)
+    r.raise_for_status()
+    must = re.compile(src['must'], re.I)
+    items = []
+    for it in ET.fromstring(r.content).iter('item'):
+        title, pub = it.findtext('title') or '', (it.findtext('source') or '').strip()
+        if pub and title.endswith(' - ' + pub):
+            title = title[:-len(pub) - 3]
+        if not must.search(title) or NOISE.search(title):
+            continue
+        items.append({'title': title, 'link': (it.findtext('link') or '').strip(), 'summary': '',
+                      'date': parse_date(it.findtext('pubDate')), 'publisher': pub})
+    return items
+
+
 def read_feed(src):
+    if src.get('kind') == 'gnews':
+        return read_gnews(src)
     r = requests.get(src['feed'], headers=UA, timeout=25)
     r.raise_for_status()
     root = ET.fromstring(r.content)
@@ -99,6 +127,7 @@ def main():
         sys.exit('no confirmed admin account to own the drafts')
     cutoff = datetime.now(timezone.utc) - timedelta(days=args.days)
     new, jobs, report = [], [], []
+    taken = set()   # one story can turn up in several searches
     for src in cfg['sources']:
         try:
             items = read_feed(src)
@@ -110,11 +139,14 @@ def main():
             seen = {r['source_url'] for r in requests.get(rest + 'news', headers=H, params={'select': 'source_url', 'source_url': 'in.(%s)' % links}, timeout=20).json()}
             seen |= {r['website_url'] for r in requests.get(rest + 'listings', headers=H, params={'select': 'website_url', 'website_url': 'in.(%s)' % links}, timeout=20).json()}
             fresh = [i for i in fresh if i['link'] not in seen]
+        fresh = [i for i in fresh if re.sub(r'\W+', ' ', i['title'].lower()).strip() not in taken]
         for i in fresh:
+            taken.add(re.sub(r'\W+', ' ', i['title'].lower()).strip())
             if JOB_TITLE.search(i['title']):
                 jobs.append(job_listing(clean(i['title'], 200), clean(i['summary'], 600), src['name'], i['link'], [src['topic'], src['lang'].lower()], owner))
                 continue
-            new.append({'title': clean(i['title'], 200), 'excerpt': clean(i['summary']), 'body': clean(i['summary'], 600) or clean(i['title'], 200), 'source_name': src['name'], 'source_url': i['link'],
+            name = i.get('publisher') or src['name']
+            new.append({'title': clean(i['title'], 200), 'excerpt': clean(i['summary']), 'body': clean(i['summary'], 600) or clean(i['title'], 200), 'source_name': name, 'source_url': i['link'],
                         'published_at': i['date'].isoformat(), 'status': 'pending', 'featured': False, 'user_id': owner,
                         'tags': ['roundup', src['topic'], src['lang'].lower()]})
         report.append('%s: %d new' % (src['name'], len(fresh)))

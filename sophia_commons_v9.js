@@ -7969,10 +7969,11 @@ function _mountNewsSlider(slider, slides) {
   var label = function (i) { return (i + 1) + ' / ' + n; };
   slider.insertAdjacentHTML('beforeend', '<div class="feat-ctrl">'
     + '<button type="button" class="feat-arrow" data-step="-1" aria-label="' + esc(t('common.previous', 'Previous')) + '">&#8249;</button>'
-    + '<div class="feat-dots">' + slides.map(function (s, i) { return '<button type="button" class="feat-dot" data-go="' + i + '" aria-label="' + esc(label(i) + ': ' + s.title) + '"></button>'; }).join('') + '</div>'
+    + '<div class="feat-dots">' + slides.map(function (s, i) { return '<button type="button" class="feat-dot" data-go="' + i + '" aria-label="' + esc(label(i) + ': ' + s.title) + '"></button>'; }).join('') + '</div><span class="feat-count" aria-hidden="true"></span>'
     + '<button type="button" class="feat-arrow" data-step="1" aria-label="' + esc(t('common.next', 'Next')) + '">&#8250;</button>'
     + '<button type="button" class="feat-pause" aria-pressed="false"></button></div>');
-  var pauseBtn = slider.querySelector('.feat-pause');
+  var pauseBtn = slider.querySelector('.feat-pause'), count = slider.querySelector('.feat-count');
+  slider.classList.toggle('many', n > 6);   // phones show "3 / 10" instead of the dots
   var syncPause = function () {
     pauseBtn.setAttribute('aria-pressed', paused ? 'true' : 'false');
     pauseBtn.textContent = paused ? t('common.play', 'Play') : t('common.pause', 'Pause');
@@ -7988,6 +7989,7 @@ function _mountNewsSlider(slider, slides) {
       Array.prototype.forEach.call(el.querySelectorAll('a, button'), function (a) { a.tabIndex = k === idx ? 0 : -1; });
     });
     Array.prototype.forEach.call(slider.querySelectorAll('.feat-dot'), function (d, k) { d.setAttribute('aria-current', k === idx ? 'true' : 'false'); });
+    count.textContent = (idx + 1) + ' / ' + n;
     if (byUser) { paused = true; syncPause(); }
   };
   slider.querySelector('.feat-ctrl').addEventListener('click', function (e) {
@@ -8232,7 +8234,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.85.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.86.1').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {

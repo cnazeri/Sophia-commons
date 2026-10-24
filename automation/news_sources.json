@@ -1,5 +1,5 @@
 {
-  "note": "RSS feeds read by automation/news_roundup.py. New articles arrive as pending news for the admin to publish. English only (owner choice, 2026-10-10).",
+  "note": "RSS feeds read by automation/news_roundup.py. New articles arrive as pending news for the admin to publish. English only (owner choice, 2026-10-10). Google News searches (kind gnews) add recent press coverage; headlines must match \"must\" and pass the NOISE filter in the script (2026-10-24).",
   "sources": [
     {
       "name": "Goetheanum",
@@ -42,6 +42,54 @@
       "feed": "https://lilipoh.com/feed/",
       "lang": "EN",
       "topic": "health"
+    },
+    {
+      "name": "Google News: Waldorf",
+      "kind": "gnews",
+      "query": "\"Waldorf school\" OR \"Waldorf education\" OR \"Waldorf kindergarten\"",
+      "must": "\\bWaldorf\\b.*\\b(school|education|kindergarten|teacher|students?|steiner|learning)|\\b(school|education)\\b.*\\bWaldorf\\b",
+      "lang": "EN",
+      "topic": "waldorf"
+    },
+    {
+      "name": "Google News: Steiner schools",
+      "kind": "gnews",
+      "query": "\"Steiner school\" OR \"Steiner Waldorf\" OR \"Rudolf Steiner\"",
+      "must": "\\bSteiner\\b",
+      "lang": "EN",
+      "topic": "waldorf"
+    },
+    {
+      "name": "Google News: biodynamic",
+      "kind": "gnews",
+      "query": "biodynamic",
+      "must": "\\bbiodynamic",
+      "lang": "EN",
+      "topic": "biodynamic"
+    },
+    {
+      "name": "Google News: anthroposophy",
+      "kind": "gnews",
+      "query": "anthroposophy OR anthroposophical OR anthroposophic",
+      "must": "\\banthropos",
+      "lang": "EN",
+      "topic": "society"
+    },
+    {
+      "name": "Google News: Camphill",
+      "kind": "gnews",
+      "query": "\"Camphill\" -\"Camp Hill\"",
+      "must": "\\bCamphill\\b",
+      "lang": "EN",
+      "topic": "camphill"
+    },
+    {
+      "name": "Google News: eurythmy",
+      "kind": "gnews",
+      "query": "eurythmy",
+      "must": "\\beurythm",
+      "lang": "EN",
+      "topic": "arts"
     }
   ]
 }
