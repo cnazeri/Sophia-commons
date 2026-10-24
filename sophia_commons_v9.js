@@ -1445,7 +1445,8 @@ function showSec(id, skipPush) {
   if (id === 'books') _ensureBooksLoaded();
   if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
   if (id === 'podcasts' && typeof renderFacebookPages === 'function') renderFacebookPages();
-  if (id === 'podcasts') { renderVideoSpotlight(); renderSocialFeatured(); }
+  if (id === 'podcasts') renderVideoSpotlight();
+  if (id === 'home') renderHomeExtras();
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   if (_toNews) setTimeout(function() { var n = document.getElementById('sec-news'); if (n) n.scrollIntoView({ block: 'start' }); }, 50);
@@ -4519,7 +4520,7 @@ function _mountFeatSlider(first, slides) {
 var _featIdx = 0, _featPaused = false, _featHold = false;
 
 function featGo(i, byUser) {
-  var slider = document.querySelector('.feat-slider');
+  var slider = document.querySelector('.feat-slider:not(.news-slider)');
   if (!slider) return;
   var slides = slider.querySelectorAll('.feat-track > .feat-ev');
   var n = slides.length;
@@ -4542,7 +4543,7 @@ function featTogglePause() {
 }
 
 function _featSyncPause() {
-  var b = document.querySelector('.feat-pause');
+  var b = document.querySelector('.feat-slider:not(.news-slider) .feat-pause');
   if (!b) return;
   b.setAttribute('aria-pressed', _featPaused ? 'true' : 'false');
   b.textContent = _featPaused ? t('common.play', 'Play') : t('common.pause', 'Pause');
@@ -4897,11 +4898,11 @@ function rerenderForLang() {
   if (!activeSection) return;
   var id = activeSection.id.replace('sec-', '');
   if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); renderSidebarUpcoming(); loadNewsFromSupabase(); }   // news sits on this page too
-  if (id === 'home') { renderSidebarUpcoming(); renderCotsWidget(); }   // home events box, slider and verse widget
+  if (id === 'home') { renderSidebarUpcoming(); renderCotsWidget(); _homeNewsPromise = null; renderHomeExtras(); }   // home events box, slider and verse widget
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
   if (id === 'marketplace') { renderMarketplace(); }
-  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); renderFacebookPages(); renderVideoSpotlight(); renderSocialFeatured(); }
+  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); renderFacebookPages(); renderVideoSpotlight(); }
   if (id === 'books') { renderTop50Books(); }
   if (id === 'directory' && !_allDataLoaded) { _loadAllSupabaseData(); }
   if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
@@ -7876,18 +7877,140 @@ function _fbPageFor(url, pages) {
   return best;
 }
 
+// The card sits on the home page under Events (moved from Social Media, owner 2026-10-24).
+// Home must stay light, so only the matching Facebook page is fetched, not all 1,300.
+async function _fbPagesNear(url) {
+  if (_fbRows) return _fbRows;
+  var m = /facebook\.com\/((?:groups\/)?[^\/?#]+)/i.exec(String(url || ''));
+  if (!m || !sbReady()) return [];
+  try {
+    var r = await _sb.from('facebook_pages').select('slug,name,url,kind,description,members_text,avatar_url')
+      .ilike('url', '%facebook.com/' + m[1].replace(/[%_]/g, '') + '%').limit(5);
+    return r.error ? [] : (r.data || []);
+  } catch (e) { return []; }
+}
+
 async function renderSocialFeatured() {
-  var el = document.getElementById('social-featured');
-  if (!el) return;
-  var both = await Promise.all([_loadFeaturedPost(), _fbFetch()]);
-  var post = both[0], pages = both[1];
-  if (post) { el.innerHTML = _socialPostHtml(post, _fbPageFor(post.url, pages)); return; }
-  var day = await _loadListingOfDay();
-  if (day) { el.innerHTML = _socialListingOfDayHtml(day, _fbPageFor(day.facebook_url, pages)); return; }
-  var pool = pages.filter(function (p) { return p.kind === 'page' && p.avatar_url && p.description; })
-    .sort(function (a, b) { return a.slug.localeCompare(b.slug); });
-  if (!pool.length) { el.innerHTML = ''; return; }
-  el.innerHTML = _socialPageOfDayHtml(pool[Math.floor(Date.now() / 864e5) % pool.length]);
+  var el = document.getElementById('home-social');
+  if (!el || !sbReady()) return;
+  var post = await _loadFeaturedPost();
+  var html = '';
+  if (post) html = _socialPostHtml(post, _fbPageFor(post.url, await _fbPagesNear(post.url)));
+  else {
+    var day = await _loadListingOfDay();
+    if (day) html = _socialListingOfDayHtml(day, _fbPageFor(day.facebook_url, await _fbPagesNear(day.facebook_url)));
+    else {
+      var pool = (await _fbFetch()).filter(function (p) { return p.kind === 'page' && p.avatar_url && p.description; })
+        .sort(function (a, b) { return a.slug.localeCompare(b.slug); });
+      if (pool.length) html = _socialPageOfDayHtml(pool[Math.floor(Date.now() / 864e5) % pool.length]);
+    }
+  }
+  var head = '<div class="listblock-head"><h3 aria-level="2">' + esc(t('home.social_heading', 'From the community')) + '</h3>'
+    + '<a href="/podcasts" onclick="showSec(\'podcasts\');return false;">' + esc(t('home.all_pages_groups', 'all pages and groups')) + ' &rarr;</a></div>';
+  el.innerHTML = html.replace('<div class="listblock social-feat">', '<div class="listblock social-feat home-social-card">' + head);
+}
+
+// ── Home news: highlighted stories in a slider built like the featured events ──
+// Featured stories first, then the newest, up to FEAT_MAX. Own state, so it never moves the events slider.
+var _homeNewsPromise = null;
+function _homeNewsLoad() {
+  if (!_homeNewsPromise && sbReady()) _homeNewsPromise = _sb.from('news')
+    .select('id, title, excerpt, source_name, featured, published_at')
+    .eq('status', 'published').order('published_at', { ascending: false }).limit(12)
+    .then(function (r) { return r.error ? [] : (r.data || []); }, function () { return []; });
+  return _homeNewsPromise || Promise.resolve([]);
+}
+
+// WordPress feeds send "Der Beitrag X erschien zuerst auf Y" as the excerpt; that says nothing
+function _newsBlurb(n) {
+  var x = String(n.excerpt || '').trim();
+  return /^(Der Beitrag|The post)\b/i.test(x) ? '' : x;
+}
+
+function _homeNewsSlide(n, i) {
+  var href = '/article/' + esc(n.id), open = 'showDetail(\'news\',\'' + escJs(n.id) + '\');return false;';
+  var blurb = _newsBlurb(n);
+  return '<div class="feat-ev news-ev" data-id="' + esc(n.id) + '">'
+    + '<a class="news-ev-mark" href="' + href + '" onclick="' + open + '" tabindex="-1" aria-hidden="true"><span>' + esc(n.source_name || t('home.news_heading', 'News')) + '</span></a>'
+    + '<div class="feat-ev-body"><div class="etag">' + esc(n.featured ? t('home.featured_story', 'Featured story') : t('home.latest_news', 'Latest news')) + '</div>'
+    + '<h5 aria-level="3"><a href="' + href + '" onclick="' + open + '">' + esc(n.title) + '</a></h5>'
+    + '<div class="emeta">' + _storyMeta(n) + '</div>'
+    + (blurb ? '<p class="feat-ev-desc">' + esc(_shortText(blurb, 160)) + '</p>' : '')
+    + '<a class="news-ev-read" href="' + href + '" onclick="' + open + '">' + esc(t('home.read_story', 'Read the story')) + ' &rarr;</a>'
+    + '</div></div>';
+}
+
+async function renderHomeNews() {
+  var block = document.getElementById('home-news-block');
+  var box = document.getElementById('home-news');
+  if (!block || !box) return;
+  var rows = await _homeNewsLoad();
+  var slides = rows.filter(function (n) { return n.featured; }).concat(rows.filter(function (n) { return !n.featured; })).slice(0, FEAT_MAX);
+  block.hidden = !slides.length;
+  if (!slides.length) return;
+  box.innerHTML = '<div class="feat-slider news-slider" role="region" aria-roledescription="carousel" aria-label="' + esc(t('home.featured_news', 'Featured news')) + '">'
+    + '<div class="feat-view"><div class="feat-track">' + slides.map(_homeNewsSlide).join('') + '</div></div></div>';
+  if (slides.length > 1) _mountNewsSlider(box.querySelector('.news-slider'), slides);
+}
+
+var _newsTimer = null;
+function _mountNewsSlider(slider, slides) {
+  var n = slides.length, idx = 0, paused = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, hold = false;
+  var track = slider.querySelector('.feat-track'), view = slider.querySelector('.feat-view');
+  var label = function (i) { return (i + 1) + ' / ' + n; };
+  slider.insertAdjacentHTML('beforeend', '<div class="feat-ctrl">'
+    + '<button type="button" class="feat-arrow" data-step="-1" aria-label="' + esc(t('common.previous', 'Previous')) + '">&#8249;</button>'
+    + '<div class="feat-dots">' + slides.map(function (s, i) { return '<button type="button" class="feat-dot" data-go="' + i + '" aria-label="' + esc(label(i) + ': ' + s.title) + '"></button>'; }).join('') + '</div>'
+    + '<button type="button" class="feat-arrow" data-step="1" aria-label="' + esc(t('common.next', 'Next')) + '">&#8250;</button>'
+    + '<button type="button" class="feat-pause" aria-pressed="false"></button></div>');
+  var pauseBtn = slider.querySelector('.feat-pause');
+  var syncPause = function () {
+    pauseBtn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+    pauseBtn.textContent = paused ? t('common.play', 'Play') : t('common.pause', 'Pause');
+  };
+  var go = function (i, byUser) {
+    idx = ((i % n) + n) % n;
+    track.style.transform = 'translateX(' + (-100 * idx) + '%)';
+    Array.prototype.forEach.call(track.children, function (el, k) {
+      el.setAttribute('role', 'group');
+      el.setAttribute('aria-roledescription', 'slide');
+      el.setAttribute('aria-label', label(k));
+      el.setAttribute('aria-hidden', k === idx ? 'false' : 'true');
+      Array.prototype.forEach.call(el.querySelectorAll('a, button'), function (a) { a.tabIndex = k === idx ? 0 : -1; });
+    });
+    Array.prototype.forEach.call(slider.querySelectorAll('.feat-dot'), function (d, k) { d.setAttribute('aria-current', k === idx ? 'true' : 'false'); });
+    if (byUser) { paused = true; syncPause(); }
+  };
+  slider.querySelector('.feat-ctrl').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b === pauseBtn) { paused = !paused; syncPause(); return; }
+    if (b.hasAttribute('data-go')) go(Number(b.getAttribute('data-go')), true);
+    else go(idx + Number(b.getAttribute('data-step')), true);
+  });
+  slider.addEventListener('mouseenter', function () { hold = true; });
+  slider.addEventListener('mouseleave', function () { hold = false; });
+  slider.addEventListener('focusin', function () { hold = true; });
+  slider.addEventListener('focusout', function () { hold = false; });
+  var x0 = null;
+  view.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  view.addEventListener('touchend', function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    x0 = null;
+    if (Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1), true);
+  }, { passive: true });
+  syncPause();
+  go(0, false);
+  clearInterval(_newsTimer);
+  _newsTimer = setInterval(function () {
+    if (!paused && !hold && !document.hidden && document.body.contains(slider)) go(idx + 1, false);
+  }, FEAT_INTERVAL_MS + 1500);   // out of step with the events slider, so the two do not move together
+}
+
+function renderHomeExtras() {
+  renderSocialFeatured();
+  renderHomeNews();
 }
 
 function _socialHead(kicker, page, name) {
@@ -8081,12 +8204,15 @@ function _ensureBooksPulldown() {
   det.className = 'books-more';
   det.id = 'books-more';
   det.innerHTML = '<summary><span class="bm-title">' + esc(t('books.more_pulldown', 'More books and lists')) + '</span>'
-    + '<span class="bm-hint">' + esc(t('books.more_hint', 'The rest of the Top 50, Steiner\'s written works, lecture cycles by subject, Rudolf Steiner Audio, where to buy and free reading')) + '</span></summary>'
+    + '<span class="bm-hint">' + esc(t('books.more_hint', 'The rest of the Top 50, Steiner\'s written works, lecture cycles by subject, where to buy and free reading')) + '</span></summary>'
     + '<div id="books-more-body"><div id="top50-rest"></div></div>';
   body = det.querySelector('#books-more-body');
+  // Rudolf Steiner Audio stays outside the pulldown, as its own section under the books (owner, 2026-10-24)
+  var audio = document.getElementById('steiner-audio');
   var node = top.nextSibling;
-  while (node) { var next = node.nextSibling; body.appendChild(node); node = next; }
+  while (node) { var next = node.nextSibling; if (node !== audio) body.appendChild(node); node = next; }
   top.insertAdjacentElement('afterend', det);
+  if (audio) det.insertAdjacentElement('afterend', audio);
   det.addEventListener('toggle', function () { if (det.open) _showCovers(body); });
   return body;
 }
@@ -8097,7 +8223,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.83.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.84.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {
@@ -8107,20 +8233,43 @@ function _loadSteinerAudio() {
         : '<span class="audio-cover audio-cover-blank" aria-hidden="true"></span>';
       return '<div class="lrow audio-row">' + cover + '<span class="ltag">' + esc(i.cw ? 'CW ' + i.cw : 'Audio') + '</span><a class="ltitle" href="' + href + '" target="_blank" rel="noopener">' + esc(i.t) + '</a></div>';
     };
-    // Same two groups as the site: Written Works and Lectures, each its own collapsible list
-    var group = function (g, label, page) {
-      var list = d.items.filter(function (i) { return i.g === g; });
+    // Listed like the books: the first 6 written works (in CW order) as cards, everything else in a
+    // pulldown with the same two groups as his site, Written works and Lectures (owner, 2026-10-24)
+    var cwNum = function (i) { return parseInt(i.cw, 10) || 999; };
+    var written = d.items.filter(function (i) { return i.g === 'w'; }).sort(function (a, b) { return cwNum(a) - cwNum(b); });
+    var lectures = d.items.filter(function (i) { return i.g === 'l'; });
+    var card = function (i) {
+      var href = escUrl(base + i.u);
+      var cover = i.img
+        ? '<img class="top50-cover" data-src="' + escUrl(base + i.img) + '" alt="" width="64" height="96" decoding="async">'
+        : '<div class="top50-cover top50-cover-blank" aria-hidden="true"><span>' + esc(i.t) + '</span></div>';
+      return '<div class="top50-item audio-item"><a href="' + href + '" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">' + cover + '</a><div>'
+        + '<div class="top50-title"><a href="' + href + '" target="_blank" rel="noopener">' + esc(i.t) + '</a></div>'
+        + '<div class="top50-author">Rudolf Steiner' + (i.cw ? ' &middot; CW ' + esc(i.cw) : '') + ' &middot; ' + esc(t('books.audio_read_by', 'read by Dale Brunsvold')) + '</div>'
+        + '<div class="top50-links"><a href="' + href + '" target="_blank" rel="noopener">' + esc(t('books.audio_listen', 'Listen free')) + ' &rarr;</a></div>'
+        + '</div></div>';
+    };
+    var group = function (list, label, page) {
       return '<h4 class="audio-group-head"><a href="' + base + page + '" target="_blank" rel="noopener">' + esc(label) + '</a> <span>' + list.length + '</span></h4>'
         + '<div class="listblock-body audio-group">' + list.map(row).join('') + '</div>';
     };
-    var html = group('w', t('books.audio_written', 'Written works'), 'writtenimagebased.html')
-      + group('l', t('books.audio_lectures', 'Lectures'), 'lecturesimagebased.html');
+    var first = written.slice(0, BOOKS_FIRST);
+    var restWritten = written.slice(BOOKS_FIRST);
+    var html = '<div class="top50-list audio-cards">' + first.map(card).join('') + '</div>'
+      + '<details class="books-more" id="audio-more"><summary><span class="bm-title">' + esc(t('books.audio_more', 'More recordings')) + '</span>'
+      + '<span class="bm-hint">' + esc(t('books.audio_more_hint', '{w} more written works and {l} lecture cycles').replace('{w}', restWritten.length).replace('{l}', lectures.length)) + '</span></summary>'
+      + '<div class="audio-more-body">'
+      + group(restWritten, t('books.audio_written', 'Written works'), 'writtenimagebased.html')
+      + group(lectures, t('books.audio_lectures', 'Lectures'), 'lecturesimagebased.html')
+      + '</div></details>';
     box.remove();
     body.insertAdjacentHTML('beforeend', html);
     _collapseBookLists();
-    // Covers: the 12 visible ones load now, the rest when "Show more" opens their list
+    // Covers: the 6 cards load now, the rest when the pulldown or a "Show more" opens
     // (browser lazy loading did not fire for rows added after the section opened)
     _showCovers(body);
+    var det = body.querySelector('#audio-more');
+    det.addEventListener('toggle', function () { if (det.open) _showCovers(det); });
   }).catch(function () {
     _steinerAudioLoad = null;
     box.innerHTML = '<p class="muted" style="font-size:12px;">The title list could not load. <a href="https://rudolfsteineraudio.com/texttitleCWorder.html" target="_blank" rel="noopener">See all titles on rudolfsteineraudio.com</a>.</p>';
@@ -8163,6 +8312,7 @@ function _collapseBookLists() {
 document.addEventListener('DOMContentLoaded', function () {
   // Books and Podcasts are hidden on most first visits; showSec() renders them when opened
   if (_secVisible('books')) renderTop50Books();
+  if (_secVisible('home')) renderHomeExtras();
   if (_secVisible('podcasts')) { renderVideoSpotlight(); renderYouTubeChannels(); }
 });
 
