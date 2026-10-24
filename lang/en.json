@@ -587,7 +587,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.86.1",
+  "footer.version": "v1.87.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -965,5 +965,10 @@
   "books.audio_listen": "Listen free",
   "books.audio_more": "More recordings",
   "books.audio_more_hint": "{w} more written works and {l} lecture cycles",
-  "home.today": "Today"
+  "home.today": "Today",
+  "home.book_heading": "Book of the day",
+  "home.book_store_link": "Rudolf Steiner Bookstore →",
+  "home.book_buy": "See it at the Rudolf Steiner Bookstore",
+  "home.sem_heading": "Seminars & Retreats",
+  "home.sem_all": "all events →"
 }

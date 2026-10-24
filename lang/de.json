@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.86.1",
+  "footer.version": "v1.87.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1026,5 +1026,10 @@
   "books.audio_listen": "Kostenlos anhören",
   "books.audio_more": "Weitere Aufnahmen",
   "books.audio_more_hint": "{w} weitere Schriften und {l} Vortragszyklen",
-  "home.today": "Heute"
+  "home.today": "Heute",
+  "home.book_heading": "Buch des Tages",
+  "home.book_store_link": "Rudolf Steiner Bookstore →",
+  "home.book_buy": "Im Rudolf Steiner Bookstore ansehen",
+  "home.sem_heading": "Seminare & Retreats",
+  "home.sem_all": "alle Veranstaltungen →"
 }

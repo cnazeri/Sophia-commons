@@ -4398,7 +4398,26 @@ function renderSidebarUpcoming() {
 
 // Home page "Upcoming Events" card: previously three hard-coded spring 2026 events, all
 // auto-hidden once past, which left an empty box. Render from the live calendar instead.
+// Home "Seminars & Retreats": the next learning events (workshops, retreats, study days, trainings,
+// conferences) in date order; a series such as the weekly Mani webinars shows only its next session.
+var HOME_SEM_CATS = ['workshop', 'retreat', 'study_group', 'seminar', 'training', 'study', 'conference'];
+var HOME_SEM_MAX = 6;
+function renderHomeSeminars() {
+  var block = document.getElementById('home-sem-block');
+  var box = document.getElementById('home-sem');
+  if (!block || !box) return;
+  var today = _localDay(new Date());
+  var seen = {};
+  var items = calEvents.filter(function(e) { return e.id && HOME_SEM_CATS.indexOf(e.cat) !== -1 && e.date >= today; })
+    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })
+    .filter(function(e) { var k = _evSeriesKey(e); if (!k) return true; if (seen[k]) return false; seen[k] = true; return true; })
+    .slice(0, HOME_SEM_MAX);
+  block.hidden = !items.length;
+  box.innerHTML = items.length ? '<div class="home-ev-rows">' + items.map(_homeEvRow).join('') + '</div>' : '';
+}
+
 function renderHomeUpcoming() {
+  renderHomeSeminars();
   var box = document.getElementById('home-upcoming');
   if (!box) return;
   // Until real events arrive, keep the banner the deploy wrote into the page (festival dates alone
@@ -8019,9 +8038,32 @@ function _mountNewsSlider(slider, slides) {
   }, FEAT_INTERVAL_MS + 1500);   // out of step with the events slider, so the two do not move together
 }
 
+// ── Book of the day: one book a day from the Anthroposophy section of the Rudolf Steiner Bookstore ──
+// Served by the edge function netlify/edge-functions/book-of-day.js (their store blocks browser reads).
+var _homeBookPromise = null;
+async function renderHomeBook() {
+  var block = document.getElementById('home-book-block');
+  var box = document.getElementById('home-book');
+  if (!block || !box) return;
+  if (!_homeBookPromise) _homeBookPromise = fetch('/api/book-of-the-day').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+  var b = await _homeBookPromise;
+  if (!b || !b.name || !/^https:\/\/rudolfsteinerbookstore\.com\//.test(b.url || '')) { block.hidden = true; return; }
+  var link = function (inner, cls, extra) { return '<a' + (cls ? ' class="' + cls + '"' : '') + ' href="' + escUrl(b.url) + '" target="_blank" rel="noopener"' + (extra || '') + '>' + inner + '</a>'; };
+  box.innerHTML = '<div class="book-day">'
+    + (b.image ? link('<img src="' + escUrl(b.image) + '" alt="" width="96" height="144" loading="lazy" decoding="async">', 'book-day-cover', ' tabindex="-1" aria-hidden="true"') : '')
+    + '<div class="book-day-body"><div class="etag">' + esc(b.section || 'Anthroposophy') + '</div>'
+    + '<h5 aria-level="3">' + link(esc(b.name)) + '</h5>'
+    + (b.price ? '<div class="emeta">' + esc(b.price) + '</div>' : '')
+    + (b.blurb ? '<p class="feat-ev-desc">' + esc(b.blurb) + '</p>' : '')
+    + link(esc(t('home.book_buy', 'See it at the Rudolf Steiner Bookstore')) + ' &rarr;', 'book-day-buy')
+    + '</div></div>';
+  block.hidden = false;
+}
+
 function renderHomeExtras() {
   renderSocialFeatured();
   renderHomeNews();
+  renderHomeBook();
 }
 
 function _socialHead(kicker, page, name) {
@@ -8234,7 +8276,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.86.1').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.87.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {

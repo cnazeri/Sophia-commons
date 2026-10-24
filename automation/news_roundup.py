@@ -127,7 +127,11 @@ def main():
         sys.exit('no confirmed admin account to own the drafts')
     cutoff = datetime.now(timezone.utc) - timedelta(days=args.days)
     new, jobs, report = [], [], []
-    taken = set()   # one story can turn up in several searches
+    # One story can turn up in several searches, and news_review.py swaps Google's link for the
+    # publisher's, so also skip any title already filed in the last 90 days
+    since = (datetime.now(timezone.utc) - timedelta(days=90)).isoformat()
+    known = requests.get(rest + 'news', headers=H, params={'select': 'title', 'created_at': 'gte.' + since}, timeout=20).json()
+    taken = {re.sub(r'\W+', ' ', (r.get('title') or '').lower()).strip() for r in known}
     for src in cfg['sources']:
         try:
             items = read_feed(src)

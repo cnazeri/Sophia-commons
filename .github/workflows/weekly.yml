@@ -61,6 +61,14 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python3 automation/news_roundup.py
 
+      - name: Review new news (article date from the page, Claude checks the topic; publishes or rejects)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 automation/news_review.py
+        continue-on-error: true      # if it fails, stories just wait in Admin > News queue
+
       - name: Mark events that have ended as past (their pages stay readable)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
