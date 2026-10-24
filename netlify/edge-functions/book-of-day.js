@@ -1,6 +1,7 @@
-// /api/book-of-the-day: one in-stock book a day from the Anthroposophy section of the Rudolf Steiner
-// Bookstore (owner, 2026-10-24). Their store API cannot be read from a visitor's browser (no CORS
-// allow-origin), so this reads it on the server and the CDN keeps the answer until midnight UTC.
+// /api/book-of-the-week: one in-stock book a week from the Anthroposophy section of the Rudolf Steiner
+// Bookstore (owner, 2026-10-24; weekly instead of daily from the same day). Their store API cannot be read
+// from a visitor's browser (no CORS allow-origin), so this reads it on the server and the CDN keeps the
+// answer until the week turns over (Monday 00:00 UTC).
 const STORE = 'https://rudolfsteinerbookstore.com/wp-json/wc/store/v1/products';
 const CATEGORY = 6356;   // product-category/anthroposophy
 const PER_PAGE = 10;
@@ -18,14 +19,15 @@ async function page(n) {
 }
 
 export default async () => {
-  const day = Math.floor(Date.now() / 864e5);
-  const untilMidnight = 86400 - Math.floor(Date.now() / 1000) % 86400;
+  // Day 0 of the epoch was a Thursday; +3 makes each week start on Monday
+  const week = Math.floor((Math.floor(Date.now() / 864e5) + 3) / 7);
+  const untilNextWeek = 7 * 86400 - (Math.floor(Date.now() / 1000) + 3 * 86400) % (7 * 86400);
   try {
     const first = await page(1);
-    // A different page each day, then the first book on it that has a cover and a description
-    const pick = first.pages > 1 ? await page(1 + (day * 7) % first.pages) : first;
+    // A different page each week, then the first book on it that has a cover and a description
+    const pick = first.pages > 1 ? await page(1 + (week * 7) % first.pages) : first;
     const pool = pick.items.filter(p => p.images && p.images.length && plain(p.short_description || p.description).length > 40);
-    const p = pool.length ? pool[day % pool.length] : pick.items[0];
+    const p = pool.length ? pool[week % pool.length] : pick.items[0];
     if (!p) throw new Error('no books');
     const minor = p.prices && p.prices.currency_minor_unit != null ? p.prices.currency_minor_unit : 2;
     const book = {
@@ -40,7 +42,7 @@ export default async () => {
     return new Response(JSON.stringify(book), { headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'public, max-age=3600',
-      'Netlify-CDN-Cache-Control': `public, durable, s-maxage=${untilMidnight}`,
+      'Netlify-CDN-Cache-Control': `public, durable, s-maxage=${untilNextWeek}`,
     } });
   } catch (e) {
     return new Response(JSON.stringify({ error: 'The bookstore could not be reached.' }), {
@@ -48,4 +50,4 @@ export default async () => {
   }
 };
 
-export const config = { path: '/api/book-of-the-day', cache: 'manual' };
+export const config = { path: ['/api/book-of-the-week', '/api/book-of-the-day'], cache: 'manual' };

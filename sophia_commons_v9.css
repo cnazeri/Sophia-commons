@@ -3992,3 +3992,10 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .book-day-body h5 { margin: 2px 0 4px; font-size: 14px; line-height: 1.35; }
 .book-day-buy { display: inline-block; font-size: 12.5px; font-weight: 600; color: var(--gold-text); min-height: 32px; padding: 6px 0; }
 @media (max-width: 480px) { .book-day-cover { flex-basis: 76px; } .book-day-cover img { width: 76px; } .book-day-buy { min-height: 44px; padding: 12px 0; } }
+
+/* Home Seminars & Retreats: one event card with its picture (v1.88) */
+.sem-home { padding: 8px 0 6px; }
+.sem-home-img { display: block; margin-bottom: 10px; }
+.sem-home-img img { display: block; width: 100%; height: auto; max-height: 260px; aspect-ratio: 16 / 7; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--surface-2, #f4f1ea); }
+.sem-home-body h5 { margin: 2px 0 4px; font-size: 15px; line-height: 1.35; text-wrap: balance; }
+@media (max-width: 480px) { .sem-home-img img { aspect-ratio: 16 / 9; } }

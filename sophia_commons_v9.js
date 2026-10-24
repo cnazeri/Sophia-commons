@@ -4398,22 +4398,35 @@ function renderSidebarUpcoming() {
 
 // Home page "Upcoming Events" card: previously three hard-coded spring 2026 events, all
 // auto-hidden once past, which left an empty box. Render from the live calendar instead.
-// Home "Seminars & Retreats": the next learning events (workshops, retreats, study days, trainings,
-// conferences) in date order; a series such as the weekly Mani webinars shows only its next session.
+// Home "Seminars & Retreats": ONE learning event (workshop, retreat, study day, training, conference), the
+// next one in date order, as a card with its picture (owner, 2026-10-24). Weekly webinar series ("Mani
+// Webinar: ...") are skipped; they already fill the events slider just above.
 var HOME_SEM_CATS = ['workshop', 'retreat', 'study_group', 'seminar', 'training', 'study', 'conference'];
-var HOME_SEM_MAX = 6;
 function renderHomeSeminars() {
   var block = document.getElementById('home-sem-block');
   var box = document.getElementById('home-sem');
   if (!block || !box) return;
   var today = _localDay(new Date());
-  var seen = {};
-  var items = calEvents.filter(function(e) { return e.id && HOME_SEM_CATS.indexOf(e.cat) !== -1 && e.date >= today; })
-    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })
-    .filter(function(e) { var k = _evSeriesKey(e); if (!k) return true; if (seen[k]) return false; seen[k] = true; return true; })
-    .slice(0, HOME_SEM_MAX);
-  block.hidden = !items.length;
-  box.innerHTML = items.length ? '<div class="home-ev-rows">' + items.map(_homeEvRow).join('') + '</div>' : '';
+  var pool = calEvents.filter(function(e) { return e.id && HOME_SEM_CATS.indexOf(e.cat) !== -1 && e.date >= today; })
+    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  var n = {};
+  pool.forEach(function(e) { var k = _evSeriesKey(e); if (k) n[k] = (n[k] || 0) + 1; });
+  var ev = pool.filter(function(e) { var k = _evSeriesKey(e); return !k || n[k] < 2; })[0] || pool[0];
+  block.hidden = !ev;
+  box.innerHTML = ev ? _homeSemCard(ev) : '';
+}
+
+function _homeSemCard(ev) {
+  var href = '/event/' + esc(ev.id);
+  var go = ' onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;"';
+  var cat = String(ev.cat || 'event').replace('_', ' ');
+  var meta = _evMeta(ev);
+  var img = ev.img && ev.img.src && /^https:\/\//.test(ev.img.src)
+    ? '<a class="sem-home-img" href="' + href + '"' + go + ' tabindex="-1" aria-hidden="true"><img src="' + escUrl(_imgSized(ev.img.src, 640)) + '" alt="" width="640" height="300" loading="lazy" decoding="async"></a>' : '';
+  return '<div class="sem-home">' + img
+    + '<div class="sem-home-body"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + ' &middot; ' + esc(localDate(ev.date, { month: 'short', day: 'numeric', year: 'numeric' })) + '</div>'
+    + '<h5 aria-level="3"><a href="' + href + '"' + go + '>' + esc(ev.title) + '</a></h5>'
+    + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
 }
 
 function renderHomeUpcoming() {
@@ -8038,14 +8051,14 @@ function _mountNewsSlider(slider, slides) {
   }, FEAT_INTERVAL_MS + 1500);   // out of step with the events slider, so the two do not move together
 }
 
-// ── Book of the day: one book a day from the Anthroposophy section of the Rudolf Steiner Bookstore ──
+// ── Book of the week: one book a week from the Anthroposophy section of the Rudolf Steiner Bookstore ──
 // Served by the edge function netlify/edge-functions/book-of-day.js (their store blocks browser reads).
 var _homeBookPromise = null;
 async function renderHomeBook() {
   var block = document.getElementById('home-book-block');
   var box = document.getElementById('home-book');
   if (!block || !box) return;
-  if (!_homeBookPromise) _homeBookPromise = fetch('/api/book-of-the-day').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+  if (!_homeBookPromise) _homeBookPromise = fetch('/api/book-of-the-week').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
   var b = await _homeBookPromise;
   if (!b || !b.name || !/^https:\/\/rudolfsteinerbookstore\.com\//.test(b.url || '')) { block.hidden = true; return; }
   var link = function (inner, cls, extra) { return '<a' + (cls ? ' class="' + cls + '"' : '') + ' href="' + escUrl(b.url) + '" target="_blank" rel="noopener"' + (extra || '') + '>' + inner + '</a>'; };
@@ -8276,7 +8289,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.87.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.88.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {
