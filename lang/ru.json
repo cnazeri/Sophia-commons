@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.84.0",
+  "footer.version": "v1.85.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1025,5 +1025,6 @@
   "books.audio_read_by": "читает Дейл Брансволд",
   "books.audio_listen": "Слушать бесплатно",
   "books.audio_more": "Другие записи",
-  "books.audio_more_hint": "ещё {w} сочинений и {l} циклов лекций"
+  "books.audio_more_hint": "ещё {w} сочинений и {l} циклов лекций",
+  "home.today": "Сегодня"
 }

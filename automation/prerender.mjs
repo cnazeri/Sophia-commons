@@ -184,7 +184,10 @@ fs.writeFileSync(path.join(OUT, 'sitemap.xml'), xml);
 // Home: write the featured event banner into index.html so it shows with the first paint (it was
 // the largest element on phones and only appeared after the script and an events request).
 // The app replaces this with the live list as soon as it loads.
-const feat = events.find(ev => ev.featured);
+// First banner = the soonest event starting today or later, same as the app's slider (owner, 2026-10-24)
+const laDay = iso => new Date(iso).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+const todayLA = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+const feat = events.filter(ev => laDay(ev.start_date) >= todayLA).sort((a, b) => a.start_date.localeCompare(b.start_date))[0];
 if (feat) {
   const short = (t, n) => { t = String(t || '').replace(/\s+/g, ' ').trim(); return t.length <= n ? t : t.slice(0, n - 3).replace(/\s+\S*$/, '') + '...'; };
   const img = feat.image_url && feat.image_url.includes('/storage/v1/object/public/')
@@ -193,7 +196,7 @@ if (feat) {
   const join = feat.online_url ? `<a class="feat-ev-join" href="${attr(feat.online_url)}" target="_blank" rel="noopener">${/zoom\./i.test(feat.online_url) ? 'Join on Zoom' : 'Join online'}</a>` : '';
   const banner = `<div class="feat-ev" data-id="${attr(feat.id)}">`
     + (img ? `<img class="feat-ev-img" src="${attr(img)}" alt="" width="96" height="116" fetchpriority="high">` : '')
-    + `<div class="feat-ev-body"><div class="etag">Featured event</div><h5 aria-level="3"><a href="/event/${attr(feat.id)}">${esc(feat.title)}</a></h5>`
+    + `<div class="feat-ev-body"><div class="etag">${feat.featured ? 'Featured event' : laDay(feat.start_date) === todayLA ? 'Today' : 'Coming up'}</div><h5 aria-level="3"><a href="/event/${attr(feat.id)}">${esc(feat.title)}</a></h5>`
     + `<div class="emeta">${esc(when)}</div>` + (feat.description ? `<p class="feat-ev-desc">${esc(short(feat.description, 160))}</p>` : '') + join + '</div></div>';
   const homeFile = path.join(OUT, 'index.html');
   const home = fs.readFileSync(homeFile, 'utf8');
@@ -215,7 +218,7 @@ function homeGrid(feat) {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: tz });
   const rest = events.filter(ev => ev !== feat && dayOf(ev.end_date || ev.start_date) >= today)
     .sort((a, b) => a.start_date.localeCompare(b.start_date));
-  const now = rest.filter(ev => dayOf(ev.start_date) <= today).slice(0, 4);
+  const now = rest.filter(ev => dayOf(ev.start_date) < today).slice(0, 4);
   const fmt = (iso, o) => new Date(iso).toLocaleDateString('en-US', { timeZone: tz, ...o });
   const row = ev => {
     const multi = ev.end_date && dayOf(ev.end_date) !== dayOf(ev.start_date);

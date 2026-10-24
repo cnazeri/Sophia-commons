@@ -3981,3 +3981,6 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .news-ev-mark { width: 96px; height: 116px; flex-shrink: 0; border-radius: 10px; border: 1px solid var(--border-subtle); background: linear-gradient(160deg, var(--gold-light), var(--muted-bg)); display: flex; align-items: center; justify-content: center; padding: 8px; text-decoration: none; }
 .news-ev-mark span { font-family: 'Cormorant Garamond', 'Lora', Georgia, serif; font-size: 14px; font-weight: 600; line-height: 1.2; text-align: center; color: var(--text-secondary); overflow-wrap: anywhere; }
 @media (max-width: 480px) { .news-ev-mark { width: 76px; height: 92px; } .news-ev-mark span { font-size: 12.5px; } }
+/* Events slider with more than 6 slides: phones show a counter instead of the dots (2026-10-24) */
+.feat-count { display: none; font-size: 12.5px; font-weight: 600; color: var(--text-secondary); min-width: 52px; text-align: center; }
+@media (max-width: 480px) { .feat-slider.many .feat-dots { display: none; } .feat-slider.many .feat-count { display: inline-block; } }

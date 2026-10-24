@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.84.0",
+  "footer.version": "v1.85.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -1025,5 +1025,6 @@
   "books.audio_read_by": "leído por Dale Brunsvold",
   "books.audio_listen": "Escuchar gratis",
   "books.audio_more": "Más grabaciones",
-  "books.audio_more_hint": "{w} obras escritas más y {l} ciclos de conferencias"
+  "books.audio_more_hint": "{w} obras escritas más y {l} ciclos de conferencias",
+  "home.today": "Hoy"
 }

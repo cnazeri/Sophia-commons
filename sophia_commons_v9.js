@@ -4415,7 +4415,7 @@ function renderHomeUpcoming() {
   var feat = slides[0];
   var rest = live.filter(function(e) { return slides.indexOf(e) === -1; });
   // Happening now: started on or before today and not yet over (multi-day conferences, tours)
-  var now = rest.filter(function(e) { return e.date <= today; }).slice(0, 4);
+  var now = rest.filter(function(e) { return e.date < today; }).slice(0, 4);
   // Under the featured slider only "Happening now" (the "Coming up" list was removed, owner 2026-10-18;
   // the full list is one tap away on Events & News)
   var gridHtml = now.length
@@ -4438,18 +4438,18 @@ function renderHomeUpcoming() {
 }
 
 // ── Featured events slider ──
-// Featured events first, then the next upcoming events that have a picture, up to FEAT_MAX.
+// The next upcoming events in date order, starting today, up to FEAT_MAX (owner, 2026-10-24).
+// Events that began earlier and are still running stay in "Happening now" under the slider.
 // The first slide is the banner already on the page (no repaint); the rest are added beside it.
 // Moves every FEAT_INTERVAL_MS; stops on hover, keyboard focus, the pause button, or when the
 // visitor prefers reduced motion. Swipe works on touch screens.
-var FEAT_MAX = 6;
+var FEAT_MAX = 10;
 var FEAT_INTERVAL_MS = 6500;
 var _featTimer = null;
 
 function _featSlides(live) {
-  var featured = live.filter(function(e) { return e.featured; });
-  var pictured = live.filter(function(e) { return !e.featured && e.img && e.img.src; });
-  return featured.concat(pictured).slice(0, FEAT_MAX);
+  var today = _localDay(new Date());
+  return live.filter(function(e) { return e.id && e.date >= today; }).slice(0, FEAT_MAX);
 }
 
 function _mountFeatSlider(first, slides) {
@@ -4478,20 +4478,19 @@ function _mountFeatSlider(first, slides) {
     track.appendChild(first);
   }
   slider.setAttribute('aria-label', t('home.featured_events', 'Featured events'));
+  slider.classList.toggle('many', n > 6);   // phones show "3 / 10" instead of 10 dots
   track.insertAdjacentHTML('beforeend', slides.slice(1).map(_featBannerHtml).join(''));
   Array.prototype.forEach.call(track.children, function(el, i) {
     el.setAttribute('role', 'group');
     el.setAttribute('aria-roledescription', 'slide');
     el.setAttribute('aria-label', label(i));
-    var tag = el.querySelector('.etag');
-    if (tag && i > 0 && !slides[i].featured) tag.textContent = t('home.coming_up', 'Coming up');
   });
   var dots = slides.map(function(ev, i) {
     return '<button type="button" class="feat-dot" aria-label="' + esc(label(i) + ': ' + ev.title) + '" onclick="featGo(' + i + ', true)"></button>';
   }).join('');
   slider.insertAdjacentHTML('beforeend', '<div class="feat-ctrl">'
     + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.previous', 'Previous')) + '" onclick="featGo(_featIdx - 1, true)">&#8249;</button>'
-    + '<div class="feat-dots">' + dots + '</div>'
+    + '<div class="feat-dots">' + dots + '</div><span class="feat-count" aria-hidden="true"></span>'
     + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.next', 'Next')) + '" onclick="featGo(_featIdx + 1, true)">&#8250;</button>'
     + '<button type="button" class="feat-pause" aria-pressed="false" onclick="featTogglePause()">' + esc(t('common.pause', 'Pause')) + '</button>'
     + '</div>');
@@ -4534,6 +4533,8 @@ function featGo(i, byUser) {
   Array.prototype.forEach.call(slider.querySelectorAll('.feat-dot'), function(d, k) {
     d.setAttribute('aria-current', k === _featIdx ? 'true' : 'false');
   });
+  var count = slider.querySelector('.feat-count');
+  if (count) count.textContent = (_featIdx + 1) + ' / ' + n;
   if (byUser) { _featPaused = true; _featSyncPause(); }
 }
 
@@ -4549,11 +4550,17 @@ function _featSyncPause() {
   b.textContent = _featPaused ? t('common.play', 'Play') : t('common.pause', 'Pause');
 }
 
+// Tag over each event: featured ones keep "Featured event"; the rest say Today or Coming up
+function _featTag(ev) {
+  if (ev.featured) return t('home.featured_event', 'Featured event');
+  return ev.date === _localDay(new Date()) ? t('home.today', 'Today') : t('home.coming_up', 'Coming up');
+}
+
 function _featBannerHtml(feat) {
   var join = (feat.src || []).filter(function(x) { return /Join/.test(x[0]); })[0];
   return '<div class="feat-ev" data-id="' + esc(feat.id) + '">'
     + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(_imgSized(feat.img.src, 200)) + '" alt="" width="96" height="116">' : '')
-    + '<div class="feat-ev-body"><div class="etag">' + esc(t('home.featured_event', 'Featured event')) + '</div>'
+    + '<div class="feat-ev-body"><div class="etag">' + esc(_featTag(feat)) + '</div>'
     + '<h5 aria-level="3"><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
     + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
     + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(feat.desc, 160)) + '</p>' : '')
@@ -7911,8 +7918,9 @@ async function renderSocialFeatured() {
 }
 
 // ── Home news: highlighted stories in a slider built like the featured events ──
-// Featured stories first, then the newest, up to FEAT_MAX. Own state, so it never moves the events slider.
+// Stories from the last NEWS_RECENT_DAYS: featured first, then the newest, up to FEAT_MAX. Own state, so it never moves the events slider.
 var _homeNewsPromise = null;
+var NEWS_RECENT_DAYS = 30;   // older stories stay on the Events & News page only (owner, 2026-10-24)
 function _homeNewsLoad() {
   if (!_homeNewsPromise && sbReady()) _homeNewsPromise = _sb.from('news')
     .select('id, title, excerpt, source_name, featured, published_at')
@@ -7944,7 +7952,8 @@ async function renderHomeNews() {
   var block = document.getElementById('home-news-block');
   var box = document.getElementById('home-news');
   if (!block || !box) return;
-  var rows = await _homeNewsLoad();
+  var since = Date.now() - NEWS_RECENT_DAYS * 864e5;
+  var rows = (await _homeNewsLoad()).filter(function (n) { return Date.parse(n.published_at) >= since; });
   var slides = rows.filter(function (n) { return n.featured; }).concat(rows.filter(function (n) { return !n.featured; })).slice(0, FEAT_MAX);
   block.hidden = !slides.length;
   if (!slides.length) return;
@@ -8223,7 +8232,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.84.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.85.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {
