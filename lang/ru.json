@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.88.1",
+  "footer.version": "v1.89.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1031,5 +1031,15 @@
   "home.book_store_link": "Rudolf Steiner Bookstore →",
   "home.book_buy": "Смотреть в Rudolf Steiner Bookstore",
   "home.sem_heading": "Семинары и ретриты",
-  "home.sem_all": "все мероприятия →"
+  "home.sem_all": "все мероприятия →",
+  "digest.label": "Еженедельный дайджест",
+  "digest.heading": "Прошлые выпуски дайджеста",
+  "digest.lead": "Все выпуски еженедельной рассылки Sophia Commons, сначала новые. В каждом: ближайшие события недели, новые видео и новые места в каталоге.",
+  "digest.subscribe": "Получать следующий выпуск по почте",
+  "digest.read_past": "Читать прошлые выпуски",
+  "digest.past_issues": "Прошлые выпуски дайджеста",
+  "digest.empty": "Выпусков пока нет. Первый выйдет в понедельник.",
+  "digest.error": "Не удалось загрузить архив. Попробуйте позже.",
+  "meta.digest_title": "Архив дайджеста | Sophia Commons",
+  "meta.digest_desc": "Все прошлые выпуски еженедельной рассылки Sophia Commons: события, новые видео и новые места антропософского мира."
 }

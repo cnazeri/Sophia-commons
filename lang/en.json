@@ -587,7 +587,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.88.1",
+  "footer.version": "v1.89.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -970,5 +970,15 @@
   "home.book_store_link": "Rudolf Steiner Bookstore →",
   "home.book_buy": "See it at the Rudolf Steiner Bookstore",
   "home.sem_heading": "Seminars & Retreats",
-  "home.sem_all": "all events →"
+  "home.sem_all": "all events →",
+  "digest.label": "Weekly digest",
+  "digest.heading": "Past weekly digests",
+  "digest.lead": "Every issue of the Sophia Commons weekly email, newest first. Each one has the events coming up that week, new videos and new places in the directory.",
+  "digest.subscribe": "Get the next issue by email",
+  "digest.read_past": "Read past issues",
+  "digest.past_issues": "Past weekly digests",
+  "digest.empty": "No issues yet. The first one goes out on a Monday.",
+  "digest.error": "The archive could not be loaded. Please try again later.",
+  "meta.digest_title": "Weekly digest archive | Sophia Commons",
+  "meta.digest_desc": "Every past issue of the Sophia Commons weekly email: upcoming events, new videos and new places in the anthroposophical world."
 }

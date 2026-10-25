@@ -374,6 +374,7 @@ function renderNewsDetail(n) {
     + '<h1>' + esc(n.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
     + '<div class="detail-body">' + ((n.tags || []).indexOf('weekly-digest') >= 0 && n.body ? _sanitizeHtml(n.body) : esc(n.body || n.excerpt || '')) + '</div>'
+    + (_notDigest(n) ? '' : _digestLinkHtml())
     + '<div class="detail-actions">' + actions + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'news\',\'' + n.id + '\')">' + t('report.flag_btn') + '</button>' : '') + '</div>'
     + '</div>'
     + renderCommentsSection('news', n.id);
@@ -810,6 +811,7 @@ async function loadCategoryPage(catKey, dirCat, opts) {
       var { data } = await _sb.from('news')
         .select('id, title, excerpt, source_name, published_at, tags')
         .eq('status', 'published').order('published_at', { ascending: false }).limit(20);
+      if (data) data = data.filter(_notDigest);
       if (data) {
         var keywords = catKey.split(/[\s&,]+/).filter(function(w) { return w.length > 3; });
         data.forEach(function(n) {
@@ -1378,7 +1380,7 @@ const roomHistory = {};
 const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
   directory: '/directory', books: '/books', podcasts: '/podcasts',
-  memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', chat: '/chat', privacy: '/privacy', terms: '/terms', about: '/about'
+  memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', chat: '/chat', privacy: '/privacy', terms: '/terms', about: '/about', digest: '/digest'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
@@ -1398,6 +1400,7 @@ function _getSecMeta() {
     chat:      { title: t('meta.chat_title', 'Community Chat | Sophia Commons'), desc: t('meta.chat_desc', 'Live conversation rooms for members of the anthroposophical community.') },
     about:     { title: 'About | Sophia Commons', desc: 'Sophia Commons is a free, community-maintained directory for the anthroposophical world.' },
     privacy:   { title: 'Privacy | Sophia Commons', desc: 'What Sophia Commons collects, why, and how to have your data corrected or deleted.' },
+    digest:    { title: t('meta.digest_title', 'Weekly digest archive | Sophia Commons'), desc: t('meta.digest_desc', 'Every past issue of the Sophia Commons weekly email: upcoming events, new videos and new places in the anthroposophical world.') },
     terms:     { title: 'Terms of use | Sophia Commons', desc: 'The simple terms for using and contributing to the Sophia Commons directory.' }
   };
 }
@@ -1447,6 +1450,7 @@ function showSec(id, skipPush) {
   if (id === 'podcasts' && typeof renderFacebookPages === 'function') renderFacebookPages();
   if (id === 'podcasts') renderVideoSpotlight();
   if (id === 'home') renderHomeExtras();
+  if (id === 'digest') renderDigestArchive();
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   if (_toNews) setTimeout(function() { var n = document.getElementById('sec-news'); if (n) n.scrollIntoView({ block: 'start' }); }, 50);
@@ -3452,13 +3456,15 @@ var _newsListOpen = false;
 async function loadNewsFromSupabase() {
   if (!sbReady()) return;
   try {
-    const { data, error } = await _sb
+    let { data, error } = await _sb
       .from('news')
       .select('id, title, excerpt, source_name, tags, featured, published_at')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
-      .limit(20);
-    if (error || !data || data.length === 0) return;
+      .limit(24);
+    if (error || !data) return;
+    data = data.filter(_notDigest).slice(0, 20);   // past weekly emails have their own page, /digest
+    if (data.length === 0) return;
 
     const container = document.getElementById('sec-news');
     if (!container) return;
@@ -3500,6 +3506,7 @@ async function loadNewsFromSupabase() {
         </div>
       </div>`;
     }
+    html += _digestLinkHtml();
 
     let newsList = document.getElementById('sb-news-list');
     if (!newsList) {
@@ -7953,12 +7960,37 @@ async function renderSocialFeatured() {
 // Stories from the last NEWS_RECENT_DAYS: featured first, then the newest, up to FEAT_MAX. Own state, so it never moves the events slider.
 var _homeNewsPromise = null;
 var NEWS_RECENT_DAYS = 30;   // older stories stay on the Events & News page only (owner, 2026-10-24)
+// ── WEEKLY DIGEST ARCHIVE (/digest) ──
+// The weekly email is saved as a news row tagged weekly-digest. It stays out of the news lists and
+// every past issue is listed here instead (owner, 2026-10-24).
+function _notDigest(n) { return (n.tags || []).indexOf('weekly-digest') < 0; }
+
+function _digestLinkHtml() {
+  return '<p class="digest-link"><a href="/digest" onclick="showSec(\'digest\');return false;">'
+    + esc(t('digest.past_issues', 'Past weekly digests')) + ' &rarr;</a></p>';
+}
+
+async function renderDigestArchive() {
+  var el = document.getElementById('digest-archive');
+  if (!el || !sbReady()) return;
+  var r = await _sb.from('news').select('id, title, excerpt, published_at')
+    .eq('status', 'published').contains('tags', ['weekly-digest'])
+    .order('published_at', { ascending: false }).limit(200);
+  if (r.error) { el.innerHTML = '<p class="digest-empty">' + esc(t('digest.error', 'The archive could not be loaded. Please try again later.')) + '</p>'; return; }
+  if (!r.data || !r.data.length) { el.innerHTML = '<p class="digest-empty">' + esc(t('digest.empty', 'No issues yet. The first one goes out on a Monday.')) + '</p>'; return; }
+  el.innerHTML = '<div class="listblock"><div class="listblock-body">' + r.data.map(function (d) {
+    var href = '/article/' + esc(d.id), open = 'showDetail(\'news\',\'' + escJs(d.id) + '\');return false;';
+    return '<div class="lrow digest-row"><a class="ltitle" href="' + href + '" onclick="' + open + '">' + esc(d.title) + '</a>'
+      + '<span class="lmeta">' + esc(localDate(d.published_at, { month: 'long', day: 'numeric', year: 'numeric' })) + '</span></div>';
+  }).join('') + '</div></div>';
+}
+
 function _homeNewsLoad() {
   if (!_homeNewsPromise && sbReady()) _homeNewsPromise = _sb.from('news')
     .select('id, title, excerpt, source_name, featured, published_at, tags')
     .eq('status', 'published').order('published_at', { ascending: false }).limit(16)
     // the weekly email is stored as news too; it stays off the home page (owner, 2026-10-24)
-    .then(function (r) { return r.error ? [] : (r.data || []).filter(function (n) { return (n.tags || []).indexOf('weekly-digest') < 0; }).slice(0, 12); },
+    .then(function (r) { return r.error ? [] : (r.data || []).filter(_notDigest).slice(0, 12); },
       function () { return []; });
   return _homeNewsPromise || Promise.resolve([]);
 }
@@ -8291,7 +8323,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.88.1').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.89.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {

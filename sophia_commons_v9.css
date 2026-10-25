@@ -3999,3 +3999,14 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .sem-home-img img { display: block; width: 100%; height: auto; max-height: 260px; aspect-ratio: 16 / 7; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--surface-2, #f4f1ea); }
 .sem-home-body h5 { margin: 2px 0 4px; font-size: 15px; line-height: 1.35; text-wrap: balance; }
 @media (max-width: 480px) { .sem-home-img img { aspect-ratio: 16 / 9; } }
+
+/* Weekly digest archive (/digest) and the links to it (2026-10-24) */
+#sec-digest { max-width: 760px; }
+.digest-title { font-family: 'Lora', serif; font-size: 26px; font-weight: 600; margin: 4px 0 8px; }
+.digest-lead { color: var(--text-secondary, #555); margin: 0 0 18px; max-width: 62ch; }
+.digest-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.digest-row .lmeta { white-space: nowrap; }
+.digest-empty { color: var(--muted, #777); }
+.digest-link { margin: 14px 0 0; font-size: 14px; }
+.digest-link a { font-weight: 600; }
+@media (max-width: 480px) { .digest-row { flex-direction: column; gap: 2px; } }

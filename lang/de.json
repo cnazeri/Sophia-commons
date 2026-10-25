@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.88.1",
+  "footer.version": "v1.89.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1031,5 +1031,15 @@
   "home.book_store_link": "Rudolf Steiner Bookstore →",
   "home.book_buy": "Im Rudolf Steiner Bookstore ansehen",
   "home.sem_heading": "Seminare & Retreats",
-  "home.sem_all": "alle Veranstaltungen →"
+  "home.sem_all": "alle Veranstaltungen →",
+  "digest.label": "Wochenrundbrief",
+  "digest.heading": "Frühere Wochenrundbriefe",
+  "digest.lead": "Alle Ausgaben des wöchentlichen Sophia Commons Rundbriefs, die neueste zuerst. Jede enthält die kommenden Veranstaltungen der Woche, neue Videos und neue Einträge im Verzeichnis.",
+  "digest.subscribe": "Die nächste Ausgabe per E-Mail erhalten",
+  "digest.read_past": "Frühere Ausgaben lesen",
+  "digest.past_issues": "Frühere Wochenrundbriefe",
+  "digest.empty": "Noch keine Ausgaben. Die erste erscheint an einem Montag.",
+  "digest.error": "Das Archiv konnte nicht geladen werden. Bitte später erneut versuchen.",
+  "meta.digest_title": "Archiv des Wochenrundbriefs | Sophia Commons",
+  "meta.digest_desc": "Alle früheren Ausgaben des wöchentlichen Sophia Commons Rundbriefs: Veranstaltungen, neue Videos und neue Orte der anthroposophischen Welt."
 }
