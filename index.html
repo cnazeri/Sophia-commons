@@ -222,7 +222,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.93.2">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.93.3">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -388,10 +388,10 @@
     <li><a href="#" onclick="showCategory('Anthroposophic Medicine');return false;" data-i18n="sidebar.category_medicine">anthro. medicine</a><span class="cbadge">124</span></li>
     <li><a href="#" onclick="showCategory('Community & Camphill');return false;" data-i18n="sidebar.category_camphill">community &amp; camphill</a><span class="cbadge">67</span></li>
     <li><a href="/category/the-christian-community" onclick="showCategory('The Christian Community');return false;" data-i18n="sidebar.category_cc">the christian community</a><span class="cbadge">344</span></li>
-    <li><a href="#" onclick="showCategory('Free & Sharing');return false;" data-i18n="sidebar.category_free">free &amp; sharing</a><span class="cbadge">143</span></li>
-    <li><a href="#" onclick="showCategory('Marketplace');return false;" data-i18n="sidebar.category_marketplace">marketplace</a><span class="cbadge">388</span></li>
-    <li><a href="#" onclick="showCategory('Housing & Room Rent');return false;" data-i18n="sidebar.category_housing">housing &amp; room rent</a><span class="cbadge">54</span></li>
-    <li><a href="#" onclick="showCategory('Jobs & Volunteering');return false;" data-i18n="sidebar.category_jobs">jobs &amp; volunteering</a><span class="cbadge">176</span></li>
+    <li><a href="#" onclick="showCategory('Free & Sharing');return false;" data-i18n="sidebar.category_free">free &amp; sharing</a><span class="cbadge" hidden></span></li>
+    <li><a href="#" onclick="showCategory('Marketplace');return false;" data-i18n="sidebar.category_marketplace">marketplace</a><span class="cbadge" hidden></span></li>
+    <li><a href="#" onclick="showCategory('Housing & Room Rent');return false;" data-i18n="sidebar.category_housing">housing &amp; room rent</a><span class="cbadge" hidden></span></li>
+    <li><a href="#" onclick="showCategory('Jobs & Volunteering');return false;" data-i18n="sidebar.category_jobs">jobs &amp; volunteering</a><span class="cbadge" hidden></span></li>
     <li><a href="#" onclick="showCategory('Groups & Circles');return false;" data-i18n="sidebar.category_groups">groups &amp; seminars</a><span class="cbadge">111</span></li>
     <li class="cat-sub"><a href="/category/groups-circles#first-class" onclick="showBlueCard();return false;" data-i18n="firstclass.link_side">blue card holders</a></li>
     <li><a href="/podcasts" onclick="showSec('podcasts');return false;" data-i18n="sidebar.category_media_social">podcasts, video &amp; social media</a><span class="cbadge">48</span></li>
@@ -568,7 +568,7 @@
 
   <div class="catgrid">
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 aria-level="2" onclick="showCategory('Free & Sharing');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.free_name">Free &amp; Sharing</h3><span class="alllink">143</span></div>
+      <div class="catblock-head"><h3 aria-level="2" onclick="showCategory('Free & Sharing');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.free_name">Free &amp; Sharing</h3><span class="alllink" hidden></span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Free items  giveaways';doSearch();return false;">Free items &amp; giveaways</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Seed  plant exchanges';doSearch();return false;">Seed &amp; plant exchanges</a></li>
@@ -578,7 +578,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 aria-level="2" onclick="showCategory('Jobs & Volunteering');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.jobs_name">Jobs &amp; Volunteering</h3><span class="alllink">176</span></div>
+      <div class="catblock-head"><h3 aria-level="2" onclick="showCategory('Jobs & Volunteering');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.jobs_name">Jobs &amp; Volunteering</h3><span class="alllink" hidden></span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Waldorf teaching positions';doSearch();return false;">Waldorf teaching positions</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Farm co-workers';doSearch();return false;">Farm co-workers</a></li>
@@ -588,7 +588,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 aria-level="2" data-i18n="catmeta.housing_name">Housing &amp; Room Rent</h3><span class="alllink" data-live-count="">54</span></div>
+      <div class="catblock-head"><h3 aria-level="2" data-i18n="catmeta.housing_name">Housing &amp; Room Rent</h3><span class="alllink" hidden></span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Rooms for rent';doSearch();return false;">Rooms for rent</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Shared housing';doSearch();return false;">Shared housing</a></li>
@@ -598,7 +598,7 @@
       </ul>
     </div>
     <div class="catblock reveal">
-      <div class="catblock-head"><h3 aria-level="2" onclick="showCategory('Marketplace');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.marketplace_name">Marketplace</h3><span class="alllink">388</span></div>
+      <div class="catblock-head"><h3 aria-level="2" onclick="showCategory('Marketplace');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.marketplace_name">Marketplace</h3><span class="alllink" hidden></span></div>
       <ul>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Books  publications';doSearch();return false;">Books &amp; publications</a></li>
         <li><a href="#" onclick="document.getElementById('searchinput').value='Art  crafts';doSearch();return false;">Art &amp; crafts</a></li>
@@ -850,8 +850,8 @@
     <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Biodynamic Agriculture');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.biodynamic_name">Biodynamic Agriculture</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">198 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='CSA farm shares';doSearch();return false;">CSA farm shares</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Farm apprenticeships';doSearch();return false;">Farm apprenticeships</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Demeter farms';doSearch();return false;">Demeter farms</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Seed suppliers';doSearch();return false;">Seed suppliers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Training programs';doSearch();return false;">Training programs</a></li></ul></div>
     <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Arts & Eurythmy');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.arts_name">Arts &amp; Eurythmy</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">89 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Eurythmy training';doSearch();return false;">Eurythmy training</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Performance companies';doSearch();return false;">Performance companies</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Classes  workshops';doSearch();return false;">Classes &amp; workshops</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Commissions';doSearch();return false;">Commissions</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Speech formation';doSearch();return false;">Speech formation</a></li></ul></div>
     <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Anthroposophic Medicine');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.medicine_name">Anthroposophic Medicine</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">124 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Clinics  hospitals';doSearch();return false;">Clinics &amp; hospitals</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Practitioners';doSearch();return false;">Practitioners</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Weleda products';doSearch();return false;">Weleda products</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='WALA remedies';doSearch();return false;">WALA remedies</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Therapeutic eurythmy';doSearch();return false;">Therapeutic eurythmy</a></li></ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Free & Sharing');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.free_name">Free &amp; Sharing</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">143 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Free items  giveaways';doSearch();return false;">Free items &amp; giveaways</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Seed  plant exchanges';doSearch();return false;">Seed &amp; plant exchanges</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Skill shares  barter';doSearch();return false;">Skill shares &amp; barter</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Books free';doSearch();return false;">Books free</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Tool lending';doSearch();return false;">Tool lending</a></li></ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Jobs & Volunteering');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.jobs_name">Jobs &amp; Volunteering</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">176 →</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Waldorf teaching';doSearch();return false;">Waldorf teaching</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Farm co-workers';doSearch();return false;">Farm co-workers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Administrative roles';doSearch();return false;">Administrative roles</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Camphill co-workers';doSearch();return false;">Camphill co-workers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Volunteer positions';doSearch();return false;">Volunteer positions</a></li></ul></div>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Free & Sharing');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.free_name">Free &amp; Sharing</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">→</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Free items  giveaways';doSearch();return false;">Free items &amp; giveaways</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Seed  plant exchanges';doSearch();return false;">Seed &amp; plant exchanges</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Skill shares  barter';doSearch();return false;">Skill shares &amp; barter</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Books free';doSearch();return false;">Books free</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Tool lending';doSearch();return false;">Tool lending</a></li></ul></div>
+    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Jobs & Volunteering');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.jobs_name">Jobs &amp; Volunteering</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">→</a></div><ul><li><a href="#" onclick="document.getElementById('searchinput').value='Waldorf teaching';doSearch();return false;">Waldorf teaching</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Farm co-workers';doSearch();return false;">Farm co-workers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Administrative roles';doSearch();return false;">Administrative roles</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Camphill co-workers';doSearch();return false;">Camphill co-workers</a></li><li><a href="#" onclick="document.getElementById('searchinput').value='Volunteer positions';doSearch();return false;">Volunteer positions</a></li></ul></div>
   </div>
 </div>
 
@@ -2201,18 +2201,18 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.93.2</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.93.3</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.93.2"></script>
-<script defer src="/i18n.js?v=1.93.2"></script>
-<script defer src="/sophia_commons_v9.js?v=1.93.2"></script>
-<script defer src="/blog.js?v=1.93.2"></script>
-<script defer src="/claims.js?v=1.93.2"></script>
+<script defer src="/sb-init.js?v=1.93.3"></script>
+<script defer src="/i18n.js?v=1.93.3"></script>
+<script defer src="/sophia_commons_v9.js?v=1.93.3"></script>
+<script defer src="/blog.js?v=1.93.3"></script>
+<script defer src="/claims.js?v=1.93.3"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

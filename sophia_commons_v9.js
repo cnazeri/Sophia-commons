@@ -1350,6 +1350,17 @@ async function _markEmptyClassifieds() {
       if (badge) { badge.hidden = false; badge.textContent = t('classifieds.new', 'new'); badge.classList.add('badge-new'); }
       block.insertAdjacentHTML('beforeend', '<div class="catblock-empty">' + esc(t('classifieds.no_posts', 'No posts yet.')) + ' <a href="#" onclick="showSubmitForm();return false;">' + esc(t('classifieds.post_first', 'Post the first one')) + '</a></div>');
     });
+    // Sidebar badges for classified sections show the live post count (hidden when there are none)
+    document.querySelectorAll('#leftbar [onclick*="showCategory("]').forEach(function(el) {
+      var m = (el.getAttribute('onclick') || '').match(/showCategory\('([^']+)'/);
+      var badge = el.nextElementSibling;
+      if (!m || !badge || !badge.classList.contains('cbadge')) return;
+      var key = m[1].toLowerCase();
+      if (!(key in CLASSIFIED_CAT_IDS)) return;
+      var n = counts[CLASSIFIED_CAT_IDS[key]] || 0;
+      badge.textContent = n ? String(n) : '';
+      badge.hidden = !n;
+    });
   } catch (e) {}
 }
 
