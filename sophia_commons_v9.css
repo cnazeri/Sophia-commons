@@ -3622,14 +3622,6 @@ footer li a { display: inline-block; padding: 10px 0; }
 .cal-add a { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 999px; font-size: 13px; background: var(--elevated); }
 .cal-add a:hover { border-color: var(--gold); text-decoration: none; }
 
-/* v1.45: community spotlight on the home page, under Events */
-.home-spotlight #spotlight-block { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.home-spotlight .spotlight-card { margin: 0; padding: 12px 14px; }
-.home-spotlight .spotlight-kicker { font-size: 10.5px; }
-.home-spotlight .spotlight-title { font-size: 15px; font-family: 'Lora', Georgia, serif; }
-.home-spotlight .spotlight-note { font-size: 12.5px; }
-.home-spotlight + hr.soft { display: none; }
-@media (max-width: 600px) { .home-spotlight #spotlight-block { grid-template-columns: 1fr; } }
 
 /* v1.48: About page subsections */
 .legal-page h3 { font-family: 'Lora', Georgia, serif; font-size: 1rem; color: var(--text-primary); margin: 18px 0 6px; }
@@ -4010,3 +4002,12 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .digest-link { margin: 14px 0 0; font-size: 14px; }
 .digest-link a { font-weight: 600; }
 @media (max-width: 480px) { .digest-row { flex-direction: column; gap: 2px; } }
+
+/* Community Spotlight in the left sidebar (owner, 2026-10-24) */
+.lb-spotlight { margin-bottom: 14px; }
+.lb-spotlight .spotlight-card { margin: 0 0 8px; }
+/* Resources list at the top of the Resources page (2026-10-24) */
+.res-block { margin-bottom: 18px; }
+.res-row { display: block; }
+.res-row .ltitle { display: block; }
+.res-desc { display: block; font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-top: 2px; }

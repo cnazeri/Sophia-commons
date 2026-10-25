@@ -1393,7 +1393,7 @@ function _getSecMeta() {
     events:    { title: t('meta.events_title', "Events & Calendar | Sophia Commons"), desc: t('meta.events_desc', 'Upcoming anthroposophical events, conferences, workshops, study groups, and retreats worldwide.') },
     browse:    { title: t('meta.browse_title', "Browse Categories | Sophia Commons"), desc: t('meta.browse_desc', 'Browse Waldorf schools, biodynamic farms, Camphill communities, eurythmy programs, anthroposophic medicine, and more by category.') },
     directory: { title: t('meta.directory_title', "Global Directory | Sophia Commons"), desc: t('meta.directory_desc', 'Interactive map and directory of 430+ anthroposophical organizations across 30+ countries worldwide.') },
-    books:     { title: t('meta.books_title', 'Books & Library | Sophia Commons'), desc: t('meta.books_desc', 'Rudolf Steiner catalog and the top 50 anthroposophical books.') },
+    books:     { title: t('meta.books_title', 'Resources | Sophia Commons'), desc: t('meta.books_desc', 'Rudolf Steiner catalog and the top 50 anthroposophical books.') },
     podcasts:  { title: t('meta.podcasts_title', 'Social Media | Sophia Commons'), desc: t('meta.podcasts_desc', 'Anthroposophical podcasts, YouTube channels, archives and media.') },
     memorial:  { title: t('meta.memorial_title', "In Memoriam | Sophia Commons"), desc: t('meta.memorial_desc', 'Honoring members of the anthroposophical community who have crossed the threshold.') },
     marketplace: { title: t('meta.marketplace_title', "Marketplace | Sophia Commons"), desc: t('meta.marketplace_desc', 'Buy, sell, share and swap within the anthroposophical community: books, crafts, biodynamic goods and more.') },
@@ -8323,7 +8323,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.89.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.90.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {

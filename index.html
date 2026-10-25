@@ -222,7 +222,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.89.0">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.90.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -361,7 +361,7 @@
   <button id="nav-events"    onclick="showSec('events')" data-i18n="nav.news_events">events</button>
   <button id="nav-podcasts"  onclick="showSec('podcasts')" data-i18n="nav.podcasts">social media</button>
   <button id="nav-directory" onclick="showSec('directory')" data-i18n="nav.directory">directory</button>
-  <button id="nav-books"     onclick="showSec('books')" data-i18n="nav.books">books &amp; library</button>
+  <button id="nav-books"     onclick="showSec('books')" data-i18n="nav.books">resources</button>
   <button id="nav-memorial" onclick="showSec('memorial')" data-i18n="nav.memorial">in memoriam</button>
   <button class="chatnav locked" id="nav-chat" onclick="handleChat()" data-i18n="nav.chat">community chat</button>
 </div>
@@ -395,7 +395,7 @@
     <li><a href="#" onclick="showCategory('Groups & Circles');return false;" data-i18n="sidebar.category_groups">groups &amp; seminars</a><span class="cbadge">111</span></li>
     <li class="cat-sub"><a href="/category/groups-circles#first-class" onclick="showBlueCard();return false;" data-i18n="firstclass.link_side">blue card holders</a></li>
     <li><a href="/podcasts" onclick="showSec('podcasts');return false;" data-i18n="sidebar.category_media_social">podcasts, video &amp; social media</a><span class="cbadge">48</span></li>
-    <li><a href="#" onclick="showSec('books');return false;" data-i18n="sidebar.category_books">books &amp; library</a><span class="cbadge">350+</span></li>
+    <li><a href="#" onclick="showSec('books');return false;" data-i18n="sidebar.category_books">resources</a><span class="cbadge">350+</span></li>
     <li><a href="#" onclick="showSec('eldercare');return false;" data-i18n="sidebar.category_eldercare">eldercare</a><span class="cbadge" data-live-count="eldercare">42</span></li>
     <li><a href="/category/science-technology" onclick="showCategory('Science & Technology');return false;" data-i18n="sidebar.category_science">science &amp; technology</a><span class="cbadge">1</span></li>
     <li><a href="#" onclick="showCategory('Online Resources');return false;" data-i18n="sidebar.category_online">online resources</a><span class="cbadge">280</span></li>
@@ -424,6 +424,21 @@
     <li><a href="https://biodynamics.com" target="_blank" data-i18n="sidebar.quick_biodynamics">Biodynamics.com</a></li>
     <li><a href="mailto:hello@sophiacommons.org" data-i18n="sidebar.quick_suggest_correction">suggest correction</a></li>
   </ul>
+  <h5 aria-level="2" data-i18n="rightbar.community_spotlight_title">Community Spotlight</h5>
+  <div class="lb-spotlight">
+  <div id="spotlight-block">
+        <div class="spotlight-card">
+          <div class="spotlight-kicker" data-i18n="spotlight.featured">Featured organization</div>
+          <a href="https://goetheanum.ch" target="_blank" rel="noopener" class="spotlight-title">Goetheanum: World Center of Anthroposophy</a>
+          <div class="spotlight-note">Dornach, Switzerland</div>
+        </div>
+        <div class="spotlight-card alt">
+          <div class="spotlight-kicker" data-i18n="spotlight.grow">Grow the directory</div>
+          <a href="#" onclick="showSubmitForm();return false;" class="spotlight-title" data-i18n="spotlight.missing">Know a school, farm or clinic we're missing?</a>
+          <div class="spotlight-note" data-i18n="spotlight.reviewed">Submissions are reviewed within 48 hours.</div>
+        </div>
+      </div>
+  </div>
   <ul class="lb-site">
     <li><a href="/about" onclick="showSec('about');return false;" data-i18n="topbar.about">about</a></li>
     <li><a href="#" onclick="closeMobileMenu();showSubmitForm();return false;" data-i18n="topbar.post_listing_link">post a listing</a></li>
@@ -674,7 +689,7 @@
     </div>
   </div>
 
-  <!-- Weekly digest and Community Spotlight sit at the end of the home page (owner, 2026-10-18) -->
+  <!-- Weekly digest sits at the end of the home page (owner, 2026-10-18); Community Spotlight moved to the left sidebar (owner, 2026-10-24) -->
   <hr class="soft">
   <section class="nl-card nl-card-home" aria-labelledby="home-nl-h">
     <h3 id="home-nl-h" aria-level="2" data-i18n="newsletter.card_heading">Get the weekly digest</h3>
@@ -686,23 +701,6 @@
     <div id="home-nl-ok" class="rb-nl-ok" role="status" data-i18n="newsletter.check_inbox">Almost done: check your inbox and click the link to confirm.</div>
     <p class="digest-link"><a href="/digest" onclick="showSec('digest');return false;" data-i18n="digest.read_past">Read past issues</a> &rarr;</p>
   </section>
-  <div class="listblock reveal home-spotlight" style="margin-bottom:12px;">
-    <div class="listblock-head"><h3 aria-level="2" data-i18n="rightbar.community_spotlight_title">Community Spotlight</h3></div>
-    <div class="listblock-body">
-  <div id="spotlight-block">
-        <div class="spotlight-card">
-          <div class="spotlight-kicker" data-i18n="spotlight.featured">Featured organization</div>
-          <a href="https://goetheanum.ch" target="_blank" rel="noopener" class="spotlight-title">Goetheanum: World Center of Anthroposophy</a>
-          <div class="spotlight-note">Dornach, Switzerland</div>
-        </div>
-        <div class="spotlight-card alt">
-          <div class="spotlight-kicker" data-i18n="spotlight.grow">Grow the directory</div>
-          <a href="#" onclick="showSubmitForm();return false;" class="spotlight-title" data-i18n="spotlight.missing">Know a school, farm or clinic we're missing?</a>
-          <div class="spotlight-note" data-i18n="spotlight.reviewed">Submissions are reviewed within 48 hours.</div>
-        </div>
-      </div>
-    </div>
-  </div>
 
 </div><!-- end sec-home -->
 
@@ -1066,9 +1064,22 @@
   </div>
 </div>
 
-<!-- ═══ BOOKS & LIBRARY ═══ -->
+<!-- ═══ RESOURCES (was Books & Library; renamed by the owner 2026-10-24, path stays /books) ═══ -->
 <div class="pagesec" id="sec-books">
-  <div class="seclabel">Books &amp; Library &middot; Complete Rudolf Steiner Catalog &middot; 350+ volumes</div>
+  <div class="seclabel">Resources &middot; Complete Rudolf Steiner Catalog &middot; 350+ volumes</div>
+  <div class="listblock res-block" id="resources-list">
+    <div class="listblock-head"><h3 aria-level="2" data-i18n="resources.heading">Resources</h3></div>
+    <div class="listblock-body">
+      <div class="lrow res-row"><a class="ltitle" href="https://aelzina.com/" target="_blank" rel="noopener">Index to the Complete Works of Rudolf Steiner</a><span class="res-desc">Aelzina Books.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.rudolfsteinerweb.com/" target="_blank" rel="noopener">Rudolf Steiner Web</a><span class="res-desc">Daniel Hindes&#39;s site on the many sides of Steiner&#39;s life and work, with a full list of the Complete Works and the known English translations.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://steinerbooks.org/" target="_blank" rel="noopener">SteinerBooks</a><span class="res-desc">Anthroposophic Press Inc. (USA).</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://rsarchive.org/" target="_blank" rel="noopener">Rudolf Steiner Archive</a><span class="res-desc">The largest online collection of Rudolf Steiner&#39;s books, lectures and articles in English (Steiner Online Library).</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.rudolfsteineraudio.com/" target="_blank" rel="noopener">Rudolf Steiner Audio</a><span class="res-desc">Recorded and read by Dale Brunsvold.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://anthroposophy.eu/" target="_blank" rel="noopener">anthroposophy.eu</a><span class="res-desc">English wiki-based reference site with advanced materials for the earnest student of spiritual science and anthroposophy.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.rudolfsteineranthroposophy.com/" target="_blank" rel="noopener">rudolfsteineranthroposophy.com</a><span class="res-desc">Daily practice, meditation, study and timelines.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="http://www.rudolf-steiner-handbuch.de/images/Handbook.pdf" target="_blank" rel="noopener">Rudolf Steiner Handbook (PDF, 35 MB)</a><span class="res-desc">Christian Karl&#39;s standard guide to finding your way through Rudolf Steiner&#39;s Collected Works, free to download.</span></div>
+    </div>
+  </div>
   <div id="top50-books"></div>
 
   <p style="font-size:14px;color:var(--text-secondary);margin-bottom:6px;line-height:1.7;">
@@ -1645,7 +1656,7 @@
   <p data-i18n-html="about2.media_p"><a href="/podcasts" onclick="showSec('podcasts');return false;">Social Media</a> follows about 70 anthroposophical YouTube channels and checks them every day for new videos. The newest one is featured at the top of that page as the video of the day. You can rate and review the channels, and you'll also find podcasts, video archives and the movement's accounts on X.</p>
 
   <h3 data-i18n="about2.books_h">Books and library</h3>
-  <p data-i18n-html="about2.books_p"><a href="/books" onclick="showSec('books');return false;">Books &amp; Library</a> lists all of Rudolf Steiner's written works (GA 1 to 28) with links to read them free online, a Top 50 reading list with covers, a section on The Philosophy of Freedom with its translations and study guides, and close to 400 titles by Steiner and the authors who built on his work, from Sergei Prokofieff to Paul Emberson. Amazon links help keep the site free.</p>
+  <p data-i18n-html="about2.books_p"><a href="/books" onclick="showSec('books');return false;">Resources</a> lists all of Rudolf Steiner's written works (GA 1 to 28) with links to read them free online, a Top 50 reading list with covers, a section on The Philosophy of Freedom with its translations and study guides, and close to 400 titles by Steiner and the authors who built on his work, from Sergei Prokofieff to Paul Emberson. Amazon links help keep the site free.</p>
 
   <h3 data-i18n="about2.practice_h">Daily practice</h3>
   <p data-i18n="about2.practice_p">The right-hand column carries the week's verse from the Calendar of the Soul, the day's exercise from "For the Days of the Week", the Foundation Stone Meditation and the phases of the moon. They change on their own as the days and weeks go by.</p>
@@ -2163,18 +2174,18 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.89.0</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.90.0</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.89.0"></script>
-<script defer src="/i18n.js?v=1.89.0"></script>
-<script defer src="/sophia_commons_v9.js?v=1.89.0"></script>
-<script defer src="/blog.js?v=1.89.0"></script>
-<script defer src="/claims.js?v=1.89.0"></script>
+<script defer src="/sb-init.js?v=1.90.0"></script>
+<script defer src="/i18n.js?v=1.90.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.90.0"></script>
+<script defer src="/blog.js?v=1.90.0"></script>
+<script defer src="/claims.js?v=1.90.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
