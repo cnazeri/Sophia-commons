@@ -715,20 +715,24 @@ async function _sbAllRows(makeQuery) {
 async function _classifiedBlock(catId) {
   try {
     var r = await _sb.from('listings').select('id, title, description, location, country, website_url, listing_type, created_at')
-      .eq('status', 'active').eq('category_id', catId).order('created_at', { ascending: false }).limit(60);
+      .eq('status', 'active').eq('category_id', catId).order('created_at', { ascending: false }).limit(1000);
     var ads = r.error ? [] : (r.data || []);
     if (!ads.length) return '';
+    var FIRST = 60;   // the rest wait behind a "Show all" button
     return '<div class="listblock"><div class="listblock-head"><h3>' + esc(t('classifieds.current', 'Current posts')) + '</h3>'
       + '<span class="podcast-count">' + ads.length + '</span></div><div class="listblock-body">'
-      + ads.map(function(a) {
+      + ads.map(function(a, i) {
           var meta = [[a.location, a.country].filter(Boolean).join(', '), localDate(a.created_at, { month: 'short', day: 'numeric' })].filter(Boolean).join(' \u00b7 ');
-          return '<div class="dir-row"><div class="dir-row-body"><div class="dir-row-main">'
+          return '<div class="dir-row"' + (i >= FIRST ? ' hidden' : '') + '><div class="dir-row-body"><div class="dir-row-main">'
             + '<a class="ltitle" href="/classified/' + esc(a.id) + '" onclick="showDetail(\'listing\',\'' + escJs(a.id) + '\');return false;">' + esc(a.title) + '</a>'
             + '<span class="lmeta">' + esc(meta) + '</span></div>'
             + (a.description ? '<div class="dir-row-desc">' + esc(_shortText(a.description, 200)) + '</div>' : '')
             + (a.website_url ? '<a class="dir-tag" href="' + escUrl(a.website_url) + '" target="_blank" rel="noopener">' + esc(t('classifieds.original', 'see the original post')) + ' &rarr;</a>' : '')
             + '</div></div>';
-        }).join('') + '</div></div>';
+        }).join('')
+      + (ads.length > FIRST ? '<button type="button" class="ev-more more-toggle cat-more" onclick="this.parentNode.querySelectorAll(\'.dir-row[hidden]\').forEach(function(x){x.hidden=false;});this.remove();">'
+          + esc(t('podcasts.show_all_social', 'Show all {n}').replace('{n}', ads.length)) + '</button>' : '')
+      + '</div></div>';
   } catch (e) { return ''; }
 }
 
@@ -8431,7 +8435,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.93.2').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.93.4').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {
