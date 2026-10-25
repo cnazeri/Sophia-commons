@@ -133,6 +133,7 @@ const ITEM = `style="margin:0 0 18px"`;
 const LINK = `style="color:${GOLD};font-weight:bold;text-decoration:none"`;
 const MUTED = `style="color:${MUTED_C};font-size:13px"`;
 const BODY = `style="font-size:14px;color:#3A332A;margin-top:2px"`;
+const EMAIL_EVENTS = 4;   // the next four; "See the full calendar" links to the rest (owner, 2026-10-24)
 const CATEGORY_LABEL: Record<string, string> = {
   waldorf: "Waldorf education", biodynamic: "Biodynamic farming", camphill: "Camphill",
   christian_community: "The Christian Community", medicine: "Anthroposophic medicine",
@@ -185,7 +186,7 @@ export function buildHtml(d: Digest): string {
 
   h += soulVerseHtml(new Date());
   if (d.events.length) {
-    h += `<h3 ${H3}>Coming up</h3>` + d.events.map(eventHtml).join("");
+    h += `<h3 ${H3}>Coming up</h3>` + d.events.slice(0, EMAIL_EVENTS).map(eventHtml).join("");
     h += `<p style="margin:4px 0 0;font-size:14px"><a href="${SITE}/events" ${LINK}>See the full calendar &rarr;</a></p>`;
   }
   if (d.videos.length) h += `<h3 ${H3}>New videos</h3>` + d.videos.map(videoHtml).join("");
