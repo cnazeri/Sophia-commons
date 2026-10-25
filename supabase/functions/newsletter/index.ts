@@ -48,7 +48,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 function confirmEmailHtml(confirmUrl: string) {
   return `<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;color:#1E1810;line-height:1.6">
-  <div style="text-align:center;padding:8px 0 4px"><img src="https://sophiacommons.org/img/logo-mark.png" width="72" height="72" alt="Sophia Commons" style="border:0"><div style="font-size:22px;margin-top:6px">Sophia Commons</div></div>
+  <div style="text-align:center;padding:8px 0 4px"><img src="https://sophiacommons.org/img/email-logo.png" width="300" height="73" alt="Sophia Commons" style="display:block;width:300px;max-width:100%;height:auto;border:0;margin:0 auto"></div>
   <h2 style="font-weight:600">Please confirm your subscription</h2>
   <p>Someone (hopefully you) asked to receive the Sophia Commons newsletter at this address.</p>
   <p><a href="${confirmUrl}" style="display:inline-block;background:#C9A035;color:#1E1810;padding:10px 22px;border-radius:50px;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold">Yes, subscribe me</a></p>

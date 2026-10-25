@@ -5,7 +5,7 @@
 // ══════════════════════════════════════════
 
 const SITE = "https://sophiacommons.org";
-const LOGO = `${SITE}/img/logo-mark.png`;
+const LOGO = `${SITE}/img/email-logo.png`;   // mark + wordmark in the site's logo font, 2x for sharp screens
 const C = {
   page: "#F3EDE2",      // warm ivory, matches the site background family
   card: "#FFFFFF",
@@ -14,7 +14,6 @@ const C = {
   gold: "#7F6116",      // gold text color from the site (passes AA on white)
   rule: "#E8E2DA",
 };
-const SERIF = "Georgia,'Times New Roman',serif";
 const SANS = "Arial,Helvetica,sans-serif";
 
 function esc(s: string): string {
@@ -48,8 +47,7 @@ export function emailShell({ subject, preheader = "", kicker = "", body, unsubsc
 <tr><td align="center" style="padding:28px 12px">
   <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px">
     <tr><td align="center" style="padding:0 0 20px">
-      <a href="${SITE}" style="text-decoration:none"><img src="${LOGO}" width="72" height="72" alt="Sophia Commons" style="display:block;border:0;margin:0 auto 10px"></a>
-      <div style="font-family:${SERIF};font-size:26px;line-height:1.2;color:${C.ink}">Sophia Commons</div>
+      <a href="${SITE}" style="text-decoration:none"><img src="${LOGO}" width="300" height="73" alt="Sophia Commons" style="display:block;width:300px;max-width:100%;height:auto;border:0;margin:0 auto"></a>
       ${kicker ? `<div style="font-family:${SANS};font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${C.gold};margin-top:6px">${esc(kicker)}</div>` : ""}
     </td></tr>
     <tr><td class="card" style="background:${C.card};border:1px solid ${C.rule};border-radius:12px;padding:32px 32px 28px;font-family:${SANS};font-size:15px;line-height:1.6;color:${C.ink}">
