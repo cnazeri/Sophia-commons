@@ -20,40 +20,58 @@ async function page(n, before) {
   return { items: await r.json(), pages: Number(r.headers.get('x-wp-totalpages')) || 1 };
 }
 
-// The first book from slot `start` on (wrapping) that is in stock with a cover and a description
-function choose(items, start) {
+// Up to n books from slot `start` on (wrapping) that are in stock with a cover and a description
+function chooseN(items, start, n) {
   const ok = p => p.is_in_stock !== false && p.images && p.images.length && plain(p.short_description || p.description).length > 40;
-  for (let i = 0; i < items.length; i++) {
+  const out = [];
+  for (let i = 0; i < items.length && out.length < n; i++) {
     const p = items[(start + i) % items.length];
-    if (ok(p)) return p;
+    if (ok(p)) out.push(p);
   }
-  return null;
+  return out;
 }
 
-export default async () => {
+function toBook(p) {
+  const minor = p.prices && p.prices.currency_minor_unit != null ? p.prices.currency_minor_unit : 2;
+  return {
+    name: plain(p.name),
+    url: p.permalink,
+    image: (p.images[0] && (p.images[0].thumbnail || p.images[0].src)) || null,
+    price: p.prices && p.prices.price ? `${(p.prices.currency_prefix || '$').trim()}${(Number(p.prices.price) / 10 ** minor).toFixed(minor)}` : null,
+    section: plain((p.categories && p.categories[0] && p.categories[0].name) || 'Anthroposophy'),
+    // Many descriptions open with the book's own title and a colon ("A Way of Seeing: Perception, ..."); drop that
+    blurb: short(plain(p.short_description || p.description).replace(new RegExp('^' + plain(p.name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*:\\s*', 'i'), ''), 280),
+  };
+}
+
+// The week's recommendations: the first one is shown automatically when the owner hasn't picked
+// (Admin > Book of the week stores picks in the book_picks table; owner, 2026-10-24).
+const RECOMMENDATIONS = 3;
+async function recommendations(week) {
+  const before = new Date((week * 7 - 3) * 864e5).toISOString().slice(0, 19);   // that Monday 00:00 UTC
+  const first = await page(1, before);
+  const pick = first.pages > 1 ? await page(1 + (week * 7) % first.pages, before) : first;
+  return chooseN(pick.items, week % Math.max(pick.items.length, 1), RECOMMENDATIONS).map(toBook);
+}
+
+export default async (req) => {
   // Day 0 of the epoch was a Thursday; +3 makes each week start on Monday
   const week = Math.floor((Math.floor(Date.now() / 864e5) + 3) / 7);
   const untilNextWeek = 7 * 86400 - (Math.floor(Date.now() / 1000) + 3 * 86400) % (7 * 86400);
+  const q = new URL(req.url).searchParams;
   try {
-    const before = new Date((week * 7 - 3) * 864e5).toISOString().slice(0, 19);   // this Monday 00:00 UTC
-    const first = await page(1, before);
-    const pick = first.pages > 1 ? await page(1 + (week * 7) % first.pages, before) : first;
-    const p = choose(pick.items, week % Math.max(pick.items.length, 1));
-    if (!p) throw new Error('no books');
-    const minor = p.prices && p.prices.currency_minor_unit != null ? p.prices.currency_minor_unit : 2;
-    const book = {
-      name: plain(p.name),
-      url: p.permalink,
-      image: (p.images[0] && (p.images[0].thumbnail || p.images[0].src)) || null,
-      price: p.prices && p.prices.price ? `${(p.prices.currency_prefix || '$').trim()}${(Number(p.prices.price) / 10 ** minor).toFixed(minor)}` : null,
-      section: plain((p.categories && p.categories[0] && p.categories[0].name) || 'Anthroposophy'),
-      // Many descriptions open with the book's own title and a colon ("A Way of Seeing: Perception, ..."); drop that
-      blurb: short(plain(p.short_description || p.description).replace(new RegExp('^' + plain(p.name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*:\\s*', 'i'), ''), 280),
-    };
+    // ?options=1 (Admin): this week's recommendations; &week=next for the coming week
+    if (q.get('options')) {
+      const books = await recommendations(week + (q.get('week') === 'next' ? 1 : 0));
+      return new Response(JSON.stringify({ books }), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
+    }
+    const [book] = await recommendations(week);
+    if (!book) throw new Error('no books');
     return new Response(JSON.stringify(book), { headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'public, max-age=3600',
       'Netlify-CDN-Cache-Control': `public, durable, s-maxage=${untilNextWeek}`,
+      'Netlify-Vary': 'query=options|week',
     } });
   } catch (e) {
     return new Response(JSON.stringify({ error: 'The bookstore could not be reached.' }), {

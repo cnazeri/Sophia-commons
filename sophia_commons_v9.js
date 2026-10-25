@@ -5175,9 +5175,64 @@ function adminSwitchTab(tab) {
   else if (tab === 'claims' && typeof loadAdminClaims === 'function') loadAdminClaims();
   else if (tab === 'outreach') loadAdminOutreach();
   else if (tab === 'featpost') loadAdminFeatPost();
+  else if (tab === 'bookweek') loadAdminBookWeek();
 }
 
 function adminEsc(s) { return esc(s); }
+
+// ── Admin: book of the week (owner, 2026-10-24) ──
+// Three recommendations come from /api/book-of-the-week?options=1; a pick is saved in book_picks
+// under that week's Monday (UTC). The home page shows the pick, or the first recommendation.
+function _bookWeekStart(offset) {
+  var week = Math.floor((Math.floor(Date.now() / 864e5) + 3) / 7) + (offset || 0);   // same weeks as the edge function
+  return new Date((week * 7 - 3) * 864e5).toISOString().slice(0, 10);
+}
+
+var _bwOptions = [];
+async function loadAdminBookWeek() {
+  var list = document.getElementById('bw-list');
+  var cur = document.getElementById('bw-current');
+  if (!list || !sbReady()) return;
+  var next = document.getElementById('bw-week').value === 'next';
+  var monday = _bookWeekStart(next ? 1 : 0);
+  list.innerHTML = '<div class="admin-empty">Loading...</div>';
+  var res = await Promise.all([
+    fetch('/api/book-of-the-week?options=1' + (next ? '&week=next' : '')).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    _sb.from('book_picks').select('name, url').eq('week_start', monday).maybeSingle()
+  ]);
+  if (res[1].error) {
+    cur.textContent = '';
+    list.innerHTML = '<div class="admin-empty">The book_picks table is not set up yet. Run backend/migrations/RUN_THIS_2026-10-25_book_picks.sql in the Supabase SQL editor.</div>';
+    return;
+  }
+  var picked = res[1].data;
+  var weekLabel = 'Week of ' + localDate(monday + 'T12:00:00Z', { month: 'long', day: 'numeric' });
+  cur.innerHTML = esc(weekLabel) + ': ' + (picked ? 'you picked <b>' + esc(picked.name) + '</b>.' : 'no pick yet, so the first book below is shown.');
+  _bwOptions = (res[0] && res[0].books) || [];
+  if (!_bwOptions.length) { list.innerHTML = '<div class="admin-empty">The bookstore could not be reached. Try again in a minute.</div>'; return; }
+  list.innerHTML = _bwOptions.map(function (b, i) {
+    var isPick = picked && picked.url === b.url;
+    return '<div class="adm-row bw-row">'
+      + (b.image ? '<img src="' + escUrl(b.image) + '" alt="" width="64" height="96" loading="lazy">' : '')
+      + '<div><b><a href="' + escUrl(b.url) + '" target="_blank" rel="noopener">' + esc(b.name) + '</a></b>'
+      + (isPick ? ' <span class="adm-tag">picked</span>' : '')
+      + '<div class="adm-note">' + esc([b.price, b.section].filter(Boolean).join(', ')) + '</div>'
+      + (b.blurb ? '<div class="adm-note">' + esc(_shortText(b.blurb, 220)) + '</div>' : '') + '</div>'
+      + '<div class="adm-tools">' + (isPick ? '' : '<button type="button" class="adm-btn" onclick="pickBookOfWeek(' + i + ')">Feature this book</button>') + '</div></div>';
+  }).join('');
+}
+
+async function pickBookOfWeek(i) {
+  var b = _bwOptions[i];
+  if (!b) return;
+  var monday = _bookWeekStart(document.getElementById('bw-week').value === 'next' ? 1 : 0);
+  var r = await _sb.from('book_picks').upsert({ week_start: monday, name: b.name, url: b.url, image: b.image || null,
+    price: b.price || null, section: b.section || null, blurb: b.blurb || null, picked_at: new Date().toISOString() });
+  if (r.error) { scNotify('Could not save: ' + r.error.message); return; }
+  _homeBookPromise = null;
+  loadAdminBookWeek();
+  renderHomeBook();
+}
 
 // ── Admin: featured social post ──
 async function loadAdminFeatPost() {
@@ -8121,13 +8176,20 @@ function _mountNewsSlider(slider, slides) {
 }
 
 // ── Book of the week: one book a week from the Anthroposophy section of the Rudolf Steiner Bookstore ──
+// Picked by the admin (book_picks), or automatically when there is no pick for the week.
 // Served by the edge function netlify/edge-functions/book-of-day.js (their store blocks browser reads).
 var _homeBookPromise = null;
 async function renderHomeBook() {
   var block = document.getElementById('home-book-block');
   var box = document.getElementById('home-book');
   if (!block || !box) return;
-  if (!_homeBookPromise) _homeBookPromise = fetch('/api/book-of-the-week').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+  // The admin's pick for this week (Admin > Book of the week), else the automatic first recommendation
+  if (!_homeBookPromise) _homeBookPromise = (sbReady()
+    ? _sb.from('book_picks').select('name, url, image, price, section, blurb').eq('week_start', _bookWeekStart(0)).maybeSingle()
+      .then(function (r) { return r.data || null; }, function () { return null; })
+    : Promise.resolve(null))
+    .then(function (pick) { return pick || fetch('/api/book-of-the-week').then(function (r) { return r.ok ? r.json() : null; }); })
+    .catch(function () { return null; });
   var b = await _homeBookPromise;
   if (!b || !b.name || !/^https:\/\/rudolfsteinerbookstore\.com\//.test(b.url || '')) { block.hidden = true; return; }
   var link = function (inner, cls, extra) { return '<a' + (cls ? ' class="' + cls + '"' : '') + ' href="' + escUrl(b.url) + '" target="_blank" rel="noopener"' + (extra || '') + '>' + inner + '</a>'; };
@@ -8358,7 +8420,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.92.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.93.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {

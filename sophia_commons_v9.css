@@ -4013,3 +4013,10 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .res-row { display: block; }
 .res-row .ltitle { display: block; }
 .res-desc { display: block; font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-top: 2px; }
+
+/* Admin: book of the week */
+.bw-row { display: flex; gap: 14px; align-items: flex-start; }
+.bw-row img { width: 64px; height: auto; border-radius: 4px; flex-shrink: 0; }
+.bw-row > div:nth-child(2) { flex: 1; min-width: 0; }
+#bw-current { margin: 0 0 12px; font-size: 13px; }
+#bw-week { min-height: 44px; padding: 0 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-primary); font: inherit; font-size: 13px; }
