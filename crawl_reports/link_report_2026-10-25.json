@@ -1,0 +1,3322 @@
+{
+ "date": "2026-10-25",
+ "checked": 3837,
+ "broken": 251,
+ "redirected": 132,
+ "broken_links": [
+  {
+   "url": "https://x.com/WaldorfSchools",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 293,
+   "soft": true,
+   "source": "directory: AWSNA (X/Twitter)"
+  },
+  {
+   "url": "https://fermelarock.be",
+   "status": "SSL",
+   "ok": false,
+   "ms": 409,
+   "soft": false,
+   "source": "directory: Acceuil Waldorf à la ferme"
+  },
+  {
+   "url": "https://www.apedagogiaimuhely.hu",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.apedagogiaimuhely.hu/",
+   "ms": 1424,
+   "soft": false,
+   "source": "directory: Antropozófiai Pedagógiai Műhely"
+  },
+  {
+   "url": "https://www.aut.ac.nz/study/study-options/education",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 636,
+   "soft": false,
+   "source": "directory: Auckland University of Technology"
+  },
+  {
+   "url": "http://www.bdbees.com",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: BD Bees"
+  },
+  {
+   "url": "https://www.rosengarden.fi/hem",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://mikaelskolan.fi/om-rosengarden/hem",
+   "ms": 5461,
+   "soft": false,
+   "source": "directory: Barnträdgården Rosengården"
+  },
+  {
+   "url": "https://www.lebenskeimbrot.de",
+   "status": 429,
+   "ok": false,
+   "final_url": "https://www.lebenskeimbrot.de/",
+   "ms": 1061,
+   "soft": false,
+   "source": "directory: Bettinas Keimbackstube"
+  },
+  {
+   "url": "https://www.biaasteiner.barnehage.no",
+   "status": "SSL",
+   "ok": false,
+   "ms": 294,
+   "soft": false,
+   "source": "directory: Bia-Steinerbarnehagen Mosvangen/Storhaug"
+  },
+  {
+   "url": "https://www.biodynamic.org.uk",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.biodynamic.org.uk/",
+   "ms": 108,
+   "soft": false,
+   "source": "directory: Biodynamic Association UK (BDA Certification)"
+  },
+  {
+   "url": "https://www.biohof-huemme.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Biohof Hümme"
+  },
+  {
+   "url": "https://www.biohof-wachinger.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.biohof-wachinger.de/",
+   "ms": 336,
+   "soft": false,
+   "source": "directory: Biohof Wachinger"
+  },
+  {
+   "url": "https://www.blote-vogel.de/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Blote Vogel, Freie Schule nach der Pädagogik Rudolf Steiners"
+  },
+  {
+   "url": "https://bothmer-movement.eu/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Bothmer Movement International"
+  },
+  {
+   "url": "https://www.brookswine.com",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.brookswine.com/",
+   "ms": 216,
+   "soft": false,
+   "source": "directory: Brooks Wine"
+  },
+  {
+   "url": "https://www.babuska.dk",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Børnehuset Babuska"
+  },
+  {
+   "url": "https://www.biottajuices.com",
+   "status": "SSL",
+   "ok": false,
+   "ms": 283,
+   "soft": false,
+   "source": "directory: CAJ Food Products, Inc."
+  },
+  {
+   "url": "http://www.camphill-steinfurt.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "http://www.camphill-steinfurt.de/",
+   "ms": 846,
+   "soft": false,
+   "source": "directory: Camphill Sellen gGmbH"
+  },
+  {
+   "url": "https://www.loiseaudor.com",
+   "status": "SSL",
+   "ok": false,
+   "ms": 270,
+   "soft": false,
+   "source": "directory: Centre de la Petite Enfance L'Oiseau d'Or"
+  },
+  {
+   "url": "https://antroposofiamexico.org/",
+   "status": "SSL",
+   "ok": false,
+   "ms": 280,
+   "soft": false,
+   "source": "directory: Centro de Desarrollo Antroposófico"
+  },
+  {
+   "url": "http://chateaubellevue.com/",
+   "status": 503,
+   "ok": false,
+   "final_url": null,
+   "ms": 828,
+   "soft": false,
+   "source": "directory: Chateau Bellevue"
+  },
+  {
+   "url": "http://www.waldorfchina.org.cn/training/concept",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 4780,
+   "soft": false,
+   "source": "directory: Chengdu Waldorf School Training Center"
+  },
+  {
+   "url": "https://giordanobruno.cl",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Colegio Giordano Bruno"
+  },
+  {
+   "url": "https://facebook.com/pages/Colegio-Waldorf-Amanecer",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://www.facebook.com/pages/Colegio-Waldorf-Amanecer",
+   "ms": 513,
+   "soft": true,
+   "source": "directory: Colegio Waldorf Amanecer/Waldorf Aguascalientes"
+  },
+  {
+   "url": "https://elcolibri.edu.pe",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Colegio Waldorf Arequipa El Colibrí"
+  },
+  {
+   "url": "https://waldorfcantabria.es",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://waldorfcantabria.es/",
+   "ms": 1301,
+   "soft": false,
+   "source": "directory: Colegio Waldorf Cantabria"
+  },
+  {
+   "url": "https://elhilar.com.mx",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://elhilar.com.mx/",
+   "ms": 214,
+   "soft": false,
+   "source": "directory: Comunidad Educativa Elhilar"
+  },
+  {
+   "url": "https://www.waldorfconstantia.org.za",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorfconstantia.org.za/",
+   "ms": 238,
+   "soft": false,
+   "source": "directory: Constantia Waldorf School"
+  },
+  {
+   "url": "https://cefzanzibar.org",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://cefzanzibar.org/",
+   "ms": 159,
+   "soft": false,
+   "source": "directory: Creative Education School"
+  },
+  {
+   "url": "https://www.csillagszemwaldorf.hu",
+   "status": "SSL",
+   "ok": false,
+   "ms": 1763,
+   "soft": false,
+   "source": "directory: Csillagszem Waldorf Óvoda"
+  },
+  {
+   "url": "https://www.impulso.eco.br/impulso",
+   "status": 401,
+   "ok": false,
+   "final_url": null,
+   "ms": 1204,
+   "soft": false,
+   "source": "directory: Curso de Formação em Pedagogia Waldorf de Bauru"
+  },
+  {
+   "url": "https://waldorfalicante.com",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://waldorfalicante.com/",
+   "ms": 1300,
+   "soft": false,
+   "source": "directory: Cursos Pedagogía Waldorf"
+  },
+  {
+   "url": "https://dallaterra.com",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://dallaterra.com/",
+   "ms": 188,
+   "soft": false,
+   "source": "directory: Dalla Terra"
+  },
+  {
+   "url": "https://www.demeter.es/",
+   "status": 500,
+   "ok": false,
+   "final_url": null,
+   "ms": 2232,
+   "soft": false,
+   "source": "directory: Demeter Espana"
+  },
+  {
+   "url": "https://www.demeter-hof-kaindl.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.demeter-hof-kaindl.de/",
+   "ms": 370,
+   "soft": false,
+   "source": "directory: Demeter Hof Kaindl"
+  },
+  {
+   "url": "https://x.com/DemeterInt",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 296,
+   "soft": true,
+   "source": "directory: Demeter International (X/Twitter)"
+  },
+  {
+   "url": "https://solawi-dollinger.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Demeterhof Dollinger"
+  },
+  {
+   "url": "https://www.demeterhof-freytag-woerz.de/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Demeterhof Freytag-Wörz-GbR"
+  },
+  {
+   "url": "https://www.bio-walz.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Demeterhof Walz"
+  },
+  {
+   "url": "https://www.gmwe.hu",
+   "status": "SSL",
+   "ok": false,
+   "ms": 633,
+   "soft": false,
+   "source": "directory: Dr. Göllner Mária Waldorf Óvoda"
+  },
+  {
+   "url": "https://www.educaredo.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 112,
+   "soft": false,
+   "source": "directory: EduCareDo – Foundations in Anthroposophy (Online Course Platform)"
+  },
+  {
+   "url": "https://www.educaredo.org/speech-and-drama-as-living-arts",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 277,
+   "soft": false,
+   "source": "directory: EduCareDo – Speech and Drama as Living Arts"
+  },
+  {
+   "url": "https://asocelcuenco.com.ar",
+   "status": 503,
+   "ok": false,
+   "final_url": "https://asocelcuenco.com.ar/",
+   "ms": 966,
+   "soft": false,
+   "source": "directory: El Cuenco"
+  },
+  {
+   "url": "https://www.elias-schulzweig.com/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Elias-Schulzweig der Rudolf-Steiner-Schule Nordheide, Förderschulzweig"
+  },
+  {
+   "url": "https://biohof-reber.de",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Elisabeth und Armin Reber"
+  },
+  {
+   "url": "https://escolawaldorfguarulhos.com.br",
+   "status": "SSL",
+   "ok": false,
+   "ms": 583,
+   "soft": false,
+   "source": "directory: Escola Waldorf Guarulhos"
+  },
+  {
+   "url": "https://ewrs.com.br",
+   "status": 500,
+   "ok": false,
+   "final_url": "https://ewrs.com.br/",
+   "ms": 621,
+   "soft": false,
+   "source": "directory: Escola Waldorf Rudolf Steiner"
+  },
+  {
+   "url": "https://escuelaeltrigal.edu.ar/",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://escuelaeltrigal.edu.ar/en/escuela-waldorf-el-trigal-english/",
+   "ms": 3650,
+   "soft": false,
+   "source": "directory: Escuela El Trigal"
+  },
+  {
+   "url": "https://www.elfarol-waldorf.org",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.elfarol-waldorf.org/",
+   "ms": 1707,
+   "soft": false,
+   "source": "directory: Escuela Internacional Waldorf El Farol"
+  },
+  {
+   "url": "https://escuelalibremicael.edu.ar",
+   "status": 500,
+   "ok": false,
+   "final_url": "https://escuelalibremicael.edu.ar/",
+   "ms": 1004,
+   "soft": false,
+   "source": "directory: Escuela Libre Micael"
+  },
+  {
+   "url": "https://ww.prohumanus.org",
+   "status": "SSL",
+   "ok": false,
+   "ms": 633,
+   "soft": false,
+   "source": "directory: Especialización en Pedagogía Waldorf Pro Humanus"
+  },
+  {
+   "url": "https://waldorfkindergarten-dillingen.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Feengarten, Verein zur Förderung der Waldorfpädagogik Saarlouis"
+  },
+  {
+   "url": "https://www.feherlofiawaldorf.hu",
+   "status": "SSL",
+   "ok": false,
+   "ms": 544,
+   "soft": false,
+   "source": "directory: Fehérlófia Waldorf Óvoda"
+  },
+  {
+   "url": "https://feltonroad.com",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://feltonroad.com/",
+   "ms": 183,
+   "soft": false,
+   "source": "directory: Felton Road Wines"
+  },
+  {
+   "url": "https://www.waldorfkindergartenseminar.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 629,
+   "soft": false,
+   "source": "directory: Freie Fachschule für Sozialpädagogik Akademie für Erziehungskunst e.V."
+  },
+  {
+   "url": "http://www.waldorfschule-dachsberg.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 964,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Dachsberg"
+  },
+  {
+   "url": "https://www.waldorfschule-goerlitz.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Görlitz \"Jacob Böhme\""
+  },
+  {
+   "url": "https://www.fws-kaki.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Kaltenkirchen"
+  },
+  {
+   "url": "https://www.waldorf-landsberg.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Landsberg"
+  },
+  {
+   "url": "https://fwsl-ohz.de/",
+   "status": "SSL",
+   "ok": false,
+   "ms": 336,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Lindenstrasse"
+  },
+  {
+   "url": "https://www.waldorfschule-msw.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule München Südwest"
+  },
+  {
+   "url": "http://www.waldorf-neuenrade.de",
+   "status": 503,
+   "ok": false,
+   "final_url": "https://www.waldorf-neuenrade.de/",
+   "ms": 2342,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Neuenrade"
+  },
+  {
+   "url": "https://www.waldorfschule-rottweil.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorfschule-rottweil.de/",
+   "ms": 361,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Rottweil"
+  },
+  {
+   "url": "https://waldorfschule-saarbruecken.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 552,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Saarbrücken"
+  },
+  {
+   "url": "https://feszekiskola.hu",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://feszekiskola.hu/",
+   "ms": 1647,
+   "soft": false,
+   "source": "directory: Fészek Waldorf Általános Iskola, Gimnázium és AMI"
+  },
+  {
+   "url": "https://x.com/goetheanumTV",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 299,
+   "soft": true,
+   "source": "directory: Goetheanum TV (X/Twitter)"
+  },
+  {
+   "url": "https://blog.sina.com.cn/qingcaopohuadefu",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 2080,
+   "soft": false,
+   "source": "directory: Grassland Kindergarten"
+  },
+  {
+   "url": "https://www.youtube.com/@GreenMeadowWaldorf",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 242,
+   "soft": true,
+   "source": "directory: Green Meadow Waldorf School YouTube"
+  },
+  {
+   "url": "https://www.greenmountainbranch.org/",
+   "status": "SSL",
+   "ok": false,
+   "ms": 283,
+   "soft": false,
+   "source": "directory: Green Mountain Branch of the Anthroposophical Society"
+  },
+  {
+   "url": "https://www.gyermekligetovi.blogspot.hu",
+   "status": "SSL",
+   "ok": false,
+   "ms": 194,
+   "soft": false,
+   "source": "directory: Gyermekliget Waldorf Óvoda"
+  },
+  {
+   "url": "https://www.gaertnerei-funke.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Gärtnerei Funke"
+  },
+  {
+   "url": "https://www.haugtussasteinerbarnehage.no",
+   "status": "SSL",
+   "ok": false,
+   "ms": 793,
+   "soft": false,
+   "source": "directory: Haugtussa Steinerbarnehage"
+  },
+  {
+   "url": "https://www.hof-herten.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.hof-herten.de/",
+   "ms": 223,
+   "soft": false,
+   "source": "directory: Hof Herten GbR"
+  },
+  {
+   "url": "https://huberhof-kronast.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Huberhof"
+  },
+  {
+   "url": "https://www.hvezdyvlese.cz",
+   "status": "SSL",
+   "ok": false,
+   "ms": 318,
+   "soft": false,
+   "source": "directory: Hvězdy v lese, zs"
+  },
+  {
+   "url": "https://strohbeuten.de",
+   "status": 500,
+   "ok": false,
+   "final_url": "https://strohbeuten.de/",
+   "ms": 1358,
+   "soft": false,
+   "source": "directory: Imkerei am Schwalbenhof"
+  },
+  {
+   "url": "https://www.intamores.org.br",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.intamores.org.br/",
+   "ms": 614,
+   "soft": false,
+   "source": "directory: Intamorés Curso de Fundamentação em Pedagogia Waldorf de Botucatu"
+  },
+  {
+   "url": "https://waldorf-irkutsk.ru",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Irkutskaya Waldorfskaya Shkola"
+  },
+  {
+   "url": "https://escolawaldorfvinhedo.com.br",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Jardim Das Estrelas"
+  },
+  {
+   "url": "http://www.quintaldosol.com.br",
+   "status": 403,
+   "ok": false,
+   "final_url": "http://www.quintaldosol.com.br/",
+   "ms": 1798,
+   "soft": false,
+   "source": "directory: Jardim de Infância Quintal do Sol"
+  },
+  {
+   "url": "https://www.blanchefleur.org",
+   "status": "ERR TooManyRedirects",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Jardin d'enfant de l'École Blanchefleur"
+  },
+  {
+   "url": "https://biogaertnerei-hamann.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Jutta Hamann"
+  },
+  {
+   "url": "https://www.waldorf-haz.hu",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://waldorf-haz.hu/",
+   "ms": 1898,
+   "soft": false,
+   "source": "directory: Katicabogár Waldorf Óvoda"
+  },
+  {
+   "url": "https://www.freieschuleelztal.de/verein/kindergarten-bienenkorb",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 4008,
+   "soft": false,
+   "source": "directory: Kindergarten Bienenkorb"
+  },
+  {
+   "url": "https://www.waldorfschule-dachsberg.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 420,
+   "soft": false,
+   "source": "directory: Kindergarten Klappermühle"
+  },
+  {
+   "url": "https://www.kinderhaus.li",
+   "status": "SSL",
+   "ok": false,
+   "ms": 533,
+   "soft": false,
+   "source": "directory: Kindergarten Regenbogen der Liechtensteinischen Waldorfschule Schaan"
+  },
+  {
+   "url": "https://www.steinerschulen-regionbern.ch",
+   "status": "SSL",
+   "ok": false,
+   "ms": 623,
+   "soft": false,
+   "source": "directory: Kindergarten und Spielgruppe der Rudolf Steiner Bern"
+  },
+  {
+   "url": "https://www.starkerwanja.ch",
+   "status": "SSL",
+   "ok": false,
+   "ms": 696,
+   "soft": false,
+   "source": "directory: Kinderhaus „Der Starke Wanja\", Birsfelden"
+  },
+  {
+   "url": "https://www.kita-chaeferli.ch/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 234,
+   "soft": false,
+   "source": "directory: Kinderkrippe Chäferli, Zug"
+  },
+  {
+   "url": "https://www.kleinkindgruppezwergenstuebchen.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 660,
+   "soft": false,
+   "source": "directory: Kleinkindgruppe Zwergenstübchen"
+  },
+  {
+   "url": "https://klinik-oeschelbronn.de/",
+   "status": 500,
+   "ok": false,
+   "final_url": null,
+   "ms": 3854,
+   "soft": false,
+   "source": "directory: Klinik Oeschelbronn"
+  },
+  {
+   "url": "https://kongelyset.net",
+   "status": "SSL",
+   "ok": false,
+   "ms": 421,
+   "soft": false,
+   "source": "directory: Kongelyset"
+  },
+  {
+   "url": "http://lafiababiella.altervista.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 770,
+   "soft": false,
+   "source": "directory: La Fiaba - Associazione per la pedagogia steineriana"
+  },
+  {
+   "url": "https://www.landbienenhof.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.landbienenhof.de/",
+   "ms": 265,
+   "soft": false,
+   "source": "directory: Landbienenhof"
+  },
+  {
+   "url": "https://www.laurelfarmkindergarten.co.uk",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.laurelfarmkindergarten.co.uk/",
+   "ms": 605,
+   "soft": false,
+   "source": "directory: Laurel Farm Kindergarten"
+  },
+  {
+   "url": "https://www.waldorfpalermo.org",
+   "status": "SSL",
+   "ok": false,
+   "ms": 521,
+   "soft": false,
+   "source": "directory: Libera Scuola Waldorf"
+  },
+  {
+   "url": "https://lyss.vic.edu.au",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Little Yarra Steiner School"
+  },
+  {
+   "url": "https://luisenhof-wiebendorf.de",
+   "status": 503,
+   "ok": false,
+   "final_url": "https://luisenhof-wiebendorf.de/",
+   "ms": 1069,
+   "soft": false,
+   "source": "directory: Luisenhof Hofladen & Café"
+  },
+  {
+   "url": "https://scuolaarcodoro.it/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 319,
+   "soft": false,
+   "source": "directory: L’arco d’oro"
+  },
+  {
+   "url": "http://maitreyapathshala.wix.com/maitreya",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://maitreyapathshala.wix.com/maitreya",
+   "ms": 387,
+   "soft": true,
+   "source": "directory: Maitreya Pathshala - The Pokhara Waldorf School"
+  },
+  {
+   "url": "https://www.maysara.com",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.maysara.com/",
+   "ms": 182,
+   "soft": false,
+   "source": "directory: Maysara Winery"
+  },
+  {
+   "url": "https://www.michaelhall.co.uk",
+   "status": 520,
+   "ok": false,
+   "final_url": "https://www.michaelhall.co.uk/",
+   "ms": 739,
+   "soft": false,
+   "source": "directory: Michael Hall School"
+  },
+  {
+   "url": "https://www.michaelschule.net",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Michael Schule Harburg, Waldorfschule für heilende Erziehung"
+  },
+  {
+   "url": "https://www.minamisawa-steiner.wix.com/kodomoen",
+   "status": "SSL",
+   "ok": false,
+   "ms": 85,
+   "soft": true,
+   "source": "directory: Minamisawa Steiner Kodomoen"
+  },
+  {
+   "url": "https://nvaa.nl/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 328,
+   "soft": false,
+   "source": "directory: Nederlandse Vereniging van Antroposofische Artsen (NVAA)"
+  },
+  {
+   "url": "http://ttps://vk.com/club450215",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Nikolsk-Gorka"
+  },
+  {
+   "url": "https://neswec.org.uk",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://neswec.org.uk/",
+   "ms": 189,
+   "soft": false,
+   "source": "directory: North of England Steiner Waldorf Early Childhood Studies"
+  },
+  {
+   "url": "https://pardubice.obec-krestanu.cz",
+   "status": 401,
+   "ok": false,
+   "final_url": "https://pardubice.obec-krestanu.cz/",
+   "ms": 839,
+   "soft": false,
+   "source": "directory: Obec křesťanů Pardubice"
+  },
+  {
+   "url": "https://praha.obec-krestanu.cz",
+   "status": 401,
+   "ok": false,
+   "final_url": "https://praha.obec-krestanu.cz/",
+   "ms": 836,
+   "soft": false,
+   "source": "directory: Obec křesťanů Praha (Modrý dům)"
+  },
+  {
+   "url": "https://www.obec-krestanu.cz/kontakt/sbory",
+   "status": 401,
+   "ok": false,
+   "final_url": null,
+   "ms": 833,
+   "soft": false,
+   "source": "directory: Obec křesťanů České Budějovice"
+  },
+  {
+   "url": "https://www.weilersobsthof.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.weilersobsthof.de/",
+   "ms": 309,
+   "soft": false,
+   "source": "directory: Obstbau Weiler und Naturpädagogik"
+  },
+  {
+   "url": "https://priesterseminar-stuttgart.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Priesterseminar Stuttgart – Freie Hochschule der Christengemeinschaft"
+  },
+  {
+   "url": "https://www.associacaosalvador.wix.com/associacao-salva-dor",
+   "status": "SSL",
+   "ok": false,
+   "ms": 50,
+   "soft": true,
+   "source": "directory: Projeto Salva Dor"
+  },
+  {
+   "url": "https://www.waldorfskie.ehost.pl",
+   "status": "SSL",
+   "ok": false,
+   "ms": 483,
+   "soft": false,
+   "source": "directory: Przedszkole Waldorfskie"
+  },
+  {
+   "url": "https://www.oekoferienhofretzbach.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Retzbach Ökobauernhof GbR"
+  },
+  {
+   "url": "https://richmondwaldorf.com/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 144,
+   "soft": false,
+   "source": "directory: Richmond Waldorf School"
+  },
+  {
+   "url": "https://ringwoodwaldorfschool.org.uk",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://ringwoodwaldorfschool.org.uk/",
+   "ms": 305,
+   "soft": false,
+   "source": "directory: Ringwood Waldorf School"
+  },
+  {
+   "url": "https://www.roedererestate.com/index.php",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 191,
+   "soft": false,
+   "source": "directory: Roederer Estate Domaine Anderson"
+  },
+  {
+   "url": "https://discord.me/rosefolk",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 284,
+   "soft": false,
+   "source": "directory: Rosefolk (Discord)"
+  },
+  {
+   "url": "https://rotenbauer.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Rotenbauer GbR"
+  },
+  {
+   "url": "https://www.rovaniemensteinerkoulu.fi",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Rovaniemen Steinerkoulu"
+  },
+  {
+   "url": "https://www.waldorfbreda.nl/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Rudolf Steiner School Breda"
+  },
+  {
+   "url": "https://www.steinerschule-aargau.ch",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Rudolf Steiner Schule Aargau"
+  },
+  {
+   "url": "http://www.rshoyskolen.no",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Rudolf Steinerhöyskolen - Rudolf Steiner University College"
+  },
+  {
+   "url": "https://r-s-schule.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Rudolf-Steiner-Schule Augsburg"
+  },
+  {
+   "url": "https://rudolfsteinerschule-bielefeld.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Rudolf-Steiner-Schule Bielefeld"
+  },
+  {
+   "url": "https://vk.com/club218336700?from=groups",
+   "status": 418,
+   "ok": false,
+   "final_url": null,
+   "ms": 617,
+   "soft": false,
+   "source": "directory: Samarskij seminar valdorfskoj pedagogiki"
+  },
+  {
+   "url": "http://sasana.edu.my",
+   "status": 403,
+   "ok": false,
+   "final_url": "http://sasana.edu.my/",
+   "ms": 138,
+   "soft": false,
+   "source": "directory: Sasana International School"
+  },
+  {
+   "url": "https://www.apar.me",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Scoala Gimnaziala Waldorf \"Hans Spalinger\" Rosia"
+  },
+  {
+   "url": "https://www.scuolasteinermilano.it",
+   "status": "SSL",
+   "ok": false,
+   "ms": 854,
+   "soft": false,
+   "source": "directory: Scuola Rudolf Steiner"
+  },
+  {
+   "url": "https://www.семейный-лад.москва",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Semejniy Lad"
+  },
+  {
+   "url": "https://semilleroeducativo.com/",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://www.semilleroeducativo.com/en/nosotros",
+   "ms": 1811,
+   "soft": false,
+   "source": "directory: Semillero Comunalidad Educativa"
+  },
+  {
+   "url": "https://www.waldorfseminar.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorfseminar.de/",
+   "ms": 341,
+   "soft": false,
+   "source": "directory: Seminar für Waldorfpädagogik Hamburg"
+  },
+  {
+   "url": "https://seoulwaldorf.com",
+   "status": "SSL",
+   "ok": false,
+   "ms": 523,
+   "soft": false,
+   "source": "directory: Seoul Waldorf School"
+  },
+  {
+   "url": "https://www.shishyaa.weebly.com",
+   "status": "SSL",
+   "ok": false,
+   "ms": 50,
+   "soft": false,
+   "source": "directory: Shishyaa school"
+  },
+  {
+   "url": "https://stgeorgeschool.ru",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Shkola Sv. Georgiya"
+  },
+  {
+   "url": "https://www.steinerskolen-kbh.dk",
+   "status": "SSL",
+   "ok": false,
+   "ms": 541,
+   "soft": false,
+   "source": "directory: Soria Moria"
+  },
+  {
+   "url": "https://southerncrossreview.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 155,
+   "soft": false,
+   "source": "directory: Southern Cross Review"
+  },
+  {
+   "url": "https://www.spielgruppe-im-atelier.ch",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.spielgruppe-im-atelier.ch/",
+   "ms": 234,
+   "soft": false,
+   "source": "directory: Spielgruppe im Atelier, Aarau"
+  },
+  {
+   "url": "https://disboard.org/server/598729995967266827",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 234,
+   "soft": false,
+   "source": "directory: Spiritual Evolution (Discord)"
+  },
+  {
+   "url": "https://www.stpaulswaldorfschool.org",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: St. Paul's Steiner School"
+  },
+  {
+   "url": "https://www.steinerbarnehagenila.no",
+   "status": "SSL",
+   "ok": false,
+   "ms": 387,
+   "soft": false,
+   "source": "directory: Steinerbarnehagen i Trondheim"
+  },
+  {
+   "url": "https://www.steinerpaivakotisirius.fi",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Steinerpäiväkoti Sirius"
+  },
+  {
+   "url": "https://www.tahtitarha.fi",
+   "status": "SSL",
+   "ok": false,
+   "ms": 828,
+   "soft": false,
+   "source": "directory: Steinerpäiväkoti Tähtitarha"
+  },
+  {
+   "url": "https://www.askersteinerskole.no/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 162,
+   "soft": false,
+   "source": "directory: Steinerskolen i Asker"
+  },
+  {
+   "url": "https://www.steinerskole.no",
+   "status": 500,
+   "ok": false,
+   "final_url": "https://www.steinerskole.no/",
+   "ms": 1081,
+   "soft": false,
+   "source": "directory: Steinerskolen i Bærum"
+  },
+  {
+   "url": "https://stichtingdemeter.nl/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 348,
+   "soft": false,
+   "source": "directory: Stichting Demeter"
+  },
+  {
+   "url": "https://www.humanushaus.ch",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Stiftung Humanus-Haus"
+  },
+  {
+   "url": "https://www.freeschool.ru",
+   "status": "SSL",
+   "ok": false,
+   "ms": 4096,
+   "soft": false,
+   "source": "directory: Svobodnaya shkola"
+  },
+  {
+   "url": "http://www.tallinn.waldorf.ee",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.tallinn.waldorf.ee/",
+   "ms": 2584,
+   "soft": false,
+   "source": "directory: Tallinna Vaba Waldorfkool"
+  },
+  {
+   "url": "https://www.tamarvalleysteiner.tas.edu.au",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Tamar Valley Steiner School"
+  },
+  {
+   "url": "https://www.theccaustin.org",
+   "status": "SSL",
+   "ok": false,
+   "ms": 613,
+   "soft": false,
+   "source": "directory: The Christian Community in Austin (affiliate of Denver)"
+  },
+  {
+   "url": "https://www.mountcamphill.org/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: The Mount Camphill Community"
+  },
+  {
+   "url": "http://www.philosophyoffreedom.com/",
+   "status": "SSL",
+   "ok": false,
+   "ms": 642,
+   "soft": false,
+   "source": "directory: The Philosophy Of Freedom (Tom Last)"
+  },
+  {
+   "url": "https://www.thesheilingringwood.co.uk/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: The Sheiling Ringwood"
+  },
+  {
+   "url": "http://www.tridha.com",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://tridha.com/",
+   "ms": 598,
+   "soft": false,
+   "source": "directory: Tridha"
+  },
+  {
+   "url": "https://guelphwaldorf.ca/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 199,
+   "soft": false,
+   "source": "directory: Trillium Waldorf School"
+  },
+  {
+   "url": "https://www.tunderkertgyor.hu",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Tündérkert Waldorf Óvoda"
+  },
+  {
+   "url": "https://www.biohof-gt.de",
+   "status": 500,
+   "ok": false,
+   "final_url": "https://www.biohof-gt.de/",
+   "ms": 1744,
+   "soft": false,
+   "source": "directory: Vier Jahreszeiten Gartenbau GbR"
+  },
+  {
+   "url": "https://vrijeschoolridderspooralphenaandenrijn.nl",
+   "status": 503,
+   "ok": false,
+   "final_url": "https://vrijeschoolridderspooralphenaandenrijn.nl/",
+   "ms": 1439,
+   "soft": false,
+   "source": "directory: Vrije School Ridderspoor"
+  },
+  {
+   "url": "https://www.vsdekleinejohannes.nl",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Vrijeschool De Kleine Johannes"
+  },
+  {
+   "url": "https://www.schooldelans.nl",
+   "status": "SSL",
+   "ok": false,
+   "ms": 547,
+   "soft": false,
+   "source": "directory: Vrijeschool De Lans"
+  },
+  {
+   "url": "https://www.dezeeridder.nl",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Vrijeschool De Zeeridder"
+  },
+  {
+   "url": "http://www.hsleiden.nl/vrijeschool-pabo-deeltijd/kennismaken-met-de-opleiding.html",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 236,
+   "soft": false,
+   "source": "directory: Vrijeschool Pabo Hogeschool Leiden"
+  },
+  {
+   "url": "https://www.waldorfcambridge.uk",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorf Cambridge"
+  },
+  {
+   "url": "https://www.waldorferzieher.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorferzieher.de/",
+   "ms": 452,
+   "soft": false,
+   "source": "directory: Waldorf Fach- und Berufsfachschule für Sozialpädagogik"
+  },
+  {
+   "url": "https://www.waldorfinfanciaviva.org",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorfinfanciaviva.org/",
+   "ms": 206,
+   "soft": false,
+   "source": "directory: Waldorf Jardim Infância Viva"
+  },
+  {
+   "url": "https://waldorf-obuda.hu",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://waldorf-obuda.hu/",
+   "ms": 279,
+   "soft": false,
+   "source": "directory: Waldorf School Budapest (Óbudai Waldorf Iskola)"
+  },
+  {
+   "url": "http://www.nyiregyhaziwaldorf.hu",
+   "status": 403,
+   "ok": false,
+   "final_url": "http://www.nyiregyhaziwaldorf.hu/",
+   "ms": 1204,
+   "soft": false,
+   "source": "directory: Waldorf Óvoda, Általános Iskola, Gimnázium és AMI"
+  },
+  {
+   "url": "https://www.waldorf-integrations-kindergarten.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorf-Integrations-Kindergarten Starnberg"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-iserlohn.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 520,
+   "soft": false,
+   "source": "directory: WaldorfKindergarten Iserlohn"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-arnsberg.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 2930,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Arnsberg"
+  },
+  {
+   "url": "https://waldorfkindergarten-aurich.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 343,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Aurich"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-bayreuth.de",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Bayreuth"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-lahr.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 320,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Christophorus"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-flensburg.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Flensburg"
+  },
+  {
+   "url": "https://www.goldwurzel.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Goldwurzel Tempelhof"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-grabow.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 393,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Grabow"
+  },
+  {
+   "url": "https://waldorfkindergarten-goeppingen.de",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://waldorfkindergarten-goeppingen.de/",
+   "ms": 3098,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Göppingen Ahorn"
+  },
+  {
+   "url": "https://waldorfkindergarten-neuss.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Hof Turmalin"
+  },
+  {
+   "url": "https://www.hollerbusch-ev.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 369,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Hollerbusch"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-itzehoe.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 522,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Itzehoe"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-kakenstorf.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Kakenstorf"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-karlsruhe.de",
+   "status": 503,
+   "ok": false,
+   "final_url": "https://www.waldorfkindergarten-karlsruhe.de/",
+   "ms": 992,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Karlsruhe"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-klagenfurt.at",
+   "status": "SSL",
+   "ok": false,
+   "ms": 692,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Klagenfurt"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-krefeld.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Krefeld"
+  },
+  {
+   "url": "http://kr-waldorf-nvk.dp.sch.in.ua/",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Kryvyi Rih"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-nordhorn.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorfkindergarten-nordhorn.de/",
+   "ms": 370,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Nordhorn"
+  },
+  {
+   "url": "https://www.waldorfkiga-pankow.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Pankow"
+  },
+  {
+   "url": "https://www.waldorfkiga-pirmasens.de",
+   "status": 503,
+   "ok": false,
+   "final_url": "https://www.waldorfkiga-pirmasens.de/",
+   "ms": 1703,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Pirmasens"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-rheinsheim.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorfkindergarten-rheinsheim.de/",
+   "ms": 1691,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Rheinsheim"
+  },
+  {
+   "url": "https://www.kindergarten-rosenhof.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Rosenhof"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-solln.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Solln"
+  },
+  {
+   "url": "https://www.kindergartensonnenbogen.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.kindergartensonnenbogen.de/",
+   "ms": 371,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Sonnenbogen"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-hude.de",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Sonnenweg"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-sonnenwiege.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Sonnenwiege Heerdt"
+  },
+  {
+   "url": "https://waldorfkita-tt.de/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Tennental"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-uetersen.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Uetersen"
+  },
+  {
+   "url": "https://www.villa-federleicht.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 304,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Villa Federleicht"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-mauer.at",
+   "status": "SSL",
+   "ok": false,
+   "ms": 785,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Wien-Mauer"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-winnenden.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Winnender Kinderstube"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-siegen.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 554,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten am Häusling"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-harburg.de",
+   "status": "SSL",
+   "ok": false,
+   "ms": 381,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten der Rudolf Steiner Schule Harburg"
+  },
+  {
+   "url": "https://www.waldorfkindergartenengeln.de",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorfkindergartenengeln.de/",
+   "ms": 319,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten in Engeln"
+  },
+  {
+   "url": "https://www.waldorfkindergartenseminar.at",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "directory: Waldorfkindergartenseminar Wien"
+  },
+  {
+   "url": "https://www.waldorfschule-marchfeld.at",
+   "status": 403,
+   "ok": false,
+   "final_url": "https://www.waldorfschule-marchfeld.at/",
+   "ms": 486,
+   "soft": false,
+   "source": "directory: Waldorfschule Marchfeld"
+  },
+  {
+   "url": "https://waldorfschule-in-ostholstein.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Waldorfschule in Ostholstein"
+  },
+  {
+   "url": "http://www.waldorkzsh.dnepredu.com",
+   "status": 403,
+   "ok": false,
+   "final_url": "http://www.waldorkzsh.dnepredu.com/",
+   "ms": 144,
+   "soft": false,
+   "source": "directory: Waldorfska Schkola Kryvyi Rih"
+  },
+  {
+   "url": "https://istota.edu.pl",
+   "status": "SSL",
+   "ok": false,
+   "ms": 404,
+   "soft": false,
+   "source": "directory: Waldorfska Szkola Podstawowa „Istota\""
+  },
+  {
+   "url": "https://www.crwkomorow.wix.com",
+   "status": "SSL",
+   "ok": false,
+   "ms": 72,
+   "soft": true,
+   "source": "directory: Waldorfski Punkt Przedszkolny"
+  },
+  {
+   "url": "https://waldorfrataje.cz/",
+   "status": 401,
+   "ok": false,
+   "final_url": null,
+   "ms": 841,
+   "soft": false,
+   "source": "directory: Waldorfská základní škola Ratolest"
+  },
+  {
+   "url": "https://waldorfcheb.cz/",
+   "status": 401,
+   "ok": false,
+   "final_url": null,
+   "ms": 832,
+   "soft": false,
+   "source": "directory: Waldorfská základní škola a mateřská škola Cheb"
+  },
+  {
+   "url": "http://www.waldorf-brno.cz",
+   "status": 401,
+   "ok": false,
+   "final_url": "https://www.waldorf-brno.cz/",
+   "ms": 1522,
+   "soft": false,
+   "source": "directory: Waldorfská škola Brno - střední škola, základní škola a mateřská škola"
+  },
+  {
+   "url": "https://whistlerwaldorf.com/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 191,
+   "soft": false,
+   "source": "directory: Whistler Waldorf School"
+  },
+  {
+   "url": "https://www.wuennerhof-marienhof.de",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "directory: Wünnerhof"
+  },
+  {
+   "url": "https://blog.sina.com.cn/77xiaozhu",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 3293,
+   "soft": false,
+   "source": "directory: Xiao Song shu (Little Pine Tree Kindergarten)"
+  },
+  {
+   "url": "https://www.babydreamfarm.pixnet.net/blog",
+   "status": "SSL",
+   "ok": false,
+   "ms": 435,
+   "soft": false,
+   "source": "directory: Yi Mu Tian Farm Kindergarten"
+  },
+  {
+   "url": "https://www.waldorf-brno.cz",
+   "status": 401,
+   "ok": false,
+   "final_url": "https://www.waldorf-brno.cz/",
+   "ms": 871,
+   "soft": false,
+   "source": "directory: aterská škola Brno"
+  },
+  {
+   "url": "https://",
+   "status": "ERR InvalidURL",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://*.analytics.google.com",
+   "status": "ERR InvalidURL",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://*.google-analytics.com",
+   "status": "ERR InvalidURL",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://anthroposophy.eu/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 428,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://anthroposophy.org/podcast/",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://www.anthroposophy.org/podcast",
+   "ms": 1153,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://astrosophy.app/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 177,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://meadowbrookelder.org",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://rudolfsteinerelib.org/RelArtic/UsherS/TwoBooks.html",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 340,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://soundcircleeurythmy.org/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://twitter.com/SophiaCommons",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://x.com/SophiaCommons",
+   "ms": 437,
+   "soft": true,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.alterspflege-dornach.ch",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.anthroposophy.org.au/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.biodynamic.org.uk/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 106,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.camphillminnesota.org/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.cvt.org.uk/botton-village",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 7426,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.heartbeetcamphill.org/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.ime.usp.br/~vwsetzer/Setzer-Know-Higher-Worlds.pdf",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.kimbertoncsa.org/",
+   "status": 401,
+   "ok": false,
+   "final_url": null,
+   "ms": 387,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.newtondee.org.uk/",
+   "status": "TIMEOUT",
+   "ok": false,
+   "ms": 20000,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.rudolfsteiner.podbean.com/",
+   "status": "SSL",
+   "ok": false,
+   "ms": 133,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.rudolfsteinerelib.org/",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 289,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.triformcamphill.org/",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.youtube.com/@AnthroposophyUSA",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 260,
+   "soft": true,
+   "source": "index.html"
+  },
+  {
+   "url": "https://…",
+   "status": "ERR InvalidURL",
+   "ok": false,
+   "ms": 0,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://%facebook.com/%",
+   "status": "ERR ConnectionError",
+   "ok": false,
+   "ms": 0,
+   "soft": true,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://commons.wikimedia.org/wiki/File:4%25_Illuminated_Crescent_Moon_with_Earthshine_(41490002672",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 242,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://commons.wikimedia.org/wiki/File:Leonardo_da_Vinci_(1452-1519",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 201,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://commons.wikimedia.org/wiki/File:Wandtafelbild_-_Gotheanum-Motiv_(1924",
+   "status": 404,
+   "ok": false,
+   "final_url": null,
+   "ms": 203,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://rsarchive.org/COTS/index.php?northern_week=",
+   "status": 500,
+   "ok": false,
+   "final_url": null,
+   "ms": 242,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://rudolfsteinerelib.org/GA/index.php?ga=GA0260",
+   "status": 403,
+   "ok": false,
+   "final_url": null,
+   "ms": 113,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Articles/EduChild/EduChi_index.html",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://rsarchive.org/Articles/EduChild/EduChi_index.html",
+   "ms": 517,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Education/_pdf/Foundations_of_Human_Experience.pdf",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://rsarchive.org/Education/_pdf/Foundations_of_Human_Experience.pdf",
+   "ms": 559,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Education/_pdf/Practical_Advice_to_Teachers.pdf",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://rsarchive.org/Education/_pdf/Practical_Advice_to_Teachers.pdf",
+   "ms": 481,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Education/_pdf/The_Kingdom_of_Childhood.pdf",
+   "status": 404,
+   "ok": false,
+   "final_url": "https://rsarchive.org/Education/_pdf/The_Kingdom_of_Childhood.pdf",
+   "ms": 490,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  }
+ ],
+ "redirects": [
+  {
+   "url": "https://www.waldorfskapedagogika.cz",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfskapedagogika.cz/studium",
+   "ms": 1685,
+   "soft": false,
+   "source": "directory: Akademie sociálního umění TABOR z.s."
+  },
+  {
+   "url": "https://www.antroposofie.nl",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://antroposofie.nl/",
+   "ms": 3623,
+   "soft": false,
+   "source": "directory: Antroposofische Vereniging in Nederland"
+  },
+  {
+   "url": "https://Www.aronia-vom-Langlebenhof.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.aronia-vom-langlebenhof.de/",
+   "ms": 297,
+   "soft": false,
+   "source": "directory: Aronia vom Langlebenhof GmbH"
+  },
+  {
+   "url": "https://auroratamariki.co.nz",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.auroratamariki.co.nz/",
+   "ms": 2229,
+   "soft": false,
+   "source": "directory: Aurora tamariki Early Years Care"
+  },
+  {
+   "url": "https://www.hofbäckerei-steingraber.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.xn--hofbckerei-steingraber-34b.de/",
+   "ms": 1004,
+   "soft": false,
+   "source": "directory: Bayuwarenhof"
+  },
+  {
+   "url": "https://www.beavercreekvineyards.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.martinpohlwines.com/",
+   "ms": 667,
+   "soft": false,
+   "source": "directory: Beaver Creek Vineyards"
+  },
+  {
+   "url": "https://www.benowashs.eq.edu.au",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://benowashs.eq.edu.au/",
+   "ms": 6835,
+   "soft": false,
+   "source": "directory: Benowa State High School"
+  },
+  {
+   "url": "https://www.ulmenhof-Unterlengenhardt.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.ulmenhof-unterlengenhardt.de/",
+   "ms": 1032,
+   "soft": false,
+   "source": "directory: Betriebsgemeinschaft Ulmenhof KG"
+  },
+  {
+   "url": "https://www.biohof-hiss.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://biohof-hiss.de",
+   "ms": 1401,
+   "soft": false,
+   "source": "directory: Biohof Hiss Matthias Hiß"
+  },
+  {
+   "url": "http://www.biohof-weissmeyer.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "http://www.biokiste-weissmeyer.de/",
+   "ms": 889,
+   "soft": false,
+   "source": "directory: Biokiste Weißmeyer Gemüsebau Martin Weißmeyer"
+  },
+  {
+   "url": "http://www.Pflege-bei-Freunden.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://seniorenzentrum-haus-am-berg.de/",
+   "ms": 7195,
+   "soft": false,
+   "source": "directory: Bliesmed Seniorenbetreuungs GmbH, Dirk Mahren"
+  },
+  {
+   "url": "https://www.bluemountainssteiner.nsw.edu.au",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://bluemountainssteiner.nsw.edu.au/",
+   "ms": 4532,
+   "soft": false,
+   "source": "directory: Blue Mountains Steiner School"
+  },
+  {
+   "url": "https://www.bornhof-taunusstein.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://bornhof-taunusstein.de",
+   "ms": 1314,
+   "soft": false,
+   "source": "directory: Bornhof GbR"
+  },
+  {
+   "url": "http://www.busanwaldorf.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://busanwaldorf.com/",
+   "ms": 2562,
+   "soft": false,
+   "source": "directory: Busan Free Waldorf School"
+  },
+  {
+   "url": "http://www.buehlerhof-murr.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://biohof-buehler.de/",
+   "ms": 5780,
+   "soft": false,
+   "source": "directory: Bühlerhof GbR"
+  },
+  {
+   "url": "https://www.camphill.ie/Dingle",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://camphill.ie/communities/dingle/",
+   "ms": 2023,
+   "soft": false,
+   "source": "directory: Camphill Community Dingle"
+  },
+  {
+   "url": "https://www.hausenhof.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://hausenhof.de/",
+   "ms": 12727,
+   "soft": false,
+   "source": "directory: Camphill Dorfgemeinschaft Hausenhof"
+  },
+  {
+   "url": "http://www.carltonfarms.net",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://carltonfarms.net/",
+   "ms": 330,
+   "soft": false,
+   "source": "directory: Carlton Farms"
+  },
+  {
+   "url": "https://www.antiochne.edu",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.antioch.edu/new-england/",
+   "ms": 499,
+   "soft": false,
+   "source": "directory: Center for Anthroposophy, Antioch University New England (AUNE)"
+  },
+  {
+   "url": "https://www.ccrss.nsw.edu.au",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://ccss.nsw.edu.au/",
+   "ms": 3816,
+   "soft": false,
+   "source": "directory: Central Coast Steiner School"
+  },
+  {
+   "url": "https://www.christian-morgenstern-kita.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://wordpress.innerestadt.de/interim/",
+   "ms": 1292,
+   "soft": false,
+   "source": "directory: Christian Morgenstern Kindergarten"
+  },
+  {
+   "url": "https://www.christianmorgensternschule.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://wordpress.innerestadt.de/interim/",
+   "ms": 1637,
+   "soft": false,
+   "source": "directory: Christian Morgenstern Schule"
+  },
+  {
+   "url": "https://www.ovoda.csillagberek.hu",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://ovoda.csillagberek.hu/",
+   "ms": 6435,
+   "soft": false,
+   "source": "directory: Csillagberek Waldorf Óvoda"
+  },
+  {
+   "url": "https://www.csillagbolcso.hu",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://csillagbolcso.hu/",
+   "ms": 2543,
+   "soft": false,
+   "source": "directory: Csillagbölcső Gyermekközpontú Óvoda, Általános Iskola és AMI"
+  },
+  {
+   "url": "https://www.daKaiserhof.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.dakaiserhof.de/",
+   "ms": 917,
+   "soft": false,
+   "source": "directory: Da Kaiserhof"
+  },
+  {
+   "url": "https://www.piluweri.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://piluweri.de/",
+   "ms": 1176,
+   "soft": false,
+   "source": "directory: Demeter Gärtnerei Piluweri"
+  },
+  {
+   "url": "https://www.Der-Bienenfreund.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.der-bienenfreund.de/",
+   "ms": 1802,
+   "soft": false,
+   "source": "directory: Demeter-Imkerei Der Bienenfreund"
+  },
+  {
+   "url": "https://www.hofgut-pulsitz.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://hofgut-pulsitz.de/",
+   "ms": 1129,
+   "soft": false,
+   "source": "directory: Dr. Sabine Reichardt"
+  },
+  {
+   "url": "http://www.ecoledelaprovidence.be",
+   "status": 200,
+   "ok": true,
+   "final_url": "http://ecoledelaprovidence.be",
+   "ms": 1442,
+   "soft": false,
+   "source": "directory: Ecole Steiner de la Providence"
+  },
+  {
+   "url": "https://www.eminenceorganics.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://eminenceorganics.com/us/",
+   "ms": 537,
+   "soft": false,
+   "source": "directory: Eminence Organic Skin Care"
+  },
+  {
+   "url": "https://www.escolalivremanaca.com.br",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://escolalivremanaca.com.br/portal/",
+   "ms": 2739,
+   "soft": false,
+   "source": "directory: Escola Manacá"
+  },
+  {
+   "url": "https://www.ewfa.com.br",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://ewfa.com.br/",
+   "ms": 6214,
+   "soft": false,
+   "source": "directory: Escola Waldorf Francisco de Assis"
+  },
+  {
+   "url": "https://www.escuelacaracol.org",
+   "status": 200,
+   "ok": true,
+   "final_url": "http://escuelacaracol.org/en/home/",
+   "ms": 2725,
+   "soft": false,
+   "source": "directory: Escuela Caracol"
+  },
+  {
+   "url": "https://www.waldorfciudadreal.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfciudadreal.com/en/association/",
+   "ms": 2607,
+   "soft": false,
+   "source": "directory: Escuela Internacional Waldorf Madreselva"
+  },
+  {
+   "url": "https://www.waldorfsuedost.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfsuedost.de/en",
+   "ms": 1573,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Berlin-Südost"
+  },
+  {
+   "url": "https://www.waldorf-eckernfoerde.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorf-eckernfoerde.de/site/",
+   "ms": 1660,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Eckernförde"
+  },
+  {
+   "url": "https://www.waldorfschule-eifel.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfschule-mayen.de//",
+   "ms": 1223,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Mayen"
+  },
+  {
+   "url": "https://www.waldorfschule-oberursel.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfschule-oberursel.de/",
+   "ms": 2412,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Oberursel"
+  },
+  {
+   "url": "https://www.waldorfschule-ostfriesland.de/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfschule-ostfriesland.de/",
+   "ms": 2838,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Ostfriesland"
+  },
+  {
+   "url": "https://www.waldorf-weimar.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorf-weimar.de/",
+   "ms": 2750,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Weimar"
+  },
+  {
+   "url": "https://www.waldorfschule-wildau.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfschule-wildau.de/",
+   "ms": 3309,
+   "soft": false,
+   "source": "directory: Freie Waldorfschule Wildau"
+  },
+  {
+   "url": "https://Intihuasi.org",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://intihuasi.org/",
+   "ms": 879,
+   "soft": false,
+   "source": "directory: Fundación Inti Huasi Casa del Sol"
+  },
+  {
+   "url": "https://www.camphill.ie/grangemockler",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://camphill.ie/communities/grangemockler/",
+   "ms": 1875,
+   "soft": false,
+   "source": "directory: Grangemockler Camphill Community"
+  },
+  {
+   "url": "https://www.hofsondernnaturkost.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://hofsondernnaturkost.de/",
+   "ms": 7477,
+   "soft": false,
+   "source": "directory: Hof Sondern e.V. Sozialtherapeutische Gemeinschaft"
+  },
+  {
+   "url": "https://www.hof-ziegelhütte.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.xn--hof-ziegelhtte-qsb.de/",
+   "ms": 739,
+   "soft": false,
+   "source": "directory: Hof Ziegelhütte GbR"
+  },
+  {
+   "url": "https://www.hof-bauern-hof.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://hof-bauern-hof.de/",
+   "ms": 1454,
+   "soft": false,
+   "source": "directory: Hofbauernhof GbR"
+  },
+  {
+   "url": "http://www.hofgut-hochburg.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://neu.hofgut-hochburg.de/",
+   "ms": 2170,
+   "soft": false,
+   "source": "directory: Hofgut Domäne Hochburg"
+  },
+  {
+   "url": "https://xn--hkassen-q1a.dk/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.xn--hkassen-q1a.dk/",
+   "ms": 1474,
+   "soft": false,
+   "source": "directory: Høkassen"
+  },
+  {
+   "url": "https://www.iaswece.org",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://iaswece.org/home/",
+   "ms": 847,
+   "soft": false,
+   "source": "directory: International Association for Steiner/Waldorf Early Childhood Education"
+  },
+  {
+   "url": "https://www.waldorf.jp",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorf.jp/",
+   "ms": 1649,
+   "soft": false,
+   "source": "directory: Japan Waldorf Schools Association"
+  },
+  {
+   "url": "http://www.jean-paul-schule.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "http://jean-paul-schule.de/",
+   "ms": 3038,
+   "soft": false,
+   "source": "directory: Jean-Paul-Schule Kassel - WS für soziale und emotionale Entwicklung"
+  },
+  {
+   "url": "https://www.karl-schubert-schule.at",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://karl-schubert-schule.at/de/",
+   "ms": 2746,
+   "soft": false,
+   "source": "directory: Karl Schubert Schule Wien"
+  },
+  {
+   "url": "https://www.karlavagnen.nu/forskola",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://karlavagnen.nu/forskola",
+   "ms": 1892,
+   "soft": false,
+   "source": "directory: Karlavagnens Barnträdgård"
+  },
+  {
+   "url": "https://trondelag.kristensamfunnet.no/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://kristensamfunnet.no",
+   "ms": 354,
+   "soft": false,
+   "source": "directory: Kristensamfunnet i Trøndelag"
+  },
+  {
+   "url": "https://www.Rosenhof-Taubertal.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.rosenhof-taubertal.de/",
+   "ms": 711,
+   "soft": false,
+   "source": "directory: Kräuter- Obst- und Rosenhof Reinhold Schneider"
+  },
+  {
+   "url": "https://lakechamplainwaldorfschool.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.lakechamplainwaldorfschool.org/",
+   "ms": 390,
+   "soft": false,
+   "source": "directory: Lake Champlain Waldorf School"
+  },
+  {
+   "url": "https://www.landofthelivingheart.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://landofthelivingheart.com/",
+   "ms": 1624,
+   "soft": false,
+   "source": "directory: Land of the Living Heart"
+  },
+  {
+   "url": "https://www.Schafkaese.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.schafkaese.com/",
+   "ms": 132,
+   "soft": false,
+   "source": "directory: Langenburger Schafkäserei GbR"
+  },
+  {
+   "url": "https://www.liceulwaldorfiasi.ro",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://liceulwaldorfiasi.ro/",
+   "ms": 2411,
+   "soft": false,
+   "source": "directory: Liceul Teoretic Waldorf Iasi"
+  },
+  {
+   "url": "https://GlashausFrankfurt.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://glashausfrankfurt.de/de/",
+   "ms": 2492,
+   "soft": false,
+   "source": "directory: Lichtwurzel GLASHAUS Frankfurt - Hans-Martin Aurich (Büroadresse)"
+  },
+  {
+   "url": "https://www.linden-gut.eu",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://linden-gut.eu/de/",
+   "ms": 1300,
+   "soft": false,
+   "source": "directory: LindenGut"
+  },
+  {
+   "url": "https://www.ljabruskolen.no",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://ljabruskolen.no",
+   "ms": 2388,
+   "soft": false,
+   "source": "directory: Ljabruskolen"
+  },
+  {
+   "url": "http://www.gutshof-hauteroda.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.markus-gemeinschaft.de/",
+   "ms": 2276,
+   "soft": false,
+   "source": "directory: Markus Gemeinschaft e.V."
+  },
+  {
+   "url": "https://www.FerienHOFer.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.ferienhofer.de/",
+   "ms": 1623,
+   "soft": false,
+   "source": "directory: Martin Hofer"
+  },
+  {
+   "url": "https://www.biokraemer.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://biokraemer.de/",
+   "ms": 6448,
+   "soft": false,
+   "source": "directory: Obstplantagen Krämer Lothar Krämer"
+  },
+  {
+   "url": "https://dunaujvarosiwaldorf.hu",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.dunaujvarosiwaldorf.hu/",
+   "ms": 1250,
+   "soft": false,
+   "source": "directory: Pentelei Waldorf Általános Iskola és AMI"
+  },
+  {
+   "url": "https://www.waldorfcampus-hn.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfcampus-hn.de/",
+   "ms": 3533,
+   "soft": false,
+   "source": "directory: Regiswindis-Waldorfkindergarten"
+  },
+  {
+   "url": "https://www.specialklasserne.dk",
+   "status": 200,
+   "ok": true,
+   "final_url": "http://lf-oelsted.dk/boern/specialklasserne/",
+   "ms": 1048,
+   "soft": false,
+   "source": "directory: Rudolf Steiner Skolen i Odense, Specialklasserne"
+  },
+  {
+   "url": "http://www.rss8660.dk",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://rss8660.m.skoleintra.dk:443/Account/IdpLogin?role=Teacher&partnerSp=urn%3Aitslearning%3Ansi%3Asaml%3A2.0%3Arss8660.skoleintra.dk",
+   "ms": 3652,
+   "soft": false,
+   "source": "directory: Rudolf Steiner Skolen i Skanderborg"
+  },
+  {
+   "url": "https://www.rudolfsteinerkindergarten.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://rudolfsteinerkindergarten.de/",
+   "ms": 2808,
+   "soft": false,
+   "source": "directory: Rudolf-Steiner-Kindergarten"
+  },
+  {
+   "url": "https://www.waldorfschule-groebenzell.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfschule-groebenzell.de/home",
+   "ms": 1751,
+   "soft": false,
+   "source": "directory: Rudolf-Steiner-Schule Gröbenzell, UNESCO-Projektschule"
+  },
+  {
+   "url": "https://www.rozsahaz.hu",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://energia.rozsahaz.hu/public/",
+   "ms": 1500,
+   "soft": false,
+   "source": "directory: Rózsaház Gyógypedagógiai Waldorf Általános Iskola és AMI"
+  },
+  {
+   "url": "https://skid-ggmbh.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://dev.skid-ggmbh.de",
+   "ms": 1593,
+   "soft": false,
+   "source": "directory: SKID gGmbH"
+  },
+  {
+   "url": "https://sites.google.com/site/villagepreschoolsantacruz",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://accounts.google.com/v3/signin/identifier?continue=https://sites.google.com/site/villagepreschoolsantacruz&followup=https://sites.google.com/site/villagepreschoolsantacruz&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S1845874114:1792948054144449",
+   "ms": 268,
+   "soft": false,
+   "source": "directory: Santa Cruz Village Preschool"
+  },
+  {
+   "url": "https://www.waldorf-bolzano.it",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorf-bolzano.it/",
+   "ms": 1844,
+   "soft": false,
+   "source": "directory: Scuola Waldorf \"Il piccolo principe\""
+  },
+  {
+   "url": "https://www.sekem.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://sekem.com/en/home/",
+   "ms": 911,
+   "soft": false,
+   "source": "directory: Sekem"
+  },
+  {
+   "url": "https://www.shanti-leprahilfe.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://shanti-leprahilfe.de/de/verein",
+   "ms": 3607,
+   "soft": false,
+   "source": "directory: Shanti Sewa Griha (Waldorf inspired)"
+  },
+  {
+   "url": "https://Www.solawizollernalb.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.solawizollernalb.de/",
+   "ms": 1531,
+   "soft": false,
+   "source": "directory: Solawi Zollernalb e.V."
+  },
+  {
+   "url": "https://www.steinerbarnehagen-moss.no",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://steinerbarnehagen-moss.no/",
+   "ms": 1803,
+   "soft": false,
+   "source": "directory: Steinerbarnehagen i Moss"
+  },
+  {
+   "url": "https://www.bentelson.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://bentelson.de/",
+   "ms": 1010,
+   "soft": false,
+   "source": "directory: Sven Armbruster"
+  },
+  {
+   "url": "https://www.sites.google.com/site/waldorfshefaraam/home",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://accounts.google.com/v3/signin/identifier?continue=https://sites.google.com/site/waldorfshefaraam/home&followup=https://sites.google.com/site/waldorfshefaraam/home&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S1845874114:1792948073077246",
+   "ms": 335,
+   "soft": false,
+   "source": "directory: Tamrat-El Zeitun"
+  },
+  {
+   "url": "https://www.titirangi.steiner.school.nz",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://titirangi.steiner.school.nz/",
+   "ms": 3107,
+   "soft": false,
+   "source": "directory: Titirangi Rudolf Steiner School"
+  },
+  {
+   "url": "https://www.broekhin.nl/Onderwijs/Vrijeschool.aspx",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://broekhin.nl/vrijeschool",
+   "ms": 4900,
+   "soft": false,
+   "source": "directory: Vrijeschool Broekhin"
+  },
+  {
+   "url": "https://www.wurzelkinder.info",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://wurzelkinder.info/",
+   "ms": 4851,
+   "soft": false,
+   "source": "directory: Waldorf- und Naturkindergarten Wurzelkinder"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-kristalllicht.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-kristalllicht.de/vorschau",
+   "ms": 3880,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten \"Kristallicht\""
+  },
+  {
+   "url": "https://www.alterabenstrasse.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://alterabenstrasse.de/",
+   "ms": 5174,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Alte Rabenstrasse"
+  },
+  {
+   "url": "https://www.kindergarten-auenland.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://kindergarten-auenland.de/",
+   "ms": 5274,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Auenland"
+  },
+  {
+   "url": "https://www.waldorf-badvoeslau.at",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorf-badvoeslau.at/",
+   "ms": 510,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Bad Vöslau"
+  },
+  {
+   "url": "https://www.waldorf-bregenz.at",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorf-bregenz.at/",
+   "ms": 2041,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Bregenz"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-dinslaken.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-dinslaken.de/",
+   "ms": 2495,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Dinslaken"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-eckernfoerde.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-eckernfoerde.de/site/",
+   "ms": 931,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Erlengrund"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-fuerth.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-fuerth.de/",
+   "ms": 4276,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Fürth"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-lilienkinder.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-lilienkinder.de/",
+   "ms": 1241,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Lilienkinder"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-moers.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-moers.de/",
+   "ms": 2846,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Moers"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-muehldorf.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-muehldorf.de/",
+   "ms": 2909,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Mühldorf"
+  },
+  {
+   "url": "https://www.kiga-schwalbennest.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://kiga-schwalbennest.de/",
+   "ms": 1515,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Schwalbennest"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-wattenscheid.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-wattenscheid.de/",
+   "ms": 2632,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Wattenscheid"
+  },
+  {
+   "url": "https://www.waldorf-weissensee.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorf-weissensee.de/",
+   "ms": 4573,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten Weißensee"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-kleinmachnow.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-kleinmachnow.de/",
+   "ms": 1091,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten am Hochwald"
+  },
+  {
+   "url": "https://waldorfkiga-cg.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.waldorfkiga-cg.de/",
+   "ms": 516,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten der Christengemeinschaft"
+  },
+  {
+   "url": "https://www.waldorfkindergarten-chemnitz.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkindergarten-chemnitz.de/startseite-waldorfkindergarten.html",
+   "ms": 1899,
+   "soft": false,
+   "source": "directory: Waldorfkindergarten und Hort \"Morgensonne\""
+  },
+  {
+   "url": "https://www.waldorfkinderhaus-bochum.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfkinderhaus-bochum.de/",
+   "ms": 4280,
+   "soft": false,
+   "source": "directory: Waldorfkinderhaus Bochum-Zentrum"
+  },
+  {
+   "url": "https://www.hollerbusch-berlin.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://hollerbusch-berlin.de/",
+   "ms": 5318,
+   "soft": false,
+   "source": "directory: Waldorfkinderladen Hollerbusch"
+  },
+  {
+   "url": "http://www.waldorf-seewalde.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://seewalde.de/schule",
+   "ms": 1323,
+   "soft": false,
+   "source": "directory: Waldorfschule für den ländlichen Raum Seewalde"
+  },
+  {
+   "url": "https://waldorf.pb.cz/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfpb.cz/",
+   "ms": 1677,
+   "soft": false,
+   "source": "directory: Waldorfská škola Příbram - mateřská škola"
+  },
+  {
+   "url": "https://waldorf.pb.cz",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://waldorfpb.cz/",
+   "ms": 1318,
+   "soft": false,
+   "source": "directory: Waldorfská škola Příbram - mateřská škola, základní škola a střední škola"
+  },
+  {
+   "url": "https://www.tatatuck.ch",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://tatatuck.ch/2021/",
+   "ms": 1582,
+   "soft": false,
+   "source": "directory: Waldspielgruppe und Eltern Kind Gruppe Tatatuck, Ringgenberg"
+  },
+  {
+   "url": "https://www.bioweingut-häussermann.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.xn--bioweingut-hussermann-h2b.de/",
+   "ms": 2107,
+   "soft": false,
+   "source": "directory: Weingut Albert Häußermann"
+  },
+  {
+   "url": "https://www.Bioweingut-Isele.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.bioweingut-isele.de/",
+   "ms": 1325,
+   "soft": false,
+   "source": "directory: Weingut Bertram Isele"
+  },
+  {
+   "url": "https://www.weingut-leiner.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://shop.weingut-leiner.de/",
+   "ms": 1518,
+   "soft": false,
+   "source": "directory: Weingut Leiner"
+  },
+  {
+   "url": "https://www.weingut-fries.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://weingut-fries.com/en-us",
+   "ms": 1705,
+   "soft": false,
+   "source": "directory: Weingut Markus Fries"
+  },
+  {
+   "url": "https://www.melsheimer-riesling.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://melsheimer-riesling.de/en/",
+   "ms": 2624,
+   "soft": false,
+   "source": "directory: Weingut Melsheimer"
+  },
+  {
+   "url": "https://wild-Honey.de",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://wild-honey.de/",
+   "ms": 1329,
+   "soft": false,
+   "source": "directory: Wild Honey"
+  },
+  {
+   "url": "https://aelzina.com/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.aelzina.com/",
+   "ms": 512,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://anthroposophy.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.anthroposophy.org/",
+   "ms": 392,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://anthroposophy.org/being-human/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.anthroposophy.org/being-human",
+   "ms": 463,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://biodynamics.com",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.biodynamics.com/",
+   "ms": 842,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://desertmarigold.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.desertmarigold.org/",
+   "ms": 442,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://portlandvillageschool.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.portlandvillageschool.org/",
+   "ms": 935,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://waldorfeducation.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.waldorfeducation.org/",
+   "ms": 213,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.benziger.com/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://benziger.com/",
+   "ms": 496,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.camphill.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://camphill.org/",
+   "ms": 581,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.camphillschool.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://camphillschool.org/",
+   "ms": 1004,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.communityhomestead.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://communityhomestead.org/index.html",
+   "ms": 1064,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.greenmeadow.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://greenmeadow.org/",
+   "ms": 858,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.plowsharefarm.org/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://www.plowshare.org/",
+   "ms": 633,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.threefold.org",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://threefold.org/",
+   "ms": 478,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://www.truebotanica.com/",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://truebotanica.com/",
+   "ms": 809,
+   "soft": false,
+   "source": "index.html"
+  },
+  {
+   "url": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://accounts.google.com/v3/signin/identifier?continue=https://calendar.google.com/calendar/render?action%3DTEMPLATE%26text&emr=1&followup=https://calendar.google.com/calendar/render?action%3DTEMPLATE%26text&osid=1&passive=1209600&service=cl&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S2082547377:1792947923170673",
+   "ms": 306,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://mail.google.com/mail/?authuser=",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://accounts.google.com/v3/signin/identifier?continue=https://mail.google.com/mail/u/0/?authuser&emr=1&followup=https://mail.google.com/mail/u/0/?authuser&osid=1&passive=1209600&service=mail&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-1993480596:1792947923866891",
+   "ms": 298,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://wn.rsarchive.org/Lectures/GA120/English/RSP1984/ManKar_index.html",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://rsarchive.org/Lectures/GA120/English/RSP1984/ManKar_index.html",
+   "ms": 326,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  },
+  {
+   "url": "https://www.steinerbooks.org",
+   "status": 200,
+   "ok": true,
+   "final_url": "https://steinerbooks.org/",
+   "ms": 653,
+   "soft": false,
+   "source": "sophia_commons_v9.js"
+  }
+ ]
+}
