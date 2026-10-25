@@ -14,6 +14,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { englishOnly } from "./translate.ts";
 import { soulVerseHtml } from "./soul_calendar.ts";
+import { writeLetter } from "./letter.ts";
 
 const ADMIN_EMAILS = ["cameron.nazeri@gmail.com", "cameron@sophiacommons.org", "admin@sophiacommons.org"];  // keep in sync with sophia_commons_v9.js
 const SITE = "https://sophiacommons.org";
@@ -174,13 +175,13 @@ function listingHtml(l: Digest["listings"][number]): string {
     + (meta ? `<br><span ${MUTED}>${esc(meta)}</span>` : "") + `</div>`;
 }
 
-export function buildHtml(d: Digest): string {
+export function buildHtml(d: Digest, note = ""): string {
   const parts = [
     d.videos.length ? plural(d.videos.length, "new video", "new videos") : "",
     d.events.length ? plural(d.events.length, "event coming up", "events coming up") : "",
     d.listings.length ? plural(d.listings.length, "new place in the directory", "new places in the directory") : "",
   ].filter(Boolean);
-  let h = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${INK}">`;
+  let h = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${INK}">` + note;
   h += `<p style="font-family:Georgia,serif;font-size:19px;line-height:1.45;margin:0 0 6px;color:${INK}">This week across the anthroposophical world</p>`;
   h += `<p style="margin:0;color:#3A332A">${parts.length ? `Here's what's new: ${parts.join(", ").replace(/, ([^,]*)$/, " and $1")}. Videos in other languages are marked; their titles and summaries are translated.` : "A quiet week."}</p>`;
 
@@ -253,9 +254,12 @@ serve(async (req: Request) => {
 
   try {
     const { digest: data, translated, reason } = await englishOnly(await gather(sb), Deno.env.get("ANTHROPIC_API_KEY"));
-    const html = buildHtml(data);
+    // the personal "Dear Friends" note on top, written from this week's items (editable in Admin)
+    const letter = await writeLetter(data, Deno.env.get("ANTHROPIC_API_KEY"));
+    const html = buildHtml(data, letter.html);
     const counts = `${data.videos.length} videos, ${data.events.length} events, ${data.listings.length} new listings`
-      + (translated ? "" : `; NOT translated to English (${reason})`);
+      + (translated ? "" : `; NOT translated to English (${reason})`)
+      + (letter.html ? "" : `; no personal note (${letter.reason})`);
     const title = `Sophia Commons weekly: ${data.weekOf}`;
     if (preview) return jsonResponse({ title, html, counts, translated });
 
