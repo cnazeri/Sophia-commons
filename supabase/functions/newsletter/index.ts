@@ -4,12 +4,14 @@
 //  Body: { action: "subscribe", email, source? }   -> sends a confirmation email (source = which form)
 //        { action: "confirm", token }              -> confirms the subscription
 //        { action: "unsubscribe", token }          -> unsubscribes (token from any newsletter)
+//        { action: "admin_add", entries: [{email, name}] } -> admins only: adds people as confirmed
 //  Public endpoint (no login). Deploy with:  supabase functions deploy newsletter --no-verify-jwt
 //  Secrets: RESEND_API_KEY (already used by send-newsletter)
 // ══════════════════════════════════════════
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { cleanEntries, MAX_ADD, planAdds } from "./admin-add.ts";
 
 // Server key: the new secret key Supabase injects (SUPABASE_SECRET_KEYS, JSON by key name),
 // falling back to the legacy service_role key until legacy keys are disabled.
@@ -132,5 +134,41 @@ serve(async (req: Request) => {
     return json(req, { ok: true, status: "unsubscribed" });
   }
 
+  if (body.action === "admin_add") return adminAdd(req, supabase, (body as { entries?: unknown }).entries);
+
   return json(req, { error: "unknown_action" }, 400);
 });
+
+// ── Admin: add people by hand, as confirmed (see admin-add.ts) ──
+async function adminAdd(req: Request, supabase: SupabaseClient, raw: unknown) {
+  // Admin = app_metadata.role "admin", same rule as send-newsletter and the database RLS
+  const jwt = (req.headers.get("Authorization") || "").replace("Bearer ", "");
+  const { data: { user } } = await supabase.auth.getUser(jwt);
+  if (user?.app_metadata?.role !== "admin") return json(req, { error: "admins_only" }, 403);
+
+  const { entries, invalid } = cleanEntries(raw);
+  if (!entries.length) return json(req, { error: invalid.length ? "invalid_email" : "no_emails", invalid }, 400);
+  if (entries.length > MAX_ADD) return json(req, { error: `at most ${MAX_ADD} at a time` }, 400);
+
+  const { data: existing, error: readErr } = await supabase.from("newsletter_subscribers")
+    .select("id, email, name, confirmed, unsubscribed_at").in("email", entries.map((e) => e.email));
+  if (readErr) return json(req, { error: "save_failed" }, 500);
+
+  const plan = planAdds(entries, existing ?? [], invalid);
+  const now = new Date().toISOString();
+  if (plan.inserts.length) {
+    const { error } = await supabase.from("newsletter_subscribers").insert(plan.inserts.map((e) => ({
+      email: e.email, name: e.name || null, confirmed: true, confirmed_at: now, preferences: { source: "admin" },
+    })));
+    if (error) return json(req, { error: "save_failed" }, 500);
+  }
+  for (const c of plan.confirms) {
+    const { error } = await supabase.from("newsletter_subscribers")
+      .update({ confirmed: true, confirmed_at: now, confirm_token: null, name: c.name || null }).eq("id", c.id);
+    if (error) return json(req, { error: "save_failed" }, 500);
+  }
+  return json(req, {
+    ok: true, added: plan.inserts.length + plan.confirms.length,
+    already: plan.already, unsubscribed: plan.unsubscribed, invalid: plan.invalid,
+  });
+}

@@ -6922,6 +6922,41 @@ async function loadAdminMembers() {
     }).join('') + '</tbody></table>' : '<div class="admin-empty">No subscribers yet.</div>';
 }
 
+// Admin > Members: add people by hand (owner, 2026-10-24). One per line: "email", "Name, email"
+// or "Name <email>". The newsletter function adds them as confirmed and never re-adds an unsubscribe.
+function _parseSubscriberLines(text) {
+  return String(text || '').split(/\r?\n/).map(function (line) {
+    var m = line.match(/[^\s<>,;"']+@[^\s<>,;"']+/);
+    if (!m) return line.trim() ? { email: line.trim(), name: '' } : null;
+    var name = line.replace(m[0], '').replace(/[<>,;"]/g, ' ').replace(/\s+/g, ' ').trim();
+    return { email: m[0], name: name };
+  }).filter(Boolean);
+}
+
+async function addAdminSubscribers() {
+  var box = document.getElementById('adm-subs-new');
+  var btn = document.getElementById('adm-subs-add-btn');
+  var status = document.getElementById('adm-subs-add-status');
+  var entries = _parseSubscriberLines(box.value);
+  if (!entries.length) { status.textContent = 'Type at least one email address.'; return; }
+  btn.disabled = true;
+  status.textContent = 'Adding...';
+  try {
+    var out = await _digestCall('newsletter', { action: 'admin_add', entries: entries });
+    var parts = ['Added ' + out.added + '.'];
+    if (out.already.length) parts.push('Already subscribed: ' + out.already.join(', ') + '.');
+    if (out.unsubscribed.length) parts.push('Not added, they unsubscribed: ' + out.unsubscribed.join(', ') + '.');
+    if (out.invalid.length) parts.push('Not an email address: ' + out.invalid.join(', ') + '.');
+    status.textContent = parts.join(' ');
+    box.value = '';
+    loadAdminMembers();
+  } catch (e) {
+    status.textContent = 'Could not add: ' + e.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 // Newsletter growth: totals plus signups per week (Monday start) for the last SUB_WEEKS weeks.
 // A bar's dark part is signups that went on to confirm; the light part never clicked the email link.
 var SUB_WEEKS = 12;
@@ -6962,7 +6997,7 @@ function renderSubscriberWeeks(subs) {
 }
 
 var SUB_SOURCE_LABELS = { listing: 'Listing pages', event: 'Event pages', home: 'Home page', sidebar: 'Sidebar',
-  footer: 'Footer', signup_page: 'Signup page', member: 'New members', other: 'Other' };
+  footer: 'Footer', signup_page: 'Signup page', member: 'New members', admin: 'Added by admin', other: 'Other' };
 
 // Which form people used, over the same 12 weeks. Older signups have no source and are left out.
 function _subSourcesHtml(subs, since) {
@@ -8323,7 +8358,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.90.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.91.0').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {
