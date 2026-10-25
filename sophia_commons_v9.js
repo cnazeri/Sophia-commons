@@ -7955,9 +7955,11 @@ var _homeNewsPromise = null;
 var NEWS_RECENT_DAYS = 30;   // older stories stay on the Events & News page only (owner, 2026-10-24)
 function _homeNewsLoad() {
   if (!_homeNewsPromise && sbReady()) _homeNewsPromise = _sb.from('news')
-    .select('id, title, excerpt, source_name, featured, published_at')
-    .eq('status', 'published').order('published_at', { ascending: false }).limit(12)
-    .then(function (r) { return r.error ? [] : (r.data || []); }, function () { return []; });
+    .select('id, title, excerpt, source_name, featured, published_at, tags')
+    .eq('status', 'published').order('published_at', { ascending: false }).limit(16)
+    // the weekly email is stored as news too; it stays off the home page (owner, 2026-10-24)
+    .then(function (r) { return r.error ? [] : (r.data || []).filter(function (n) { return (n.tags || []).indexOf('weekly-digest') < 0; }).slice(0, 12); },
+      function () { return []; });
   return _homeNewsPromise || Promise.resolve([]);
 }
 
@@ -8289,7 +8291,7 @@ var _steinerAudioLoad = null;
 function _loadSteinerAudio() {
   var box = document.querySelector('#steiner-audio .audio-list');
   if (!box || _steinerAudioLoad) return;
-  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.88.0').then(function (r) { return r.json(); }).then(function (d) {
+  _steinerAudioLoad = fetch('/steiner_audio.json?v=1.88.1').then(function (r) { return r.json(); }).then(function (d) {
     var base = 'https://rudolfsteineraudio.com/';
     var body = box.parentNode;
     var row = function (i) {
