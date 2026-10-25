@@ -46,7 +46,7 @@ function toBook(p) {
 
 // The week's recommendations: the first one is shown automatically when the owner hasn't picked
 // (Admin > Book of the week stores picks in the book_picks table; owner, 2026-10-24).
-const RECOMMENDATIONS = 3;
+const RECOMMENDATIONS = 5;
 async function recommendations(week) {
   const before = new Date((week * 7 - 3) * 864e5).toISOString().slice(0, 19);   // that Monday 00:00 UTC
   const first = await page(1, before);

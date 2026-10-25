@@ -222,7 +222,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.93.0">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.93.1">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -1951,6 +1951,15 @@
 
   <!-- MEMBERS PANEL -->
   <div id="admin-members" class="admin-tab-content">
+    <div class="adm-subs-add" style="margin-top:16px;">
+      <label for="adm-subs-new"><b>Add people to the newsletter</b></label>
+      <p class="adm-note">One person per line: an email, or a name and email (Anna Weber, anna@example.org). They're added as subscribed right away, with no confirmation email. Anyone who unsubscribed is never re-added.</p>
+      <textarea id="adm-subs-new" rows="4" placeholder="anna@example.org&#10;Paul Smith, paul@example.org"></textarea>
+      <div class="adm-tools">
+        <button type="button" class="adm-btn" id="adm-subs-add-btn" onclick="addAdminSubscribers()">Add to newsletter</button>
+        <span id="adm-subs-add-status" class="adm-note" role="status"></span>
+      </div>
+    </div>
     <div class="adm-head">
       <h3>Registered members</h3>
       <div class="adm-tools">
@@ -1972,7 +1981,7 @@
     <div id="adm-subs-stats" class="adm-stats"></div>
     <div id="adm-subs-weekly" class="adm-weekly"></div>
     <div id="adm-subs-list" class="adm-table-wrap"><div class="admin-empty">Loading...</div></div>
-    <p class="adm-note">These email addresses are private. Use them only to run Sophia Commons, and only add people who asked to get the newsletter. To add people by hand, use Admin &gt; Weekly Digest.</p>
+    <p class="adm-note">These email addresses are private. Use them only to run Sophia Commons, and only add people who asked to get the newsletter. To add people by hand, use the box at the top of this tab.</p>
   </div>
 
   <!-- ACTIVITY PANEL -->
@@ -1999,7 +2008,7 @@
         </select>
       </div>
     </div>
-    <p class="adm-note">Three recommendations from the Anthroposophy section of the Rudolf Steiner Bookstore. Pick one to show it on the home page for that week (weeks start Monday). If you don't pick, the first one is shown.</p>
+    <p class="adm-note">Five recommendations from the Anthroposophy section of the Rudolf Steiner Bookstore. Pick one to show it on the home page for that week (weeks start Monday). If you don't pick, the first one is shown.</p>
     <div id="bw-current" class="adm-note"></div>
     <div id="bw-list"><div class="admin-empty">Loading...</div></div>
   </div>
@@ -2062,15 +2071,6 @@
       </div>
 
       <div id="digest-status" style="font-size:13px;color:var(--text-muted);margin-bottom:12px;"></div>
-      <div class="adm-subs-add">
-        <label for="adm-subs-new"><b>Add people to the newsletter</b></label>
-        <p class="adm-note">One person per line: an email, or a name and email (Anna Weber, anna@example.org). They're added as subscribed right away, with no confirmation email. Anyone who unsubscribed is never re-added.</p>
-        <textarea id="adm-subs-new" rows="4" placeholder="anna@example.org&#10;Paul Smith, paul@example.org"></textarea>
-        <div class="adm-tools">
-          <button type="button" class="adm-btn" id="adm-subs-add-btn" onclick="addAdminSubscribers()">Add to newsletter</button>
-          <span id="adm-subs-add-status" class="adm-note" role="status"></span>
-        </div>
-      </div>
 
       <div id="digest-preview" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -2201,18 +2201,18 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.93.0</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.93.1</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.93.0"></script>
-<script defer src="/i18n.js?v=1.93.0"></script>
-<script defer src="/sophia_commons_v9.js?v=1.93.0"></script>
-<script defer src="/blog.js?v=1.93.0"></script>
-<script defer src="/claims.js?v=1.93.0"></script>
+<script defer src="/sb-init.js?v=1.93.1"></script>
+<script defer src="/i18n.js?v=1.93.1"></script>
+<script defer src="/sophia_commons_v9.js?v=1.93.1"></script>
+<script defer src="/blog.js?v=1.93.1"></script>
+<script defer src="/claims.js?v=1.93.1"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
