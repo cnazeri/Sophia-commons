@@ -4026,3 +4026,7 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .adm-sub-btns { white-space: nowrap; }
 .adm-sub-btns .adm-btn + .adm-btn { margin-left: 6px; }
 .adm-sub-status { font-size: 12px; color: var(--text-muted); }
+
+/* Featured post: "View on Facebook" is the main action (group posts cannot be embedded) */
+.video-actions a.sf-open { display: inline-flex; align-items: center; min-height: 36px; padding: 0 16px; border-radius: 50px; background: var(--gold); color: var(--on-gold); font-weight: 600; text-decoration: none; }
+.video-actions a.sf-open:hover { background: var(--gold-hover, var(--gold)); color: var(--on-gold); filter: brightness(0.96); }

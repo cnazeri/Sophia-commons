@@ -5288,6 +5288,11 @@ async function saveFeatPost() {
   var url = val('fp-url'), img = val('fp-image');
   if (!/^https:\/\/\S+$/i.test(url)) { msg.textContent = 'Please paste the post link (starting with https://).'; return; }
   if (img && !/^https:\/\/\S+$/i.test(img)) { msg.textContent = 'The image link must start with https://.'; return; }
+  if (_isFbGroupPost(url) && !val('fp-excerpt')) {
+    msg.textContent = 'This is a Facebook group post. Facebook does not let other sites show group posts, so please paste the post\'s text in the Excerpt box. Visitors see the text here and a button to open the post on Facebook.';
+    document.getElementById('fp-excerpt').focus();
+    return;
+  }
   msg.textContent = 'Saving...';
   // One featured post at a time: retire the current one, keep it as history
   var off = await _sb.from('featured_posts').update({ active: false }).eq('active', true);
@@ -8350,14 +8355,18 @@ function _socialHead(kicker, page, name) {
     + (page && page.members_text ? '<span class="lmeta">' + esc(page.members_text) + '</span>' : '') + '</div></div>';
 }
 
+function _isFbGroupPost(url) { return /facebook\.com\/groups\//i.test(String(url || '')); }
+
 function _socialPostHtml(post, page) {
   var plat = SOCIAL_PLATFORMS[post.platform] || '';
-  var canEmbed = post.platform === 'facebook' && /^https:\/\/(www\.|m\.)?facebook\.com\//i.test(post.url);
+  // Facebook only embeds public Page posts. A group post shows a blank box, so it gets the
+  // admin's text and a button to open it on Facebook instead (owner, 2026-10-29).
+  var canEmbed = post.platform === 'facebook' && /^https:\/\/(www\.|m\.)?facebook\.com\//i.test(post.url) && !_isFbGroupPost(post.url);
   return '<div class="listblock social-feat"><div class="sf-body">'
     + (post.image_url ? '<a class="sf-img" href="' + escUrl(post.url) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(post.image_url) + '" alt="" loading="lazy"></a>' : '')
     + '<div class="sf-main">' + _socialHead(t('social.featured_post', 'Featured post') + (plat ? ' \u00b7 ' + plat : ''), page, post.page_name)
     + (post.excerpt ? '<p class="sf-text">' + esc(post.excerpt) + '</p>' : '')
-    + '<div class="video-actions"><a href="' + escUrl(post.url) + '" target="_blank" rel="noopener">' + esc(t('social.view_on', 'View on {platform}').replace('{platform}', plat || t('social.the_site', 'the site'))) + ' &rarr;</a>'
+    + '<div class="video-actions"><a class="sf-open" href="' + escUrl(post.url) + '" target="_blank" rel="noopener">' + esc(t('social.view_on', 'View on {platform}').replace('{platform}', plat || t('social.the_site', 'the site'))) + ' &rarr;</a>'
     + (canEmbed ? '<button type="button" class="sf-load" onclick="loadSocialEmbed(this, \'' + escJs(post.url) + '\')">' + esc(t('social.load_embed', 'Show the post here')) + '</button>' : '')
     + '</div>' + (canEmbed ? '<p class="sf-note">' + esc(t('social.embed_note', 'Showing it here loads the post from Facebook, which may set cookies.')) + '</p><div class="sf-embed"></div>' : '')
     + '</div></div></div>';
