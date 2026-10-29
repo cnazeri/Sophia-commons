@@ -4020,3 +4020,9 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .bw-row > div:nth-child(2) { flex: 1; min-width: 0; }
 #bw-current { margin: 0 0 12px; font-size: 13px; }
 #bw-week { min-height: 44px; padding: 0 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-primary); font: inherit; font-size: 13px; }
+
+/* Admin > Members: edit a subscriber's name or email in place */
+.adm-sub-input { width: 100%; min-width: 140px; min-height: 36px; padding: 6px 8px; font: inherit; border: 1px solid var(--border); border-radius: 6px; background: var(--elevated); color: var(--ink); }
+.adm-sub-btns { white-space: nowrap; }
+.adm-sub-btns .adm-btn + .adm-btn { margin-left: 6px; }
+.adm-sub-status { font-size: 12px; color: var(--text-muted); }

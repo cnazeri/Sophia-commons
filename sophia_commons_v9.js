@@ -6982,19 +6982,60 @@ async function loadAdminMembers() {
   if (!isAdmin() || !sbReady()) { list.innerHTML = '<div class="admin-empty">Admins only.</div>'; return; }
   var res = await Promise.all([
     _sb.rpc('admin_list_users'),
-    _sb.from('newsletter_subscribers').select('email, name, confirmed, created_at, confirmed_at, unsubscribed_at, preferences').order('created_at', { ascending: false })
+    _sb.from('newsletter_subscribers').select('id, email, name, confirmed, created_at, confirmed_at, unsubscribed_at, preferences').order('created_at', { ascending: false })
   ]);
   if (res[0].error) { list.innerHTML = '<div class="admin-empty">Could not load members: ' + esc(res[0].error.message) + '</div>'; }
   else { _admMembers = res[0].data || []; renderAdminMembers(); }
   if (res[1].error) { subsEl.innerHTML = '<div class="admin-empty">Could not load subscribers.</div>'; return; }
   _admSubs = res[1].data || [];
   renderSubscriberWeeks(_admSubs);
-  subsEl.innerHTML = _admSubs.length ? '<table class="adm-table"><thead><tr><th>Email</th><th>Name</th><th>Status</th><th>Signed up</th></tr></thead><tbody>'
-    + _admSubs.map(function (s) {
-      var st = s.unsubscribed_at ? 'unsubscribed' : (s.confirmed ? 'subscribed' : 'unconfirmed');
-      return '<tr><td><a href="mailto:' + esc(s.email) + '">' + esc(s.email) + '</a></td><td>' + esc(s.name || '') + '</td>'
-        + '<td><span class="adm-pill adm-' + st + '">' + st + '</span></td><td>' + esc(_admDate(s.created_at)) + '</td></tr>';
-    }).join('') + '</tbody></table>' : '<div class="admin-empty">No subscribers yet.</div>';
+  renderAdminSubscribers();
+}
+
+// Admin > Members: subscriber table. Each row has an Edit button to fix a name or a mistyped
+// email (owner, 2026-10-29). Admins can update newsletter_subscribers through RLS ("newsletter: admin update").
+function _subRowHtml(s) {
+  var st = s.unsubscribed_at ? 'unsubscribed' : (s.confirmed ? 'subscribed' : 'unconfirmed');
+  return '<tr id="sub-row-' + esc(s.id) + '"><td><a href="mailto:' + esc(s.email) + '">' + esc(s.email) + '</a></td><td>' + esc(s.name || '') + '</td>'
+    + '<td><span class="adm-pill adm-' + st + '">' + st + '</span></td><td>' + esc(_admDate(s.created_at)) + '</td>'
+    + '<td><button type="button" class="adm-btn" onclick="editSubscriber(\'' + esc(s.id) + '\')">Edit</button></td></tr>';
+}
+function renderAdminSubscribers() {
+  var subsEl = document.getElementById('adm-subs-list');
+  subsEl.innerHTML = _admSubs.length ? '<table class="adm-table"><thead><tr><th>Email</th><th>Name</th><th>Status</th><th>Signed up</th><th></th></tr></thead><tbody>'
+    + _admSubs.map(_subRowHtml).join('') + '</tbody></table>' : '<div class="admin-empty">No subscribers yet.</div>';
+}
+function _findSub(id) { return _admSubs.filter(function (s) { return s.id === id; })[0]; }
+function editSubscriber(id) {
+  var s = _findSub(id), row = document.getElementById('sub-row-' + id);
+  if (!s || !row) return;
+  row.innerHTML = '<td><label class="sr-only" for="sub-email-' + esc(id) + '">Email</label><input type="email" id="sub-email-' + esc(id) + '" class="adm-sub-input" maxlength="254" value="' + esc(s.email) + '"></td>'
+    + '<td><label class="sr-only" for="sub-name-' + esc(id) + '">Name</label><input id="sub-name-' + esc(id) + '" class="adm-sub-input" maxlength="120" value="' + esc(s.name || '') + '"></td>'
+    + '<td colspan="2"><span id="sub-status-' + esc(id) + '" class="adm-sub-status" role="status"></span></td>'
+    + '<td class="adm-sub-btns"><button type="button" class="adm-btn" onclick="saveSubscriber(\'' + esc(id) + '\')">Save</button>'
+    + '<button type="button" class="adm-btn" onclick="cancelSubscriber(\'' + esc(id) + '\')">Cancel</button></td>';
+  document.getElementById('sub-name-' + id).focus();
+}
+function cancelSubscriber(id) {
+  var s = _findSub(id), row = document.getElementById('sub-row-' + id);
+  if (s && row) row.outerHTML = _subRowHtml(s);
+}
+async function saveSubscriber(id) {
+  if (!isAdmin()) return;
+  var s = _findSub(id);
+  var email = document.getElementById('sub-email-' + id).value.trim().toLowerCase();
+  var name = document.getElementById('sub-name-' + id).value.replace(/\s+/g, ' ').trim();
+  var status = document.getElementById('sub-status-' + id);
+  if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email)) { status.textContent = 'Please check the email address.'; return; }
+  status.textContent = 'Saving...';
+  var r = await _sb.from('newsletter_subscribers').update({ email: email, name: name || null }).eq('id', id).select('id, email, name');
+  if (r.error) {
+    status.textContent = /duplicate|unique/i.test(r.error.message) ? 'Another subscriber already has that email.' : 'Could not save: ' + r.error.message;
+    return;
+  }
+  if (!r.data || !r.data.length) { status.textContent = 'Not saved: please sign in again as an admin.'; return; }
+  _admSubs = _admSubs.map(function (x) { return x.id === id ? Object.assign({}, x, { email: email, name: name || null }) : x; });
+  cancelSubscriber(id);
 }
 
 // Admin > Members: add people by hand (owner, 2026-10-24). One per line: "email", "Name, email"
