@@ -4030,3 +4030,10 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 /* Featured post: "View on Facebook" is the main action (group posts cannot be embedded) */
 .video-actions a.sf-open { display: inline-flex; align-items: center; min-height: 36px; padding: 0 16px; border-radius: 50px; background: var(--gold); color: var(--on-gold); font-weight: 600; text-decoration: none; }
 .video-actions a.sf-open:hover { background: var(--gold-hover, var(--gold)); color: var(--on-gold); filter: brightness(0.96); }
+
+/* Admin > Featured post: suggested posts */
+.sugg-row { align-items: flex-start; }
+.sugg-img { width: 72px; height: 54px; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: var(--border-subtle); }
+.sugg-main { flex: 1; min-width: 0; }
+.sugg-tools { flex-wrap: wrap; justify-content: flex-end; max-width: 220px; }
+@media (max-width: 768px) { .sugg-row { flex-wrap: wrap; } .sugg-tools { max-width: none; justify-content: flex-start; } }

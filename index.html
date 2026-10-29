@@ -222,7 +222,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.97.0">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.98.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -1960,6 +1960,10 @@
   <div id="admin-featpost" class="admin-tab-content">
     <div class="adm-head"><h3>Featured social media post</h3><div class="adm-tools"><button type="button" class="adm-btn" onclick="loadAdminFeatPost()">Refresh</button></div></div>
     <p class="adm-note">Shown at the top of Pages &amp; Groups on the Social Media page. Paste the post's link (on Facebook: the post's date, then copy the address). Add the post's text in the Excerpt box so visitors can read it here, then click through to Facebook. Facebook only lets other sites show posts from public Pages; for a group post the Excerpt is required, since the post itself cannot be shown here. The newest featured post is shown; with none, the site shows a Page of the day.</p>
+    <h4 class="adm-sub">Suggested posts</h4>
+    <p class="adm-note">Recent posts from the news pages of organizations in the directory, checked every morning. Feature one with a click, or use Edit first to change the text before it goes live.</p>
+    <div id="admin-suggested"><div class="admin-empty">Loading...</div></div>
+    <h4 class="adm-sub">Feature a post yourself</h4>
     <form id="featpost-form" class="adm-featpost" onsubmit="saveFeatPost();return false;" novalidate>
       <label for="fp-url">Post link *</label>
       <input type="url" id="fp-url" required maxlength="500" placeholder="https://www.facebook.com/...">
@@ -2145,18 +2149,18 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.97.0</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.98.0</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.97.0"></script>
-<script defer src="/i18n.js?v=1.97.0"></script>
-<script defer src="/sophia_commons_v9.js?v=1.97.0"></script>
-<script defer src="/blog.js?v=1.97.0"></script>
-<script defer src="/claims.js?v=1.97.0"></script>
+<script defer src="/sb-init.js?v=1.98.0"></script>
+<script defer src="/i18n.js?v=1.98.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.98.0"></script>
+<script defer src="/blog.js?v=1.98.0"></script>
+<script defer src="/claims.js?v=1.98.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

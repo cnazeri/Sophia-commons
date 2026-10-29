@@ -1,3 +1,4 @@
 # Pinned for the GitHub Actions workflow (weekly.yml)
 requests==2.32.3
 Pillow==11.0.0
+scrapling==0.5

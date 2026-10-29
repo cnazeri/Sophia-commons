@@ -1,0 +1,179 @@
+{
+ "_about": "Sources for Admin > Featured post > Suggested posts (automation/suggest_posts.py). English feeds from organizations in the directory, checked 2026-10-29. entry_id links the suggestion to its listing; facebook_url is shown as a follow link.",
+ "sources": [
+  {
+   "name": "Das Goetheanum (weekly journal)",
+   "feed": "https://dasgoetheanum.com/en/feed/",
+   "entry_id": "3cc6ae99-b691-4b16-96d8-996923ef973b",
+   "facebook_url": "https://www.facebook.com/dasgoetheanum/"
+  },
+  {
+   "name": "Corbenic Camphill Community",
+   "feed": "https://www.corbeniccamphill.co.uk/feed/",
+   "entry_id": "b7691cb6-aa90-4bd7-b3e3-960202dc65b6",
+   "facebook_url": "https://www.facebook.com/corbeniccamphill/"
+  },
+  {
+   "name": "Foundation for Health Creation",
+   "feed": "https://foundationforhealthcreation.org/feed/",
+   "entry_id": "25dbdaec-25cc-4d1d-8cd9-c944a04d16fc",
+   "facebook_url": "https://www.facebook.com/foundationforhealthcreation/"
+  },
+  {
+   "name": "Hawthorne Valley Farm",
+   "feed": "https://hawthornevalley.org/feed/",
+   "entry_id": "1d71f485-880a-424d-9db7-9cba672ceef9",
+   "facebook_url": null
+  },
+  {
+   "name": "Lilly Kolisko Institute",
+   "feed": "https://www.koliskoinstitute.org/feed/",
+   "entry_id": "3d551f72-f046-4113-ac78-d5a012c91945",
+   "facebook_url": null
+  },
+  {
+   "name": "Michael Fields Agricultural Institute",
+   "feed": "https://www.michaelfields.org/blog-feed.xml",
+   "entry_id": "0c56a378-23a3-4107-a20f-90f5905eb1db",
+   "facebook_url": "https://www.facebook.com/michaelfieldsagriculturalinstitute/"
+  },
+  {
+   "name": "Anthroposophy Nashville (Middle Tennessee Branch)",
+   "feed": "https://anthroposophynashville.org/feed/",
+   "entry_id": "bc103259-f0e8-498a-8ce3-8b51c1719463",
+   "facebook_url": null
+  },
+  {
+   "name": "Anthroposophy Santa Cruz",
+   "feed": "https://www.anthroposophysantacruz.com/feed/",
+   "entry_id": "858b29b2-8d5c-4513-a5bc-00bfb4790876",
+   "facebook_url": null
+  },
+  {
+   "name": "Simeon Care for the Elderly",
+   "feed": "https://www.simeoncare.org/blog-feed.xml",
+   "entry_id": "bb5ad76f-c0a6-459d-8119-013fcd515513",
+   "facebook_url": "https://www.facebook.com/simeoncarefortheelderly/"
+  },
+  {
+   "name": "Biodynamic Agriculture Australia",
+   "feed": "https://biodynamics.net.au/feed/",
+   "entry_id": "811ed1ca-7f0e-47b3-940f-395cae749ee9",
+   "facebook_url": "https://www.facebook.com/biodynamicagaus/"
+  },
+  {
+   "name": "Demeter USA",
+   "feed": "https://demeter-usa.org/feed/",
+   "entry_id": "169f8f23-a671-4c5c-915a-ca0a8aa84fc6",
+   "facebook_url": "https://www.facebook.com/demeterusa/"
+  },
+  {
+   "name": "The Christian Community in North America",
+   "feed": "https://www.thechristiancommunity.org/feed/",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "Tablehurst Farm",
+   "feed": "https://www.tablehurstfarm.org.uk/blog-feed.xml",
+   "entry_id": "0bdef559-2d80-4fbe-a7f9-69b4541ca3a0",
+   "facebook_url": "https://www.facebook.com/tablehurstfarm/"
+  },
+  {
+   "name": "Center for Anthroposophy",
+   "feed": "https://centerforanthroposophy.org/feed/",
+   "entry_id": "c8df8bb0-8722-44d9-8f66-12e1f30b604e",
+   "facebook_url": null
+  },
+  {
+   "name": "Camphill Village Copake",
+   "feed": "https://camphillvillage.org/feed/",
+   "entry_id": "71a35538-d581-4923-a7ad-ebff483efd36",
+   "facebook_url": null
+  },
+  {
+   "name": "Camphill Milton Keynes Community",
+   "feed": "https://camphillmk.co.uk/feed/",
+   "entry_id": "5d7ded10-5fae-402f-9ef0-5a17f1888657",
+   "facebook_url": "https://www.facebook.com/camphillmkcommunities/"
+  },
+  {
+   "name": "Biodynamics New Zealand",
+   "feed": "https://biodynamic.org.nz/feed",
+   "entry_id": "2ec5924b-d93c-4744-8fed-f8dee8bd4d1b",
+   "facebook_url": "https://www.facebook.com/biodynamicsnewzealand/"
+  },
+  {
+   "name": "Summerfield Waldorf School & Farm",
+   "feed": "https://www.summerfieldwaldorf.org/rss.xml",
+   "entry_id": "0ccb4cd5-fff7-4ef7-baed-1f89f7ff81b6",
+   "facebook_url": null
+  },
+  {
+   "name": "Goetheanum",
+   "feed": "https://goetheanum.ch/en/rss",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "Anthroposophical Society in Great Britain",
+   "feed": "https://www.anthroposophy.org.uk/feed/",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "Biodynamic Association UK",
+   "feed": "https://www.biodynamic.org.uk/feed/",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "Biodynamic Federation Demeter International",
+   "feed": "https://www.demeter.net/feed/",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "Waldorf Today",
+   "feed": "https://www.waldorftoday.com/feed/",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "Association of Waldorf Schools of North America",
+   "feed": "https://www.waldorfeducation.org/rss",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "LILIPOH Magazine",
+   "feed": "https://lilipoh.com/feed/",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "Camphill Village Trust",
+   "feed": "https://www.cvt.org.uk/feed/",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "Medical Section at the Goetheanum",
+   "feed": "https://medsektion-goetheanum.org/en/rss",
+   "entry_id": null,
+   "facebook_url": null
+  },
+  {
+   "name": "IVAA (anthroposophic medicine)",
+   "feed": "https://www.ivaa.info/feed/",
+   "entry_id": "831f6856-247b-4a5b-b7cb-9100d0ee3619",
+   "facebook_url": null
+  },
+  {
+   "name": "Anthroposophical Society in Canada",
+   "feed": "https://anthroposophy.ca/feed/",
+   "entry_id": null,
+   "facebook_url": null
+  }
+ ]
+}

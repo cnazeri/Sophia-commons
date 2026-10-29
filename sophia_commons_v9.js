@@ -5253,6 +5253,7 @@ async function pickBookOfWeek(i) {
 async function loadAdminFeatPost() {
   var el = document.getElementById('admin-featpost-list');
   if (!el || !sbReady()) return;
+  loadSuggestedPosts();
   var urlIn = document.getElementById('fp-url');
   if (urlIn && !urlIn._wired) {
     urlIn._wired = true;
@@ -5280,6 +5281,70 @@ async function loadAdminFeatPost() {
       + '<div class="adm-tools">' + (x.id === liveId ? '<button type="button" class="adm-btn" onclick="setFeatPost(\'' + escJs(x.id) + '\', false)">Stop featuring</button>'
         : '<button type="button" class="adm-btn" onclick="setFeatPost(\'' + escJs(x.id) + '\', true)">Feature again</button>') + '</div></div>';
   }).join('') : '<div class="admin-empty">None yet. The site is showing a Page of the day.</div>';
+}
+
+// Suggested posts: recent posts from organizations' own news feeds, collected daily by
+// automation/suggest_posts.py (owner, 2026-10-29). Feature one with a click, edit it first, or dismiss it.
+var SUGGEST_SHOW = 15;
+var _suggested = [];
+async function loadSuggestedPosts() {
+  var el = document.getElementById('admin-suggested');
+  if (!el) return;
+  var r = await _sb.from('suggested_posts').select('id, url, title, excerpt, image_url, source_name, facebook_url, published_at')
+    .eq('status', 'new').order('published_at', { ascending: false }).limit(SUGGEST_SHOW);
+  if (r.error) {
+    el.innerHTML = '<div class="admin-empty">Suggestions are not set up yet. Run backend/migrations/RUN_THIS_2026-10-29_suggested_posts.sql in the Supabase SQL editor.</div>';
+    return;
+  }
+  _suggested = r.data || [];
+  el.innerHTML = _suggested.length ? _suggested.map(function (x) {
+    return '<div class="adm-row sugg-row" id="sugg-' + esc(x.id) + '">'
+      + (x.image_url ? '<img class="sugg-img" src="' + escUrl(x.image_url) + '" alt="" loading="lazy">' : '')
+      + '<div class="sugg-main"><a href="' + escUrl(x.url) + '" target="_blank" rel="noopener"><b>' + esc(x.title) + '</b></a>'
+      + '<div class="adm-note">' + esc(x.source_name) + (x.published_at ? ' &middot; ' + esc(localDate(x.published_at, { month: 'short', day: 'numeric' })) : '') + '</div>'
+      + (x.excerpt ? '<div class="adm-note">' + esc(_shortText(x.excerpt, 180)) + '</div>' : '') + '</div>'
+      + '<div class="adm-tools sugg-tools"><button type="button" class="adm-btn" onclick="featureSuggestion(\'' + escJs(x.id) + '\')">Feature this</button>'
+      + '<button type="button" class="adm-btn" onclick="editSuggestion(\'' + escJs(x.id) + '\')">Edit first</button>'
+      + '<button type="button" class="adm-btn" onclick="dismissSuggestion(\'' + escJs(x.id) + '\')">Dismiss</button></div></div>';
+  }).join('') : '<div class="admin-empty">No new suggestions. The daily job checks the sources every morning.</div>';
+}
+function _suggestionPost(x) {
+  // The card shows the page name and the text, so the title leads the text
+  var text = x.title + (x.excerpt ? '\n\n' + x.excerpt : '');
+  return { url: x.url, platform: /facebook\.com/i.test(x.url) ? 'facebook' : 'other', page_name: (x.source_name || '').slice(0, 200),
+           excerpt: text.length > 800 ? text.slice(0, 797) + '...' : text, image_url: x.image_url || null };
+}
+function _findSuggestion(id) { return _suggested.filter(function (x) { return x.id === id; })[0]; }
+async function featureSuggestion(id) {
+  var x = _findSuggestion(id);
+  if (!x || !isAdmin()) return;
+  var off = await _sb.from('featured_posts').update({ active: false }).eq('active', true);
+  if (off.error) { scNotify('Could not feature: ' + off.error.message); return; }
+  var r = await _sb.from('featured_posts').insert(Object.assign(_suggestionPost(x), { active: true }));
+  if (r.error) { scNotify('Could not feature: ' + r.error.message); return; }
+  await _sb.from('suggested_posts').update({ status: 'featured' }).eq('id', id);
+  _featPostPromise = null;
+  document.getElementById('fp-msg').textContent = 'Featured "' + x.title + '". It is on the home page now.';
+  loadAdminFeatPost();
+}
+function editSuggestion(id) {
+  var x = _findSuggestion(id);
+  if (!x) return;
+  var p = _suggestionPost(x);
+  document.getElementById('fp-url').value = p.url;
+  document.getElementById('fp-platform').value = p.platform;
+  document.getElementById('fp-page').value = p.page_name;
+  document.getElementById('fp-excerpt').value = p.excerpt;
+  document.getElementById('fp-image').value = p.image_url || '';
+  document.getElementById('fp-msg').textContent = 'Filled in from the suggestion. Change anything, then click Feature this post.';
+  document.getElementById('featpost-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  _sb.from('suggested_posts').update({ status: 'featured' }).eq('id', id);   // leaves the list either way
+}
+async function dismissSuggestion(id) {
+  var r = await _sb.from('suggested_posts').update({ status: 'dismissed' }).eq('id', id);
+  if (r.error) { scNotify('Could not dismiss: ' + r.error.message); return; }
+  var row = document.getElementById('sugg-' + id);
+  if (row) row.remove();
 }
 
 async function saveFeatPost() {
