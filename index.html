@@ -222,7 +222,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.93.4">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.94.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -479,6 +479,14 @@
       <a href="/events" onclick="showSec('events');return false;" data-i18n="home.sem_all">all events →</a>
     </div>
     <div class="listblock-body" id="home-sem" style="padding:4px 10px 6px;"></div>
+  </div>
+  <!-- Jobs: featured job posts first, then the newest, in a slider like the news (owner, 2026-10-29) -->
+  <div class="listblock reveal home-events home-news home-jobs" id="home-jobs-block" hidden style="margin-bottom:12px;">
+    <div class="listblock-head">
+      <h3 aria-level="2" data-i18n="home.jobs_heading">Jobs</h3>
+      <a href="/category/jobs-volunteering" onclick="showCategory('Jobs & Volunteering');return false;" data-i18n="home.all_jobs_link">all jobs →</a>
+    </div>
+    <div class="listblock-body" id="home-jobs" style="padding:4px 10px 6px;"></div>
   </div>
   <!-- Book of the week from the Rudolf Steiner Bookstore, Anthroposophy section (owner, 2026-10-24) -->
   <div class="listblock reveal home-book" id="home-book-block" hidden style="margin-bottom:12px;">
@@ -1075,11 +1083,16 @@
       <div class="lrow res-row"><a class="ltitle" href="https://steinerbooks.org/" target="_blank" rel="noopener">SteinerBooks</a><span class="res-desc">Anthroposophic Press Inc. (USA).</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://rsarchive.org/" target="_blank" rel="noopener">Rudolf Steiner Archive</a><span class="res-desc">The largest online collection of Rudolf Steiner&#39;s books, lectures and articles in English (Steiner Online Library).</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.rudolfsteineraudio.com/" target="_blank" rel="noopener">Rudolf Steiner Audio</a><span class="res-desc">Recorded and read by Dale Brunsvold.</span></div>
+      <!-- Top 5 show; the rest open with the button below (owner, 2026-10-29) -->
+      <div id="res-more" class="more-rows" hidden>
       <div class="lrow res-row"><a class="ltitle" href="https://anthroposophy.eu/" target="_blank" rel="noopener">anthroposophy.eu</a><span class="res-desc">English wiki-based reference site with advanced materials for the earnest student of spiritual science and anthroposophy.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.rudolfsteineranthroposophy.com/" target="_blank" rel="noopener">rudolfsteineranthroposophy.com</a><span class="res-desc">Daily practice, meditation, study and timelines.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="http://www.rudolf-steiner-handbuch.de/images/Handbook.pdf" target="_blank" rel="noopener">Rudolf Steiner Handbook (PDF, 35 MB)</a><span class="res-desc">Christian Karl&#39;s standard guide to finding your way through Rudolf Steiner&#39;s Collected Works, free to download.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.anthroposophie.net/steiner/bib_steiner_fuer_die_tage_der_woche.htm" target="_blank" rel="noopener">For the Days of the Week</a><span class="res-desc">One must devote attention and care to certain processes of the soul that one usually carries out carelessly and inattentively. There are eight such processes. (Rudolf Steiner, in German)</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://astrosophy.app/" target="_blank" rel="noopener">Astrosophy</a><span class="res-desc">Star wisdom through spiritual science: today&#39;s planetary day, the daily sky, birth charts, biography and constitution.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://anthroposophyla.org/calendar-of-the-soul-verses/" target="_blank" rel="noopener">Calendar of the Soul Verses</a><span class="res-desc">This week&#39;s verse from Rudolf Steiner&#39;s Calendar of the Soul, in German and English with images and commentary, from the Los Angeles Branch of the Anthroposophical Society in America. Free PDF downloads.</span></div>
+      </div>
+      <button type="button" class="ev-more more-toggle" aria-controls="res-more" aria-expanded="false" data-more="Show all 11 resources" data-less="Show fewer" onclick="_moreToggle(this)">Show all 11 resources</button>
     </div>
   </div>
   <div id="top50-books"></div>
@@ -2202,18 +2215,18 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.93.4</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.94.0</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.93.4"></script>
-<script defer src="/i18n.js?v=1.93.4"></script>
-<script defer src="/sophia_commons_v9.js?v=1.93.4"></script>
-<script defer src="/blog.js?v=1.93.4"></script>
-<script defer src="/claims.js?v=1.93.4"></script>
+<script defer src="/sb-init.js?v=1.94.0"></script>
+<script defer src="/i18n.js?v=1.94.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.94.0"></script>
+<script defer src="/blog.js?v=1.94.0"></script>
+<script defer src="/claims.js?v=1.94.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

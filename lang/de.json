@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.93.4",
+  "footer.version": "v1.94.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1042,5 +1042,13 @@
   "digest.error": "Das Archiv konnte nicht geladen werden. Bitte später erneut versuchen.",
   "meta.digest_title": "Archiv des Wochenrundbriefs | Sophia Commons",
   "meta.digest_desc": "Alle früheren Ausgaben des wöchentlichen Sophia Commons Rundbriefs: Veranstaltungen, neue Videos und neue Orte der anthroposophischen Welt.",
-  "resources.heading": "Ressourcen"
+  "resources.heading": "Ressourcen",
+  "home.jobs_heading": "Stellen",
+  "home.all_jobs_link": "alle Stellen →",
+  "home.featured_jobs": "Ausgewählte Stellen",
+  "home.featured_job": "Ausgewählte Stelle",
+  "home.new_job": "Neue Stelle",
+  "home.see_job": "Zur Stelle",
+  "jobs.feature": "Auf der Startseite zeigen",
+  "jobs.unfeature": "Von der Startseite nehmen"
 }

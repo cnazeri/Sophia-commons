@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.93.4",
+  "footer.version": "v1.94.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -1042,5 +1042,13 @@
   "digest.error": "No se pudo cargar el archivo. Inténtalo de nuevo más tarde.",
   "meta.digest_title": "Archivo del boletín semanal | Sophia Commons",
   "meta.digest_desc": "Todos los números anteriores del boletín semanal de Sophia Commons: eventos, videos nuevos y lugares nuevos del mundo antroposófico.",
-  "resources.heading": "Recursos"
+  "resources.heading": "Recursos",
+  "home.jobs_heading": "Empleos",
+  "home.all_jobs_link": "todos los empleos →",
+  "home.featured_jobs": "Empleos destacados",
+  "home.featured_job": "Empleo destacado",
+  "home.new_job": "Nuevo empleo",
+  "home.see_job": "Ver el empleo",
+  "jobs.feature": "Destacar en la portada",
+  "jobs.unfeature": "Quitar de la portada"
 }

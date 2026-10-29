@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.93.4",
+  "footer.version": "v1.94.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1042,5 +1042,13 @@
   "digest.error": "Не удалось загрузить архив. Попробуйте позже.",
   "meta.digest_title": "Архив дайджеста | Sophia Commons",
   "meta.digest_desc": "Все прошлые выпуски еженедельной рассылки Sophia Commons: события, новые видео и новые места антропософского мира.",
-  "resources.heading": "Ресурсы"
+  "resources.heading": "Ресурсы",
+  "home.jobs_heading": "Вакансии",
+  "home.all_jobs_link": "все вакансии →",
+  "home.featured_jobs": "Избранные вакансии",
+  "home.featured_job": "Избранная вакансия",
+  "home.new_job": "Новая вакансия",
+  "home.see_job": "Открыть вакансию",
+  "jobs.feature": "Показать на главной",
+  "jobs.unfeature": "Убрать с главной"
 }

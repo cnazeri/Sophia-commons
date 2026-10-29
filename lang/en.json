@@ -587,7 +587,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.93.4",
+  "footer.version": "v1.94.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -981,5 +981,13 @@
   "digest.error": "The archive could not be loaded. Please try again later.",
   "meta.digest_title": "Weekly digest archive | Sophia Commons",
   "meta.digest_desc": "Every past issue of the Sophia Commons weekly email: upcoming events, new videos and new places in the anthroposophical world.",
-  "resources.heading": "Resources"
+  "resources.heading": "Resources",
+  "home.jobs_heading": "Jobs",
+  "home.all_jobs_link": "all jobs →",
+  "home.featured_jobs": "Featured jobs",
+  "home.featured_job": "Featured job",
+  "home.new_job": "New job",
+  "home.see_job": "See the job",
+  "jobs.feature": "Feature on the home page",
+  "jobs.unfeature": "Remove from the home page"
 }

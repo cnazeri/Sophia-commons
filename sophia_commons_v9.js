@@ -6298,7 +6298,7 @@ function renderListingDetail(d) {
   var poster = (d.profiles && d.profiles.username) ? d.profiles.username : t('marketplace.anonymous');
   var catName = (d.categories && d.categories.name) ? d.categories.name : '';
   var loc = [d.location, d.region, d.country].filter(Boolean).join(', ');
-  var tags = (d.tags || []).map(function(tg) { return '<span class="detail-badge category">' + esc(tg) + '</span>'; }).join('');
+  var tags = (d.tags || []).filter(function(tg) { return tg !== 'featured'; }).map(function(tg) { return '<span class="detail-badge category">' + esc(tg) + '</span>'; }).join('');
 
   var actions = '';
   if (d.website_url) actions += '<a class="btn-primary-detail" href="' + escUrl(d.website_url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
@@ -6306,6 +6306,10 @@ function renderListingDetail(d) {
   if (d.contact_phone) actions += '<a class="btn-secondary-detail" href="tel:' + esc(d.contact_phone) + '">' + t('detail.call') + ' &#9742;</a>';
 
   var reportBtn = signedIn ? '<button class="btn-report" onclick="event.stopPropagation();openReportModal(\'listing\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '';
+  var featBtn = isAdmin() && d.category_id === JOBS_CAT_ID
+    ? '<button type="button" class="claim-btn job-feat-btn" onclick="toggleFeaturedJob(\'' + escJs(d.id) + '\',this)">'
+      + esc((d.tags || []).indexOf('featured') >= 0 ? t('jobs.unfeature', 'Remove from the home page') : t('jobs.feature', 'Feature on the home page')) + '</button>'
+    : '';
 
   return '<div class="detail-card">'
     + '<div class="detail-header">'
@@ -6324,7 +6328,7 @@ function renderListingDetail(d) {
     + '<p><strong>' + t('marketplace.views') + ':</strong> ' + (d.view_count || 0) + '</p>'
     + '<p><strong>' + t('marketplace.posted') + ':</strong> ' + localDate(d.created_at, {month:'short',day:'numeric',year:'numeric'}) + '</p>'
     + '<p><strong>' + t('marketplace.expires') + ':</strong> ' + localDate(d.expires_at, {month:'short',day:'numeric',year:'numeric'}) + '</p>'
-    + reportBtn
+    + reportBtn + featBtn
     + '</div>'
     + renderCommentsSection('listing', d.id)
     + '</div>';
@@ -8133,8 +8137,8 @@ async function renderHomeNews() {
   if (slides.length > 1) _mountNewsSlider(box.querySelector('.news-slider'), slides);
 }
 
-var _newsTimer = null;
-function _mountNewsSlider(slider, slides) {
+var _sliderTimers = {};   // one auto-advance timer per home slider (news, jobs)
+function _mountNewsSlider(slider, slides, key, delay) {
   var n = slides.length, idx = 0, paused = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, hold = false;
   var track = slider.querySelector('.feat-track'), view = slider.querySelector('.feat-view');
   var label = function (i) { return (i + 1) + ' / ' + n; };
@@ -8184,10 +8188,11 @@ function _mountNewsSlider(slider, slides) {
   }, { passive: true });
   syncPause();
   go(0, false);
-  clearInterval(_newsTimer);
-  _newsTimer = setInterval(function () {
+  key = key || 'news';
+  clearInterval(_sliderTimers[key]);
+  _sliderTimers[key] = setInterval(function () {
     if (!paused && !hold && !document.hidden && document.body.contains(slider)) go(idx + 1, false);
-  }, FEAT_INTERVAL_MS + 1500);   // out of step with the events slider, so the two do not move together
+  }, delay || FEAT_INTERVAL_MS + 1500);   // out of step with the events slider, so the two do not move together
 }
 
 // ── Book of the week: one book a week from the Anthroposophy section of the Rudolf Steiner Bookstore ──
@@ -8219,9 +8224,81 @@ async function renderHomeBook() {
   block.hidden = false;
 }
 
+// ── Home jobs: job posts in a slider built like the news ──
+// Featured jobs first (admin marks them with the 'featured' tag on the job page), then the newest,
+// no more than JOBS_PER_PLACE from one town so one school's batch does not fill it (owner, 2026-10-29).
+var JOBS_CAT_ID = 11, JOBS_PER_PLACE = 2;
+var _homeJobsPromise = null;
+function _homeJobsLoad() {
+  if (!_homeJobsPromise && sbReady()) _homeJobsPromise = _sb.from('listings')
+    .select('id, title, description, location, country, tags, created_at, expires_at')
+    .eq('status', 'active').eq('category_id', JOBS_CAT_ID).order('created_at', { ascending: false }).limit(80)
+    .then(function (r) {
+      var now = new Date().toISOString();
+      return r.error ? [] : (r.data || []).filter(function (j) { return !j.expires_at || j.expires_at > now; });
+    }, function () { return []; });
+  return _homeJobsPromise || Promise.resolve([]);
+}
+
+function _isFeaturedJob(j) { return (j.tags || []).indexOf('featured') >= 0; }
+
+function _homeJobSlides(rows) {
+  var feat = rows.filter(_isFeaturedJob), seen = {};
+  var rest = rows.filter(function (j) {
+    if (_isFeaturedJob(j)) return false;
+    var k = String(j.location || j.country || '').toLowerCase();
+    seen[k] = (seen[k] || 0) + 1;
+    return seen[k] <= JOBS_PER_PLACE;
+  });
+  return feat.concat(rest).slice(0, FEAT_MAX);
+}
+
+function _homeJobSlide(j) {
+  var href = '/classified/' + esc(j.id), open = 'showDetail(\'listing\',\'' + escJs(j.id) + '\');return false;';
+  var place = [j.location, j.country].filter(Boolean).join(', ');
+  return '<div class="feat-ev news-ev job-ev" data-id="' + esc(j.id) + '">'
+    + '<a class="news-ev-mark" href="' + href + '" onclick="' + open + '" tabindex="-1" aria-hidden="true"><span>' + esc(j.location || j.country || t('home.jobs_heading', 'Jobs')) + '</span></a>'
+    + '<div class="feat-ev-body"><div class="etag">' + esc(_isFeaturedJob(j) ? t('home.featured_job', 'Featured job') : t('home.new_job', 'New job')) + '</div>'
+    + '<h5 aria-level="3"><a href="' + href + '" onclick="' + open + '">' + esc(j.title) + '</a></h5>'
+    + '<div class="emeta">' + esc([place, localDate(j.created_at, { month: 'short', day: 'numeric' })].filter(Boolean).join(' \u00b7 ')) + '</div>'
+    + (j.description ? '<p class="feat-ev-desc">' + esc(_shortText(j.description, 160)) + '</p>' : '')
+    + '<a class="news-ev-read" href="' + href + '" onclick="' + open + '">' + esc(t('home.see_job', 'See the job')) + ' &rarr;</a>'
+    + '</div></div>';
+}
+
+async function renderHomeJobs() {
+  var block = document.getElementById('home-jobs-block');
+  var box = document.getElementById('home-jobs');
+  if (!block || !box) return;
+  var slides = _homeJobSlides(await _homeJobsLoad());
+  block.hidden = !slides.length;
+  if (!slides.length) return;
+  box.innerHTML = '<div class="feat-slider news-slider" role="region" aria-roledescription="carousel" aria-label="' + esc(t('home.featured_jobs', 'Featured jobs')) + '">'
+    + '<div class="feat-view"><div class="feat-track">' + slides.map(_homeJobSlide).join('') + '</div></div></div>';
+  if (slides.length > 1) _mountNewsSlider(box.querySelector('.news-slider'), slides, 'jobs', FEAT_INTERVAL_MS + 2700);
+}
+
+// Admin: put a job on (or take it off) the home page by toggling its 'featured' tag
+async function toggleFeaturedJob(id, btn) {
+  if (!isAdmin() || !sbReady()) return;
+  btn.disabled = true;
+  var r = await _sb.from('listings').select('tags').eq('id', id).single();
+  if (r.error) { btn.disabled = false; scNotify('Error: ' + r.error.message); return; }
+  var tags = r.data.tags || [];
+  var on = tags.indexOf('featured') < 0;
+  var next = on ? tags.concat(['featured']) : tags.filter(function (x) { return x !== 'featured'; });
+  var u = await _sb.from('listings').update({ tags: next }).eq('id', id);
+  btn.disabled = false;
+  if (u.error) { scNotify('Error: ' + u.error.message); return; }
+  btn.textContent = on ? t('jobs.unfeature', 'Remove from the home page') : t('jobs.feature', 'Feature on the home page');
+  _homeJobsPromise = null;   // the home slider reloads with the change
+  renderHomeJobs();
+}
+
 function renderHomeExtras() {
   renderSocialFeatured();
   renderHomeNews();
+  renderHomeJobs();
   renderHomeBook();
 }
 
