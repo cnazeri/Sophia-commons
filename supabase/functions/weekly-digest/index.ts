@@ -82,12 +82,25 @@ const MONTHS = ["January", "February", "March", "April", "May", "June", "July", 
 function longDate(d: Date) { return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`; }
 function shortDate(iso: string) { const d = new Date(iso); return `${MONTHS[d.getUTCMonth()].slice(0, 3)} ${d.getUTCDate()}`; }
 
+// Country of every approved listing, read 1,000 rows at a time (the API's page limit)
+// deno-lint-ignore no-explicit-any
+async function approvedCountries(sb: any): Promise<string[]> {
+  const out: string[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await sb.from("directory_entries").select("country").eq("status", "approved")
+      .order("id").range(from, from + 999);
+    if (error) throw new Error(error.message);
+    out.push(...(data ?? []).map((r: { country: string | null }) => r.country ?? ""));
+    if (!data || data.length < 1000) return out;
+  }
+}
+
 async function gather(sb: SupabaseClient) {
   const now = new Date();
   const weekAgo = new Date(now.getTime() - 7 * DAY).toISOString();
   const threeWeeks = new Date(now.getTime() + 21 * DAY).toISOString();
 
-  const [videos, channels, events, listings, news] = await Promise.all([
+  const [videos, channels, events, listings, news, places] = await Promise.all([
     sb.from("youtube_videos").select("video_id, channel_slug, title, url, thumbnail_url, published_at, description")
       .gte("published_at", weekAgo).order("published_at", { ascending: false }).limit(40),
     sb.from("youtube_channels").select("slug, name").eq("active", true),
@@ -98,6 +111,7 @@ async function gather(sb: SupabaseClient) {
       .eq("status", "approved").gte("created_at", weekAgo).order("created_at", { ascending: false }).limit(12),
     sb.from("news").select("id, title, excerpt, tags, published_at")
       .eq("status", "published").gte("published_at", weekAgo).order("published_at", { ascending: false }).limit(10),
+    approvedCountries(sb),
   ]);
   for (const r of [videos, channels, events, listings, news]) if (r.error) throw new Error(r.error.message);
 
@@ -120,6 +134,8 @@ async function gather(sb: SupabaseClient) {
     events: evs,
     listings: listings.data ?? [],
     news: (news.data ?? []).filter((n) => !(n.tags ?? []).includes("weekly-digest")).slice(0, 5),
+    placeCount: places.length,
+    countryCount: new Set(places.filter(Boolean)).size,
   };
 }
 
@@ -175,6 +191,19 @@ function listingHtml(l: Digest["listings"][number]): string {
     + (meta ? `<br><span ${MUTED}>${esc(meta)}</span>` : "") + `</div>`;
 }
 
+// Every issue ends by saying what Sophia Commons is and asking readers to pass it on (owner, 2026-10-29)
+function shareHtml(d: Digest): string {
+  const places = d.placeCount >= 1000 ? `over ${(Math.floor(d.placeCount / 100) * 100).toLocaleString("en-US")}` : String(d.placeCount);
+  const mail = `mailto:?subject=${encodeURIComponent("Sophia Commons: anthroposophy around the world")}`
+    + `&body=${encodeURIComponent(`I thought you'd like this: a free directory of Waldorf schools, biodynamic farms, Camphill communities and other anthroposophical work around the world. ${SITE}`)}`;
+  const fb = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE)}`;
+  return `<div style="margin:32px 0 0;padding:18px 20px;background:#FAF6EE;border:1px solid ${RULE};border-radius:10px">`
+    + `<p style="font-family:Georgia,serif;font-size:18px;margin:0 0 8px;color:${INK}">Please help us spread the word</p>`
+    + `<p style="margin:0 0 10px;color:#3A332A">Sophia Commons is a free directory of anthroposophical life around the world: ${places} Waldorf schools, biodynamic farms, Camphill communities, clinics, study groups and more in ${d.countryCount} countries, along with events, videos and books. It's the largest online directory of anthroposophical resources, and we need your help to get the word out. If this email was useful, please forward it to a friend or share Sophia Commons with your school, farm or study group.</p>`
+    + `<p style="margin:0;font-size:14px"><a href="${mail}" ${LINK}>Share by email</a> &nbsp;&middot;&nbsp; <a href="${fb}" ${LINK}>Share on Facebook</a></p>`
+    + `</div>`;
+}
+
 export function buildHtml(d: Digest, note = ""): string {
   const parts = [
     d.videos.length ? plural(d.videos.length, "new video", "new videos") : "",
@@ -201,6 +230,7 @@ export function buildHtml(d: Digest, note = ""): string {
   if (!d.videos.length && !d.events.length && !d.listings.length && !d.news.length) {
     h += `<p>Browse the <a href="${SITE}/directory" ${LINK}>directory</a> or the <a href="${SITE}/events" ${LINK}>calendar</a>.</p>`;
   }
+  h += shareHtml(d);
   h += `<div style="margin:32px 0 4px;text-align:center"><a href="${SITE}" style="display:inline-block;background:${GOLD_FILL};color:${INK};font-weight:bold;text-decoration:none;padding:12px 26px;border-radius:999px">Explore Sophia Commons</a></div>`;
   h += `</div>`;
   return h;
