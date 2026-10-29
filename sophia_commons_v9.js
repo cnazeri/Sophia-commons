@@ -6545,6 +6545,7 @@ function _renderSearchGroup(label, items, renderItem) {
 
 // ── Directory alllink scroll ──
 document.querySelectorAll('#sec-directory .alllink').forEach(function(el) {
+  if (el.closest('#dir-community')) return;   // Community & Resources badges open their category instead
   el.style.cursor = 'pointer';
   el.addEventListener('click', function(e) {
     e.preventDefault();
