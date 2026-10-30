@@ -33,13 +33,16 @@ export function entryList(entries) {
   return '<ul>' + entries.map(e => `<li><a href="/listing/${attr(e.id)}">${esc(e.organization_name)}</a>${place(e) ? ' (' + esc(place(e)) + ')' : ''}${e.website_url && /^https?:\/\//.test(e.website_url) ? ` <a href="${attr(e.website_url)}" rel="nofollow noopener">website</a>` : ''}</li>`).join('') + '</ul>';
 }
 
-export function applySeo(template, { route, title, desc, bodyHtml = '', ld = null, ldId = 'prerender-jsonld', image = '', robots = '', h1 = '' }) {
+export function applySeo(template, { route, title, desc, bodyHtml = '', ld = null, ldId = 'prerender-jsonld', image = '', robots = '', h1 = '', lang = '', alternates = [] }) {
   const url = SITE + route;
   let h = template;
   const set = (re, val) => { h = h.replace(re, () => val); };
   set(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
   set(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(desc)}">`);
   set(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${attr(url)}">`);
+  // Language versions (German pages for DACH, owner 2026-10-29): <html lang> and hreflang links
+  if (lang) set(/<html lang="[^"]*">/, `<html lang="${attr(lang)}">`);
+  if (alternates.length) set(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${attr(url)}">` + alternates.map(([l, u]) => `\n<link rel="alternate" hreflang="${attr(l)}" href="${attr(u)}">`).join(''));
   set(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${attr(url)}">`);
   set(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${attr(title)}">`);
   set(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${attr(desc)}">`);

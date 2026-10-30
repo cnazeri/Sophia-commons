@@ -116,3 +116,22 @@ test('crawler detection', () => {
   assert.ok(!isCrawler('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1'));
   assert.equal(crawlerView('<p>not the app</p>'), '<p>not the app</p>');
 });
+
+// ── German pages (v1.103) ──
+import { placeFaqDe, entryListDe } from '../automation/seo_de.mjs';
+import { applySeo } from '../automation/seo_html.mjs';
+test('German Q&A uses singular for one and German numbers', () => {
+  const f = placeFaqDe([{ organization_name: 'A', category: 'waldorf' }, { organization_name: 'B', category: 'biodynamic' }], 'in Bern', 'die Seite');
+  assert.match(f.html, /1 Waldorfschule oder -kindergarten/);
+  assert.match(f.html, /2 Einträge in Bern/);
+  assert.equal(f.ld.inLanguage, 'de');
+  assert.match(entryListDe([{ id: 'x', organization_name: 'S', city: 'Bern', website_url: 'https://s.ch' }]), />Website</);
+});
+test('applySeo sets the page language and hreflang links', () => {
+  const tpl = '<html lang="en"><head><title>x</title><meta name="description" content=""><link rel="canonical" href="https://sophiacommons.org/"></head><body><footer></footer></body></html>';
+  const h = applySeo(tpl, { route: '/de/country/germany', title: 't', desc: 'd', lang: 'de', alternates: [['en', 'https://sophiacommons.org/country/germany'], ['de', 'https://sophiacommons.org/de/country/germany']] });
+  assert.match(h, /<html lang="de">/);
+  assert.match(h, /hreflang="en" href="https:\/\/sophiacommons.org\/country\/germany"/);
+  assert.match(h, /<link rel="canonical" href="https:\/\/sophiacommons.org\/de\/country\/germany">/);
+  assert.ok(!h.includes('$1'));
+});

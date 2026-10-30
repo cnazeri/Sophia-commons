@@ -1199,7 +1199,8 @@ async function showPlace(catSlug, cSlug, skipPush, cityKey) {
   var path = catSlug ? '/category/' + catSlug + '/' + cSlug : '/country/' + cSlug + (cityKey ? '/' + cityKey : '');
   // Opened straight from the deploy's static copy: keep its fuller title and description
   var canon = document.querySelector('link[rel="canonical"]');
-  var keepStatic = !!(skipPush && canon && canon.getAttribute('href') === 'https://sophiacommons.org' + path);
+  var canonHref = canon ? canon.getAttribute('href') : '';
+  var keepStatic = !!(skipPush && (canonHref === 'https://sophiacommons.org' + path || canonHref === 'https://sophiacommons.org/de' + path));
   if (!keepStatic) _clearPlaceFaq();   // answers belong to the page they were built for
   setHead(guess);
   container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + t('common.loading') + '</div>';
@@ -1615,7 +1616,8 @@ function _armReveal(el, observer, top) {
 
 // ── SPA ROUTER (SEO-friendly URLs) ──
 function routeFromPath(pathname, isPopstate) {
-  var p = pathname || '/';
+  // German versions of country and city pages (/de/country/...) show the same live page
+  var p = (pathname || '/').replace(/^\/de(?=\/country\/)/, '');
   var skip = true; // never pushState when routing from URL
 
   // Section routes

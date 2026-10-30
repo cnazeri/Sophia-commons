@@ -10,6 +10,7 @@ import path from 'node:path';
 import { SITE, esc, attr, CATEGORIES, entryList, applySeo, NOT_COUNTRIES, countryLabel, countrySlug, PLACE_CATS, placeCatOf,
   MIN_COUNTRY, MIN_COMBO, fmtN, breadcrumbLd, countryIn, MIN_CITY, citySlug, cityLabel, cityShort, placeFaq, countOf } from './seo_html.mjs';
 import { DATA_SELECT, directoryJson, directoryCsv, llmsFull } from './agent_data.mjs';
+import { DE_COUNTRIES, countryPageDe, cityPageDe, hreflang } from './seo_de.mjs';
 
 const OUT = process.argv[2] || '_deploy';
 const template = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
@@ -66,8 +67,8 @@ function itemListLd(name, url, entries) {
   };
 }
 
-function render(route, title, desc, bodyHtml, ld, h1 = '') {
-  const h = applySeo(template, { route, title, desc, bodyHtml, ld, h1 });
+function render(route, title, desc, bodyHtml, ld, h1 = '', opts = {}) {
+  const h = applySeo(template, { route, title, desc, bodyHtml, ld, h1, ...opts });
   // Write <route>.html, not <route>/index.html: Netlify serves /events from events.html with a 200,
   // while a directory index would 301-redirect /events to /events/ (mismatching canonicals and sitemap).
   const file = path.join(OUT, decodeURIComponent(route.replace(/^\//, '')) + '.html');
@@ -142,7 +143,8 @@ for (const [country, list] of countries) {
   if (other.length) body += `<h2>More in ${esc(Lin)}</h2>` + entryList(other);
   const faq = placeFaq(list, Lin, 'the country page');
   body += faq.html + '<p><a href="/directory">The world directory and map</a></p>';
-  written.push(render(route, title, desc, body, [itemListLd(`Anthroposophy in ${Lin}`, SITE + route, list), breadcrumbLd([['Home', '/'], ['Directory', '/directory'], [L, route]]), faq.ld], `Anthroposophy in ${Lin}`));
+  written.push(render(route, title, desc, body, [itemListLd(`Anthroposophy in ${Lin}`, SITE + route, list), breadcrumbLd([['Home', '/'], ['Directory', '/directory'], [L, route]]), faq.ld], `Anthroposophy in ${Lin}`,
+    DE_COUNTRIES[country] ? { alternates: hreflang(route, '/de' + route) } : {}));
 }
 
 // /category/<cat>/<country>: e.g. Waldorf & Steiner Schools in Germany
@@ -171,7 +173,22 @@ for (const { country, city, list, route } of cityPages) {
     + (near.length ? `<h2>Other cities in ${esc(Lin)}</h2><p>` + near.map(c => `<a href="${c.route}">${esc(cityShort(c.city))}</a> (${c.list.length})`).join(', ') + '</p>' : '')
     + `<p><a href="/country/${countrySlug(country)}">Everything in ${esc(Lin)}</a> &middot; <a href="/directory">The world directory and map</a></p>`;
   written.push(render(route, title, desc, body, [itemListLd(`Anthroposophy in ${where}`, SITE + route, list),
-    breadcrumbLd([['Home', '/'], [L, `/country/${countrySlug(country)}`], [cityShort(city), route]]), faq.ld], `Anthroposophy in ${where}`));
+    breadcrumbLd([['Home', '/'], [L, `/country/${countrySlug(country)}`], [cityShort(city), route]]), faq.ld], `Anthroposophy in ${where}`,
+    DE_COUNTRIES[country] ? { alternates: hreflang(route, '/de' + route) } : {}));
+}
+
+// German versions for Germany, Austria and Switzerland (/de/country/..., automation/seo_de.mjs)
+for (const [country, list] of countries) {
+  if (!DE_COUNTRIES[country]) continue;
+  const enRoute = `/country/${countrySlug(country)}`, deRoute = '/de' + enRoute;
+  const cities = cityPages.filter(c => c.country === country).sort((a, b) => b.list.length - a.list.length).map(c => ({ ...c, deRoute: '/de' + c.route }));
+  const pg = countryPageDe(country, list, cities, enRoute);
+  written.push(render(deRoute, pg.title, pg.desc, pg.body, [itemListLd(pg.h1, SITE + deRoute, list), pg.faq.ld], pg.h1, { lang: 'de', alternates: hreflang(enRoute, deRoute) }));
+  for (const c of cities) {
+    const sib = cities.filter(x => x !== c).slice(0, 12);
+    const cp = cityPageDe(country, c.city, c.list, sib, deRoute, c.route);
+    written.push(render(c.deRoute, cp.title, cp.desc, cp.body, [itemListLd(cp.h1, SITE + c.deRoute, c.list), cp.faq.ld], cp.h1, { lang: 'de', alternates: hreflang(c.route, c.deRoute) }));
+  }
 }
 for (const [slug, label, desc] of SECTIONS) {
   let body = '';

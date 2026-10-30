@@ -88,6 +88,8 @@ var SC_I18N = (function () {
       cache.en = data;
       var saved = 'en';
       try { saved = localStorage.getItem('sc-lang') || 'en'; } catch (e) {}
+      // German pages (/de/...) open in German (owner, 2026-10-29)
+      if (/^\/de\//.test(location.pathname)) saved = 'de';
       if (!LOCALES[saved]) saved = 'en';
       return setLang(saved);
     }).then(function () {

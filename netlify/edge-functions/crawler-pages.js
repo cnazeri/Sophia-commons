@@ -21,6 +21,6 @@ export default async (request, context) => {
 
 export const config = {
   // Literal list (keep in step with SECTION_OF_ROUTE) so Netlify can read it at build time
-  path: ['/', '/category/*', '/country/*', '/region/*', '/directory', '/events', '/browse', '/news', '/blog', '/books', '/podcasts',
+  path: ['/', '/category/*', '/country/*', '/region/*', '/de/*', '/directory', '/events', '/browse', '/news', '/blog', '/books', '/podcasts',
     '/memorial', '/eldercare', '/about', '/privacy', '/terms'],
 };
