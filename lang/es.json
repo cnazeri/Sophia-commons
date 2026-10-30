@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.102.0",
+  "footer.version": "v1.102.1",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -1055,5 +1055,8 @@
   "about2.data_p": "Para asistentes de IA y desarrolladores: todo el directorio se puede usar libremente en <a href=\"/data/directory.json\">JSON</a>, <a href=\"/data/directory.csv\">CSV</a> o <a href=\"/llms-full.txt\">un archivo de texto</a>, los eventos como <a href=\"/events.ics\">feed de calendario</a> y las noticias como <a href=\"/feed.xml\">feed RSS</a>. Claude, ChatGPT y otros asistentes compatibles con MCP pueden conectarse a https://sophiacommons.org/mcp para buscar entradas y eventos directamente. Por favor, cite a Sophia Commons al usar los datos.",
   "home.cc_heading": "Encuentro de la Comunidad de Cristianos",
   "home.cc_all": "congregaciones →",
-  "home.cc_tag": "Encuentro en línea"
+  "home.cc_tag": "Encuentro en línea",
+  "event_detail.zoom_details": "Datos de Zoom",
+  "event_detail.zoom_id": "ID de reunión",
+  "event_detail.zoom_passcode": "Código de acceso"
 }

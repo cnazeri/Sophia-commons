@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.102.0",
+  "footer.version": "v1.102.1",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1055,5 +1055,8 @@
   "about2.data_p": "Для ИИ-ассистентов и разработчиков: весь каталог можно свободно использовать в формате <a href=\"/data/directory.json\">JSON</a>, <a href=\"/data/directory.csv\">CSV</a> или <a href=\"/llms-full.txt\">одним текстовым файлом</a>, события доступны как <a href=\"/events.ics\">календарная лента</a>, а новости как <a href=\"/feed.xml\">RSS-лента</a>. Claude, ChatGPT и другие ассистенты с поддержкой MCP могут подключиться к https://sophiacommons.org/mcp и искать записи и события напрямую. Пожалуйста, указывайте Sophia Commons как источник.",
   "home.cc_heading": "Встреча Христианской общины",
   "home.cc_all": "общины →",
-  "home.cc_tag": "Онлайн-встреча"
+  "home.cc_tag": "Онлайн-встреча",
+  "event_detail.zoom_details": "Данные Zoom",
+  "event_detail.zoom_id": "Идентификатор конференции",
+  "event_detail.zoom_passcode": "Код доступа"
 }

@@ -279,6 +279,18 @@ function renderEventDetail(ev) {
   if (ev.city) meta += '<span>&#128205; ' + esc(ev.city) + (ev.country ? ', ' + esc(ev.country) : '') + '</span>';
   if (ev.organizer_name) meta += '<span>&#127915; ' + esc(ev.organizer_name) + '</span>';
 
+  // Zoom meetings: show the meeting ID and passcode plainly (owner, 2026-10-29)
+  var zoom = '';
+  var zid = String(ev.online_url || '').match(/zoom\.us\/j\/(\d{9,11})/);
+  if (zid) {
+    var pc = String(ev.description || '').match(/pass(?:code|word)\s*[:=]\s*(\S+)/i);
+    var mid = zid[1].replace(/^(\d{3})(\d{3,4})(\d{4})$/, '$1 $2 $3');
+    zoom = '<div class="zoom-box"><div class="zoom-h">' + esc(t('event_detail.zoom_details', 'Zoom details')) + '</div>'
+      + '<div>' + esc(t('event_detail.zoom_id', 'Meeting ID')) + ': <strong>' + esc(mid) + '</strong></div>'
+      + (pc ? '<div>' + esc(t('event_detail.zoom_passcode', 'Passcode')) + ': <strong>' + esc(pc[1].replace(/[.,;]+$/, '')) + '</strong></div>' : '')
+      + '<div><a href="' + escUrl(ev.online_url) + '" target="_blank" rel="noopener">' + esc(t('events.join_zoom', 'Join on Zoom')) + ' &#8599;</a></div></div>';
+  }
+
   var actions = '';
   // Sign-up forms (Google Forms etc.) are not ticket shops
   var isForm = /forms\.gle|docs\.google\.com\/forms|forms\.office\.com|typeform|jotform/i.test(ev.ticket_url || '');
@@ -295,6 +307,7 @@ function renderEventDetail(ev) {
     + '<h1>' + esc(ev.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
     + '<div class="detail-body" style="white-space:pre-line;">' + esc(ev.description || '') + '</div>'
+    + zoom
     + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold-text);font-weight:700;margin-bottom:12px;">' + t('event_detail.ticket_price').replace('${price}', ev.ticket_price) + '</p>' : '')
     + '<div class="detail-actions">' + actions + '</div>'
     + _calButtonsHtml(ev)
@@ -4463,9 +4476,13 @@ function renderHomeCC() {
     .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })[0];
   block.hidden = !ev;
   if (!ev) { box.innerHTML = ''; return; }
-  var join = (ev.src || [])[0];
-  box.innerHTML = _homeSemCard(ev, t('home.cc_tag', 'Online gathering'),
-    join ? '<a class="feat-ev-join" href="' + escUrl(join[1]) + '" target="_blank" rel="noopener">' + esc(join[0] === 'Join on Zoom' ? t('events.join_zoom', 'Join on Zoom') : join[0]) + '</a>' : '');
+  // Compact row like the featured-event banner: small picture, date, title, time. The event page has the Zoom details.
+  var href = '/event/' + esc(ev.id), go = ' onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;"';
+  var img = ev.img && ev.img.src && /^https:\/\//.test(ev.img.src)
+    ? '<a href="' + href + '"' + go + ' tabindex="-1" aria-hidden="true"><img class="feat-ev-img" src="' + escUrl(_imgSized(ev.img.src, 200)) + '" alt="" width="96" height="72" loading="lazy" decoding="async"></a>' : '';
+  box.innerHTML = '<div class="feat-ev cc-home">' + img + '<div class="feat-ev-body"><div class="etag">' + esc(t('home.cc_tag', 'Online gathering')) + ' &middot; '
+    + esc(localDate(ev.date, { month: 'short', day: 'numeric' })) + '</div><h5 aria-level="3"><a href="' + href + '"' + go + '>' + esc(ev.title) + '</a></h5>'
+    + (ev.time ? '<div class="emeta">' + esc(ev.time) + '</div>' : '') + '</div></div>';
 }
 
 function _homeSemCard(ev, tag, extra) {

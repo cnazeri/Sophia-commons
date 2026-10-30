@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.102.0",
+  "footer.version": "v1.102.1",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1055,5 +1055,8 @@
   "about2.data_p": "Für KI-Assistenten und Entwickler: Das gesamte Verzeichnis steht frei als <a href=\"/data/directory.json\">JSON</a>, <a href=\"/data/directory.csv\">CSV</a> oder <a href=\"/llms-full.txt\">eine Textdatei</a> zur Verfügung, Veranstaltungen als <a href=\"/events.ics\">Kalender-Feed</a> und Nachrichten als <a href=\"/feed.xml\">RSS-Feed</a>. Claude, ChatGPT und andere Assistenten mit MCP-Unterstützung können sich mit https://sophiacommons.org/mcp verbinden und Einträge und Veranstaltungen direkt durchsuchen. Bitte nennen Sie Sophia Commons als Quelle.",
   "home.cc_heading": "Treffen der Christengemeinschaft",
   "home.cc_all": "Gemeinden →",
-  "home.cc_tag": "Online-Treffen"
+  "home.cc_tag": "Online-Treffen",
+  "event_detail.zoom_details": "Zoom-Zugangsdaten",
+  "event_detail.zoom_id": "Meeting-ID",
+  "event_detail.zoom_passcode": "Kenncode"
 }

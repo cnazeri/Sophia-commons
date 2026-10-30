@@ -4048,5 +4048,11 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 #place-faq h3 { font-size: 1rem; margin: 16px 0 4px; }
 #place-faq p { font-size: .95rem; line-height: 1.65; color: var(--text-secondary); margin: 0; }
 
-/* Home: Christian Community gathering card, Join button under the meta line (v1.102) */
-.home-cc .feat-ev-join { margin-top: 8px; min-height: 44px; line-height: 32px; }
+/* Home: Christian Community gathering, a compact row (v1.102.1) */
+.cc-home { display: flex; gap: 12px; align-items: flex-start; padding: 6px 0; border-bottom: 0; margin-bottom: 0; }
+.cc-home .feat-ev-img { width: 96px; height: 72px; object-fit: cover; border-radius: 6px; flex: none; }
+.cc-home h5 { margin: 2px 0; font-size: 15px; line-height: 1.35; }
+/* Event page: Zoom meeting ID and passcode */
+.zoom-box { margin: 12px 0 16px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--muted-bg); font-size: 14px; line-height: 1.8; }
+.zoom-box .zoom-h { font-weight: 700; margin-bottom: 2px; }
+.zoom-box a { color: var(--gold-text); font-weight: 600; }
