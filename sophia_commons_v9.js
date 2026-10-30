@@ -4451,7 +4451,24 @@ function renderHomeSeminars() {
   box.innerHTML = ev ? _homeSemCard(ev) : '';
 }
 
-function _homeSemCard(ev) {
+// Home: the next monthly online gathering of The Christian Community in North America, as a card with
+// its picture and a Join button, above the highlighted social post (owner, 2026-10-29).
+var HOME_CC = /christian community in north america/i;
+function renderHomeCC() {
+  var block = document.getElementById('home-cc-block');
+  var box = document.getElementById('home-cc');
+  if (!block || !box) return;
+  var today = _localDay(new Date());
+  var ev = calEvents.filter(function(e) { return e.id && e.date >= today && (HOME_CC.test(e.org || '') || HOME_CC.test(e.title || '')) && /gathering/i.test(e.title || ''); })
+    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })[0];
+  block.hidden = !ev;
+  if (!ev) { box.innerHTML = ''; return; }
+  var join = (ev.src || [])[0];
+  box.innerHTML = _homeSemCard(ev, t('home.cc_tag', 'Online gathering'),
+    join ? '<a class="feat-ev-join" href="' + escUrl(join[1]) + '" target="_blank" rel="noopener">' + esc(join[0] === 'Join on Zoom' ? t('events.join_zoom', 'Join on Zoom') : join[0]) + '</a>' : '');
+}
+
+function _homeSemCard(ev, tag, extra) {
   var href = '/event/' + esc(ev.id);
   var go = ' onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;"';
   var cat = String(ev.cat || 'event').replace('_', ' ');
@@ -4459,13 +4476,14 @@ function _homeSemCard(ev) {
   var img = ev.img && ev.img.src && /^https:\/\//.test(ev.img.src)
     ? '<a class="sem-home-img" href="' + href + '"' + go + ' tabindex="-1" aria-hidden="true"><img src="' + escUrl(_imgSized(ev.img.src, 640)) + '" alt="" width="640" height="300" loading="lazy" decoding="async"></a>' : '';
   return '<div class="sem-home">' + img
-    + '<div class="sem-home-body"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + ' &middot; ' + esc(localDate(ev.date, { month: 'short', day: 'numeric', year: 'numeric' })) + '</div>'
+    + '<div class="sem-home-body"><div class="etag">' + esc(tag || (cat.charAt(0).toUpperCase() + cat.slice(1))) + ' &middot; ' + esc(localDate(ev.date, { month: 'short', day: 'numeric', year: 'numeric' })) + '</div>'
     + '<h5 aria-level="3"><a href="' + href + '"' + go + '>' + esc(ev.title) + '</a></h5>'
-    + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
+    + (meta ? '<div class="emeta">' + meta + '</div>' : '') + (extra || '') + '</div></div>';
 }
 
 function renderHomeUpcoming() {
   renderHomeSeminars();
+  renderHomeCC();
   var box = document.getElementById('home-upcoming');
   if (!box) return;
   // Until real events arrive, keep the banner the deploy wrote into the page (festival dates alone

@@ -587,7 +587,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.101.1",
+  "footer.version": "v1.102.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -991,5 +991,8 @@
   "jobs.feature": "Feature on the home page",
   "jobs.unfeature": "Remove from the home page",
   "events.subscribe_html": "Subscribe to these events in your calendar, and new ones appear on their own: <a href=\"webcal://sophiacommons.org/events.ics\">Apple Calendar or Outlook</a> &middot; <a href=\"https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Fsophiacommons.org%2Fevents.ics\" target=\"_blank\" rel=\"noopener\">Google Calendar</a> &middot; <a href=\"/events.ics\">.ics file</a>",
-  "about2.data_p": "For AI assistants and developers: the whole directory is free to use as <a href=\"/data/directory.json\">JSON</a>, <a href=\"/data/directory.csv\">CSV</a> or <a href=\"/llms-full.txt\">one text file</a>, events come as a <a href=\"/events.ics\">calendar feed</a> and news as an <a href=\"/feed.xml\">RSS feed</a>. Claude, ChatGPT and other assistants that support MCP can connect to https://sophiacommons.org/mcp to search listings and events directly. Please credit Sophia Commons when you use the data."
+  "about2.data_p": "For AI assistants and developers: the whole directory is free to use as <a href=\"/data/directory.json\">JSON</a>, <a href=\"/data/directory.csv\">CSV</a> or <a href=\"/llms-full.txt\">one text file</a>, events come as a <a href=\"/events.ics\">calendar feed</a> and news as an <a href=\"/feed.xml\">RSS feed</a>. Claude, ChatGPT and other assistants that support MCP can connect to https://sophiacommons.org/mcp to search listings and events directly. Please credit Sophia Commons when you use the data.",
+  "home.cc_heading": "Christian Community Gathering",
+  "home.cc_all": "congregations →",
+  "home.cc_tag": "Online gathering"
 }

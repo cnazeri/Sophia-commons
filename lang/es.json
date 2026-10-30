@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.101.1",
+  "footer.version": "v1.102.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -1052,5 +1052,8 @@
   "jobs.feature": "Destacar en la portada",
   "jobs.unfeature": "Quitar de la portada",
   "events.subscribe_html": "Suscríbase a estos eventos en su calendario y los nuevos aparecerán solos: <a href=\"webcal://sophiacommons.org/events.ics\">Apple Calendar u Outlook</a> &middot; <a href=\"https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Fsophiacommons.org%2Fevents.ics\" target=\"_blank\" rel=\"noopener\">Google Calendar</a> &middot; <a href=\"/events.ics\">archivo .ics</a>",
-  "about2.data_p": "Para asistentes de IA y desarrolladores: todo el directorio se puede usar libremente en <a href=\"/data/directory.json\">JSON</a>, <a href=\"/data/directory.csv\">CSV</a> o <a href=\"/llms-full.txt\">un archivo de texto</a>, los eventos como <a href=\"/events.ics\">feed de calendario</a> y las noticias como <a href=\"/feed.xml\">feed RSS</a>. Claude, ChatGPT y otros asistentes compatibles con MCP pueden conectarse a https://sophiacommons.org/mcp para buscar entradas y eventos directamente. Por favor, cite a Sophia Commons al usar los datos."
+  "about2.data_p": "Para asistentes de IA y desarrolladores: todo el directorio se puede usar libremente en <a href=\"/data/directory.json\">JSON</a>, <a href=\"/data/directory.csv\">CSV</a> o <a href=\"/llms-full.txt\">un archivo de texto</a>, los eventos como <a href=\"/events.ics\">feed de calendario</a> y las noticias como <a href=\"/feed.xml\">feed RSS</a>. Claude, ChatGPT y otros asistentes compatibles con MCP pueden conectarse a https://sophiacommons.org/mcp para buscar entradas y eventos directamente. Por favor, cite a Sophia Commons al usar los datos.",
+  "home.cc_heading": "Encuentro de la Comunidad de Cristianos",
+  "home.cc_all": "congregaciones →",
+  "home.cc_tag": "Encuentro en línea"
 }
