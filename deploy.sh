@@ -23,6 +23,8 @@ done
 cp lang/*.json _deploy/lang/
 mkdir -p _deploy/fonts && cp fonts/*.woff2 _deploy/fonts/
 mkdir -p _deploy/img && cp -R img/. _deploy/img/
+# Proof of domain ownership for the official MCP Registry (public key only; private key stays in ~/.config/sophia-commons)
+mkdir -p _deploy/.well-known && cp .well-known/mcp-registry-auth _deploy/.well-known/
 
 echo "→ Prerendering static pages and sitemap (falls back to the plain app if Supabase is unreachable)"
 if ! node automation/prerender.mjs _deploy; then

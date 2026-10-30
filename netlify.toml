@@ -96,6 +96,12 @@
     Content-Type = "text/plain; charset=utf-8"
     Cache-Control = "public, max-age=3600"
 
+[[headers]]
+  for = "/.well-known/mcp-registry-auth"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
 # SPA fallback: unknown paths (e.g. /event/<id>, /category/waldorf) load the app shell.
 # Netlify serves real files first, so /sitemap.xml, /robots.txt and assets are unaffected.
 [[redirects]]
