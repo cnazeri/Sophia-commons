@@ -254,6 +254,11 @@ export const PLACE_CATS = [
   ['science-technology', 'Goethean Science & Technology', ['science'], 'Goethean Science', 'science initiatives'],
   ['online-resources', 'Anthroposophical Resources', ['online'], 'Resources', 'publishers and other resources'],
 ];
+const ONE = { 'waldorf-education': 'Waldorf school or kindergarten', 'biodynamic-agriculture': 'biodynamic farm or initiative',
+  'the-christian-community': 'Christian Community congregation', 'community-camphill': 'Camphill or social therapy place',
+  'anthroposophic-medicine': 'doctor, clinic or therapist', 'arts-eurythmy': 'eurythmy or arts initiative', 'societies-organizations': 'society, branch or group',
+  'science-technology': 'science initiative', 'online-resources': 'publisher or other resource' };
+export const countOf = (n, pc) => `${Number(n).toLocaleString('en-US')} ${n === 1 ? ONE[pc[0]] || pc[4] : pc[4]}`;   // "1 biodynamic farm or initiative"
 export const placeCatOf = dirCat => PLACE_CATS.find(p => p[2].includes(dirCat)) || null;
 export const fmtN = n => Number(n).toLocaleString('en-US');
 
@@ -286,4 +291,47 @@ export function nearbyHtml(e, nearby) {
     const km = n._km < 1 ? 'under 1 km' : Math.round(n._km) + ' km';
     return `<li><a href="/listing/${attr(n.id)}">${esc(n.organization_name)}</a> (${esc([n.city || n.location, categoryOf(n)[1]].filter(Boolean).join(', '))}, ${km})</li>`;
   }).join('') + '</ul>';
+}
+
+// ── City pages (/country/<country>/<city>) and short FAQs for country and city pages (owner, 2026-10-29) ──
+// They answer questions like "Waldorf schools in Portland" for search engines and AI assistants.
+// Keep citySlug in step with _citySlug() in sophia_commons_v9.js.
+export const MIN_CITY = 4;      // listings needed for a city page
+// English names for cities stored in their own language (shown as "Munich (München)"; the slug keeps the stored name)
+export const CITY_EN = { 'München': 'Munich', 'Köln': 'Cologne', 'Wien': 'Vienna', 'Moskau': 'Moscow', 'Moskva': 'Moscow', 'Bucuresti': 'Bucharest',
+  'București': 'Bucharest', 'Sao Paulo': 'São Paulo', 'Antwerpen': 'Antwerp', 'Praha': 'Prague', 'Warszawa': 'Warsaw', 'Lisboa': 'Lisbon',
+  'Roma': 'Rome', 'Milano': 'Milan', 'Firenze': 'Florence', 'Genève': 'Geneva', 'Den Haag': 'The Hague', 'København': 'Copenhagen',
+  'Göteborg': 'Gothenburg', 'Nürnberg': 'Nuremberg', 'Sankt Petersburg': 'Saint Petersburg', 'Kyiv': 'Kyiv', 'Kiew': 'Kyiv', 'Athina': 'Athens',
+  'Bruxelles': 'Brussels', 'Brussel': 'Brussels', 'Napoli': 'Naples', 'Torino': 'Turin', 'Zürich': 'Zurich', 'Luzern': 'Lucerne' };
+export const citySlug = city => slugify(city);
+export function cityLabel(city, list = []) {
+  const en = CITY_EN[city];
+  const name = en && en !== city ? `${en} (${city})` : city;
+  // US, Canada and Australia: add the most common state or province, e.g. "Portland, Oregon"
+  if (!list.length || !['USA', 'Canada', 'Australia'].includes(list[0].country)) return name;
+  const m = new Map();
+  for (const e of list) if (e.region) m.set(e.region, (m.get(e.region) || 0) + 1);
+  const top = [...m.entries()].sort((a, b) => b[1] - a[1])[0];
+  return top ? `${name}, ${top[0]}` : name;
+}
+export const cityShort = city => CITY_EN[city] || city;   // "Munich" in running text
+
+// A short FAQ built from the listings themselves. `where` is "Portland, Oregon" or "the Netherlands".
+export function placeFaq(list, where, moreLink) {
+  const parts = PLACE_CATS.map(pc => ({ pc, sub: list.filter(e => pc[2].includes(e.category)) })).filter(x => x.sub.length)
+    .sort((a, b) => b.sub.length - a.sub.length);
+  const names = l => { const n = l.slice(0, 3).map(e => e.organization_name); return n.length < l.length ? n.join(', ') + ' and others' : n.length > 1 ? n.slice(0, -1).join(', ') + ' and ' + n[n.length - 1] : n[0]; };
+  const qa = [];
+  qa.push([`What anthroposophical places are in ${where}?`,
+    `Sophia Commons lists ${fmtN(list.length)} ${list.length === 1 ? 'place' : 'places'} in ${where}: ` + parts.map(x => countOf(x.sub.length, x.pc)).join(', ') + '.']);
+  const Q = { 'waldorf-education': `Are there Waldorf or Steiner schools in ${where}?`, 'biodynamic-agriculture': `Are there biodynamic or Demeter farms in ${where}?`,
+    'the-christian-community': `Is there a Christian Community congregation in ${where}?`, 'community-camphill': `Are there Camphill communities in ${where}?`,
+    'anthroposophic-medicine': `Where can I find anthroposophic medicine in ${where}?`, 'arts-eurythmy': `Where can I find eurythmy in ${where}?`,
+    'societies-organizations': `Is there an anthroposophical society or study group in ${where}?` };
+  for (const x of parts.slice(0, 4)) if (Q[x.pc[0]]) qa.push([Q[x.pc[0]], `Yes. Sophia Commons lists ${countOf(x.sub.length, x.pc)} in ${where}, including ${names(x.sub)}.`]);
+  qa.push([`How do I find the nearest one?`, `Open ${moreLink} on Sophia Commons and use "Find near me" to sort every listing by distance, or browse the map. Each listing has the address and website.`]);
+  // .place-faq: the app moves this block into the visible page, so visitors see the same answers as crawlers
+  const html = '<div class="place-faq"><h2>Questions and answers</h2>' + qa.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('') + '</div>';
+  const ld = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: qa.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) };
+  return { html, ld };
 }

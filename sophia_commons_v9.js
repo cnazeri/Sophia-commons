@@ -592,6 +592,7 @@ function _catKeyFromName(name) {
 }
 
 function showCategory(name, skipPush, opts) {
+  _clearPlaceFaq();
   name = _catKeyFromName(name);
   opts = opts || {};
   captureCurrentSection('category');
@@ -1109,6 +1110,7 @@ var REGIONS = {
 };
 
 async function showRegion(key, skipPush, opts) {
+  _clearPlaceFaq();
   opts = opts || {};
   var r = REGIONS[key];
   if (!r) { showSec('directory', skipPush); return; }
@@ -1164,7 +1166,10 @@ var COUNTRY_SLUG_ALIAS = { 'united-states': ['USA', 'United States'], 'united-ki
 var COUNTRY_LABEL = { USA: 'United States', UK: 'United Kingdom' };
 var COUNTRY_WITH_THE = ['United States', 'United Kingdom', 'Netherlands', 'Czech Republic', 'Philippines', 'Dominican Republic', 'United Arab Emirates'];
 
-async function showPlace(catSlug, cSlug, skipPush) {
+// City pages (/country/<country>/<city>): keep _citySlug in step with citySlug() in automation/seo_html.mjs
+function _citySlug(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+
+async function showPlace(catSlug, cSlug, skipPush, cityKey) {
   var pc = catSlug ? PLACE_CATS[catSlug] : null;
   if (catSlug && !pc) { showSec('directory', skipPush); return; }
   captureCurrentSection('category');
@@ -1172,19 +1177,21 @@ async function showPlace(catSlug, cSlug, skipPush) {
   var guess = COUNTRY_SLUG_ALIAS[cSlug] ? (COUNTRY_LABEL[COUNTRY_SLUG_ALIAS[cSlug][0]]) : cSlug.split('-').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
   var setHead = function(L) {
     var Lin = (COUNTRY_WITH_THE.indexOf(L) !== -1 ? 'the ' : '') + L;
-    var label = pc ? pc[0] + ' ' + t('place.in', 'in') + ' ' + Lin : t('place.anthroposophy_in', 'Anthroposophy in {country}').replace('{country}', Lin);
+    var label = pc ? pc[0] + ' ' + t('place.in', 'in') + ' ' + Lin : t('place.anthroposophy_in', 'Anthroposophy in {country}').replace('{country}', cityName ? cityName + ', ' + L : Lin);
     document.getElementById('cat-page-label').textContent = label;
     document.getElementById('cat-page-desc').textContent = t('region.desc', 'Anthroposophical schools, farms, clinics, communities and resources in {region}.').replace('{region}', L);
     if (!keepStatic) updateSEOMeta(label + ' | Sophia Commons', document.getElementById('cat-page-desc').textContent, path);
   };
-  var path = catSlug ? '/category/' + catSlug + '/' + cSlug : '/country/' + cSlug;
+  var cityName = '';
+  var path = catSlug ? '/category/' + catSlug + '/' + cSlug : '/country/' + cSlug + (cityKey ? '/' + cityKey : '');
   // Opened straight from the deploy's static copy: keep its fuller title and description
   var canon = document.querySelector('link[rel="canonical"]');
   var keepStatic = !!(skipPush && canon && canon.getAttribute('href') === 'https://sophiacommons.org' + path);
+  if (!keepStatic) _clearPlaceFaq();   // answers belong to the page they were built for
   setHead(guess);
   container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + t('common.loading') + '</div>';
   showSec('category', true);
-  if (!skipPush && location.pathname !== path) history.pushState({ type: 'place', cat: catSlug || '', country: cSlug }, '', path);
+  if (!skipPush && location.pathname !== path) history.pushState({ type: 'place', cat: catSlug || '', country: cSlug, city: cityKey || '' }, '', path);
   if (!sbReady()) { container.innerHTML = '<div class="empty-note">The directory is offline right now. Please try again shortly.</div>'; return; }
   try {
     var list = await _sbAllRows(function() {
@@ -1196,6 +1203,10 @@ async function showPlace(catSlug, cSlug, skipPush) {
       if (pc) q = q.in('category', pc[1]);
       return q.order('category').order('organization_name').order('id');
     });
+    if (cityKey) {
+      list = list.filter(function(e) { return _citySlug(e.city) === cityKey; });
+      if (list.length) cityName = list[0].city;
+    }
     if (!list.length) {
       container.innerHTML = '<div class="empty-note">' + esc(t('region.empty', 'No listings here yet.')) + ' <a href="#" onclick="showSubmitForm();return false;">' + esc(t('region.add_first', 'Add the first one')) + '</a></div>';
       return;
@@ -1602,6 +1613,8 @@ function routeFromPath(pathname, isPopstate) {
 
   // Category route: /category/:slug
   // Country and category-in-country pages: /country/germany, /category/waldorf-education/germany
+  var cityMatch = p.match(/^\/country\/([a-z0-9-]+)\/([a-z0-9-]+)$/);
+  if (cityMatch) { showPlace(null, cityMatch[1], skip, cityMatch[2]); return; }
   var placeMatch = p.match(/^\/country\/([a-z0-9-]+)$/) || p.match(/^\/category\/([a-z0-9-]+)\/([a-z0-9-]+)$/);
   if (placeMatch) {
     if (placeMatch[2]) showPlace(placeMatch[1], placeMatch[2], skip); else showPlace(null, placeMatch[1], skip);
@@ -8723,4 +8736,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Static pages built at deploy time (automation/prerender.mjs) carry a crawler summary in #prerender.
 // The app renders the real page, so remove the summary as soon as the script runs.
-(function() { var pr = document.getElementById('prerender'); if (pr) pr.remove(); })();
+// Country and city pages keep their questions and answers (.place-faq) under the live list.
+(function() {
+  var pr = document.getElementById('prerender'); if (!pr) return;
+  var faq = pr.querySelector('.place-faq'), box = document.getElementById('place-faq');
+  if (faq && box) box.appendChild(faq);
+  pr.remove();
+})();
+function _clearPlaceFaq() { var box = document.getElementById('place-faq'); if (box) box.innerHTML = ''; }
