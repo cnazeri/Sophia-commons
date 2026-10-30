@@ -77,6 +77,25 @@
   [headers.values]
     Cache-Control = "no-cache"
 
+# Open data for AI tools and developers (written at deploy by automation/prerender.mjs)
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/data/directory.csv"
+  [headers.values]
+    Content-Type = "text/csv; charset=utf-8"
+
+[[headers]]
+  for = "/llms-full.txt"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Content-Type = "text/plain; charset=utf-8"
+    Cache-Control = "public, max-age=3600"
+
 # SPA fallback: unknown paths (e.g. /event/<id>, /category/waldorf) load the app shell.
 # Netlify serves real files first, so /sitemap.xml, /robots.txt and assets are unaffected.
 [[redirects]]

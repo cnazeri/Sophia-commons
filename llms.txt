@@ -1,6 +1,6 @@
 # Sophia Commons
 
-> Sophia Commons (https://sophiacommons.org) is a free global directory and resource hub for the anthroposophical community founded on the work of Rudolf Steiner. It lists about 900 organizations in nearly 60 countries: Waldorf (Steiner) schools, biodynamic farms, Camphill communities, eurythmy and the arts, anthroposophic medicine, eldercare, societies and study groups. It also offers a festival calendar, news, a Rudolf Steiner book list, curated anthroposophical YouTube channels and podcasts, and memorials.
+> Sophia Commons (https://sophiacommons.org) is a free global directory and resource hub for the anthroposophical community founded on the work of Rudolf Steiner. It lists over 4,500 organizations in 77 countries: Waldorf (Steiner) schools, biodynamic farms, Camphill communities, eurythmy and the arts, anthroposophic medicine, eldercare, societies and study groups. It also offers a festival calendar, news, a Rudolf Steiner book list, curated anthroposophical YouTube channels and podcasts, and memorials.
 
 The site is free to use. Listings can be suggested by anyone and are reviewed before publishing. Content is in English with interface translations in German, Spanish and Russian.
 
@@ -35,6 +35,15 @@ The site is free to use. Listings can be suggested by anyone and are reviewed be
 - [Books](https://sophiacommons.org/books): Rudolf Steiner's works by GA (Gesamtausgabe) number, with links to free online texts and editions
 - [Podcasts and YouTube](https://sophiacommons.org/podcasts): curated anthroposophical YouTube channels (refreshed weekly) and podcasts
 - [Memorials](https://sophiacommons.org/memorial): remembering members of the community
+
+## Data, feeds and AI access
+
+- [Full directory as Markdown](https://sophiacommons.org/llms-full.txt): every listing, grouped by category and country, one line each with a link
+- [Directory as JSON](https://sophiacommons.org/data/directory.json) and [CSV](https://sophiacommons.org/data/directory.csv): name, category, description, address, city, country, coordinates, website and Sophia Commons page for every listing (no emails or phone numbers), updated with each release
+- [Events calendar (iCalendar)](https://sophiacommons.org/events.ics): subscribe in Google Calendar, Apple Calendar or Outlook; refreshed every few hours
+- [News feed (RSS)](https://sophiacommons.org/feed.xml): news from the anthroposophical movement and Sophia Commons blog posts
+- MCP server: https://sophiacommons.org/mcp (Streamable HTTP, no sign-in, read-only). Tools: search_directory (query, category, country, city), find_nearby (latitude, longitude, radius), get_listing (id) and upcoming_events (query, country, online only). Add it as a custom connector in Claude or ChatGPT, or in any MCP client.
+- Please credit Sophia Commons and link to the listing page when you use this data.
 
 ## About
 

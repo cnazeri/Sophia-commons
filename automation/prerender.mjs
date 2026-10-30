@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { SITE, esc, attr, CATEGORIES, entryList, applySeo, NOT_COUNTRIES, countryLabel, countrySlug, PLACE_CATS, placeCatOf,
   MIN_COUNTRY, MIN_COMBO, fmtN, breadcrumbLd, countryIn } from './seo_html.mjs';
+import { DATA_SELECT, directoryJson, directoryCsv, llmsFull } from './agent_data.mjs';
 
 const OUT = process.argv[2] || '_deploy';
 const template = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
@@ -26,7 +27,7 @@ async function rest(pathAndQuery, init = {}) {
 async function allDirectory() {
   const rows = [];
   for (let from = 0; from < 20000; from += 1000) {
-    const page = await rest('/rest/v1/directory_entries?select=id,organization_name,description,category,city,country,website_url,is_verified,updated_at&status=eq.approved&order=organization_name.asc', { headers: { Range: `${from}-${from + 999}` } });
+    const page = await rest(`/rest/v1/directory_entries?select=${DATA_SELECT}&status=eq.approved&order=organization_name.asc`, { headers: { Range: `${from}-${from + 999}` } });
     rows.push(...page);
     if (page.length < 1000) break;
   }
@@ -180,6 +181,17 @@ const urls = [{ loc: SITE + '/', pri: '1.0' }]
 const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + urls.map(u => `  <url><loc>${esc(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`).join('\n') + '\n</urlset>\n';
 fs.writeFileSync(path.join(OUT, 'sitemap.xml'), xml);
+
+// Open data for AI tools: the directory as JSON, CSV and one Markdown file, and fresh counts in llms.txt
+const generated = new Date().toISOString();
+fs.mkdirSync(path.join(OUT, 'data'), { recursive: true });
+fs.writeFileSync(path.join(OUT, 'data', 'directory.json'), directoryJson(dir, generated));
+fs.writeFileSync(path.join(OUT, 'data', 'directory.csv'), directoryCsv(dir));
+fs.writeFileSync(path.join(OUT, 'llms-full.txt'), llmsFull(dir, generated));
+const nCountries = new Set(dir.map(e => e.country).filter(c => c && !NOT_COUNTRIES.includes(c))).size;
+const llmsFile = path.join(OUT, 'llms.txt');
+if (fs.existsSync(llmsFile)) fs.writeFileSync(llmsFile, fs.readFileSync(llmsFile, 'utf8')
+  .replace(/over [\d,]+ organizations in \d+ countries/g, `over ${fmtN(Math.floor(dir.length / 100) * 100)} organizations in ${nCountries} countries`));
 
 // Home: write the featured event banner into index.html so it shows with the first paint (it was
 // the largest element on phones and only appeared after the script and an events request).

@@ -1,0 +1,44 @@
+name: Monthly AI visibility check
+
+# Does an AI assistant with web search find and cite Sophia Commons? (owner, 2026-10-29)
+# Runs automation/ai_visibility.py and commits the results to automation/ai_visibility_history.csv.
+# Needs the ANTHROPIC_API_KEY repository secret; about US$1-2 per run.
+
+on:
+  schedule:
+    - cron: "41 14 1 * *"        # the 1st of every month, 14:41 UTC
+  workflow_dispatch:             # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write                # commit the history file
+
+concurrency:
+  group: ai-visibility
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install --quiet requests
+
+      - name: Ask the questions
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 automation/ai_visibility.py
+
+      - name: Commit the results
+        run: |
+          git config user.name  "sophia-commons-bot"
+          git config user.email "bot@sophiacommons.org"
+          git add automation/ai_visibility_history.csv automation/ai_visibility_latest.md
+          git diff --cached --quiet || git commit -m "monthly: AI visibility $(date -u +%F)"
+          git pull --rebase --autostash origin main
+          git push

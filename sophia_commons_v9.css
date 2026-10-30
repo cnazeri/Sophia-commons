@@ -4037,3 +4037,7 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .sugg-main { flex: 1; min-width: 0; }
 .sugg-tools { flex-wrap: wrap; justify-content: flex-end; max-width: 220px; }
 @media (max-width: 768px) { .sugg-row { flex-wrap: wrap; } .sugg-tools { max-width: none; justify-content: flex-start; } }
+
+/* Events: subscribe to the calendar feed (v1.99) */
+.cal-subscribe { margin: 4px 14px 12px; font-size: .92rem; color: var(--text-muted); line-height: 1.6; }
+.cal-subscribe a { color: var(--gold-text); }

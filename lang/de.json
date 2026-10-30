@@ -583,7 +583,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.98.0",
+  "footer.version": "v1.99.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1050,5 +1050,7 @@
   "home.new_job": "Neue Stelle",
   "home.see_job": "Zur Stelle",
   "jobs.feature": "Auf der Startseite zeigen",
-  "jobs.unfeature": "Von der Startseite nehmen"
+  "jobs.unfeature": "Von der Startseite nehmen",
+  "events.subscribe_html": "Abonnieren Sie diese Veranstaltungen in Ihrem Kalender, dann erscheinen neue automatisch: <a href=\"webcal://sophiacommons.org/events.ics\">Apple Kalender oder Outlook</a> &middot; <a href=\"https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Fsophiacommons.org%2Fevents.ics\" target=\"_blank\" rel=\"noopener\">Google Kalender</a> &middot; <a href=\"/events.ics\">.ics-Datei</a>",
+  "about2.data_p": "Für KI-Assistenten und Entwickler: Das gesamte Verzeichnis steht frei als <a href=\"/data/directory.json\">JSON</a>, <a href=\"/data/directory.csv\">CSV</a> oder <a href=\"/llms-full.txt\">eine Textdatei</a> zur Verfügung, Veranstaltungen als <a href=\"/events.ics\">Kalender-Feed</a> und Nachrichten als <a href=\"/feed.xml\">RSS-Feed</a>. Claude, ChatGPT und andere Assistenten mit MCP-Unterstützung können sich mit https://sophiacommons.org/mcp verbinden und Einträge und Veranstaltungen direkt durchsuchen. Bitte nennen Sie Sophia Commons als Quelle."
 }
