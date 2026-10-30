@@ -89,3 +89,30 @@ test('mcp: invalid tool input comes back as a tool error, not a crash', async ()
   const c = await handleMessage({ jsonrpc: '2.0', id: 6, method: 'tools/call', params: { name: 'search_directory', arguments: { category: 'pizza' } } }, {}, fakeRest([]));
   assert.equal(c.result.isError, true);
 });
+
+// ── Lean crawler pages (v1.100) ──
+import { crawlerView, isCrawler } from '../automation/crawler_view.mjs';
+const shell = '<html><body><div id="page"><nav>menu</nav><main id="center" tabindex="-1">'
+  + '<div class="pagesec active" id="sec-home"><div>home text</div></div><div class="pagesec" id="sec-books"><div><div>books text</div></div></div>'
+  + '</main><aside id="rightbar"><p>sidebar</p></aside></div><div id="prerender" class="prerender-summary"><h1>Listing</h1></div>\n<footer>foot</footer>'
+  + '<!-- Scripts are deferred: x --><script defer src="/app.js"></script></body></html>';
+
+test('crawler view keeps the menu, the summary and the footer, and drops other sections and app scripts', () => {
+  const v = crawlerView(shell);
+  assert.match(v, /<main id="center" tabindex="-1">\n<div id="prerender"/);
+  assert.ok(v.includes('menu') && v.includes('foot'));
+  assert.ok(!v.includes('home text') && !v.includes('books text') && !v.includes('sidebar') && !v.includes('app.js'));
+});
+
+test('crawler view keeps the section a section route needs, shown as active', () => {
+  const v = crawlerView(shell, 'sec-books');
+  assert.ok(v.includes('<div class="pagesec active" id="sec-books"><div><div>books text</div></div></div>'));
+  assert.ok(!v.includes('home text'));
+});
+
+test('crawler detection', () => {
+  assert.ok(isCrawler('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'));
+  assert.ok(isCrawler('Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0)'));
+  assert.ok(!isCrawler('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1'));
+  assert.equal(crawlerView('<p>not the app</p>'), '<p>not the app</p>');
+});

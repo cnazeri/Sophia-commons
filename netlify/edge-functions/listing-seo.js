@@ -4,6 +4,7 @@
 // automation/prerender.mjs (both use automation/seo_html.mjs).
 // Fails open: any error returns the plain app shell, exactly as before this function existed.
 import { applySeo, listingPage, LISTING_COLUMNS, kmBetween } from '../../automation/seo_html.mjs';
+import { isCrawler, crawlerView, VARY_HEADERS } from '../../automation/crawler_view.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 let sb = null; // { url, key } read once per instance from the deployed sb-init.js (public key only)
@@ -54,7 +55,10 @@ export default async (request, context) => {
     }
     headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
     headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=3600, stale-while-revalidate=86400');
-    return new Response(applySeo(html, listingPage(entry, related, nearby)), { status: 200, headers });
+    for (const [k, v] of Object.entries(VARY_HEADERS)) headers.set(k, v);
+    const page = applySeo(html, listingPage(entry, related, nearby));
+    // Search engines and AI crawlers get the lean copy (automation/crawler_view.mjs)
+    return new Response(isCrawler(request.headers.get('user-agent')) ? crawlerView(page) : page, { status: 200, headers });
   } catch (err) {
     console.error('listing-seo', id, String(err));
     return shell.bodyUsed ? context.next() : shell;

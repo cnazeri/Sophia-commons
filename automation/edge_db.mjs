@@ -1,5 +1,7 @@
 // Shared by the event and article SEO edge functions: read the public Supabase URL and key from the
 // deployed sb-init.js (public key only, same as the browser) and run a REST query.
+import { isCrawler, crawlerView, VARY_HEADERS } from './crawler_view.mjs';
+
 let sb = null;
 
 export async function supabase(origin) {
@@ -33,7 +35,9 @@ export async function seoResponse(request, context, name, build) {
     if (!page) return new Response(html, { status: 404, headers });
     headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
     headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=3600, stale-while-revalidate=86400');
-    return new Response(page(html), { status: 200, headers });
+    for (const [k, v] of Object.entries(VARY_HEADERS)) headers.set(k, v);
+    const out = page(html);
+    return new Response(isCrawler(request.headers.get('user-agent')) ? crawlerView(out) : out, { status: 200, headers });
   } catch (err) {
     console.error(name, id, String(err));
     return shell.bodyUsed ? context.next() : shell;
