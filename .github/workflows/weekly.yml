@@ -76,6 +76,13 @@ jobs:
         run: python3 automation/suggest_posts.py
         continue-on-error: true      # stops by itself until suggested_posts exists; the site does not depend on it
 
+      - name: Add events from organizations' own event feeds (automation/event_feeds.json)
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python3 automation/events_from_feeds.py
+
       - name: Mark events that have ended as past (their pages stay readable)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

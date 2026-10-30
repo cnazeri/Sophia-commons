@@ -1616,8 +1616,8 @@ function _armReveal(el, observer, top) {
 
 // ── SPA ROUTER (SEO-friendly URLs) ──
 function routeFromPath(pathname, isPopstate) {
-  // German versions of country and city pages (/de/country/...) show the same live page
-  var p = (pathname || '/').replace(/^\/de(?=\/country\/)/, '');
+  // German versions of country, city and category-in-country pages (/de/...) show the same live page
+  var p = (pathname || '/').replace(/^\/de(?=\/(country|category)\/)/, '');
   var skip = true; // never pushState when routing from URL
 
   // Section routes

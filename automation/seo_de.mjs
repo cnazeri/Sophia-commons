@@ -48,7 +48,7 @@ export function placeFaqDe(list, where, moreLink) {
 }
 
 // Title, description and body for /de/country/<slug>
-export function countryPageDe(country, list, cities, enRoute) {
+export function countryPageDe(country, list, cities, enRoute, comboRoutes = {}) {
   const [name, inName] = DE_COUNTRIES[country];
   const parts = partsOf(list), other = list.filter(e => !placeCatOf(e.category));
   const title = `Anthroposophie ${inName}: ${parts.slice(0, 2).map(x => de(x.pc)[1]).join(', ')} und mehr | Sophia Commons`;
@@ -56,7 +56,8 @@ export function countryPageDe(country, list, cities, enRoute) {
   const faq = placeFaqDe(list, inName, 'die Länderseite');
   const body = (cities.length ? '<h2>Städte</h2><p>' + cities.map(c => `<a href="${c.deRoute}">${esc(c.city)}</a> (${c.list.length})`).join(', ') + '</p>' : '')
     + parts.map(x => `<h2>${esc(de(x.pc)[0])} ${esc(inName)} (${fmtDe(x.sub.length)})</h2>` + entryListDe(x.sub.slice(0, 40))
-      + (x.sub.length > 40 ? `<p>und ${fmtDe(x.sub.length - 40)} weitere im <a href="${enRoute}">vollständigen Verzeichnis</a>.</p>` : '')).join('')
+      + (comboRoutes[x.pc[0]] ? `<p><a href="${comboRoutes[x.pc[0]]}">Alle ${fmtDe(x.sub.length)} ${esc(de(x.pc)[2])} ${esc(inName)}</a></p>`
+        : x.sub.length > 40 ? `<p>und ${fmtDe(x.sub.length - 40)} weitere im <a href="${enRoute}">vollständigen Verzeichnis</a>.</p>` : '')).join('')
     + (other.length ? `<h2>Weitere Einträge ${esc(inName)}</h2>` + entryListDe(other) : '')
     + faq.html + `<p><a href="${enRoute}">English version</a> &middot; <a href="/directory">Verzeichnis und Weltkarte</a></p>`;
   return { title, desc, body, faq, h1: `Anthroposophie ${inName}` };
@@ -78,3 +79,17 @@ export function cityPageDe(country, city, list, siblings, deCountryRoute, enRout
 }
 
 export const hreflang = (enRoute, deRoute) => [['en', SITE + enRoute], ['de', SITE + deRoute], ['x-default', SITE + enRoute]];
+
+// /de/category/<cat>/<country>: e.g. "Waldorfschulen & Waldorfkindergärten in Deutschland"
+export function comboPageDe(pc, country, list, cities, siblingCats, enRoute, deCountryRoute) {
+  const [name, inName] = DE_COUNTRIES[country];
+  const L = de(pc);
+  const title = `${L[0]} ${inName} (${fmtDe(list.length)}) | Sophia Commons`;
+  const top = cities.slice(0, 3).map(([c]) => c);
+  const desc = `${countDe(list.length, pc)} ${inName}${top.length ? ', unter anderem in ' + top.join(', ') : ''}. Adressen, Websites und Karte im kostenlosen Verzeichnis Sophia Commons.`;
+  const body = (cities.length ? '<h2>Städte und Orte</h2><p>' + cities.slice(0, 20).map(([c, n]) => `${esc(c)} (${n})`).join(', ') + '</p>' : '')
+    + `<h2>Alle ${fmtDe(list.length)} Einträge</h2>` + entryListDe(list)
+    + (siblingCats.length ? `<h2>Mehr ${esc(inName)}</h2><ul>` + siblingCats.map(([p, r, n]) => `<li><a href="${r}">${esc(de(p)[0])}</a> (${fmtDe(n)})</li>`).join('') + '</ul>' : '')
+    + `<p><a href="${deCountryRoute}">Alles ${esc(inName)}</a> &middot; <a href="${enRoute}">English version</a> &middot; <a href="/directory">Verzeichnis und Weltkarte</a></p>`;
+  return { title, desc, body, h1: `${L[0]} ${inName}` };
+}

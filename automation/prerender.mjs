@@ -10,7 +10,7 @@ import path from 'node:path';
 import { SITE, esc, attr, CATEGORIES, entryList, applySeo, NOT_COUNTRIES, countryLabel, countrySlug, PLACE_CATS, placeCatOf,
   MIN_COUNTRY, MIN_COMBO, fmtN, breadcrumbLd, countryIn, MIN_CITY, citySlug, cityLabel, cityShort, placeFaq, countOf } from './seo_html.mjs';
 import { DATA_SELECT, directoryJson, directoryCsv, llmsFull } from './agent_data.mjs';
-import { DE_COUNTRIES, countryPageDe, cityPageDe, hreflang } from './seo_de.mjs';
+import { DE_COUNTRIES, countryPageDe, cityPageDe, comboPageDe, hreflang } from './seo_de.mjs';
 
 const OUT = process.argv[2] || '_deploy';
 const template = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
@@ -157,7 +157,8 @@ for (const { pc, country, list } of combos) {
   const body = citiesHtml(list) + `<h2>All ${fmtN(list.length)} listings</h2>` + entryList(list)
     + (siblings.length ? `<h2>${esc(pc[1])} in other countries</h2><ul>` + siblings.map(c => `<li><a href="${comboRoute(pc, c.country)}">${esc(countryLabel(c.country))}</a> (${fmtN(c.list.length)})</li>`).join('') + '</ul>' : '')
     + `<p><a href="/category/${pc[0]}">${esc(pc[1])} worldwide</a> &middot; <a href="/country/${countrySlug(country)}">Everything in ${esc(Lin)}</a></p>`;
-  written.push(render(route, title, desc, body, [itemListLd(`${pc[1]} in ${Lin}`, SITE + route, list), breadcrumbLd([['Home', '/'], [pc[1], `/category/${pc[0]}`], [L, route]])], `${pc[1]} in ${Lin}`));
+  written.push(render(route, title, desc, body, [itemListLd(`${pc[1]} in ${Lin}`, SITE + route, list), breadcrumbLd([['Home', '/'], [pc[1], `/category/${pc[0]}`], [L, route]])], `${pc[1]} in ${Lin}`,
+    DE_COUNTRIES[country] ? { alternates: hreflang(route, '/de' + route) } : {}));
 }
 // /country/<country>/<city>: e.g. Anthroposophy in Portland, Oregon
 for (const { country, city, list, route } of cityPages) {
@@ -182,8 +183,15 @@ for (const [country, list] of countries) {
   if (!DE_COUNTRIES[country]) continue;
   const enRoute = `/country/${countrySlug(country)}`, deRoute = '/de' + enRoute;
   const cities = cityPages.filter(c => c.country === country).sort((a, b) => b.list.length - a.list.length).map(c => ({ ...c, deRoute: '/de' + c.route }));
-  const pg = countryPageDe(country, list, cities, enRoute);
+  const pg = countryPageDe(country, list, cities, enRoute, Object.fromEntries(combos.filter(c => c.country === country).map(c => [c.pc[0], '/de' + comboRoute(c.pc, country)])));
   written.push(render(deRoute, pg.title, pg.desc, pg.body, [itemListLd(pg.h1, SITE + deRoute, list), pg.faq.ld], pg.h1, { lang: 'de', alternates: hreflang(enRoute, deRoute) }));
+  const myCombos = combos.filter(c => c.country === country).sort((a, b) => b.list.length - a.list.length);
+  for (const { pc, list: sub } of myCombos) {
+    const en = comboRoute(pc, country), deR = '/de' + en;
+    const sibs = myCombos.filter(c => c.pc !== pc).map(c => [c.pc, '/de' + comboRoute(c.pc, country), c.list.length]);
+    const cp = comboPageDe(pc, country, sub, topCities(sub, 20), sibs, en, deRoute);
+    written.push(render(deR, cp.title, cp.desc, cp.body, [itemListLd(cp.h1, SITE + deR, sub)], cp.h1, { lang: 'de', alternates: hreflang(en, deR) }));
+  }
   for (const c of cities) {
     const sib = cities.filter(x => x !== c).slice(0, 12);
     const cp = cityPageDe(country, c.city, c.list, sib, deRoute, c.route);

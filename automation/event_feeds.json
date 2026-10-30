@@ -1,0 +1,10 @@
+{
+  "note": "Organizations whose websites publish a machine-readable events feed (WordPress 'The Events Calendar' API). Read daily by automation/events_from_feeds.py. English-language sources only, like the news roundup (owner, 2026-10-29). German, Spanish and Portuguese feeds that also exist: Johanneshaus Oeschelbronn, Christophorus-Schule Basel, Camphill Dorfgemeinschaft Lehenhof, La Comunidad de Cristianos Andalucia, A Comunidade de Cristaos Belo Horizonte.",
+  "sources": [
+    {"name": "Rudolf Steiner House London", "base": "https://rsh.anth.org.uk", "country": "UK", "city": "London"},
+    {"name": "Threefold Educational Center", "base": "https://www.threefold.org", "country": "USA", "city": "Chestnut Ridge", "region": "New York"},
+    {"name": "Anthroposophical Society in Canada", "base": "https://www.anthroposophy.ca", "country": "Canada"},
+    {"name": "Camphill Village Copake", "base": "https://camphillvillage.org", "country": "USA", "city": "Copake", "region": "New York"},
+    {"name": "Inner Work Path (Lisa Romero)", "base": "https://www.innerworkpath.com"}
+  ]
+}
