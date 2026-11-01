@@ -3967,10 +3967,13 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 #audio-more .audio-more-body { padding: 0 18px 14px; }
 /* Home: community card and news slider under Events (2026-10-24) */
 .home-social-card { margin-bottom: 12px; }
-.home-reddit { padding: 4px 16px 10px; border-top: 1px solid var(--border-subtle); }
+.home-reddit { padding: 0 16px 10px; }
 .home-reddit-h { font-family: Lora, serif; font-size: 13px; font-weight: 700; margin: 10px 0 2px; color: var(--text-secondary); }
 .home-reddit-h a { color: var(--gold-text); }
 .home-reddit .lrow .ltitle { flex: 1; }
+.home-reddit .lrow { align-items: center; }
+.rd-thumb { flex: none; line-height: 0; }
+.rd-thumb img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; background: var(--surface); }
 .home-social-card > .listblock-head + .sf-body { padding-top: 10px; }
 .news-ev .feat-ev-body { min-width: 0; }
 .news-ev .emeta { font-size: 12px; color: var(--text-muted); }

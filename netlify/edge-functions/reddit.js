@@ -1,14 +1,14 @@
 // /api/reddit: the newest posts of r/Anthroposophy for the home page's "From the community" card
 // (owner, 2026-10-31). Reddit refuses frequent anonymous reads (HTTP 429), so this reads its public feed on
 // the server and the CDN keeps the answer for an hour: about 24 reads a day, whatever the traffic.
-// Only titles, authors, dates and links are shown; the posts themselves stay on Reddit.
+// Only titles, authors, dates, links and Reddit's small preview pictures are shown; the posts stay on Reddit.
 const SUB = 'Anthroposophy';
 const FEED = `https://www.reddit.com/r/${SUB}/new/.rss`;
 const SHOW = 5;
 
 const plain = s => String(s || '').replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]+>/g, ' ')
   .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0?39;|&apos;/g, "'")
-  .replace(/\s*—\s*/g, ', ').replace(/–/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"')
+  .replace(/\s*\u2014\s*/g, ', ').replace(/\u2013/g, '-').replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"')
   .replace(/&#?\w+;/g, ' ').replace(/\s+/g, ' ').trim();
 const tag = (xml, name) => (xml.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`)) || [])[1] || '';
 
@@ -18,6 +18,8 @@ function posts(xml) {
     url: (e.match(/<link[^>]*href="([^"]+)"/) || [])[1] || '',
     author: plain(tag(tag(e, 'author'), 'name')).replace(/^\/?u\//, ''),
     date: plain(tag(e, 'published') || tag(e, 'updated')),
+    // Reddit's own preview picture for the post (photo or link preview), when it has one
+    image: ((e.match(/<media:thumbnail[^>]*url="([^"]+)"/) || [])[1] || '').replace(/&amp;/g, '&'),
   })).filter(p => p.title && /^https:\/\/www\.reddit\.com\/r\//.test(p.url)).slice(0, SHOW);
 }
 

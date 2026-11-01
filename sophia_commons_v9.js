@@ -8272,17 +8272,19 @@ async function renderHomeReddit() {
     data = await r.json();
   } catch (e) { return; }
   if (!data || !data.posts || !data.posts.length) return;
-  var html = '<div class="home-reddit"><h4 class="home-reddit-h">' + esc(t('home.reddit_heading', 'From Reddit')) + ': '
-    + '<a href="' + escUrl(data.url) + '" target="_blank" rel="noopener">r/' + esc(data.subreddit) + '</a></h4>'
+  // The card holds only Reddit now (owner, 2026-10-31: no Facebook post on the home page). Replacing the
+  // whole card also means a second render of the home page never shows the list twice.
+  el.innerHTML = '<div class="listblock home-social-card"><div class="listblock-head"><h3 aria-level="2">'
+    + esc(t('home.social_heading', 'From the community')) + '</h3>'
+    + '<a href="' + escUrl(data.url) + '" target="_blank" rel="noopener">r/' + esc(data.subreddit) + ' &rarr;</a></div>'
+    + '<div class="home-reddit"><h4 class="home-reddit-h">' + esc(t('home.reddit_heading', 'From Reddit')) + '</h4>'
     + data.posts.map(function (p) {
-      return '<div class="lrow"><a class="ltitle" href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a>'
+      var img = /^https:\/\/(external-)?preview\.redd\.it\//.test(p.image || '')
+        ? '<a class="rd-thumb" href="' + escUrl(p.url) + '" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">'
+          + '<img src="' + escUrl(p.image) + '" alt="" width="56" height="56" loading="lazy" decoding="async"></a>' : '';
+      return '<div class="lrow">' + img + '<a class="ltitle" href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a>'
         + '<span class="lmeta">' + esc([p.author ? 'u/' + p.author : '', timeAgo(p.date)].filter(Boolean).join(' · ')) + '</span></div>';
-    }).join('') + '</div>';
-  el.querySelectorAll('.home-reddit').forEach(function (x) { x.remove(); });   // the home page can render twice
-  var card = el.querySelector('.home-social-card');
-  if (card) card.insertAdjacentHTML('beforeend', html);
-  else el.innerHTML = '<div class="listblock home-social-card"><div class="listblock-head"><h3 aria-level="2">'
-    + esc(t('home.social_heading', 'From the community')) + '</h3></div>' + html + '</div>';
+    }).join('') + '</div></div>';
 }
 
 // ── Home news: highlighted stories in a slider built like the featured events ──
@@ -8516,7 +8518,7 @@ async function toggleFeaturedJob(id, btn) {
 }
 
 function renderHomeExtras() {
-  renderSocialFeatured().then(renderHomeReddit, renderHomeReddit);
+  renderHomeReddit();   // the Facebook card (renderSocialFeatured) is off the home page (owner, 2026-10-31)
   renderHomeNews();
   renderHomeJobs();
   renderHomeBook();
