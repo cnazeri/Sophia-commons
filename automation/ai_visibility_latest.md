@@ -1,4 +1,4 @@
-## AI visibility 2026-10-29
+## AI visibility 2026-11-01
 
 Sophia Commons was cited or named in **1 of 15** answers and appeared in the search results for **1 of 15** questions (claude-sonnet-5-5 with web search).
 
@@ -20,4 +20,4 @@ Sophia Commons was cited or named in **1 of 15** answers and appeared in the sea
 | Waldorf kindergartens in Germany | no | no |
 | Anthroposophical eldercare or retirement communities | yes | yes |
 
-Sites cited most instead: en.wikipedia.org (4), anthroposophy.org (3), anthroposophie.ch (2), anthroposophynyc.org (2), ashwoodwaldorf.org (1), waldorf-100.org (1), freunde-waldorf.de (1), waldorfeducation.org (1), cedarwoodschool.org (1), facebook.com (1)
+Sites cited most instead: en.wikipedia.org (4), anthroposophie.ch (2), de.wikipedia.org (2), anthroposophy.org (2), anthroposophy.ca (2), anthroposophynyc.org (2), waldorf-100.org (1), waldorfeducation.org (1), ashwoodwaldorf.org (1), freunde-waldorf.de (1)
