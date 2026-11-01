@@ -81,6 +81,8 @@ const day = s => (s || '').slice(0, 10);
 
 const dir = await allDirectory();
 const events = await rest('/rest/v1/rpc/get_upcoming_events', { method: 'POST', body: JSON.stringify({ days_ahead: 365, limit_n: 100 }) }).catch(() => []);
+// Past events keep their pages (owner, 2026-10-31: people should find them later), so they stay in the sitemap
+const pastEvents = await rest(`/rest/v1/events?select=id,updated_at&status=eq.past&order=start_date.desc&limit=1000`).catch(() => []);
 const written = [];
 
 // Countries with enough listings get a page; category-in-country pages need MIN_COMBO listings
@@ -227,7 +229,8 @@ const urls = [{ loc: SITE + '/', pri: '1.0' }]
   .concat(written.map(r => ({ loc: SITE + r })))
   .concat([{ loc: SITE + '/privacy' }, { loc: SITE + '/terms' }, { loc: SITE + '/region/verified' }])
   .concat(dir.map(e => ({ loc: `${SITE}/listing/${e.id}`, lastmod: day(e.updated_at) })))
-  .concat(events.map(ev => ({ loc: `${SITE}/event/${ev.id}` })));
+  .concat(events.map(ev => ({ loc: `${SITE}/event/${ev.id}` })))
+  .concat(pastEvents.map(ev => ({ loc: `${SITE}/event/${ev.id}`, lastmod: day(ev.updated_at) })));
 const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + urls.map(u => `  <url><loc>${esc(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`).join('\n') + '\n</urlset>\n';
 fs.writeFileSync(path.join(OUT, 'sitemap.xml'), xml);

@@ -3,7 +3,7 @@
 Events from organizations' own event feeds (owner, 2026-10-30).
 
 Reads the WordPress "The Events Calendar" REST API of each source in automation/event_feeds.json and
-adds the next ~120 days of events to the calendar. Rules:
+adds the next year of events to the calendar. Rules:
 - an event already in the calendar (same feed id, or same title on the same day) is skipped;
 - a repeating event (same title more than once in the window, e.g. a weekly produce stand or craft club)
   only gets its next date, so routine items do not flood the calendar;
@@ -25,7 +25,7 @@ import requests
 ROOT = os.path.dirname(os.path.abspath(__file__))
 UA = {'User-Agent': 'Mozilla/5.0 (compatible; SophiaCommonsBot/1.0; +https://sophiacommons.org)'}
 ADMIN_EMAILS = ['cameron.nazeri@gmail.com', 'cameron@sophiacommons.org', 'admin@sophiacommons.org']
-DAYS_AHEAD = 120
+DAYS_AHEAD = 365   # a full year (owner, 2026-10-31: far-off workshops were missing)
 # Routine listings that are not events (a farm stand, weekly after-school clubs)
 SKIP = re.compile(r'produce stand|farm stand|after.school|craft clubs?\b|office hours|closed\b', re.I)
 TYPE_WORDS = [('conference', r'\bconference|symposium|congress\b'), ('festival', r"festival|fest\b|fair\b|bazaar|market|michaelmas|martinmas|lantern|advent|christmas|easter|st\.? john'?s (tide|day|festival)"),

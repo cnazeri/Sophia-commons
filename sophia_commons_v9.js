@@ -480,7 +480,8 @@ function _injectEventSEO(ev) {
     'location': loc,
     'organizer': ev.organizer_name ? { '@type': 'Organization', 'name': ev.organizer_name, 'url': ev.organizer_url || undefined } : undefined,
     'isAccessibleForFree': ev.is_free || false,
-    'offers': ev.ticket_url ? { '@type': 'Offer', 'url': ev.ticket_url, 'price': ev.ticket_price || '0', 'priceCurrency': 'USD' } : undefined
+    // Same rule as automation/seo_html.mjs: a price only when the event is free (ticket_price is free text)
+    'offers': ev.ticket_url ? Object.assign({ '@type': 'Offer', 'url': ev.ticket_url }, ev.is_free ? { 'price': 0, 'priceCurrency': 'USD' } : {}) : undefined
   });
 }
 
@@ -3395,8 +3396,23 @@ async function loadEventsFromSupabase() {
       _cachedEventIds = [];
     }
     _mergeSupabaseEventsIntoCalendar(data);
+    loadPastEventsFromSupabase();
   } catch(e) {
     console.warn('Events load failed:', e);
+  }
+}
+
+// Past events stay on the calendar for good (owner, 2026-10-31) so people can find them later.
+// Lists below the calendar and the home sliders filter to today onward, so only the calendar shows these.
+async function loadPastEventsFromSupabase() {
+  try {
+    var r = await _sb.from('events').select(_EV_CACHE_FIELDS.filter(function(k) { return k !== 'category_name'; }).join(', '))
+      .in('status', ['past', 'upcoming', 'ongoing']).lt('start_date', new Date().toISOString())
+      .order('start_date', { ascending: false }).limit(1000);
+    if (r.error || !r.data) { console.warn('Past events load failed:', r.error); return; }
+    _mergeSupabaseEventsIntoCalendar(r.data);
+  } catch (e) {
+    console.warn('Past events load failed:', e);
   }
 }
 
@@ -3464,7 +3480,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
             ev.ticket_url ? [/forms\.gle|docs\.google\.com\/forms/i.test(ev.ticket_url) ? 'Sign up to attend' : 'Event page', ev.ticket_url] : null].filter(Boolean),
       featured: !!ev.featured,
       end: _localDay(ev.end_date) || dateStr,
-      img: ev.image_url ? { src: ev.image_url, alt: ev.title || '', page: ev.ticket_url || ev.image_url, credit: ev.organizer_name || 'Event image' } : null
+      img: ev.image_url ? { src: ev.image_url, alt: ev.title || '', page: ev.ticket_url || ev.image_url, credit: ev.organizer_name || 'Event image' } : _eventFallbackImg(ev)
     });
 
     _sbMergedEventTitles[dedupKey] = true;
@@ -3870,6 +3886,22 @@ var FESTIVAL_IMAGES = {
   christmas_conference: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/christmas_conference.jpg", "alt": "Rudolf Steiner's blackboard drawing of the second Goetheanum motif, 1 January 1924 (Christmas Conference)", "page": "https://commons.wikimedia.org/wiki/File:Wandtafelbild_-_Gotheanum-Motiv_(1924).jpg", "credit": "Rudolf Steiner, Public domain, via Wikimedia Commons"},
   koberwitz: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/koberwitz.jpg", "alt": "Koberwitz manor (Kobierzyce palace), site of the 1924 Agriculture Course", "page": "https://commons.wikimedia.org/wiki/File:Kobierzyce-palac.jpg", "credit": "Julo (Wikimedia user), Public domain, via Wikimedia Commons"}
 };
+
+// Standard picture for an event that has none: the matching festival by title, else one per event type
+var EVENT_FALLBACK_IMG = [
+  [/\badvent\b/i, 'advent'], [/christmas|nativity|holy nights|weihnacht/i, 'christmas'], [/michael(mas)?\b/i, 'michaelmas'],
+  [/martin(mas)?\b|lantern/i, 'martinmas'], [/nicholas|nikolaus/i, 'nicholas'], [/epiphany|three kings/i, 'epiphany'],
+  [/candlemas|brigid|imbolc/i, 'candlemas'], [/easter/i, 'easter'], [/pentecost|whitsun/i, 'pentecost'],
+  [/st\.? john'?s|johanni|midsummer/i, 'johanni'], [/biodynamic|farm|garden|orchard|compost|soil|seed|harvest/i, 'koberwitz']
+];
+var EVENT_TYPE_IMG = { conference: 'solstice_winter', retreat: 'solstice_winter', study_group: 'christmas_conference',
+  workshop: 'equinox_autumn', festival: 'equinox_autumn', other: 'christmas_conference' };
+function _eventFallbackImg(ev) {
+  if (ev.event_type === 'first_class') return null;
+  var text = (ev.title || '') + ' ' + (ev.category_name || '');
+  var hit = EVENT_FALLBACK_IMG.find(function(p) { return p[0].test(text); });
+  return FESTIVAL_IMAGES[hit ? hit[1] : EVENT_TYPE_IMG[ev.event_type] || 'christmas_conference'] || null;
+}
 
 var ANTHRO_HOLIDAYS = [
   // Fixed dates
