@@ -8279,7 +8279,7 @@ async function renderHomeReddit() {
     + '<a href="' + escUrl(data.url) + '" target="_blank" rel="noopener">r/' + esc(data.subreddit) + ' &rarr;</a></div>'
     + '<div class="home-reddit"><h4 class="home-reddit-h">' + esc(t('home.reddit_heading', 'From Reddit')) + '</h4>'
     + data.posts.map(function (p) {
-      var img = /^https:\/\/(external-)?preview\.redd\.it\//.test(p.image || '')
+      var img = /^https:\/\/(i|preview|external-preview)\.redd\.it\//.test(p.image || '')
         ? '<a class="rd-thumb" href="' + escUrl(p.url) + '" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">'
           + '<img src="' + escUrl(p.image) + '" alt="" width="56" height="56" loading="lazy" decoding="async"></a>' : '';
       return '<div class="lrow">' + img + '<a class="ltitle" href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a>'
