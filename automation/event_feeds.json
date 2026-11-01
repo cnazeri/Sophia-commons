@@ -1,10 +1,79 @@
 {
-  "note": "Organizations whose websites publish a machine-readable events feed (WordPress 'The Events Calendar' API). Read daily by automation/events_from_feeds.py. English-language sources only, like the news roundup (owner, 2026-10-29). German, Spanish and Portuguese feeds that also exist: Johanneshaus Oeschelbronn, Christophorus-Schule Basel, Camphill Dorfgemeinschaft Lehenhof, La Comunidad de Cristianos Andalucia, A Comunidade de Cristaos Belo Horizonte.",
+  "note": "Organizations whose websites publish a machine-readable events feed (WordPress 'The Events Calendar' API). Read daily by automation/events_from_feeds.py. English-language sources only, like the news roundup (owner, 2026-10-29). German, Spanish and Portuguese feeds that also exist: Johanneshaus Oeschelbronn, Christophorus-Schule Basel, Camphill Dorfgemeinschaft Lehenhof, La Comunidad de Cristianos Andalucia, A Comunidade de Cristaos Belo Horizonte. Added 2026-10-31 (owner OK): feeds with the calendar installed but no upcoming events yet; their events come in once they post. Wineries left out (tastings).",
   "sources": [
-    {"name": "Rudolf Steiner House London", "base": "https://rsh.anth.org.uk", "country": "UK", "city": "London"},
-    {"name": "Threefold Educational Center", "base": "https://www.threefold.org", "country": "USA", "city": "Chestnut Ridge", "region": "New York"},
-    {"name": "Anthroposophical Society in Canada", "base": "https://www.anthroposophy.ca", "country": "Canada"},
-    {"name": "Camphill Village Copake", "base": "https://camphillvillage.org", "country": "USA", "city": "Copake", "region": "New York"},
-    {"name": "Inner Work Path (Lisa Romero)", "base": "https://www.innerworkpath.com"}
+    {
+      "name": "Rudolf Steiner House London",
+      "base": "https://rsh.anth.org.uk",
+      "country": "UK",
+      "city": "London"
+    },
+    {
+      "name": "Threefold Educational Center",
+      "base": "https://www.threefold.org",
+      "country": "USA",
+      "city": "Chestnut Ridge",
+      "region": "New York"
+    },
+    {
+      "name": "Anthroposophical Society in Canada",
+      "base": "https://www.anthroposophy.ca",
+      "country": "Canada"
+    },
+    {
+      "name": "Camphill Village Copake",
+      "base": "https://camphillvillage.org",
+      "country": "USA",
+      "city": "Copake",
+      "region": "New York"
+    },
+    {
+      "name": "Inner Work Path (Lisa Romero)",
+      "base": "https://www.innerworkpath.com"
+    },
+    {
+      "name": "The Christian Community in Chapel Hill",
+      "base": "https://christiancommunitync.org",
+      "country": "USA",
+      "city": "Hillsborough",
+      "region": "North Carolina"
+    },
+    {
+      "name": "The Christian Community, Sacramento",
+      "base": "https://christiancommunitysacramento.org",
+      "country": "USA",
+      "city": "Fair Oaks",
+      "region": "California"
+    },
+    {
+      "name": "The Christian Community in North America",
+      "base": "https://www.thechristiancommunity.org",
+      "country": "USA"
+    },
+    {
+      "name": "Newton Dee Village Community",
+      "base": "https://www.newtondee.co.uk",
+      "country": "UK",
+      "city": "Aberdeen",
+      "region": "Scotland"
+    },
+    {
+      "name": "Kairos Institute (Center for Anthroposophy)",
+      "base": "https://centerforanthroposophy.org",
+      "country": "USA"
+    },
+    {
+      "name": "Apricot Lane Farms",
+      "base": "https://www.apricotlanefarms.com",
+      "country": "USA",
+      "city": "Moorpark",
+      "region": "California"
+    },
+    {
+      "name": "Biodynamic Agriculture Australia",
+      "base": "https://biodynamics.net.au",
+      "country": "Australia",
+      "city": "Bellingen",
+      "region": "New South Wales"
+    }
   ]
 }

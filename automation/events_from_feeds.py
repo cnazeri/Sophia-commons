@@ -2,7 +2,8 @@
 """
 Events from organizations' own event feeds (owner, 2026-10-30).
 
-Reads the WordPress "The Events Calendar" REST API of each source in automation/event_feeds.json and
+Reads each source in automation/event_feeds.json (the WordPress "The Events Calendar" REST API, or a public
+iCal feed when the source has an "ical" URL, e.g. a Google Calendar) and
 adds the next year of events to the calendar. Rules:
 - an event already in the calendar (same feed id, or same title on the same day) is skipped;
 - a repeating event (same title more than once in the window, e.g. a weekly produce stand or craft club)
@@ -59,8 +60,39 @@ def event_type(title, cats):
     return next((t for t, pat in TYPE_WORDS if re.search(pat, text)), 'other')
 
 
+def read_ical(src, until):
+    """Events from a public iCal feed (e.g. a Google Calendar), shaped like the WordPress API's events.
+    Repeating events are expanded to their dates. An optional "include" regex on the source keeps only
+    matching titles (a school calendar also holds internal days)."""
+    import icalendar
+    import recurring_ical_events
+    r = requests.get(src['ical'], headers=UA, timeout=30)
+    r.raise_for_status()
+    cal = icalendar.Calendar.from_ical(r.content)
+    keep = re.compile(src['include'], re.I) if src.get('include') else None
+    out = []
+    for e in recurring_ical_events.of(cal).between(datetime.now(timezone.utc), until):
+        title = str(e.get('SUMMARY') or '').strip()
+        if not title or (keep and not keep.search(title)) or str(e.get('CLASS') or '').upper() == 'PRIVATE':
+            continue
+        start, end = e['DTSTART'].dt, (e['DTEND'].dt if e.get('DTEND') else None)
+        all_day = not isinstance(start, datetime)
+        utc = lambda d: (datetime(d.year, d.month, d.day, tzinfo=timezone.utc) if not isinstance(d, datetime)
+                         else (d if d.tzinfo else d.replace(tzinfo=timezone.utc)).astimezone(timezone.utc))
+        fmt = lambda d: utc(d).strftime('%Y-%m-%d %H:%M:%S') if d else None
+        if all_day and end:
+            end = end - timedelta(days=1)   # iCal all-day end dates are exclusive
+        out.append({'id': f"{e.get('UID')}@{utc(start):%Y%m%d}", 'title': html.escape(title),
+                    'description': html.escape(str(e.get('DESCRIPTION') or '')), 'all_day': all_day,
+                    'utc_start_date': fmt(start), 'utc_end_date': fmt(end),
+                    'venue': {'venue': str(e.get('LOCATION') or '')}, 'url': str(e.get('URL') or src['base'])})
+    return out
+
+
 def read_feed(src, until):
     """All events from now until `until` (follows the API's pages)."""
+    if src.get('ical'):
+        return read_ical(src, until)
     out, page = [], 1
     while page <= 6:
         r = requests.get(src['base'].rstrip('/') + '/wp-json/tribe/events/v1/events', headers=UA, timeout=20,
@@ -101,7 +133,7 @@ def to_row(ev, src, owner):
         'ticket_url': ev.get('url') if (ev.get('url') or '').startswith('http') else None,
         'image_url': img if img and img.startswith('https://') else None,
         'is_free': bool(re.search(r'\bfree\b', cost, re.I)),
-        'status': 'upcoming', 'source_event_id': f"tribe:{src['base'].split('//')[1].strip('/')}:{ev['id']}",
+        'status': 'upcoming', 'source_event_id': f"{'ical' if src.get('ical') else 'tribe'}:{src['base'].split('//')[1].strip('/')}:{ev['id']}",
     }
 
 
@@ -127,7 +159,7 @@ def main():
     for src in json.load(open(os.path.join(ROOT, 'event_feeds.json')))['sources']:
         try:
             evs = read_feed(src, now + timedelta(days=DAYS_AHEAD))
-        except (requests.RequestException, ValueError) as e:
+        except (requests.RequestException, ValueError, ImportError) as e:
             print(f"  skip {src['name']}: {type(e).__name__}")
             continue
         evs.sort(key=lambda e: e.get('utc_start_date') or '')
