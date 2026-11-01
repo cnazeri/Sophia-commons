@@ -1,0 +1,42 @@
+// /api/reddit: the newest posts of r/Anthroposophy for the home page's "From the community" card
+// (owner, 2026-10-31). Reddit refuses frequent anonymous reads (HTTP 429), so this reads its public feed on
+// the server and the CDN keeps the answer for an hour: about 24 reads a day, whatever the traffic.
+// Only titles, authors, dates and links are shown; the posts themselves stay on Reddit.
+const SUB = 'Anthroposophy';
+const FEED = `https://www.reddit.com/r/${SUB}/new/.rss`;
+const SHOW = 5;
+
+const plain = s => String(s || '').replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]+>/g, ' ')
+  .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0?39;|&apos;/g, "'")
+  .replace(/\s*—\s*/g, ', ').replace(/–/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"')
+  .replace(/&#?\w+;/g, ' ').replace(/\s+/g, ' ').trim();
+const tag = (xml, name) => (xml.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`)) || [])[1] || '';
+
+function posts(xml) {
+  return xml.split('<entry>').slice(1).map(e => ({
+    title: plain(tag(e, 'title')),
+    url: (e.match(/<link[^>]*href="([^"]+)"/) || [])[1] || '',
+    author: plain(tag(tag(e, 'author'), 'name')).replace(/^\/?u\//, ''),
+    date: plain(tag(e, 'published') || tag(e, 'updated')),
+  })).filter(p => p.title && /^https:\/\/www\.reddit\.com\/r\//.test(p.url)).slice(0, SHOW);
+}
+
+export default async () => {
+  try {
+    const r = await fetch(FEED, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SophiaCommons/1.0; +https://sophiacommons.org)' } });
+    if (!r.ok) throw new Error(`reddit HTTP ${r.status}`);
+    const list = posts(await r.text());
+    if (!list.length) throw new Error('no posts');
+    return new Response(JSON.stringify({ subreddit: SUB, url: `https://www.reddit.com/r/${SUB}/`, posts: list }), { headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'public, max-age=900',
+      // an hour fresh; if Reddit refuses a refresh, keep serving the last good list for up to a day
+      'Netlify-CDN-Cache-Control': 'public, durable, s-maxage=3600, stale-while-revalidate=86400',
+    } });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: 'Reddit could not be reached.' }), {
+      status: 502, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+  }
+};
+
+export const config = { path: '/api/reddit', cache: 'manual' };

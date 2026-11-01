@@ -3811,6 +3811,7 @@ function timeAgo(dateStr) {
   if (diff === 0) return t('common.today');
   if (diff === 1) return t('common.yesterday');
   if (diff < 7) return t('common.days_ago').replace('{count}', diff);
+  if (diff < 14) return t('common.week_ago', '1 week ago');
   if (diff < 30) return t('common.weeks_ago').replace('{count}', Math.floor(diff / 7));
   return localDate(dateStr, { month: 'short', day: 'numeric' });
 }
@@ -8259,6 +8260,31 @@ async function renderSocialFeatured() {
   el.innerHTML = html.replace('<div class="listblock social-feat">', '<div class="listblock social-feat home-social-card">' + head);
 }
 
+// Newest r/Anthroposophy posts under the community card (owner, 2026-10-31). /api/reddit is cached on the
+// server for an hour; when Reddit can't be reached the list is simply left out.
+async function renderHomeReddit() {
+  var el = document.getElementById('home-social');
+  if (!el) return;
+  var data;
+  try {
+    var r = await fetch('/api/reddit');
+    if (!r.ok) return;
+    data = await r.json();
+  } catch (e) { return; }
+  if (!data || !data.posts || !data.posts.length) return;
+  var html = '<div class="home-reddit"><h4 class="home-reddit-h">' + esc(t('home.reddit_heading', 'From Reddit')) + ': '
+    + '<a href="' + escUrl(data.url) + '" target="_blank" rel="noopener">r/' + esc(data.subreddit) + '</a></h4>'
+    + data.posts.map(function (p) {
+      return '<div class="lrow"><a class="ltitle" href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a>'
+        + '<span class="lmeta">' + esc([p.author ? 'u/' + p.author : '', timeAgo(p.date)].filter(Boolean).join(' · ')) + '</span></div>';
+    }).join('') + '</div>';
+  el.querySelectorAll('.home-reddit').forEach(function (x) { x.remove(); });   // the home page can render twice
+  var card = el.querySelector('.home-social-card');
+  if (card) card.insertAdjacentHTML('beforeend', html);
+  else el.innerHTML = '<div class="listblock home-social-card"><div class="listblock-head"><h3 aria-level="2">'
+    + esc(t('home.social_heading', 'From the community')) + '</h3></div>' + html + '</div>';
+}
+
 // ── Home news: highlighted stories in a slider built like the featured events ──
 // Stories from the last NEWS_RECENT_DAYS: featured first, then the newest, up to FEAT_MAX. Own state, so it never moves the events slider.
 var _homeNewsPromise = null;
@@ -8490,7 +8516,7 @@ async function toggleFeaturedJob(id, btn) {
 }
 
 function renderHomeExtras() {
-  renderSocialFeatured();
+  renderSocialFeatured().then(renderHomeReddit, renderHomeReddit);
   renderHomeNews();
   renderHomeJobs();
   renderHomeBook();
