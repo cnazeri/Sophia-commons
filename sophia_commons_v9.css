@@ -4063,3 +4063,30 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .zoom-box { margin: 12px 0 16px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--muted-bg); font-size: 14px; line-height: 1.8; }
 .zoom-box .zoom-h { font-weight: 700; margin-bottom: 2px; }
 .zoom-box a { color: var(--gold-text); font-weight: 600; }
+
+/* Event sign-ups (owner, 2026-10-31) */
+#event-submit-box .esm-check { display: flex; align-items: center; gap: 8px; margin: 16px 0 4px; font-weight: 600; cursor: pointer; }
+#event-submit-box .esm-check input { width: 20px; height: 20px; margin: 0; padding: 0; flex: none; accent-color: var(--gold); }
+.esm-hint { font-size: 13px; color: var(--text-muted); margin: 4px 0 8px; }
+#event-submit-box .esm-q { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-bottom: 8px; }
+#event-submit-box .esm-q select { width: auto; }
+#event-submit-box .esm-q input[id$="o"] { grid-column: 1 / -1; }
+.ev-signup, .ev-signups { margin: 18px 0; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 10px; }
+.ev-signup h3, .ev-signups h3 { font-family: Lora, serif; font-size: 17px; margin: 0 0 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ev-signup-count { font-size: 13px; font-weight: 400; color: var(--text-muted); }
+.ev-signup form { display: grid; gap: 10px; max-width: 460px; }
+.ev-signup label { display: grid; gap: 4px; font-size: 14px; font-weight: 600; }
+.ev-signup input, .ev-signup select, .ev-signup textarea { font: inherit; font-weight: 400; padding: 10px 12px; min-height: 44px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg); }
+.ev-signup-yn { border: 0; padding: 0; margin: 0; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+.ev-signup-yn legend { font-size: 14px; font-weight: 600; margin-bottom: 4px; width: 100%; }
+.ev-signup-yn label { display: flex; align-items: center; gap: 6px; font-weight: 400; min-height: 44px; }
+.ev-signup-yn input { min-height: 0; }
+.ev-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.ev-signup .ev-signup-btn { justify-self: start; min-height: 44px; padding: 11px 26px; background: var(--gold); color: var(--on-gold); border: none; border-radius: 999px; font: inherit; font-weight: 700; cursor: pointer; transition: background .2s, transform .2s; }
+.ev-signup .ev-signup-btn:hover { background: var(--gold-hover); transform: translateY(-1px); }
+.ev-signup .ev-signup-btn:disabled { opacity: .6; cursor: default; transform: none; }
+.ev-signup-msg { font-size: 14px; color: var(--rose); margin: 0; min-height: 1em; }
+.ev-signup-privacy, .ev-signups-note { font-size: 12px; color: var(--text-muted); margin: 0; }
+.ev-signup-done { font-weight: 600; color: var(--sage); margin: 0; }
+.ev-signups ul { margin: 8px 0 0; padding-left: 18px; font-size: 14px; }
+.ev-signups li { margin-bottom: 6px; }

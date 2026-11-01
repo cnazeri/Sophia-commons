@@ -79,6 +79,7 @@ async function showDetail(type, id, skipPush) {
         .select('*').eq('id', id).single();
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderEventDetail(data);
+      _initEventSignup(data);
       updateSEOMeta(data.title + ' | Sophia Commons Events', (data.description || '').substring(0, 160), '/event/' + id);
       _injectEventSEO(data);
       loadRelatedEvents(data.category_id, data.id);
@@ -311,6 +312,8 @@ function renderEventDetail(ev) {
     + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold-text);font-weight:700;margin-bottom:12px;">' + t('event_detail.ticket_price').replace('${price}', ev.ticket_price) + '</p>' : '')
     + '<div class="detail-actions">' + actions + '</div>'
     + _calButtonsHtml(ev)
+    + (ev.signup_enabled ? '<div id="ev-signup" class="ev-signup"></div>' : '')
+    + '<div id="ev-signups-list"></div>'
     + '</div>'
     + '<div class="detail-sidebar"><h4>' + t('event_detail.title') + '</h4>'
     + '<p><strong>' + t('event_detail.date') + ':</strong> ' + esc(dateStr) + '</p>'
@@ -323,6 +326,112 @@ function renderEventDetail(ev) {
     + _nlCardHtml('event')
     + renderCommentsSection('event', ev.id)
     + '<div id="related-listings"></div>';
+}
+
+// ── EVENT SIGN-UPS (owner, 2026-10-31) ──
+// Organizers can collect sign-ups on the event page instead of a Google Form: name, email, number attending
+// and up to 3 questions of their own. The event-signup edge function saves them and emails both sides.
+// The organizer (events.user_id) and admins see the list and can download it.
+function _initEventSignup(ev) {
+  var box = document.getElementById('ev-signup');
+  var open = ev.signup_enabled && ['upcoming', 'ongoing'].indexOf(ev.status) !== -1
+    && new Date(ev.end_date || ev.start_date).getTime() > Date.now() - 864e5;
+  if (box && open) {
+    var qs = (Array.isArray(ev.signup_questions) ? ev.signup_questions : []).slice(0, 3);
+    box.innerHTML = '<h3>' + esc(t('signup.heading', 'Sign up for this event')) + ' <span class="ev-signup-count" id="ev-signup-count"></span></h3>'
+      + '<form onsubmit="_sendEventSignup(event, \'' + esc(ev.id) + '\')" novalidate>'
+      + '<label>' + esc(t('signup.name', 'Your name')) + '<input name="name" required maxlength="120" autocomplete="name"></label>'
+      + '<label>' + esc(t('signup.email', 'Email')) + '<input name="email" type="email" required maxlength="200" autocomplete="email"></label>'
+      + '<label>' + esc(t('signup.attending', 'Number of people')) + '<input name="attending" type="number" min="1" max="20" value="1"></label>'
+      + qs.map(function (q, i) {
+        var f = 'q' + i, label = '<span>' + esc(q.label) + '</span>';
+        if (q.type === 'yesno') return '<fieldset class="ev-signup-yn"><legend>' + esc(q.label) + '</legend>'
+          + '<label><input type="radio" name="' + f + '" value="Yes"> ' + esc(t('common.yes', 'Yes')) + '</label>'
+          + '<label><input type="radio" name="' + f + '" value="No"> ' + esc(t('common.no', 'No')) + '</label></fieldset>';
+        if (q.type === 'choice') return '<label>' + label + '<select name="' + f + '"><option value=""></option>'
+          + (q.options || []).map(function (o) { return '<option>' + esc(o) + '</option>'; }).join('') + '</select></label>';
+        return '<label>' + label + '<input name="' + f + '" maxlength="500"></label>';
+      }).join('')
+      + '<label>' + esc(t('signup.note', 'Note for the organizer (optional)')) + '<textarea name="note" rows="2" maxlength="1000"></textarea></label>'
+      + '<input name="website" class="ev-hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
+      + '<button type="submit" class="ev-signup-btn">' + esc(t('signup.submit', 'Sign up')) + '</button>'
+      + '<p class="ev-signup-msg" role="status"></p>'
+      + '<p class="ev-signup-privacy">' + esc(t('signup.privacy', 'Only the organizer and Sophia Commons see your details. You will get a confirmation email.')) + '</p>'
+      + '</form>';
+    _sb.rpc('event_signup_count', { p_event: ev.id }).then(function (r) {
+      var c = document.getElementById('ev-signup-count');
+      if (c && r && !r.error && r.data > 0) c.textContent = t('signup.count', '{n} signed up').replace('{n}', r.data);
+    });
+  } else if (box) box.remove();
+  var me = window._supabaseUser;
+  if (ev.signup_enabled && me && (me.id === ev.user_id || isAdmin())) _loadEventSignups(ev);
+}
+
+async function _sendEventSignup(e, eventId) {
+  e.preventDefault();
+  var f = e.target, msg = f.querySelector('.ev-signup-msg'), btn = f.querySelector('button[type=submit]');
+  var val = function (n) { var x = f.elements[n]; return x ? (x.value || '').trim() : ''; };
+  if (!val('name') || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val('email'))) {
+    msg.textContent = t('signup.need_name_email', 'Please give your name and a valid email address.'); return;
+  }
+  var answers = [0, 1, 2].map(function (i) {
+    var x = f.elements['q' + i]; if (!x) return null;
+    if (x.length && x[0] && x[0].type === 'radio') { var c = f.querySelector('input[name=q' + i + ']:checked'); return c ? c.value : ''; }
+    return (x.value || '').trim();
+  }).filter(function (a) { return a !== null; });
+  btn.disabled = true; msg.textContent = t('signup.sending', 'Sending...');
+  try {
+    var r = await fetch(SUPABASE_URL + '/functions/v1/event-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+      body: JSON.stringify({ event_id: eventId, name: val('name'), email: val('email'), attending: val('attending'), note: val('note'),
+        answers: answers, website: val('website'), tz: Intl.DateTimeFormat().resolvedOptions().timeZone })
+    });
+    var body = await r.json().catch(function () { return {}; });
+    if (!r.ok) throw new Error(body.error || 'failed');
+    f.innerHTML = '<p class="ev-signup-done">' + esc(t('signup.done', 'Thank you, you are signed up. A confirmation is on its way to your email.')) + '</p>';
+    var c = document.getElementById('ev-signup-count');
+    if (c && body.count) c.textContent = t('signup.count', '{n} signed up').replace('{n}', body.count);
+  } catch (err) {
+    btn.disabled = false;
+    msg.textContent = err.message && err.message !== 'failed' ? err.message : t('signup.error', 'Your sign-up could not be sent. Please try again.');
+  }
+}
+
+var _evSignups = [];
+async function _loadEventSignups(ev) {
+  var el = document.getElementById('ev-signups-list');
+  if (!el) return;
+  var r = await _sb.from('event_signups').select('name, email, attending, answers, note, status, created_at')
+    .eq('event_id', ev.id).order('created_at');
+  if (r.error) return;
+  _evSignups = (r.data || []).filter(function (s) { return s.status === 'confirmed'; });
+  var people = _evSignups.reduce(function (n, s) { return n + (s.attending || 1); }, 0);
+  el.innerHTML = '<div class="ev-signups"><h3>' + esc(t('signup.list_heading', 'Sign-ups')) + ' (' + people + ')'
+    + (_evSignups.length ? ' <button type="button" class="adm-btn" onclick="_downloadEventSignups(\'' + esc(ev.title).replace(/'/g, '') + '\')">'
+      + esc(t('signup.download', 'Download spreadsheet')) + '</button>' : '') + '</h3>'
+    + '<p class="ev-signups-note">' + esc(t('signup.list_note', 'Only you (the organizer) and Sophia Commons admins see this list.')) + '</p>'
+    + (_evSignups.length ? '<ul>' + _evSignups.map(function (s) {
+      var extra = (s.answers || []).filter(function (a) { return a.answer; }).map(function (a) { return a.label + ': ' + a.answer; });
+      if (s.note) extra.push(s.note);
+      return '<li><b>' + esc(s.name) + '</b> &middot; ' + esc(s.email) + (s.attending > 1 ? ' &middot; ' + s.attending : '')
+        + (extra.length ? '<br><span class="lmeta">' + esc(extra.join(' | ')) + '</span>' : '') + '</li>';
+    }).join('') + '</ul>' : '<p>' + esc(t('signup.none_yet', 'No sign-ups yet.')) + '</p>') + '</div>';
+}
+
+function _downloadEventSignups(title) {
+  var qs = [];
+  _evSignups.forEach(function (s) { (s.answers || []).forEach(function (a) { if (qs.indexOf(a.label) === -1) qs.push(a.label); }); });
+  var cell = function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  var rows = [['Name', 'Email', 'People'].concat(qs, ['Note', 'Signed up'])].concat(_evSignups.map(function (s) {
+    var byLabel = {}; (s.answers || []).forEach(function (a) { byLabel[a.label] = a.answer; });
+    return [s.name, s.email, s.attending].concat(qs.map(function (q) { return byLabel[q] || ''; }), [s.note || '', (s.created_at || '').slice(0, 16).replace('T', ' ')]);
+  }));
+  var blob = new Blob(['﻿' + rows.map(function (r) { return r.map(cell).join(','); }).join('\n')], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sign-ups ' + title.slice(0, 60) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
 }
 
 // Minimal allow-list HTML sanitizer (used for the generated weekly digest, which is stored as HTML
@@ -4809,6 +4918,17 @@ async function submitEvent(btn) {
   };
   if (endDate) row.end_date = endDate + 'T23:59:59';
   if (url) row.organizer_url = url;
+  var signupBox = document.getElementById('esm-signup');
+  if (signupBox && signupBox.checked) {   // sign-ups on the event page (owner, 2026-10-31)
+    row.signup_enabled = true;
+    row.signup_questions = [1, 2, 3].map(function (i) {
+      var label = (document.getElementById('esm-q' + i).value || '').trim().slice(0, 120);
+      var type = document.getElementById('esm-q' + i + 't').value;
+      var opts = (document.getElementById('esm-q' + i + 'o').value || '').split(',').map(function (o) { return o.trim().slice(0, 60); }).filter(Boolean).slice(0, 10);
+      if (!label || (type === 'choice' && opts.length < 2)) return null;
+      return type === 'choice' ? { label: label, type: type, options: opts } : { label: label, type: type };
+    }).filter(Boolean);
+  }
 
   if (btn) btn.disabled = true;
   try {
