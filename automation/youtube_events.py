@@ -90,7 +90,8 @@ def main():
         for v in sorted(vids, key=lambda v: v['liveStreamingDetails']['scheduledStartTime']):
             r = to_row(v, ch, owner)
             k = (norm(r['title']), r['organizer_name'])
-            if r['source_event_id'] in known_ids or k in known_series:
+            # a stream that never started stays 'upcoming' on YouTube, so drop dates already gone
+            if r['start_date'] < now or r['source_event_id'] in known_ids or k in known_series:
                 continue
             known_series.add(k)
             rows.append(r)
