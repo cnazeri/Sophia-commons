@@ -32,6 +32,32 @@ $$;
 revoke all on function public.get_event(uuid) from public;
 grant execute on function public.get_event(uuid) to anon, authenticated;
 
+-- 3. Guard the fields organizers must not set themselves, whichever way they write (the event-save function,
+--    admins and the SQL editor run without a signed-in user or as admin, and are not affected):
+--    - featured stays as it was (false for new rows)
+--    - directory_entry_id may only point to a listing the user has claimed
+create or replace function public.events_guard_owner_fields()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null or public.is_admin() then
+    return new;
+  end if;
+  if tg_op = 'INSERT' then
+    new.featured := false;
+  else
+    new.featured := old.featured;
+  end if;
+  if new.directory_entry_id is not null
+     and (tg_op = 'INSERT' or new.directory_entry_id is distinct from old.directory_entry_id)
+     and not exists (select 1 from public.directory_entries d where d.id = new.directory_entry_id and d.claimed_by = auth.uid()) then
+    raise exception 'You can only link an event to a listing you have claimed.' using errcode = '42501';
+  end if;
+  return new;
+end $$;
+drop trigger if exists events_guard_owner_fields on public.events;
+create trigger events_guard_owner_fields before insert or update on public.events
+  for each row execute function public.events_guard_owner_fields();
+
 -- Check: expect the 4 new columns, then an empty result for a random id
 select column_name, data_type from information_schema.columns
 where table_schema = 'public' and table_name = 'events'
