@@ -4071,3 +4071,32 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
   .evf-row { grid-template-columns: 1fr; }
   .evf fieldset { padding: var(--sp-3); }
 }
+
+/* "+ create an event" under the right sidebar newsletter box (owner, 2026-11-01) */
+#rightbar .rb-create-event { display: flex; align-items: center; justify-content: center; min-height: 44px; margin: -6px 0 18px; border: 1px solid var(--gold); border-radius: 999px; color: var(--gold-text); font-size: 13px; font-weight: 700; text-decoration: none; transition: background 0.2s; }
+#rightbar .rb-create-event:hover { background: var(--gold-light); }
+#rightbar .rb-create-event:active { transform: scale(0.98); }
+
+/* Account settings page (account.js, owner 2026-11-01) */
+#acc-root { max-width: 760px; }
+.acc-card { margin: 0 0 18px; padding: 20px 22px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--surface); }
+.acc-card h3 { margin: 0 0 10px; font-family: 'Lora', Georgia, serif; font-size: 18px; color: var(--text-primary); }
+.acc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.acc-head a { font-size: 14px; color: var(--gold-text); font-weight: 600; }
+.acc-line { margin: 0 0 4px; font-size: 15px; color: var(--text-secondary); }
+.acc-card form label { display: block; margin: 10px 0 4px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.acc-card form input { width: 100%; max-width: 360px; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font: inherit; font-size: 15px; color: var(--text-primary); }
+.acc-card form input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-light); }
+.acc-card form .org-btn { margin-top: 14px; }
+.acc-msg { min-height: 20px; margin: 10px 0 0; font-size: 14px; color: var(--text-secondary); }
+.acc-msg-err { color: var(--error); }
+.acc-msg-ok { color: var(--verified, #2e7d4f); font-weight: 600; }
+.acc-list { list-style: none; margin: 0; padding: 0; }
+.acc-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 10px 0; border-top: 1px solid var(--border-subtle); }
+.acc-list li:first-child { border-top: 0; }
+.acc-list li a { flex: 1 1 260px; font-weight: 600; color: var(--gold-text); }
+.acc-meta { font-size: 13px; color: var(--text-muted); }
+.acc-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--gold-light); color: var(--text-primary); }
+.acc-pending { background: #fff3d6; }
+.acc-rejected, .acc-cancelled { background: #f6e3e1; color: var(--error); }
+.acc-past { background: var(--border-subtle); color: var(--text-secondary); }

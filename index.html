@@ -224,7 +224,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.108.1">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.109.1">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -263,6 +263,7 @@
     <label for="sl-cat" data-i18n="submit.category_label">Category *</label>
     <select id="sl-cat">
       <option value="">Select a category…</option>
+      <option value="__event" data-i18n="submit.cat_event">Event (opens the event form)</option>
       <option>Waldorf &amp; Education</option>
       <option>Biodynamic Agriculture</option>
       <option>Esoteric Studies</option>
@@ -326,8 +327,10 @@
   <span class="nav-links">
     <a href="/about" data-i18n="topbar.about" onclick="showSec('about');return false;">about</a>
     <a href="#" data-i18n="topbar.post_listing_link" onclick="showSubmitForm();return false;">post a listing</a>
+    <a href="/events/new" data-i18n="topbar.create_event_link" onclick="showEventForm();return false;">create an event</a>
     <a href="#" id="adminlink" onclick="showSec('admin');return false;" style="display:none;color:#c0392b;font-weight:600;">admin</a>
     <a href="/my-events" id="myevents-link" style="display:none" data-i18n="org.my_events_link" onclick="showSec('my-events');return false;">my events</a>
+    <a href="/account" id="account-link" style="display:none" data-i18n="acc.topbar_link" onclick="showSec('account');return false;">settings</a>
     <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
     <a href="#" class="signinbtn" id="signin-link" data-i18n="topbar.sign_in" onclick="openModal();return false;">sign in</a>
   </span>
@@ -1633,6 +1636,11 @@
   <div class="seclabel" data-i18n="org.label_mine">My events</div>
   <div id="myev-root"><p class="org-empty" data-i18n="common.loading">Loading...</p></div>
 </div>
+<!-- ═══ ACCOUNT: password and everything I have posted (account.js, 2026-11-01) ═══ -->
+<div class="pagesec" id="sec-account">
+  <div class="seclabel" data-i18n="acc.label">Account settings</div>
+  <div id="acc-root"><p class="org-empty" data-i18n="common.loading">Loading...</p></div>
+</div>
 <div class="pagesec legal-page" id="sec-privacy">
   <div class="seclabel">Privacy</div>
   <h2 class="legal-title">Privacy at Sophia Commons</h2>
@@ -2039,6 +2047,8 @@
   <button type="button" onclick="doRbSignup()" data-i18n="footer.newsletter_btn">subscribe</button>
   <div id="rb-ok" class="rb-nl-ok" role="status" data-i18n="newsletter.check_inbox">Almost done: check your inbox and click the link to confirm.</div>
   </section>
+  <!-- Create an event, right under the newsletter box (owner, 2026-11-01) -->
+  <a class="rb-create-event" href="/events/new" onclick="showEventForm();return false;" data-i18n="topbar.create_event_btn">+ create an event</a>
 
   <section class="rb-sec rb-steiner" aria-labelledby="rs-head">
   <h5 aria-level="2" id="rs-head" data-i18n="steiner.heading">rudolf steiner</h5>
@@ -2137,19 +2147,20 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.108.1</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.109.1</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.108.1"></script>
-<script defer src="/i18n.js?v=1.108.1"></script>
-<script defer src="/sophia_commons_v9.js?v=1.108.1"></script>
-<script defer src="/blog.js?v=1.108.1"></script>
-<script defer src="/claims.js?v=1.108.1"></script>
-<script defer src="/events_organizer.js?v=1.108.1"></script>
+<script defer src="/sb-init.js?v=1.109.1"></script>
+<script defer src="/i18n.js?v=1.109.1"></script>
+<script defer src="/sophia_commons_v9.js?v=1.109.1"></script>
+<script defer src="/blog.js?v=1.109.1"></script>
+<script defer src="/claims.js?v=1.109.1"></script>
+<script defer src="/events_organizer.js?v=1.109.1"></script>
+<script defer src="/account.js?v=1.109.1"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

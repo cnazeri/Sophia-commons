@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 
 PUBLIC_FILES=(
   e3215b7ec0b01b92545c239d0e656f20.txt
-  index.html offline.html signup.html steiner_audio.json sophia_commons_v9.css sophia_commons_v9.js blog.js claims.js events_organizer.js i18n.js sb-init.js sw.js manifest.json
+  index.html offline.html signup.html steiner_audio.json sophia_commons_v9.css sophia_commons_v9.js blog.js claims.js events_organizer.js account.js i18n.js sb-init.js sw.js manifest.json
   robots.txt llms.txt sitemap.xml _redirects googleae2ea1fc1aac5bc6.html
   logo.svg logo.png icon-192.png icon-512.png favicon.ico favicon-32.png apple-touch-icon.png og-image.jpg
 )
@@ -43,6 +43,7 @@ echo "→ Checking the JavaScript parses"
 node --check _deploy/sophia_commons_v9.js
 node --check _deploy/i18n.js
 node --check _deploy/events_organizer.js
+node --check _deploy/account.js
 for j in _deploy/lang/*.json; do node -e "JSON.parse(require('fs').readFileSync('$j','utf8'))"; done
 
 echo "→ $(find _deploy -type f | wc -l | tr -d ' ') files ready (top level shown):"

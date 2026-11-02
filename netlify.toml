@@ -32,6 +32,11 @@
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
+  for = "/account.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
   for = "/events_organizer.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"

@@ -1515,7 +1515,7 @@ const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
   directory: '/directory', books: '/books', podcasts: '/podcasts',
   memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', chat: '/chat', privacy: '/privacy', terms: '/terms', about: '/about', digest: '/digest',
-  'event-new': '/events/new', 'my-events': '/my-events'
+  'event-new': '/events/new', 'my-events': '/my-events', account: '/account'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
@@ -1538,6 +1538,7 @@ function _getSecMeta() {
     digest:    { title: t('meta.digest_title', 'Weekly digest archive | Sophia Commons'), desc: t('meta.digest_desc', 'Every past issue of the Sophia Commons weekly email: upcoming events, new videos and new places in the anthroposophical world.') },
     'event-new': { title: t('org.meta_new', 'Create an event | Sophia Commons'), desc: t('org.meta_new_desc', 'Create your event page on Sophia Commons, share it with your group and collect sign-ups.') },
     'my-events': { title: t('org.meta_mine', 'My events | Sophia Commons'), desc: t('org.meta_new_desc', 'Create your event page on Sophia Commons, share it with your group and collect sign-ups.') },
+    account:   { title: t('acc.meta_title', 'Account settings | Sophia Commons'), desc: t('acc.meta_desc', 'Your Sophia Commons account: password, events and listings.') },
     terms:     { title: 'Terms of use | Sophia Commons', desc: 'The simple terms for using and contributing to the Sophia Commons directory.' }
   };
 }
@@ -1597,7 +1598,8 @@ function showSec(id, skipPush) {
   if (id === 'home') renderHomeExtras();
   if (id === 'digest') renderDigestArchive();
   // Organizer pages are private: not for search engines (the robots tag goes back to normal elsewhere)
-  _setRobots(id === 'event-new' || id === 'my-events' ? 'noindex, nofollow' : null);
+  _setRobots(id === 'event-new' || id === 'my-events' || id === 'account' ? 'noindex, nofollow' : null);
+  if (id === 'account' && typeof renderAccount === 'function') renderAccount();
   if (id === 'event-new' && typeof renderEventForm === 'function') renderEventForm();
   if (id === 'my-events' && typeof renderMyEvents === 'function') renderMyEvents();
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
@@ -1998,6 +2000,8 @@ function applySignedInState() {
   scrollMsgs();
   updateAdminVisibility();
   var me = document.getElementById('myevents-link'); if (me) me.style.display = 'inline';
+  var ac = document.getElementById('account-link'); if (ac) ac.style.display = 'inline';
+  if (document.getElementById('sec-account') && document.getElementById('sec-account').classList.contains('active') && typeof renderAccount === 'function') renderAccount();
   if (typeof organizerAuthChanged === 'function') organizerAuthChanged();
 }
 
@@ -2012,6 +2016,7 @@ async function doSignOut() {
   document.getElementById('chat-app').classList.remove('vis');
   updateAdminVisibility();
   var me = document.getElementById('myevents-link'); if (me) me.style.display = 'none';
+  var ac = document.getElementById('account-link'); if (ac) ac.style.display = 'none';
   showSec('home');
 }
 
@@ -2041,8 +2046,9 @@ function _applyAuthDetail(detail) {
 }
 window.addEventListener('supabase-auth-ready', function(e) { _applyAuthDetail(e.detail); });
 // The session check in index.html can finish before this (large) script has loaded,
-// in which case the event above was missed. Apply the stored session now.
-if (window._scAuthDetail) _applyAuthDetail(window._scAuthDetail);
+// in which case the event above was missed. Apply the stored session once this whole file has run:
+// applying it right here threw (ADMIN_EMAILS further down was still undefined) and stopped the rest of the script.
+if (window._scAuthDetail) setTimeout(function () { _applyAuthDetail(window._scAuthDetail); }, 0);
 
 // ── CHAT ──
 let currentRoom = 'general';
@@ -3184,6 +3190,13 @@ function showSubmitForm() {
   document.getElementById('submit-overlay').style.display = 'flex';
   setTimeout(() => document.getElementById('sl-name').focus(), 80);
 }
+// Choosing "Event" in the listing form's category list opens the event form instead (owner, 2026-11-01)
+document.addEventListener('change', function (e) {
+  if (!e.target || e.target.id !== 'sl-cat' || e.target.value !== '__event') return;
+  e.target.value = '';
+  document.getElementById('submit-overlay').style.display = 'none';
+  showEventForm();
+});
 // Shared helpers for form feedback
 function _isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
 function _normalizeUrl(v) {

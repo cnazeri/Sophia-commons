@@ -20,7 +20,14 @@ try {
   _sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN' && session) {
       window._supabaseUser = session.user;
-    } else if (event === 'SIGNED_OUT') {
+    }
+    // The password-reset email link: account.js opens /account to choose the new password (2026-11-01)
+    if (event === 'PASSWORD_RECOVERY') {
+      if (session) window._supabaseUser = session.user;
+      window._scRecovery = true;
+      window.dispatchEvent(new CustomEvent('sc-password-recovery'));
+    }
+    if (event === 'SIGNED_OUT') {
       window._supabaseUser = null;
     }
   });
