@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://bnrvgitzbpocratvszgk.supabase.co; base-uri 'self'; form-action 'self'">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sign up | Sophia Commons</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.107.1">
+<!-- The sign-up form on its own page, with no site menu or other links, so organizers can share it like a
+     Google Form (owner, 2026-11-01). /signup/<event id> is served by this file (see _redirects). -->
+<style>
+  body.su-page { margin: 0; min-height: 100vh; background: var(--bg); }
+  .su-wrap { max-width: 560px; margin: 0 auto; padding: 28px 16px 40px; }
+  .su-brand { font-family: 'Cormorant Garamond', Lora, serif; font-size: 20px; color: var(--text-muted); margin-bottom: 18px; }
+  .su-card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; }
+  .su-card img.su-img { display: block; width: 100%; max-height: 220px; object-fit: cover; }
+  .su-head { padding: 20px 22px 6px; }
+  .su-head h1 { font-family: Lora, serif; font-size: 24px; line-height: 1.25; margin: 0 0 8px; }
+  .su-meta { font-size: 14px; color: var(--text-secondary); margin: 0 0 4px; }
+  .su-card .ev-signup { margin: 8px 0 0; border: 0; border-top: 1px solid var(--border-subtle); border-radius: 0; background: transparent; padding: 18px 22px 22px; }
+  .su-back { display: inline-block; margin-top: 16px; font-size: 14px; color: var(--gold-text); }
+  .su-msg { padding: 22px; font-size: 15px; }
+</style>
+</head>
+<body class="su-page">
+<main class="su-wrap">
+  <div class="su-brand">Sophia Commons</div>
+  <div class="su-card" id="su-card"><p class="su-msg">Loading...</p></div>
+  <a class="su-back" id="su-back" hidden>Event details</a>
+</main>
+<script>
+(function () {
+  var SB = 'https://bnrvgitzbpocratvszgk.supabase.co', KEY = 'sb_publishable_Quj2NdNaaDKJOe4UT5Y5nw_1Sog2yjI';
+  var H = { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' };
+  var card = document.getElementById('su-card'), back = document.getElementById('su-back');
+  var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var id = (location.pathname.match(/\/signup\/([0-9a-f-]{36})/) || [])[1];
+  var say = function (t) { card.innerHTML = '<p class="su-msg">' + esc(t) + '</p>'; };
+  if (!id) { say('This sign-up link is not complete. Please check the link you were sent.'); return; }
+  back.href = '/event/' + id; back.hidden = false;
+
+  function when(ev) {
+    var o = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+    if (ev.is_all_day) { o.timeZone = 'UTC'; return new Date(ev.start_date).toLocaleDateString(undefined, o); }
+    var d = new Date(ev.start_date).toLocaleDateString(undefined, o);
+    var t = { hour: 'numeric', minute: '2-digit' }, tz = { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' };
+    return d + ', ' + (ev.end_date ? new Date(ev.start_date).toLocaleTimeString(undefined, t) + ' - ' + new Date(ev.end_date).toLocaleTimeString(undefined, tz)
+      : new Date(ev.start_date).toLocaleTimeString(undefined, tz));
+  }
+
+  function form(ev) {
+    var qs = (Array.isArray(ev.signup_questions) ? ev.signup_questions : []).slice(0, 3);
+    return '<div class="ev-signup"><h3>Sign up <span class="ev-signup-count" id="su-count"></span></h3><form id="su-form" novalidate>'
+      + '<label>Your name<input name="name" required maxlength="120" autocomplete="name"></label>'
+      + '<label>Email<input name="email" type="email" required maxlength="200" autocomplete="email"></label>'
+      + '<label>Number of people<input name="attending" type="number" min="1" max="20" value="1"></label>'
+      + qs.map(function (q, i) {
+        var f = 'q' + i;
+        if (q.type === 'yesno') return '<fieldset class="ev-signup-yn"><legend>' + esc(q.label) + '</legend>'
+          + '<label><input type="radio" name="' + f + '" value="Yes"> Yes</label><label><input type="radio" name="' + f + '" value="No"> No</label></fieldset>';
+        if (q.type === 'choice') return '<label><span>' + esc(q.label) + '</span><select name="' + f + '"><option value=""></option>'
+          + (q.options || []).map(function (o) { return '<option>' + esc(o) + '</option>'; }).join('') + '</select></label>';
+        return '<label><span>' + esc(q.label) + '</span><input name="' + f + '" maxlength="500"></label>';
+      }).join('')
+      + '<label>Note for the organizer (optional)<textarea name="note" rows="2" maxlength="1000"></textarea></label>'
+      + '<input name="website" class="ev-hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
+      + '<button type="submit" class="ev-signup-btn">Sign up</button>'
+      + '<p class="ev-signup-msg" role="status"></p>'
+      + '<p class="ev-signup-privacy">Only the organizer and Sophia Commons see your details. You will get a confirmation email.</p>'
+      + '</form></div>';
+  }
+
+  function showCount(n) { var c = document.getElementById('su-count'); if (c && n > 0) c.textContent = n + ' signed up'; }
+
+  function send(e, ev) {
+    e.preventDefault();
+    var f = e.target, msg = f.querySelector('.ev-signup-msg'), btn = f.querySelector('button[type=submit]');
+    var val = function (n) { var x = f.elements[n]; return x ? (x.value || '').trim() : ''; };
+    if (!val('name') || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val('email'))) { msg.textContent = 'Please give your name and a valid email address.'; return; }
+    var answers = [0, 1, 2].map(function (i) {
+      var x = f.elements['q' + i]; if (!x) return null;
+      if (x.length && x[0] && x[0].type === 'radio') { var c = f.querySelector('input[name=q' + i + ']:checked'); return c ? c.value : ''; }
+      return (x.value || '').trim();
+    }).filter(function (a) { return a !== null; });
+    btn.disabled = true; msg.textContent = 'Sending...';
+    fetch(SB + '/functions/v1/event-signup', { method: 'POST', headers: H, body: JSON.stringify({
+      event_id: ev.id, name: val('name'), email: val('email'), attending: val('attending'), note: val('note'), answers: answers,
+      website: val('website'), tz: Intl.DateTimeFormat().resolvedOptions().timeZone }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { if (!r.ok) throw new Error(b.error || ''); return b; }); })
+      .then(function (b) {
+        f.innerHTML = '<p class="ev-signup-done">Thank you, you are signed up. A confirmation is on its way to your email.</p>';
+        showCount(b.count);
+      })
+      .catch(function (err) { btn.disabled = false; msg.textContent = err.message || 'Your sign-up could not be sent. Please try again.'; });
+  }
+
+  fetch(SB + '/rest/v1/events?select=id,title,start_date,end_date,is_all_day,location_name,address,city,country,is_online,organizer_name,image_url,status,signup_enabled,signup_questions&id=eq.' + id, { headers: H })
+    .then(function (r) { return r.json(); })
+    .then(function (rows) {
+      var ev = rows && rows[0];
+      if (!ev) { say('This event could not be found.'); return; }
+      document.title = 'Sign up: ' + ev.title + ' | Sophia Commons';
+      var place = ev.is_online ? 'Online' : [ev.location_name, ev.address || [ev.city, ev.country].filter(Boolean).join(', ')].filter(Boolean).join(', ');
+      var head = (ev.image_url && /^https:\/\//.test(ev.image_url) ? '<img class="su-img" src="' + esc(ev.image_url) + '" alt="">' : '')
+        + '<div class="su-head"><h1>' + esc(ev.title) + '</h1><p class="su-meta">' + esc(when(ev)) + '</p>'
+        + (place ? '<p class="su-meta">' + esc(place) + '</p>' : '')
+        + (ev.organizer_name ? '<p class="su-meta">Hosted by ' + esc(ev.organizer_name) + '</p>' : '') + '</div>';
+      var open = ev.signup_enabled && ['upcoming', 'ongoing'].indexOf(ev.status) !== -1
+        && new Date(ev.end_date || ev.start_date).getTime() > Date.now() - 864e5;
+      card.innerHTML = head + (open ? form(ev) : '<p class="su-msg">Sign-ups for this event are closed.</p>');
+      if (!open) return;
+      document.getElementById('su-form').addEventListener('submit', function (e) { send(e, ev); });
+      fetch(SB + '/rest/v1/rpc/event_signup_count', { method: 'POST', headers: H, body: JSON.stringify({ p_event: ev.id }) })
+        .then(function (r) { return r.json(); }).then(showCount).catch(function () {});
+    })
+    .catch(function () { say('The event could not be loaded. Please try again in a moment.'); });
+})();
+</script>
+</body>
+</html>

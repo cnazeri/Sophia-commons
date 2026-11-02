@@ -333,31 +333,14 @@ function renderEventDetail(ev) {
 // and up to 3 questions of their own. The event-signup edge function saves them and emails both sides.
 // The organizer (events.user_id) and admins see the list and can download it.
 function _initEventSignup(ev) {
+  // The form itself lives on its own page, /signup/<id>, with no other links (owner, 2026-11-01);
+  // the event page shows a button to it and how many have signed up.
   var box = document.getElementById('ev-signup');
   var open = ev.signup_enabled && ['upcoming', 'ongoing'].indexOf(ev.status) !== -1
     && new Date(ev.end_date || ev.start_date).getTime() > Date.now() - 864e5;
   if (box && open) {
-    var qs = (Array.isArray(ev.signup_questions) ? ev.signup_questions : []).slice(0, 3);
     box.innerHTML = '<h3>' + esc(t('signup.heading', 'Sign up for this event')) + ' <span class="ev-signup-count" id="ev-signup-count"></span></h3>'
-      + '<form onsubmit="_sendEventSignup(event, \'' + esc(ev.id) + '\')" novalidate>'
-      + '<label>' + esc(t('signup.name', 'Your name')) + '<input name="name" required maxlength="120" autocomplete="name"></label>'
-      + '<label>' + esc(t('signup.email', 'Email')) + '<input name="email" type="email" required maxlength="200" autocomplete="email"></label>'
-      + '<label>' + esc(t('signup.attending', 'Number of people')) + '<input name="attending" type="number" min="1" max="20" value="1"></label>'
-      + qs.map(function (q, i) {
-        var f = 'q' + i, label = '<span>' + esc(q.label) + '</span>';
-        if (q.type === 'yesno') return '<fieldset class="ev-signup-yn"><legend>' + esc(q.label) + '</legend>'
-          + '<label><input type="radio" name="' + f + '" value="Yes"> ' + esc(t('common.yes', 'Yes')) + '</label>'
-          + '<label><input type="radio" name="' + f + '" value="No"> ' + esc(t('common.no', 'No')) + '</label></fieldset>';
-        if (q.type === 'choice') return '<label>' + label + '<select name="' + f + '"><option value=""></option>'
-          + (q.options || []).map(function (o) { return '<option>' + esc(o) + '</option>'; }).join('') + '</select></label>';
-        return '<label>' + label + '<input name="' + f + '" maxlength="500"></label>';
-      }).join('')
-      + '<label>' + esc(t('signup.note', 'Note for the organizer (optional)')) + '<textarea name="note" rows="2" maxlength="1000"></textarea></label>'
-      + '<input name="website" class="ev-hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
-      + '<button type="submit" class="ev-signup-btn">' + esc(t('signup.submit', 'Sign up')) + '</button>'
-      + '<p class="ev-signup-msg" role="status"></p>'
-      + '<p class="ev-signup-privacy">' + esc(t('signup.privacy', 'Only the organizer and Sophia Commons see your details. You will get a confirmation email.')) + '</p>'
-      + '</form>';
+      + '<a class="ev-signup-btn" href="/signup/' + esc(ev.id) + '">' + esc(t('signup.submit', 'Sign up')) + '</a>';
     _sb.rpc('event_signup_count', { p_event: ev.id }).then(function (r) {
       var c = document.getElementById('ev-signup-count');
       if (c && r && !r.error && r.data > 0) c.textContent = t('signup.count', '{n} signed up').replace('{n}', r.data);
@@ -365,37 +348,6 @@ function _initEventSignup(ev) {
   } else if (box) box.remove();
   var me = window._supabaseUser;
   if (ev.signup_enabled && me && (me.id === ev.user_id || isAdmin())) _loadEventSignups(ev);
-}
-
-async function _sendEventSignup(e, eventId) {
-  e.preventDefault();
-  var f = e.target, msg = f.querySelector('.ev-signup-msg'), btn = f.querySelector('button[type=submit]');
-  var val = function (n) { var x = f.elements[n]; return x ? (x.value || '').trim() : ''; };
-  if (!val('name') || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val('email'))) {
-    msg.textContent = t('signup.need_name_email', 'Please give your name and a valid email address.'); return;
-  }
-  var answers = [0, 1, 2].map(function (i) {
-    var x = f.elements['q' + i]; if (!x) return null;
-    if (x.length && x[0] && x[0].type === 'radio') { var c = f.querySelector('input[name=q' + i + ']:checked'); return c ? c.value : ''; }
-    return (x.value || '').trim();
-  }).filter(function (a) { return a !== null; });
-  btn.disabled = true; msg.textContent = t('signup.sending', 'Sending...');
-  try {
-    var r = await fetch(SUPABASE_URL + '/functions/v1/event-signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-      body: JSON.stringify({ event_id: eventId, name: val('name'), email: val('email'), attending: val('attending'), note: val('note'),
-        answers: answers, website: val('website'), tz: Intl.DateTimeFormat().resolvedOptions().timeZone })
-    });
-    var body = await r.json().catch(function () { return {}; });
-    if (!r.ok) throw new Error(body.error || 'failed');
-    f.innerHTML = '<p class="ev-signup-done">' + esc(t('signup.done', 'Thank you, you are signed up. A confirmation is on its way to your email.')) + '</p>';
-    var c = document.getElementById('ev-signup-count');
-    if (c && body.count) c.textContent = t('signup.count', '{n} signed up').replace('{n}', body.count);
-  } catch (err) {
-    btn.disabled = false;
-    msg.textContent = err.message && err.message !== 'failed' ? err.message : t('signup.error', 'Your sign-up could not be sent. Please try again.');
-  }
 }
 
 var _evSignups = [];

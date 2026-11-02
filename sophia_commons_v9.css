@@ -4082,7 +4082,7 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .ev-signup-yn label { display: flex; align-items: center; gap: 6px; font-weight: 400; min-height: 44px; }
 .ev-signup-yn input { min-height: 0; }
 .ev-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-.ev-signup .ev-signup-btn { justify-self: start; min-height: 44px; padding: 11px 26px; background: var(--gold); color: var(--on-gold); border: none; border-radius: 999px; font: inherit; font-weight: 700; cursor: pointer; transition: background .2s, transform .2s; }
+.ev-signup .ev-signup-btn { display: inline-block; text-decoration: none; justify-self: start; min-height: 44px; padding: 11px 26px; background: var(--gold); color: var(--on-gold); border: none; border-radius: 999px; font: inherit; font-weight: 700; cursor: pointer; transition: background .2s, transform .2s; }
 .ev-signup .ev-signup-btn:hover { background: var(--gold-hover); transform: translateY(-1px); }
 .ev-signup .ev-signup-btn:disabled { opacity: .6; cursor: default; transform: none; }
 .ev-signup-msg { font-size: 14px; color: var(--rose); margin: 0; min-height: 1em; }
