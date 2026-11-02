@@ -3679,6 +3679,8 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       src: [ev.online_url ? [ev.online_url.indexOf('zoom.us') !== -1 ? 'Join on Zoom' : 'Join online', ev.online_url] : null,
             ev.ticket_url ? [/forms\.gle|docs\.google\.com\/forms/i.test(ev.ticket_url) ? 'Sign up to attend' : 'Event page', ev.ticket_url] : null].filter(Boolean),
       featured: !!ev.featured,
+      country: ev.country || '',
+      online: !!ev.is_online,
       end: _localDay(ev.end_date) || dateStr,
       img: ev.image_url ? { src: ev.image_url, alt: ev.title || '', page: ev.ticket_url || ev.image_url, credit: ev.organizer_name || 'Event image' } : _eventFallbackImg(ev)
     });
@@ -4764,6 +4766,7 @@ function renderHomeUpcoming() {
   var kept = feat && (typeof SC_I18N === 'undefined' || SC_I18N.getLang() === 'en') ? box.querySelector('.feat-ev[data-id="' + feat.id + '"]') : null;
   // A slider that is already running gets rebuilt; the deploy's empty frame (no controls yet) is kept
   if (kept && kept.closest('.feat-slider') && kept.closest('.feat-slider').querySelector('.feat-ctrl')) kept = null;
+  gridHtml += '<div id="home-near" class="home-near"></div>';
   if (kept) {
     var keptRoot = kept.closest('.feat-slider') || kept;
     Array.prototype.slice.call(box.children).forEach(function(c) { if (c !== keptRoot) c.remove(); });
@@ -4772,6 +4775,84 @@ function renderHomeUpcoming() {
     box.innerHTML = (feat ? _featBannerHtml(feat) : '') + gridHtml;
   }
   if (slides.length > 1) _mountFeatSlider(box.querySelector('.feat-ev'), slides);
+  renderHomeNear(slides);
+}
+
+// ── Home: events near you (owner plan, Phase C, 2026-11-02) ──
+// The country comes from the browser's time zone (no location prompt); the visitor can change it,
+// and the choice is kept in this browser. With nothing coming up there, online events are shown.
+var NEAR_MAX = 3;
+var NEAR_TZ = { 'Europe/London': 'UK', 'Europe/Belfast': 'UK', 'Europe/Zurich': 'Switzerland', 'Europe/Berlin': 'Germany',
+  'Europe/Vienna': 'Austria', 'Europe/Amsterdam': 'Netherlands', 'Europe/Paris': 'France', 'Europe/Stockholm': 'Sweden',
+  'Europe/Oslo': 'Norway', 'Europe/Copenhagen': 'Denmark', 'Europe/Helsinki': 'Finland', 'Europe/Dublin': 'Ireland',
+  'Europe/Madrid': 'Spain', 'Europe/Rome': 'Italy', 'Europe/Prague': 'Czech Republic', 'Europe/Kiev': 'Ukraine',
+  'Europe/Kyiv': 'Ukraine', 'Europe/Moscow': 'Russia', 'Asia/Kolkata': 'India', 'Asia/Calcutta': 'India',
+  'Asia/Tokyo': 'Japan', 'Asia/Shanghai': 'China', 'Asia/Taipei': 'Taiwan', 'Africa/Johannesburg': 'South Africa',
+  'Pacific/Auckland': 'New Zealand', 'America/Sao_Paulo': 'Brazil', 'America/Mexico_City': 'Mexico',
+  'America/Argentina/Buenos_Aires': 'Argentina', 'America/Toronto': 'Canada', 'America/Vancouver': 'Canada',
+  'America/Edmonton': 'Canada', 'America/Winnipeg': 'Canada', 'America/Halifax': 'Canada', 'America/Montreal': 'Canada' };
+// Spellings the events table uses for the same country
+var NEAR_ALIAS = { 'usa': 'USA', 'us': 'USA', 'united states': 'USA', 'united states of america': 'USA',
+  'uk': 'UK', 'united kingdom': 'UK', 'england': 'UK', 'scotland': 'UK', 'wales': 'UK' };
+
+function _nearCountry(c) { var k = String(c || '').trim(); return NEAR_ALIAS[k.toLowerCase()] || k; }
+
+function _nearGuess() {
+  var tz = '';
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+  if (NEAR_TZ[tz]) return NEAR_TZ[tz];
+  if (/^Australia\//.test(tz)) return 'Australia';
+  if (/^America\/(New_York|Chicago|Denver|Phoenix|Los_Angeles|Anchorage|Detroit|Boise|Indiana|Kentucky|North_Dakota)/.test(tz) || /^Pacific\/Honolulu/.test(tz)) return 'USA';
+  return '';
+}
+
+function _nearPlace() {
+  try { var v = localStorage.getItem('sc_near'); if (v !== null) return v; } catch (e) {}
+  return _nearGuess();
+}
+
+function renderHomeNear(slides) {
+  var box = document.getElementById('home-near');
+  if (!box) return;
+  if (slides) box._slides = slides;
+  var skip = box._slides || [];
+  var today = _localDay(new Date());
+  var live = calEvents.filter(function (e) { return e.id && e.cat !== 'memorial' && (e.end || e.date) >= today; })
+    .sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  var place = _nearPlace();
+  var pick = function (test) {
+    var all = live.filter(test);
+    var fresh = all.filter(function (e) { return skip.indexOf(e) === -1; });
+    return (fresh.length ? fresh : all).slice(0, NEAR_MAX);
+  };
+  var rows = place && place !== 'online' ? pick(function (e) { return !e.online && _nearCountry(e.country) === place; }) : [];
+  var online = !rows.length;
+  if (online) rows = pick(function (e) { return e.online; });
+  if (!rows.length) { box.innerHTML = ''; return; }
+  var label = online
+    ? (place && place !== 'online' ? t('home.near_online_instead', 'Nothing coming up in {place} yet. Online events').replace('{place}', place) : t('home.near_online', 'Online events'))
+    : t('home.near_heading', 'Near you: {place}').replace('{place}', place);
+  box.innerHTML = '<h4 class="home-ev-sub" aria-level="3">' + esc(label)
+    + ' <button type="button" class="near-change" aria-expanded="false" onclick="toggleNearPicker(this)">' + esc(t('home.near_change', 'change')) + '</button></h4>'
+    + '<div class="home-ev-rows">' + rows.map(_homeEvRow).join('') + '</div>';
+}
+
+function toggleNearPicker(btn) {
+  var head = btn.parentNode, old = head.parentNode.querySelector('.near-picker');
+  if (old) { old.remove(); btn.setAttribute('aria-expanded', 'false'); return; }
+  var today = _localDay(new Date()), counts = {};
+  calEvents.forEach(function (e) { if (e.id && !e.online && e.country && (e.end || e.date) >= today) { var c = _nearCountry(e.country); counts[c] = (counts[c] || 0) + 1; } });
+  var cur = _nearPlace();
+  var opts = Object.keys(counts).sort().map(function (c) { return '<option value="' + esc(c) + '"' + (c === cur ? ' selected' : '') + '>' + esc(c) + ' (' + counts[c] + ')</option>'; }).join('');
+  head.insertAdjacentHTML('afterend', '<div class="near-picker"><label for="near-select">' + esc(t('home.near_pick', 'Show events in')) + '</label> '
+    + '<select id="near-select" onchange="setNearPlace(this.value)"><option value="online"' + (cur === 'online' ? ' selected' : '') + '>' + esc(t('home.near_online', 'Online events')) + '</option>' + opts + '</select></div>');
+  btn.setAttribute('aria-expanded', 'true');
+  document.getElementById('near-select').focus();
+}
+
+function setNearPlace(v) {
+  try { localStorage.setItem('sc_near', v); } catch (e) {}
+  renderHomeNear();
 }
 
 // ── Featured events slider ──

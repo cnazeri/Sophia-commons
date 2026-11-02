@@ -4117,3 +4117,13 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .ev-msg input:not([type=checkbox]), .ev-msg textarea { width: 100%; box-sizing: border-box; padding: 9px 12px; font: inherit; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg); color: var(--text); }
 .ev-msg .org-btn { justify-self: start; }
 .ev-msg-status { font-size: 13px; margin: 0; }
+
+/* Home: events near you (2026-11-02) */
+.home-near:empty { display: none; }
+.home-near { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-subtle); }
+.home-near .home-ev-rows { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 28px; }
+@media (max-width: 760px) { .home-near .home-ev-rows { grid-template-columns: 1fr; } }
+.near-change { background: none; border: 0; padding: 0 2px; font: inherit; text-transform: none; letter-spacing: 0; color: var(--gold-text); text-decoration: underline; cursor: pointer; }
+.near-change:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.near-picker { margin: 4px 0 6px; font-size: 13px; }
+.near-picker select { font: inherit; padding: 2px 6px; }

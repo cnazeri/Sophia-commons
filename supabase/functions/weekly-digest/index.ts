@@ -100,11 +100,12 @@ async function gather(sb: SupabaseClient) {
   const weekAgo = new Date(now.getTime() - 7 * DAY).toISOString();
   const threeWeeks = new Date(now.getTime() + 21 * DAY).toISOString();
 
-  const [videos, channels, events, listings, news, places] = await Promise.all([
+  const sixMonths = new Date(now.getTime() + 183 * DAY).toISOString();
+  const [videos, channels, events, listings, news, places, added] = await Promise.all([
     sb.from("youtube_videos").select("video_id, channel_slug, title, url, thumbnail_url, published_at, description")
       .gte("published_at", weekAgo).order("published_at", { ascending: false }).limit(40),
     sb.from("youtube_channels").select("slug, name").eq("active", true),
-    sb.from("events").select("id, title, start_date, location_name, city, country, is_online, featured")
+    sb.from("events").select("id, title, start_date, location_name, city, country, is_online, featured, created_at")
       .in("status", ["upcoming", "ongoing"]).gte("start_date", now.toISOString().slice(0, 10)).lte("start_date", threeWeeks)
       .order("start_date", { ascending: true }).limit(40),
     sb.from("directory_entries").select("id, organization_name, category, city, country")
@@ -112,8 +113,12 @@ async function gather(sb: SupabaseClient) {
     sb.from("news").select("id, title, excerpt, tags, published_at")
       .eq("status", "published").gte("published_at", weekAgo).order("published_at", { ascending: false }).limit(10),
     approvedCountries(sb),
+    // events added or approved this week, even when they are months away (owner plan, Phase C, 2026-11-02)
+    sb.from("events").select("id, title, start_date, location_name, city, country, is_online, featured, created_at")
+      .in("status", ["upcoming", "ongoing"]).gte("created_at", weekAgo).gte("start_date", now.toISOString().slice(0, 10))
+      .lte("start_date", sixMonths).order("start_date", { ascending: true }).limit(20),
   ]);
-  for (const r of [videos, channels, events, listings, news]) if (r.error) throw new Error(r.error.message);
+  for (const r of [videos, channels, events, listings, news, added]) if (r.error) throw new Error(r.error.message);
 
   const names: Record<string, string> = {};
   for (const c of channels.data ?? []) names[c.slug] = c.name;
@@ -122,12 +127,16 @@ async function gather(sb: SupabaseClient) {
   const vids = (videos.data ?? []).filter((v) => names[v.channel_slug] && !seen.has(v.channel_slug) && seen.add(v.channel_slug)).slice(0, 8);
   // the same series (e.g. a weekly webinar) appears once, with its next date
   const evSeen = new Set<string>();
-  const evs = (events.data ?? []).filter((e) => {
+  const soon = events.data ?? [];
+  const soonIds = new Set(soon.map((e) => e.id));
+  const all = soon.concat((added.data ?? []).filter((e) => !soonIds.has(e.id)))
+    .map((e) => ({ ...e, isNew: e.created_at >= weekAgo }));
+  const evs = all.filter((e) => {
     const key = e.title.replace(/\s*[:(-].*$/, "").toLowerCase();
     if (evSeen.has(key)) return false;
     evSeen.add(key);
     return true;
-  }).slice(0, 10);
+  }).slice(0, 16);
   return {
     weekOf: longDate(now),
     videos: vids.map((v) => ({ ...v, channel: names[v.channel_slug], summary: shortDescription(v.description) })),
@@ -150,7 +159,8 @@ const ITEM = `style="margin:0 0 18px"`;
 const LINK = `style="color:${GOLD};font-weight:bold;text-decoration:none"`;
 const MUTED = `style="color:${MUTED_C};font-size:13px"`;
 const BODY = `style="font-size:14px;color:#3A332A;margin-top:2px"`;
-const EMAIL_EVENTS = 4;   // the next four; "See the full calendar" links to the rest (owner, 2026-10-24)
+const EMAIL_EVENTS = 4;
+const EMAIL_NEW_EVENTS = 5;   // events added this week that are not already in "Coming up"   // the next four; "See the full calendar" links to the rest (owner, 2026-10-24)
 const CATEGORY_LABEL: Record<string, string> = {
   waldorf: "Waldorf education", biodynamic: "Biodynamic farming", camphill: "Camphill",
   christian_community: "The Christian Community", medicine: "Anthroposophic medicine",
@@ -218,6 +228,9 @@ export function buildHtml(d: Digest, note = ""): string {
   if (d.events.length) {
     h += `<h3 ${H3}>Coming up</h3>` + d.events.slice(0, EMAIL_EVENTS).map(eventHtml).join("");
     h += `<p style="margin:4px 0 0;font-size:14px"><a href="${SITE}/events" ${LINK}>See the full calendar &rarr;</a></p>`;
+    const shown = new Set(d.events.slice(0, EMAIL_EVENTS).map((e) => e.id));
+    const fresh = d.events.filter((e) => e.isNew && !shown.has(e.id)).slice(0, EMAIL_NEW_EVENTS);
+    if (fresh.length) h += `<h3 ${H3}>Newly added events</h3>` + fresh.map(eventHtml).join("");
   }
   if (d.videos.length) h += `<h3 ${H3}>New videos</h3>` + d.videos.map(videoHtml).join("");
   if (d.listings.length) {
