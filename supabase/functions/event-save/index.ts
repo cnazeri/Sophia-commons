@@ -201,6 +201,12 @@ async function buildEvent(db: ReturnType<typeof createClient>, uid: string, admi
   }
 
   const signup = e.signup_enabled === true;
+  // Phase B (2026-11-02): places (empty = no limit) and when sign-ups close (hours before the start; empty = when it ends)
+  const capRaw = String(e.signup_capacity ?? "").trim(), closeRaw = String(e.signup_close_hours ?? "").trim();
+  const capacity = signup && capRaw ? parseInt(capRaw, 10) : null;
+  if (capacity !== null && !(capacity >= 1 && capacity <= 10000)) fail("The number of places must be between 1 and 10000.");
+  const closeHours = signup && closeRaw ? parseInt(closeRaw, 10) : null;
+  if (closeHours !== null && !(closeHours >= 0 && closeHours <= 720)) fail("Please choose when sign-ups close.");
   const columns: Row = {
     title, description, event_type: eventType, is_all_day: allDay, timezone: tz,
     ...place,
@@ -211,6 +217,8 @@ async function buildEvent(db: ReturnType<typeof createClient>, uid: string, admi
     directory_entry_id: entry,
     signup_enabled: signup,
     signup_questions: signup ? questions(e.signup_questions) : [],
+    signup_capacity: capacity,
+    signup_close_hours: closeHours,
   };
   return { columns, dates };
 }
@@ -281,6 +289,15 @@ serve(async (req) => {
       const { data, error } = await db.from("events").update(row).eq("id", editId)
         .select("id, status, start_date, signup_enabled").single();
       if (error) throw new Error("update: " + error.message);
+      // More places (or no limit now): move people up from the waitlist and email them
+      if (data.signup_enabled) {
+        try {
+          await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/event-signup-manage`, {
+            method: "POST", body: JSON.stringify({ action: "promote", event_id: data.id }),
+            headers: { Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`, "Content-Type": "application/json" },
+          });
+        } catch (_) { /* the edit is saved; the waitlist moves on the next cancel */ }
+      }
       return out({ ok: true, status: data.status, events: [links(data)] });
     }
 

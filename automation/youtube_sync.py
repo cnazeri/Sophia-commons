@@ -283,12 +283,20 @@ def discover(api_key, known_ids, supa, dry):
         time.sleep(0.3)
     log("discovery: %d unknown channels" % len(found))
     if found and not dry:
-        # ignore duplicates already in pending (unique index on lower(url))
-        h = {**supa.h, "Prefer": "resolution=ignore-duplicates,return=minimal"}
-        r = requests.post(supa.url + "youtube_channels_pending?on_conflict=url", headers=h,
-                          data=json.dumps(list(found.values())), timeout=30)
-        if r.status_code >= 300:
-            log("  ! pending insert failed", r.status_code, r.text[:200])
+        # The unique index is on lower(url), an expression, so PostgREST's on_conflict cannot use it
+        # (it failed with 42P10 every run). Skip what is already pending, approved or rejected instead.
+        try:
+            have = {(r.get("url") or "").lower() for r in supa.select("youtube_channels_pending", {"select": "url", "limit": "10000"})}
+        except Exception as e:
+            log("  ! discovery: cannot read pending (%s)" % e)
+            return found
+        new_rows = [v for v in found.values() if v["url"].lower() not in have]
+        if new_rows:
+            h = {**supa.h, "Prefer": "return=minimal"}
+            r = requests.post(supa.url + "youtube_channels_pending", headers=h, data=json.dumps(new_rows), timeout=30)
+            if r.status_code >= 300:
+                log("  ! pending insert failed", r.status_code, r.text[:200])
+        log("discovery: %d new suggestions saved" % len(new_rows))
     return found
 
 

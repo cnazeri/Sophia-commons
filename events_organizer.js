@@ -191,7 +191,16 @@ function _evfHtml(listings, isEdit) {
     + '<fieldset><legend>' + esc(t('org.s_signups', 'Sign-ups')) + '</legend>'
     + '<label class="evf-check"><input type="checkbox" id="evf-signup" onchange="document.getElementById(\'evf-signup-qs\').hidden=!this.checked"> ' + esc(t('signup.collect', 'Collect sign-ups on Sophia Commons')) + '</label>'
     + '<div id="evf-signup-qs" hidden><p class="evf-hint">' + esc(t('signup.collect_hint', 'People sign up with their name, email and number attending. You get an email for each sign-up and see the list on your event page. Add up to 3 questions of your own:')) + '</p>'
-    + _evfQuestionHtml(1) + _evfQuestionHtml(2) + _evfQuestionHtml(3) + '</div>'
+    + _evfQuestionHtml(1) + _evfQuestionHtml(2) + _evfQuestionHtml(3)
+    + _evfField('capacity', t('signup.capacity', 'Places'), _evfInput('capacity', 'number', ' min="1" max="10000" inputmode="numeric"'),
+      t('signup.capacity_hint', 'Leave empty for no limit. When it is full, people can join a waitlist and move up automatically when someone cancels.'))
+    + _evfField('close', t('signup.close', 'Sign-ups close'), '<select id="evf-close" name="close">'
+      + '<option value="">' + esc(t('signup.close_end', 'When the event ends')) + '</option>'
+      + '<option value="0">' + esc(t('signup.close_start', 'When the event starts')) + '</option>'
+      + '<option value="24">' + esc(t('signup.close_1d', '1 day before')) + '</option>'
+      + '<option value="48">' + esc(t('signup.close_2d', '2 days before')) + '</option>'
+      + '<option value="168">' + esc(t('signup.close_1w', '1 week before')) + '</option></select>')
+    + '</div>'
     + '</fieldset>'
     + '<button type="submit" class="org-btn evf-submit" id="evf-submit">' + esc(isEdit ? t('org.save', 'Save changes') : t('org.create', 'Create event')) + '</button>'
     + '<p class="evf-status" id="evf-status" role="status"></p>'
@@ -253,6 +262,13 @@ function _evfFill(ev, isCopy, listings) {
       _evfSet('q' + (i + 1), q.label); _evfSet('q' + (i + 1) + 't', q.type);
       if (q.type === 'choice') { _evfSet('q' + (i + 1) + 'o', (q.options || []).join(', ')); document.getElementById('evf-q' + (i + 1) + 'o').hidden = false; }
     });
+    if (ev.signup_capacity) _evfSet('capacity', ev.signup_capacity);
+    if (ev.signup_close_hours != null) {
+      var sel = document.getElementById('evf-close'), v = String(ev.signup_close_hours);
+      // A value set elsewhere (not one of the choices) still shows and is kept
+      if (sel && !sel.querySelector('option[value="' + v + '"]')) sel.insertAdjacentHTML('beforeend', '<option value="' + v + '">' + esc(t('signup.close_hours', '{n} hours before').replace('{n}', v)) + '</option>');
+      _evfSet('close', v);
+    }
   }
   if (document.getElementById('evf-repeat')) { _evfRepeatLabels(); _evfRepeatChanged(); }
 }
@@ -349,6 +365,8 @@ function _evfCollect() {
   need('online_url', !online || /^https?:\/\/\S+\.\S+/i.test(_evfVal('online_url')), t('org.err_online_url', 'Please give the full link to join, starting with https://'));
   need('city', online || _evfVal('city') || _evfVal('venue'), t('org.err_place', 'Please give the venue or the city.'));
   need('organizer_url', _orgUrlOk(_evfVal('organizer_url')), t('org.err_url', 'Please enter a valid web address, for example https://example.org'));
+  var cap = _evfVal('capacity');
+  need('capacity', !cap || (/^\d+$/.test(cap) && +cap >= 1 && +cap <= 10000), t('signup.err_capacity', 'Please enter a number of places from 1 to 10000, or leave it empty.'));
   if (errs.length) {
     var first = document.getElementById('evf-' + errs[0]); if (first) first.focus();
     return null;
@@ -367,7 +385,9 @@ function _evfCollect() {
     signup_enabled: signup,
     signup_questions: signup ? [1, 2, 3].map(function (i) {
       return { label: _evfVal('q' + i), type: _evfVal('q' + i + 't'), options: _evfVal('q' + i + 'o').split(',').map(function (o) { return o.trim(); }).filter(Boolean) };
-    }).filter(function (q) { return q.label; }) : []
+    }).filter(function (q) { return q.label; }) : [],
+    signup_capacity: signup ? _evfVal('capacity') : '',
+    signup_close_hours: signup ? _evfVal('close') : ''
   } };
 }
 

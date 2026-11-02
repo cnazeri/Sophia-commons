@@ -3,6 +3,8 @@
 // person and a short note to the organizer (both via Resend). Public endpoint: deploy with --no-verify-jwt.
 // The event_signups table has no public policies; only this function (service role) writes to it.
 // Pending (not yet approved) events take sign-ups too: organizers share them by link first (2026-11-01).
+// Phase B (2026-11-02): spots and a waitlist (event_signup_place() decides, under a lock), a closing time
+// (signup_close_hours before the start), and a private cancel link in every confirmation.
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -60,10 +62,17 @@ serve(async (req) => {
 
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: ev } = await db.from("events")
-    .select("id, title, start_date, is_all_day, location_name, address, city, is_online, online_url, organizer_name, user_id, status, signup_enabled, signup_questions")
+    .select("id, title, start_date, end_date, is_all_day, location_name, address, city, is_online, online_url, organizer_name, user_id, status, signup_enabled, signup_questions, signup_capacity, signup_close_hours")
     .eq("id", eventId).maybeSingle();
   if (!ev || !ev.signup_enabled || !["pending", "upcoming", "ongoing"].includes(ev.status)) {
     return out({ error: "This event is not taking sign-ups." }, 400);
+  }
+  const closesAt = ev.signup_close_hours == null
+    ? new Date(ev.end_date || ev.start_date).getTime() + 864e5
+    : new Date(ev.start_date).getTime() - ev.signup_close_hours * 36e5;
+  if (Date.now() > closesAt) return out({ error: "Sign-ups for this event are closed." }, 400);
+  if (ev.signup_capacity && attending > ev.signup_capacity) {
+    return out({ error: `This event has room for ${ev.signup_capacity} people in all. Please sign up for fewer.` }, 400);
   }
 
   // Answers in the same order as the organizer's questions; a choice must be one of the options
@@ -76,12 +85,15 @@ serve(async (req) => {
     return { label: q.label, answer: a };
   });
 
-  const { data: row, error } = await db.from("event_signups")
-    .insert({ event_id: eventId, name, email, attending, answers, note: note || null }).select("id").single();
-  if (error) {
-    if (error.code === "23505") return out({ error: "You are already signed up for this event with this email." }, 409);
+  const { data: row, error } = await db.rpc("event_signup_place", {
+    p_event: eventId, p_name: name, p_email: email, p_attending: attending, p_answers: answers, p_note: note || null,
+  });
+  if (error || !row) {
+    if (error?.code === "23505") return out({ error: "You are already signed up for this event with this email." }, 409);
     return out({ error: "Your sign-up could not be saved. Please try again." }, 500);
   }
+  const waitlist = row.status === "waitlist";
+  const cancelUrl = `${SITE}/signup/cancel?t=${row.cancel_token}`;
 
   // Emails: a failure here never undoes the sign-up
   const key = Deno.env.get("RESEND_API_KEY");
@@ -93,20 +105,25 @@ serve(async (req) => {
   const answerList = answers.filter((a) => a.answer).map((a) => `<li>${esc(a.label)}: ${esc(a.answer)}</li>`).join("");
   const messages = [{
     from: FROM_ADDRESS, reply_to: REPLY_TO, to: [email],
-    subject: `You're signed up: ${ev.title}`,
-    html: mail("Sign-up confirmation", `<p style="margin:0 0 14px">Dear ${esc(name)},</p>
+    subject: waitlist ? `You're on the waitlist: ${ev.title}` : `You're signed up: ${ev.title}`,
+    html: waitlist
+      ? mail("Waitlist", `<p style="margin:0 0 14px">Dear ${esc(name)},</p>
+      <p style="margin:0 0 14px">This event is full right now, so you are on the waitlist${attending > 1 ? ` (${attending} people)` : ""}. If a place opens up, you move up automatically and we email you straight away.</p>${details}
+      <p style="margin:14px 0 0"><a href="${page}" style="color:#8a6d1f;font-weight:bold">See the event page</a></p>
+      <p style="margin:14px 0 0;font-size:13px;color:#7a7368">No longer interested? <a href="${cancelUrl}" style="color:#8a6d1f">Leave the waitlist</a>.</p>`)
+      : mail("Sign-up confirmation", `<p style="margin:0 0 14px">Dear ${esc(name)},</p>
       <p style="margin:0 0 14px">Thank you for signing up${attending > 1 ? ` (${attending} people)` : ""}. Here are the details:</p>${details}
       ${ev.is_online && ev.online_url ? `<p style="margin:12px 0 0">Join online: <a href="${esc(ev.online_url)}" style="color:#8a6d1f">${esc(ev.online_url)}</a></p>` : ""}
       <p style="margin:14px 0 0"><a href="${page}" style="color:#8a6d1f;font-weight:bold">See the event page</a></p>
-      <p style="margin:14px 0 0;font-size:13px;color:#7a7368">If you can no longer come, just reply to this email and we'll let the organizer know.</p>`),
+      <p style="margin:14px 0 0;font-size:13px;color:#7a7368">Can no longer come? <a href="${cancelUrl}" style="color:#8a6d1f">Cancel your sign-up</a> so someone else can have your place.</p>`),
   }];
   if (ev.user_id) {
     const { data: u } = await db.auth.admin.getUserById(ev.user_id);
     const organizer = u?.user?.email;
     if (organizer) messages.push({
       from: FROM_ADDRESS, reply_to: email, to: [organizer],
-      subject: `New sign-up: ${ev.title}`,
-      html: mail("New sign-up", `<p style="margin:0 0 10px"><b>${esc(name)}</b> (${esc(email)}) signed up${attending > 1 ? ` for ${attending} people` : ""}.</p>
+      subject: waitlist ? `New on the waitlist: ${ev.title}` : `New sign-up: ${ev.title}`,
+      html: mail(waitlist ? "New on the waitlist" : "New sign-up", `<p style="margin:0 0 10px"><b>${esc(name)}</b> (${esc(email)}) ${waitlist ? "joined the waitlist" : "signed up"}${attending > 1 ? ` for ${attending} people` : ""}.</p>
         ${answerList ? `<ul style="margin:0 0 10px;padding-left:18px">${answerList}</ul>` : ""}${note ? `<p style="margin:0 0 10px">Note: ${esc(note)}</p>` : ""}
         ${details}<p style="margin:14px 0 0"><a href="${page}" style="color:#8a6d1f;font-weight:bold">See all sign-ups on the event page</a> (sign in first)</p>`),
     });
@@ -119,6 +136,6 @@ serve(async (req) => {
       if (r.ok) await db.from("event_signups").update({ emailed_at: new Date().toISOString() }).eq("id", row.id);
     } catch (_) { /* the sign-up is saved; the email is best effort */ }
   }
-  const { data: count } = await db.rpc("event_signup_count", { p_event: eventId });
-  return out({ ok: true, count: count ?? null });
+  const { data: spots } = await db.rpc("event_signup_spots", { p_event: eventId });
+  return out({ ok: true, waitlist, count: spots?.count ?? null, left: spots?.left ?? null });
 });

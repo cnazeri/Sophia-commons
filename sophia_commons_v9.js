@@ -325,7 +325,7 @@ function renderEventDetail(ev) {
   if (ev.organizer_url) actions += '<a class="btn-secondary-detail" href="' + escUrl(ev.organizer_url) + '" target="_blank">' + t('event_detail.organizer_website') + '</a>';
 
   var img = ev.image_url && /^https:\/\//.test(ev.image_url)
-    ? '<figure class="detail-img"><img src="' + escUrl(_imgSized(ev.image_url, 900)) + '" alt="" width="900" height="240" decoding="async"></figure>' : '';
+    ? '<figure class="detail-img"><img src="' + escUrl(_imgSized(ev.image_url, 900)) + '" alt="" decoding="async"></figure>' : '';
 
   var me = window._supabaseUser;
   var pendingNote = ev.status === 'pending' && me && (me.id === ev.user_id || isAdmin())
@@ -364,43 +364,119 @@ function renderEventDetail(ev) {
 // Organizers can collect sign-ups on the event page instead of a Google Form: name, email, number attending
 // and up to 3 questions of their own. The event-signup edge function saves them and emails both sides.
 // The organizer (events.user_id) and admins see the list and can download it.
+// Phase B (2026-11-02): places and a waitlist, a closing time, organizers remove people and message everyone.
+// When sign-ups close: signup_close_hours before the start, or (empty) a day after the event ends
+function _signupClosesAt(ev) {
+  return ev.signup_close_hours == null ? new Date(ev.end_date || ev.start_date).getTime() + 864e5
+    : new Date(ev.start_date).getTime() - ev.signup_close_hours * 36e5;
+}
+function _signupOpen(ev) {
+  return ev.signup_enabled && ['pending', 'upcoming', 'ongoing'].indexOf(ev.status) !== -1 && Date.now() < _signupClosesAt(ev);
+}
+// "12 signed up, 8 places left" / "Full: join the waitlist"
+function _signupSpotsText(sp) {
+  if (!sp) return '';
+  if (sp.capacity && sp.left <= 0) return t('signup.full', 'Full: you can join the waitlist');
+  var parts = [];
+  if (sp.count > 0) parts.push(t('signup.count', '{n} signed up').replace('{n}', sp.count));
+  if (sp.capacity) parts.push(t('signup.left', '{n} places left').replace('{n}', sp.left));
+  return parts.join(', ');
+}
+
 function _initEventSignup(ev) {
   // The form itself lives on its own page, /signup/<id>, with no other links (owner, 2026-11-01);
   // the event page shows a button to it and how many have signed up.
   var box = document.getElementById('ev-signup');
-  var open = ev.signup_enabled && ['pending', 'upcoming', 'ongoing'].indexOf(ev.status) !== -1
-    && new Date(ev.end_date || ev.start_date).getTime() > Date.now() - 864e5;
-  if (box && open) {
+  if (box && _signupOpen(ev)) {
+    var closes = ev.signup_close_hours != null
+      ? '<p class="ev-signup-closes">' + esc(t('signup.closes_on', 'Sign-ups close {date}').replace('{date}', localDate(new Date(_signupClosesAt(ev)).toISOString(), { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }))) + '</p>' : '';
     box.innerHTML = '<h3>' + esc(t('signup.heading', 'Sign up for this event')) + ' <span class="ev-signup-count" id="ev-signup-count"></span></h3>'
-      + '<a class="ev-signup-btn" href="/signup/' + esc(ev.id) + '">' + esc(t('signup.submit', 'Sign up')) + '</a>';
-    _sb.rpc('event_signup_count', { p_event: ev.id }).then(function (r) {
-      var c = document.getElementById('ev-signup-count');
-      if (c && r && !r.error && r.data > 0) c.textContent = t('signup.count', '{n} signed up').replace('{n}', r.data);
+      + '<a class="ev-signup-btn" id="ev-signup-btn" href="/signup/' + esc(ev.id) + '">' + esc(t('signup.submit', 'Sign up')) + '</a>' + closes;
+    _sb.rpc('event_signup_spots', { p_event: ev.id }).then(function (r) {
+      var c = document.getElementById('ev-signup-count'), b = document.getElementById('ev-signup-btn');
+      if (!r || r.error || !r.data) return;
+      if (c) c.textContent = _signupSpotsText(r.data);
+      if (b && r.data.capacity && r.data.left <= 0) b.textContent = t('signup.join_waitlist', 'Join the waitlist');
     });
-  } else if (box) box.remove();
+  } else if (box) {
+    if (ev.signup_enabled && ['pending', 'upcoming', 'ongoing'].indexOf(ev.status) !== -1 && new Date(ev.start_date).getTime() > Date.now())
+      box.innerHTML = '<p class="ev-signup-closed">' + esc(t('signup.closed', 'Sign-ups for this event are closed.')) + '</p>';
+    else box.remove();
+  }
   var me = window._supabaseUser;
   if (ev.signup_enabled && me && (me.id === ev.user_id || isAdmin())) _loadEventSignups(ev);
 }
 
-var _evSignups = [];
+var _evSignups = [], _evSignupsEv = null;
 async function _loadEventSignups(ev) {
   var el = document.getElementById('ev-signups-list');
   if (!el) return;
-  var r = await _sb.from('event_signups').select('name, email, attending, answers, note, status, created_at')
+  _evSignupsEv = ev;
+  var r = await _sb.from('event_signups').select('id, name, email, attending, answers, note, status, created_at')
     .eq('event_id', ev.id).order('created_at');
   if (r.error) return;
   _evSignups = (r.data || []).filter(function (s) { return s.status === 'confirmed'; });
+  var waiting = (r.data || []).filter(function (s) { return s.status === 'waitlist'; });
   var people = _evSignups.reduce(function (n, s) { return n + (s.attending || 1); }, 0);
-  el.innerHTML = '<div class="ev-signups"><h3>' + esc(t('signup.list_heading', 'Sign-ups')) + ' (' + people + ')'
+  var row = function (s) {
+    var extra = (s.answers || []).filter(function (a) { return a.answer; }).map(function (a) { return a.label + ': ' + a.answer; });
+    if (s.note) extra.push(s.note);
+    return '<li><b>' + esc(s.name) + '</b> &middot; ' + esc(s.email) + (s.attending > 1 ? ' &middot; ' + s.attending : '')
+      + ' <button type="button" class="ev-su-remove" onclick="_removeEventSignup(\'' + esc(s.id) + '\', this)">' + esc(t('signup.remove', 'Remove')) + '</button>'
+      + (extra.length ? '<br><span class="lmeta">' + esc(extra.join(' | ')) + '</span>' : '') + '</li>';
+  };
+  el.innerHTML = '<div class="ev-signups"><h3>' + esc(t('signup.list_heading', 'Sign-ups')) + ' (' + people + (ev.signup_capacity ? ' / ' + ev.signup_capacity : '') + ')'
     + (_evSignups.length ? ' <button type="button" class="adm-btn" onclick="_downloadEventSignups(\'' + esc(ev.title).replace(/'/g, '') + '\')">'
       + esc(t('signup.download', 'Download spreadsheet')) + '</button>' : '') + '</h3>'
     + '<p class="ev-signups-note">' + esc(t('signup.list_note', 'Only you (the organizer) and Sophia Commons admins see this list.')) + '</p>'
-    + (_evSignups.length ? '<ul>' + _evSignups.map(function (s) {
-      var extra = (s.answers || []).filter(function (a) { return a.answer; }).map(function (a) { return a.label + ': ' + a.answer; });
-      if (s.note) extra.push(s.note);
-      return '<li><b>' + esc(s.name) + '</b> &middot; ' + esc(s.email) + (s.attending > 1 ? ' &middot; ' + s.attending : '')
-        + (extra.length ? '<br><span class="lmeta">' + esc(extra.join(' | ')) + '</span>' : '') + '</li>';
-    }).join('') + '</ul>' : '<p>' + esc(t('signup.none_yet', 'No sign-ups yet.')) + '</p>') + '</div>';
+    + (_evSignups.length ? '<ul>' + _evSignups.map(row).join('') + '</ul>' : '<p>' + esc(t('signup.none_yet', 'No sign-ups yet.')) + '</p>')
+    + (waiting.length ? '<h4>' + esc(t('signup.waitlist_heading', 'Waitlist')) + ' (' + waiting.length + ')</h4><p class="ev-signups-note">'
+      + esc(t('signup.waitlist_note', 'In order. They move up and get an email when a place opens.')) + '</p><ol>' + waiting.map(row).join('') + '</ol>' : '')
+    + (_evSignups.length || waiting.length ? _eventMessageForm(waiting.length > 0) : '')
+    + '</div>';
+}
+
+function _eventMessageForm(hasWaitlist) {
+  return '<details class="ev-msg"><summary>' + esc(t('signup.message_open', 'Message everyone who signed up')) + '</summary>'
+    + '<form onsubmit="_sendEventMessage(event)" novalidate>'
+    + '<label for="ev-msg-subject">' + esc(t('signup.message_subject', 'Subject')) + '</label><input id="ev-msg-subject" maxlength="150" required>'
+    + '<label for="ev-msg-body">' + esc(t('signup.message_body', 'Message')) + '</label><textarea id="ev-msg-body" rows="6" maxlength="5000" required></textarea>'
+    + (hasWaitlist ? '<label class="evf-check"><input type="checkbox" id="ev-msg-wait"> ' + esc(t('signup.message_waitlist', 'Also send to the waitlist')) + '</label>' : '')
+    + '<p class="evf-hint">' + esc(t('signup.message_hint', 'Sent by email from Sophia Commons. Replies come to your email address. Up to 3 messages a day.')) + '</p>'
+    + '<button type="submit" class="org-btn">' + esc(t('signup.message_send', 'Send message')) + '</button>'
+    + '<p class="ev-msg-status" id="ev-msg-status" role="status"></p></form></details>';
+}
+
+async function _signupManage(body) {
+  var sess = (await _sb.auth.getSession()).data.session;
+  var r = await fetch(SUPABASE_URL + '/functions/v1/event-signup-manage', { method: 'POST',
+    headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + (sess ? sess.access_token : SUPABASE_ANON_KEY) },
+    body: JSON.stringify(body) });
+  var b = await r.json().catch(function () { return {}; });
+  if (!r.ok) throw new Error(b.error || t('signup.manage_error', 'That did not work. Please try again.'));
+  return b;
+}
+
+async function _removeEventSignup(id, btn) {
+  if (!confirm(t('signup.remove_confirm', 'Remove this person from the list? They are not emailed. If someone is waiting, the next person moves up.'))) return;
+  btn.disabled = true;
+  try { await _signupManage({ action: 'organizer_cancel', signup_id: id }); _loadEventSignups(_evSignupsEv); }
+  catch (e) { btn.disabled = false; scNotify(e.message); }
+}
+
+async function _sendEventMessage(e) {
+  e.preventDefault();
+  var f = e.target, st = document.getElementById('ev-msg-status'), btn = f.querySelector('button[type=submit]');
+  var subject = document.getElementById('ev-msg-subject').value.trim(), body = document.getElementById('ev-msg-body').value.trim();
+  if (!subject || !body) { st.textContent = t('signup.message_empty', 'Please write a subject and a message.'); return; }
+  var wait = document.getElementById('ev-msg-wait');
+  btn.disabled = true; st.textContent = t('signup.message_sending', 'Sending...');
+  try {
+    var b = await _signupManage({ action: 'message', event_id: _evSignupsEv.id, subject: subject, body: body, include_waitlist: !!(wait && wait.checked) });
+    f.reset();
+    st.textContent = t('signup.message_sent', 'Sent to {n} people.').replace('{n}', b.sent);
+  } catch (err) { st.textContent = err.message; }
+  btn.disabled = false;
 }
 
 function _downloadEventSignups(title) {

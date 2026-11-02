@@ -1,0 +1,23 @@
+name: Event sign-up reminders
+
+on:
+  schedule:
+    - cron: "0 16 * * *"         # every day 16:00 UTC (8 am Pacific, 5 pm Central Europe)
+  workflow_dispatch:             # "Run workflow" button in the Actions tab
+
+permissions: {}
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Email confirmed sign-ups for events starting in the next 6 to 36 hours (each person once)
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.DIGEST_CRON_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          code=$(curl -s -o out.json -w "%{http_code}" -X POST "$URL/functions/v1/event-signup-manage" \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{"action":"remind"}')
+          cat out.json; echo
+          [ "$code" = "200" ] || { echo "event-signup-manage returned HTTP $code"; exit 1; }

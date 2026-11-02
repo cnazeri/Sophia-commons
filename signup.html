@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Sign up | Sophia Commons</title>
 <link rel="icon" href="/favicon.ico">
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.109.2">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.110.0">
 <!-- The sign-up form on its own page, with no site menu or other links, so organizers can share it like a
      Google Form (owner, 2026-11-01). /signup/<event id> is served by this file (see _redirects). -->
 <style>
@@ -38,6 +38,37 @@
   var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
   var id = (location.pathname.match(/\/signup\/([0-9a-f-]{36})/) || [])[1];
   var say = function (t) { card.innerHTML = '<p class="su-msg">' + esc(t) + '</p>'; };
+  var manage = function (body) {
+    return fetch(SB + '/functions/v1/event-signup-manage', { method: 'POST', headers: H, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { if (!r.ok) throw new Error(b.error || ''); return b; }); });
+  };
+
+  // Cancel page, /signup/cancel?t=<token> (2026-11-02): shows what will be cancelled and waits for a button
+  // press, so mail scanners that open links do not cancel anyone.
+  if (/^\/signup\/cancel\/?$/.test(location.pathname)) {
+    document.title = 'Cancel sign-up | Sophia Commons';
+    var tok = new URLSearchParams(location.search).get('t') || '';
+    var showDone = function (b) {
+      card.innerHTML = '<div class="su-head"><h1>' + esc(b.title) + '</h1><p class="su-meta">' + esc(b.when) + '</p></div>'
+        + '<p class="su-msg">Your sign-up is cancelled. Thank you for letting the organizer know.</p>';
+      back.href = '/event/' + b.event_id; back.hidden = false;
+    };
+    manage({ action: 'lookup', token: tok }).then(function (b) {
+      if (b.status === 'cancelled') { showDone(b); return; }
+      card.innerHTML = '<div class="su-head"><h1>' + esc(b.title) + '</h1><p class="su-meta">' + esc(b.when) + '</p></div>'
+        + '<div class="su-msg"><p>' + esc(b.name) + ', do you want to cancel your ' + (b.status === 'waitlist' ? 'place on the waitlist' : 'sign-up') + '?</p>'
+        + '<button type="button" class="ev-signup-btn" id="su-cancel">Yes, cancel it</button><p class="ev-signup-msg" role="status" id="su-cancel-msg"></p></div>';
+      back.href = '/event/' + b.event_id; back.hidden = false;
+      document.getElementById('su-cancel').addEventListener('click', function () {
+        this.disabled = true;
+        manage({ action: 'cancel', token: tok }).then(showDone).catch(function (err) {
+          document.getElementById('su-cancel').disabled = false;
+          document.getElementById('su-cancel-msg').textContent = err.message || 'This did not work. Please try again.';
+        });
+      });
+    }).catch(function (err) { say(err.message || 'This cancel link could not be checked. Please try again in a moment.'); });
+    return;
+  }
   if (!id) { say('This sign-up link is not complete. Please check the link you were sent.'); return; }
   back.href = '/event/' + id; back.hidden = false;
 
@@ -66,13 +97,26 @@
       }).join('')
       + '<label>Note for the organizer (optional)<textarea name="note" rows="2" maxlength="1000"></textarea></label>'
       + '<input name="website" class="ev-hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
+      + '<p class="ev-signup-privacy" id="su-wait-note" hidden>This event is full. Join the waitlist and you move up automatically, with an email, if a place opens.</p>'
       + '<button type="submit" class="ev-signup-btn">Sign up</button>'
       + '<p class="ev-signup-msg" role="status"></p>'
       + '<p class="ev-signup-privacy">Only the organizer and Sophia Commons see your details. You will get a confirmation email.</p>'
       + '</form></div>';
   }
 
-  function showCount(n) { var c = document.getElementById('su-count'); if (c && n > 0) c.textContent = n + ' signed up'; }
+  // "12 signed up, 8 places left"; when full the button says it is the waitlist
+  function showSpots(sp) {
+    var c = document.getElementById('su-count'), b = document.querySelector('#su-form button[type=submit]');
+    if (!sp || !c) return;
+    if (sp.capacity && sp.left <= 0) {
+      c.textContent = 'Full';
+      if (b) b.textContent = 'Join the waitlist';
+      var n = document.getElementById('su-wait-note');
+      if (n) n.hidden = false;
+      return;
+    }
+    c.textContent = [sp.count > 0 ? sp.count + ' signed up' : '', sp.capacity ? sp.left + ' places left' : ''].filter(Boolean).join(', ');
+  }
 
   function send(e, ev) {
     e.preventDefault();
@@ -90,15 +134,18 @@
       website: val('website'), tz: Intl.DateTimeFormat().resolvedOptions().timeZone }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { if (!r.ok) throw new Error(b.error || ''); return b; }); })
       .then(function (b) {
-        f.innerHTML = '<p class="ev-signup-done">Thank you, you are signed up. A confirmation is on its way to your email.</p>';
-        showCount(b.count);
+        f.innerHTML = b.waitlist
+          ? '<p class="ev-signup-done">This event is full, so you are on the waitlist. If a place opens up you move up automatically and we email you.</p>'
+          : '<p class="ev-signup-done">Thank you, you are signed up. A confirmation is on its way to your email.</p>';
+        var c = document.getElementById('su-count');
+        if (c) c.textContent = [b.count > 0 ? b.count + ' signed up' : '', b.left != null ? b.left + ' places left' : ''].filter(Boolean).join(', ');
       })
       .catch(function (err) { btn.disabled = false; msg.textContent = err.message || 'Your sign-up could not be sent. Please try again.'; });
   }
 
   // Listed events come from the table; a pending one (shared by link before approval) from get_event().
   // Before that function exists the second request fails and the page says the event was not found.
-  var COLS = 'id,title,start_date,end_date,is_all_day,location_name,address,city,country,is_online,organizer_name,image_url,status,signup_enabled,signup_questions';
+  var COLS = 'id,title,start_date,end_date,is_all_day,location_name,address,city,country,is_online,organizer_name,image_url,status,signup_enabled,signup_questions,signup_capacity,signup_close_hours';
   var rows0 = function (r) { return r.ok ? r.json() : []; };
   fetch(SB + '/rest/v1/events?select=' + COLS + '&id=eq.' + id, { headers: H })
     .then(rows0)
@@ -115,13 +162,14 @@
         + '<div class="su-head"><h1>' + esc(ev.title) + '</h1><p class="su-meta">' + esc(when(ev)) + '</p>'
         + (place ? '<p class="su-meta">' + esc(place) + '</p>' : '')
         + (ev.organizer_name ? '<p class="su-meta">Hosted by ' + esc(ev.organizer_name) + '</p>' : '') + '</div>';
-      var open = ev.signup_enabled && ['pending', 'upcoming', 'ongoing'].indexOf(ev.status) !== -1
-        && new Date(ev.end_date || ev.start_date).getTime() > Date.now() - 864e5;
+      var closesAt = ev.signup_close_hours == null ? new Date(ev.end_date || ev.start_date).getTime() + 864e5
+        : new Date(ev.start_date).getTime() - ev.signup_close_hours * 36e5;
+      var open = ev.signup_enabled && ['pending', 'upcoming', 'ongoing'].indexOf(ev.status) !== -1 && Date.now() < closesAt;
       card.innerHTML = head + (open ? form(ev) : '<p class="su-msg">Sign-ups for this event are closed.</p>');
       if (!open) return;
       document.getElementById('su-form').addEventListener('submit', function (e) { send(e, ev); });
-      fetch(SB + '/rest/v1/rpc/event_signup_count', { method: 'POST', headers: H, body: JSON.stringify({ p_event: ev.id }) })
-        .then(function (r) { return r.json(); }).then(showCount).catch(function () {});
+      fetch(SB + '/rest/v1/rpc/event_signup_spots', { method: 'POST', headers: H, body: JSON.stringify({ p_event: ev.id }) })
+        .then(function (r) { return r.json(); }).then(showSpots).catch(function () {});
     })
     .catch(function () { say('The event could not be loaded. Please try again in a moment.'); });
 })();
