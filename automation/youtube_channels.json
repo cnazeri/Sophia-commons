@@ -737,6 +737,16 @@
       "category": "society",
       "description": "Independent German channel on the threefold social order as an alternative for cultural, political and economic life.",
       "verified": true
+    },
+    {
+      "slug": "auro177",
+      "name": "auro177",
+      "url": "https://www.youtube.com/@auro177",
+      "channel_id": "UCNsLEixHqIQfSWvvsm5Jlew",
+      "language": "DE",
+      "category": "other",
+      "description": "German talks that look at current events from a spiritual point of view, with lectures by Stephan Wunderlich and karma research by Heinz Grill.",
+      "verified": true
     }
   ]
 }
