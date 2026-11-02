@@ -4127,3 +4127,13 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .near-change:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .near-picker { margin: 4px 0 6px; font-size: 13px; }
 .near-picker select { font: inherit; padding: 2px 6px; }
+
+/* Listing page: follow a group (2026-11-02) */
+.follow-form { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-subtle); }
+.follow-form label { display: block; font-weight: 600; margin-bottom: 6px; }
+.follow-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.follow-row input[type=email] { flex: 1 1 220px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--border-subtle); border-radius: 8px; font: inherit; }
+.follow-row button { min-height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--gold); color: var(--text, #1E1810); font: inherit; font-weight: 700; cursor: pointer; }
+.follow-row button:disabled { opacity: .6; cursor: default; }
+.follow-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.follow-msg { margin-top: 6px; }

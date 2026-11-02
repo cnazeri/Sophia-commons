@@ -1283,5 +1283,14 @@
   "acc.claimed": "übernommen",
   "acc.posted": "erstellt",
   "acc.st_rejected": "Nicht gelistet",
-  "submit.cat_event": "Veranstaltung (öffnet das Veranstaltungsformular)"
+  "submit.cat_event": "Veranstaltung (öffnet das Veranstaltungsformular)",
+  "follow.prompt": "E-Mail erhalten, wenn {name} eine Veranstaltung einträgt",
+  "follow.button": "Folgen",
+  "follow.note": "Wir bitten Sie zuerst um eine Bestätigung. Jede E-Mail enthält einen Abmeldelink.",
+  "follow.invalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+  "follow.already": "Sie folgen dieser Gruppe bereits.",
+  "follow.check": "Bitte prüfen Sie Ihr Postfach auf eine Bestätigungs-E-Mail.",
+  "follow.error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+  "follow.confirmed": "Erledigt. Sie erhalten eine E-Mail, wenn {name} eine Veranstaltung einträgt.",
+  "follow.stopped": "Erledigt. Sie erhalten keine weiteren E-Mails von {name}."
 }

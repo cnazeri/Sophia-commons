@@ -1283,5 +1283,14 @@
   "acc.claimed": "reclamada",
   "acc.posted": "publicada",
   "acc.st_rejected": "No publicada",
-  "submit.cat_event": "Evento (abre el formulario de eventos)"
+  "submit.cat_event": "Evento (abre el formulario de eventos)",
+  "follow.prompt": "Recibir un correo cuando {name} publique un evento",
+  "follow.button": "Seguir",
+  "follow.note": "Primero le pediremos que confirme. Cada correo incluye un enlace para darse de baja.",
+  "follow.invalid": "Introduzca un correo electrónico válido.",
+  "follow.already": "Ya sigue a este grupo.",
+  "follow.check": "Revise su bandeja de entrada para confirmar.",
+  "follow.error": "Algo salió mal. Inténtelo de nuevo.",
+  "follow.confirmed": "Listo. Recibirá un correo cuando {name} publique un evento.",
+  "follow.stopped": "Listo. No recibirá más correos de {name}."
 }

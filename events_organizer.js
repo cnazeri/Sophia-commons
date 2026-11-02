@@ -639,13 +639,12 @@ function loadListingEvents(d) {
   if (!box || !d || !sbReady()) return;
   var since = new Date(Date.now() - 864e5).toISOString();
   var mine = d.claimed_by && _orgMe() && d.claimed_by === _orgMe().id;
+  _followFromLink(d);
   _sb.from('events').select('id, title, start_date, end_date, is_all_day, is_online, city, country')
     .eq('directory_entry_id', d.id).in('status', ['upcoming', 'ongoing']).gte('start_date', since)
     .order('start_date', { ascending: true }).limit(10)
     .then(function (r) {
-      if (r.error) return;
-      var rows = r.data || [];
-      if (!rows.length && !mine) return;
+      var rows = r.error ? [] : (r.data || []);
       box.innerHTML = '<div class="listing-events"><h3>' + esc(t('org.listing_events', 'Upcoming events')) + '</h3>'
         + (rows.length ? '<ul>' + rows.map(function (ev) {
           var place = ev.is_online ? t('event_detail.online', 'Online') : [ev.city, ev.country].filter(Boolean).join(', ');
@@ -653,6 +652,46 @@ function loadListingEvents(d) {
             + '<span class="lmeta">' + esc(_orgWhen(ev)) + (place ? ' &middot; ' + esc(place) : '') + '</span></li>';
         }).join('') + '</ul>' : '<p class="lmeta">' + esc(t('org.listing_none', 'No upcoming events yet.')) + '</p>')
         + (mine ? '<a class="org-btn-secondary" href="/events/new?listing=' + esc(d.id) + '" onclick="orgGo(\'/events/new?listing=' + escJs(d.id) + '\');return false;">+ ' + esc(t('org.add_for_listing', 'Add an event')) + '</a>' : '')
+        + _followFormHtml(d)
         + '</div>';
     }, function () {});
+}
+
+// ── Follow a group (owner plan, Phase C, 2026-11-02): one email per new event from this listing ──
+function _followCall(body) {
+  return fetch(SUPABASE_URL + '/functions/v1/event-follow', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, body: JSON.stringify(body) })
+    .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._status = r.status; return j; }); });
+}
+
+function _followFormHtml(d) {
+  var me = _orgMe();
+  return '<form class="follow-form" onsubmit="sendFollow(event, \'' + escJs(d.id) + '\')" novalidate>'
+    + '<label for="follow-email">' + esc(t('follow.prompt', 'Get an email when {name} adds an event').replace('{name}', d.organization_name || '')) + '</label>'
+    + '<div class="follow-row"><input type="email" id="follow-email" required maxlength="254" autocomplete="email" placeholder="you@example.com" value="' + esc(me && me.email || '') + '">'
+    + '<input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">'
+    + '<button type="submit">' + esc(t('follow.button', 'Follow')) + '</button></div>'
+    + '<p class="lmeta follow-msg" role="status" aria-live="polite">' + esc(t('follow.note', 'We will ask you to confirm first. Every email has a link to stop them.')) + '</p></form>';
+}
+
+function sendFollow(e, entryId) {
+  e.preventDefault();
+  var f = e.target, msg = f.querySelector('.follow-msg'), btn = f.querySelector('button');
+  var email = f.querySelector('#follow-email').value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = t('follow.invalid', 'Please enter a valid email address.'); return; }
+  btn.disabled = true;
+  _followCall({ action: 'follow', email: email, entry_id: entryId, website: f.website.value }).then(function (j) {
+    btn.disabled = false;
+    msg.textContent = j.ok ? (j.already ? t('follow.already', 'You already follow this group.') : t('follow.check', 'Check your inbox for a confirmation email.')) : (j.error || t('follow.error', 'Something went wrong. Please try again.'));
+  }, function () { btn.disabled = false; msg.textContent = t('follow.error', 'Something went wrong. Please try again.'); });
+}
+
+// The confirm and unsubscribe links in the emails open the listing page with ?follow=confirm|stop&t=<token>
+function _followFromLink(d) {
+  var q = new URLSearchParams(location.search), act = q.get('follow'), token = q.get('t');
+  if ((act !== 'confirm' && act !== 'stop') || !token) return;
+  history.replaceState(history.state, '', location.pathname);
+  _followCall({ action: act, token: token }).then(function (j) {
+    scNotify(j.ok ? (act === 'confirm' ? t('follow.confirmed', 'Done. You will get an email when {name} adds an event.') : t('follow.stopped', 'Done. You will not get more emails from {name}.')).replace('{name}', d.organization_name || '')
+      : (j.error || t('follow.error', 'Something went wrong. Please try again.')));
+  }, function () { scNotify(t('follow.error', 'Something went wrong. Please try again.')); });
 }

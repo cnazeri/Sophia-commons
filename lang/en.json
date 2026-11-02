@@ -1222,5 +1222,14 @@
   "acc.claimed": "claimed",
   "acc.posted": "posted",
   "acc.st_rejected": "Not listed",
-  "submit.cat_event": "Event (opens the event form)"
+  "submit.cat_event": "Event (opens the event form)",
+  "follow.prompt": "Get an email when {name} adds an event",
+  "follow.button": "Follow",
+  "follow.note": "We will ask you to confirm first. Every email has a link to stop them.",
+  "follow.invalid": "Please enter a valid email address.",
+  "follow.already": "You already follow this group.",
+  "follow.check": "Check your inbox for a confirmation email.",
+  "follow.error": "Something went wrong. Please try again.",
+  "follow.confirmed": "Done. You will get an email when {name} adds an event.",
+  "follow.stopped": "Done. You will not get more emails from {name}."
 }

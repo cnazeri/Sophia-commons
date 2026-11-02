@@ -1,4 +1,4 @@
-name: Event sign-up reminders
+name: Event sign-up reminders and follower emails
 
 on:
   schedule:
@@ -21,3 +21,14 @@ jobs:
             -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{"action":"remind"}')
           cat out.json; echo
           [ "$code" = "200" ] || { echo "event-signup-manage returned HTTP $code"; exit 1; }
+
+      - name: Email followers of a group about its newly listed events (each event once)
+        if: always()
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.DIGEST_CRON_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          code=$(curl -s -o out.json -w "%{http_code}" -X POST "$URL/functions/v1/event-follow" \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{"action":"notify"}')
+          cat out.json; echo
+          [ "$code" = "200" ] || { echo "event-follow returned HTTP $code"; exit 1; }
