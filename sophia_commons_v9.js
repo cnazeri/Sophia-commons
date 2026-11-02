@@ -5382,6 +5382,7 @@ function adminSwitchTab(tab) {
   else if (tab === 'outreach') loadAdminOutreach();
   else if (tab === 'featpost') loadAdminFeatPost();
   else if (tab === 'bookweek') loadAdminBookWeek();
+  else if (tab === 'ytsugg') loadAdminYtSuggestions();
 }
 
 function adminEsc(s) { return esc(s); }
@@ -5438,6 +5439,56 @@ async function pickBookOfWeek(i) {
   _homeBookPromise = null;
   loadAdminBookWeek();
   renderHomeBook();
+}
+
+// ── Admin: YouTube channel suggestions (owner, 2026-11-02) ──
+// Approve marks the row approved with a category; the daily youtube_sync.py adds approved rows to
+// automation/youtube_channels.json and starts pulling their videos. Skip marks it rejected, so the
+// search never suggests it again.
+
+// A best guess from the search words, so most rows only need Approve
+function _ytGuessCategory(note) {
+  var n = (note || '').toLowerCase();
+  var rules = [['goetheanum', 'goetheanum'], ['biodynam', 'biodynamic'], ['eurythm', 'eurythmy'], ['camphill', 'camphill'],
+    ['medicine', 'medicine'], ['waldorf', 'waldorf'], ['steiner school', 'waldorf'], ['christian community', 'christian-community'],
+    ['lecture', 'steiner-lectures'], ['society', 'society']];
+  for (var i = 0; i < rules.length; i++) if (n.indexOf(rules[i][0]) >= 0) return rules[i][1];
+  return 'other';
+}
+
+async function loadAdminYtSuggestions() {
+  var el = document.getElementById('admin-ytsugg-list');
+  if (!el || !sbReady()) return;
+  el.innerHTML = '<div class="admin-empty">Loading...</div>';
+  var src = document.getElementById('yts-source').value;
+  var q = _sb.from('youtube_channels_pending').select('id, name, url, note, source, category, created_at').eq('status', 'pending');
+  if (src) q = q.eq('source', src);
+  var r = await q.order('source', { ascending: false }).order('created_at', { ascending: false }).limit(500);
+  if (r.error) { el.innerHTML = '<div class="admin-empty">Could not load suggestions: ' + esc(r.error.message) + '</div>'; return; }
+  var rows = r.data || [];
+  if (!rows.length) { el.innerHTML = '<div class="admin-empty">No channel suggestions waiting.</div>'; return; }
+  el.innerHTML = '<div class="adm-note">' + rows.length + ' waiting.</div>' + rows.map(function (x) {
+    var cat = x.category || _ytGuessCategory(x.note);
+    var sel = '<label class="sr-only" for="yts-cat-' + x.id + '">Category</label><select id="yts-cat-' + x.id + '">'
+      + Object.keys(YT_CATEGORIES).map(function (k) { return '<option value="' + k + '"' + (k === cat ? ' selected' : '') + '>' + esc(YT_CATEGORIES[k]) + '</option>'; }).join('') + '</select>';
+    return '<div class="adm-row" id="yts-row-' + x.id + '"><div><b><a href="' + escUrl(x.url) + '" target="_blank" rel="noopener">' + esc(x.name || x.url) + '</a></b>'
+      + (x.source === 'visitor' ? ' <span class="adm-tag">from a visitor</span>' : '')
+      + '<div class="adm-note">' + esc(x.note || '') + '</div></div>'
+      + '<div class="adm-tools">' + sel
+      + '<button type="button" class="adm-btn" onclick="decideYtSuggestion(\'' + x.id + '\', true, this)">Approve</button>'
+      + '<button type="button" class="adm-btn" onclick="decideYtSuggestion(\'' + x.id + '\', false, this)">Skip</button></div></div>';
+  }).join('');
+}
+
+async function decideYtSuggestion(id, approve, btn) {
+  var row = document.getElementById('yts-row-' + id);
+  var upd = { status: approve ? 'approved' : 'rejected' };
+  if (approve) upd.category = document.getElementById('yts-cat-' + id).value;
+  btn.disabled = true;
+  var r = await _sb.from('youtube_channels_pending').update(upd).eq('id', id);
+  if (r.error) { btn.disabled = false; scNotify('Could not save: ' + r.error.message); return; }
+  if (row) row.innerHTML = '<div class="adm-note">' + (approve ? 'Approved. It will appear after the next daily sync.' : 'Skipped.') + '</div>';
+  checkAdminPendingCounts();
 }
 
 // ── Admin: featured social post ──
@@ -5839,7 +5890,8 @@ var ADMIN_PENDING = [
   { tab: 'claims',    table: 'listing_claims',    q: function (x) { return x.eq('status', 'pending'); } },
   { tab: 'digest',    table: 'news',              q: function (x) { return x.eq('status', 'pending').contains('tags', ['weekly-digest']); } },
   { tab: 'newsq',     table: 'news',              q: function (x) { return x.eq('status', 'pending').contains('tags', ['roundup']); } },
-  { tab: 'outreach',  table: 'outreach_queue',    q: function (x) { return x.eq('status', 'queued'); } }
+  { tab: 'outreach',  table: 'outreach_queue',    q: function (x) { return x.eq('status', 'queued'); } },
+  { tab: 'ytsugg',    table: 'youtube_channels_pending', q: function (x) { return x.eq('status', 'pending'); } }
 ];
 
 async function checkAdminPendingCounts() {

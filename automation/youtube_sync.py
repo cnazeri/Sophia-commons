@@ -262,6 +262,46 @@ class Supa:
         return r.json()
 
 
+def _slugify(name, taken):
+    base = re.sub(r"[^a-z0-9]+", "-", (name or "").lower()).strip("-")[:40].strip("-") or "channel"
+    slug, n = base, 2
+    while slug in taken:
+        slug, n = "%s-%d" % (base, n), n + 1
+    return slug
+
+
+def add_approved(supa, cfg):
+    """Append approved suggestions that are not in the curated list yet. Returns how many were added."""
+    try:
+        rows = supa.select("youtube_channels_pending", {"select": "name,url,channel_id,language,category,note",
+                                                        "status": "eq.approved", "limit": "1000"})
+    except Exception as e:
+        log("  ! approved suggestions: cannot read (%s)" % e)
+        return 0
+    chans = cfg["channels"]
+    ids = {c.get("channel_id") for c in chans if c.get("channel_id")}
+    urls = {(c.get("url") or "").lower().rstrip("/") for c in chans}
+    slugs = {c["slug"] for c in chans}
+    added = 0
+    for r in rows:
+        url = (r.get("url") or "").strip()
+        if not url or r.get("channel_id") in ids or url.lower().rstrip("/") in urls:
+            continue
+        slug = _slugify(r.get("name") or url, slugs)
+        slugs.add(slug)
+        urls.add(url.lower().rstrip("/"))
+        if r.get("channel_id"):
+            ids.add(r["channel_id"])
+        chans.append({"slug": slug, "name": (r.get("name") or slug).strip()[:200], "url": url,
+                      "channel_id": r.get("channel_id"), "language": r.get("language"),
+                      "category": r.get("category") or "other", "description": None,
+                      "verified": False, "added_from": "admin approval"})
+        added += 1
+    if added:
+        log("approved suggestions: %d added to the channel list" % added)
+    return added
+
+
 # ── discovery (optional) ────────────────────────────────────────────────────
 def discover(api_key, known_ids, supa, dry):
     found = {}
@@ -340,6 +380,9 @@ def main():
             sys.exit("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set (use --dry-run to test)")
         supa = Supa(url, key)
 
+    # 0. channels the admin approved in Admin > YouTube suggestions join the curated list
+    added = add_approved(supa, cfg) if supa else 0
+
     # 1+2. for each channel: make sure the id works (feed answers 200), else re-resolve from the page
     all_videos, channel_rows, feed_out, failures, changed = [], [], [], [], False
     seen_ids = {}
@@ -389,7 +432,7 @@ def main():
         channel_rows.append(row)
         time.sleep(0.4)
     log("channels: %d, videos: %d, feed failures: %s" % (len(channel_rows), len(all_videos), failures or "none"))
-    if changed:
+    if changed or added:
         with open(CHANNELS_FILE, "w", encoding="utf-8") as f:
             json.dump(cfg, f, ensure_ascii=False, indent=2)
             f.write("\n")
