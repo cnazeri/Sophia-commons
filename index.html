@@ -224,7 +224,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.107.1">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.108.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -327,6 +327,7 @@
     <a href="/about" data-i18n="topbar.about" onclick="showSec('about');return false;">about</a>
     <a href="#" data-i18n="topbar.post_listing_link" onclick="showSubmitForm();return false;">post a listing</a>
     <a href="#" id="adminlink" onclick="showSec('admin');return false;" style="display:none;color:#c0392b;font-weight:600;">admin</a>
+    <a href="/my-events" id="myevents-link" style="display:none" data-i18n="org.my_events_link" onclick="showSec('my-events');return false;">my events</a>
     <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
     <a href="#" class="signinbtn" id="signin-link" data-i18n="topbar.sign_in" onclick="openModal();return false;">sign in</a>
   </span>
@@ -633,56 +634,6 @@
     </div>
   </div>
 </div>
-</div>
-
-<!-- Event Submission Modal -->
-<div id="event-submit-overlay" onclick="if(event.target===this)closeEventForm();">
-  <div id="event-submit-box">
-    <button class="esm-close" onclick="closeEventForm();">&times;</button>
-    <h2 data-i18n="submit_event.title">Submit an Event</h2>
-    <p class="esub" data-i18n="submit_event.description">Share an anthroposophical event with the community.</p>
-    <label data-i18n="submit_event.title_label">Event Title *</label>
-    <input type="text" id="esm-title" placeholder="e.g. Spring Eurythmy Workshop" data-i18n-placeholder="submit_event.title_placeholder">
-    <div class="esm-row">
-      <div><label data-i18n="submit_event.start_date_label">Start Date *</label><input type="date" id="esm-date"></div>
-      <div><label data-i18n="submit_event.end_date_label">End Date</label><input type="date" id="esm-end"></div>
-    </div>
-    <div class="esm-row">
-      <div><label data-i18n="submit_event.time_label">Time</label><input type="text" id="esm-time" placeholder="e.g. 9:00 AM - 5:00 PM" data-i18n-placeholder="submit_event.time_placeholder"></div>
-      <div><label data-i18n="submit_event.category_label">Category</label>
-        <select id="esm-cat">
-          <option value="study">Study</option>
-          <option value="conference">Conference</option>
-          <option value="community">Community</option>
-          <option value="eurythmy">Eurythmy</option>
-          <option value="biodynamic">Biodynamic</option>
-          <option value="medicine">Medicine</option>
-        </select>
-      </div>
-    </div>
-    <label data-i18n="submit_event.location_label">Location</label>
-    <input type="text" id="esm-loc" placeholder="City, Country or 'Online'" data-i18n-placeholder="submit_event.location_placeholder">
-    <label data-i18n="submit_event.organizer_label">Organizer</label>
-    <input type="text" id="esm-org" placeholder="Organization name" data-i18n-placeholder="submit_event.organizer_placeholder">
-    <label data-i18n="submit_event.desc_label">Description</label>
-    <textarea id="esm-desc" rows="3" placeholder="Brief description..." data-i18n-placeholder="submit_event.desc_placeholder"></textarea>
-    <label data-i18n="submit_event.url_label">Website / Link</label>
-    <input type="text" id="esm-url" placeholder="https://..." data-i18n-placeholder="submit_event.url_placeholder">
-    <label class="esm-check"><input type="checkbox" id="esm-signup" onchange="document.getElementById('esm-signup-qs').hidden=!this.checked"> <span data-i18n="signup.collect">Collect sign-ups on Sophia Commons</span></label>
-    <div id="esm-signup-qs" hidden>
-      <p class="esm-hint" data-i18n="signup.collect_hint">People sign up with their name, email and number attending. You get an email for each sign-up and see the list on your event page. Add up to 3 questions of your own:</p>
-      <div class="esm-q"><input type="text" id="esm-q1" maxlength="120" placeholder="Question 1 (optional)" data-i18n-placeholder="signup.q1_placeholder">
-        <select id="esm-q1t" onchange="document.getElementById('esm-q1o').hidden=this.value!=='choice'"><option value="yesno" data-i18n="signup.type_yesno">Yes / No</option><option value="text" data-i18n="signup.type_text">Short answer</option><option value="choice" data-i18n="signup.type_choice">Choice list</option></select>
-        <input type="text" id="esm-q1o" hidden maxlength="300" placeholder="Choices, separated by commas" data-i18n-placeholder="signup.choices_placeholder"></div>
-      <div class="esm-q"><input type="text" id="esm-q2" maxlength="120" placeholder="Question 2 (optional)" data-i18n-placeholder="signup.q2_placeholder">
-        <select id="esm-q2t" onchange="document.getElementById('esm-q2o').hidden=this.value!=='choice'"><option value="yesno" data-i18n="signup.type_yesno">Yes / No</option><option value="text" data-i18n="signup.type_text">Short answer</option><option value="choice" data-i18n="signup.type_choice">Choice list</option></select>
-        <input type="text" id="esm-q2o" hidden maxlength="300" placeholder="Choices, separated by commas" data-i18n-placeholder="signup.choices_placeholder"></div>
-      <div class="esm-q"><input type="text" id="esm-q3" maxlength="120" placeholder="Question 3 (optional)" data-i18n-placeholder="signup.q3_placeholder">
-        <select id="esm-q3t" onchange="document.getElementById('esm-q3o').hidden=this.value!=='choice'"><option value="yesno" data-i18n="signup.type_yesno">Yes / No</option><option value="text" data-i18n="signup.type_text">Short answer</option><option value="choice" data-i18n="signup.type_choice">Choice list</option></select>
-        <input type="text" id="esm-q3o" hidden maxlength="300" placeholder="Choices, separated by commas" data-i18n-placeholder="signup.choices_placeholder"></div>
-    </div>
-    <button class="esm-btn" onclick="submitEvent(this);" data-i18n="submit_event.btn">Submit Event</button>
-  </div>
 </div>
 
 <!-- ═══ BROWSE ═══ -->
@@ -1673,6 +1624,15 @@
   <div id="digest-archive"><p class="digest-empty" data-i18n="common.loading">Loading...</p></div>
   <p class="digest-link"><a href="/" onclick="showSec('home');setTimeout(function(){var e=document.getElementById('home-nl-email');if(e){e.scrollIntoView({block:'center'});e.focus();}},80);return false;" data-i18n="digest.subscribe">Get the next issue by email</a> &rarr;</p>
 </div>
+<!-- ═══ ORGANIZER: create / edit an event, and my events (events_organizer.js, 2026-11-01) ═══ -->
+<div class="pagesec" id="sec-event-new">
+  <div class="seclabel" data-i18n="org.label_new">Create an event</div>
+  <div id="evf-root"><p class="org-empty" data-i18n="common.loading">Loading...</p></div>
+</div>
+<div class="pagesec" id="sec-my-events">
+  <div class="seclabel" data-i18n="org.label_mine">My events</div>
+  <div id="myev-root"><p class="org-empty" data-i18n="common.loading">Loading...</p></div>
+</div>
 <div class="pagesec legal-page" id="sec-privacy">
   <div class="seclabel">Privacy</div>
   <h2 class="legal-title">Privacy at Sophia Commons</h2>
@@ -2177,18 +2137,19 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.107.1</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.108.0</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.107.1"></script>
-<script defer src="/i18n.js?v=1.107.1"></script>
-<script defer src="/sophia_commons_v9.js?v=1.107.1"></script>
-<script defer src="/blog.js?v=1.107.1"></script>
-<script defer src="/claims.js?v=1.107.1"></script>
+<script defer src="/sb-init.js?v=1.108.0"></script>
+<script defer src="/i18n.js?v=1.108.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.108.0"></script>
+<script defer src="/blog.js?v=1.108.0"></script>
+<script defer src="/claims.js?v=1.108.0"></script>
+<script defer src="/events_organizer.js?v=1.108.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

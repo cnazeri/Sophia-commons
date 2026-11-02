@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Sign up | Sophia Commons</title>
 <link rel="icon" href="/favicon.ico">
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.107.1">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.108.0">
 <!-- The sign-up form on its own page, with no site menu or other links, so organizers can share it like a
      Google Form (owner, 2026-11-01). /signup/<event id> is served by this file (see _redirects). -->
 <style>
@@ -96,10 +96,18 @@
       .catch(function (err) { btn.disabled = false; msg.textContent = err.message || 'Your sign-up could not be sent. Please try again.'; });
   }
 
-  fetch(SB + '/rest/v1/events?select=id,title,start_date,end_date,is_all_day,location_name,address,city,country,is_online,organizer_name,image_url,status,signup_enabled,signup_questions&id=eq.' + id, { headers: H })
-    .then(function (r) { return r.json(); })
+  // Listed events come from the table; a pending one (shared by link before approval) from get_event().
+  // Before that function exists the second request fails and the page says the event was not found.
+  var COLS = 'id,title,start_date,end_date,is_all_day,location_name,address,city,country,is_online,organizer_name,image_url,status,signup_enabled,signup_questions';
+  var rows0 = function (r) { return r.ok ? r.json() : []; };
+  fetch(SB + '/rest/v1/events?select=' + COLS + '&id=eq.' + id, { headers: H })
+    .then(rows0)
     .then(function (rows) {
-      var ev = rows && rows[0];
+      if (rows && rows[0]) return rows;
+      return fetch(SB + '/rest/v1/rpc/get_event?p_id=' + id + '&select=' + COLS, { headers: H }).then(rows0).catch(function () { return []; });
+    })
+    .then(function (rows) {
+      var ev = Array.isArray(rows) ? rows[0] : null;
       if (!ev) { say('This event could not be found.'); return; }
       document.title = 'Sign up: ' + ev.title + ' | Sophia Commons';
       var place = ev.is_online ? 'Online' : [ev.location_name, ev.address || [ev.city, ev.country].filter(Boolean).join(', ')].filter(Boolean).join(', ');
@@ -107,7 +115,7 @@
         + '<div class="su-head"><h1>' + esc(ev.title) + '</h1><p class="su-meta">' + esc(when(ev)) + '</p>'
         + (place ? '<p class="su-meta">' + esc(place) + '</p>' : '')
         + (ev.organizer_name ? '<p class="su-meta">Hosted by ' + esc(ev.organizer_name) + '</p>' : '') + '</div>';
-      var open = ev.signup_enabled && ['upcoming', 'ongoing'].indexOf(ev.status) !== -1
+      var open = ev.signup_enabled && ['pending', 'upcoming', 'ongoing'].indexOf(ev.status) !== -1
         && new Date(ev.end_date || ev.start_date).getTime() > Date.now() - 864e5;
       card.innerHTML = head + (open ? form(ev) : '<p class="su-msg">Sign-ups for this event are closed.</p>');
       if (!open) return;

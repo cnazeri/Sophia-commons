@@ -2,6 +2,7 @@
 // Checks the event takes sign-ups, saves one sign-up per email per event, then emails a confirmation to the
 // person and a short note to the organizer (both via Resend). Public endpoint: deploy with --no-verify-jwt.
 // The event_signups table has no public policies; only this function (service role) writes to it.
+// Pending (not yet approved) events take sign-ups too: organizers share them by link first (2026-11-01).
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -61,7 +62,7 @@ serve(async (req) => {
   const { data: ev } = await db.from("events")
     .select("id, title, start_date, is_all_day, location_name, address, city, is_online, online_url, organizer_name, user_id, status, signup_enabled, signup_questions")
     .eq("id", eventId).maybeSingle();
-  if (!ev || !ev.signup_enabled || !["upcoming", "ongoing"].includes(ev.status)) {
+  if (!ev || !ev.signup_enabled || !["pending", "upcoming", "ongoing"].includes(ev.status)) {
     return out({ error: "This event is not taking sign-ups." }, 400);
   }
 

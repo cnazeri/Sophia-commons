@@ -72,14 +72,18 @@ async function showDetail(type, id, skipPush) {
       updateSEOMeta(data.organization_name + ' | Sophia Commons', (data.description || '').substring(0, 160), '/listing/' + id);
       _injectDirectorySEO(data);
       loadRelatedDirectory(data.category, data.id);
+      if (typeof loadListingEvents === 'function') loadListingEvents(data);
       loadComments('directory', id);
       _trackView('directory', id);
     } else if (type === 'event') {
       var { data, error } = await _sb.from('events')
-        .select('*').eq('id', id).single();
-      if (error || !data) { container.innerHTML = renderNotFound(); return; }
+        .select('*').eq('id', id).maybeSingle();
+      if (!data) data = await _getUnlistedEvent(id);
+      if (!data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderEventDetail(data);
       _initEventSignup(data);
+      if (typeof initEventShareKit === 'function') initEventShareKit(data);
+      if (data.status === 'pending') _setRobots('noindex');   // shared by link only, not for search engines
       updateSEOMeta(data.title + ' | Sophia Commons Events', (data.description || '').substring(0, 160), '/event/' + id);
       _injectEventSEO(data);
       loadRelatedEvents(data.category_id, data.id);
@@ -173,6 +177,7 @@ function renderDirectoryDetail(d) {
     + (typeof claimBoxHtml === 'function' ? claimBoxHtml(d) : '')
     + (typeof badgeBoxHtml === 'function' ? badgeBoxHtml(d) : '')
     + '</div>'
+    + '<div id="listing-events"></div>'
     + _nlCardHtml('listing')
     + renderCommentsSection('directory', d.id)
     + '<div id="related-listings"></div>';
@@ -255,6 +260,26 @@ function _calButtonsHtml(ev) {
     + '<a href="#" onclick="downloadEventIcs(\'' + esc(ev.id) + '\');return false;">' + t('event_detail.apple_ics', 'Apple / other (.ics)') + '</a></div>';
 }
 
+// A pending (not yet approved) event opens by its link through get_event(); before that function exists
+// the call fails and the page shows "not found", as it always did for events that are not listed.
+async function _getUnlistedEvent(id) {
+  try {
+    var r = await _sb.rpc('get_event', { p_id: id });
+    return r && !r.error && r.data && r.data[0] ? r.data[0] : null;
+  } catch (e) { return null; }
+}
+
+// Times on the page are in the visitor's time zone; when the event's own zone differs, also show its local time
+function _eventZoneLine(ev) {
+  if (!ev.timezone || ev.is_all_day) return '';
+  var mine = '';
+  try { mine = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
+  if (!mine || mine === ev.timezone) return '';
+  var at;
+  try { at = new Date(ev.start_date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: ev.timezone }); } catch (e) { return ''; }
+  return '<p><strong>' + esc(t('org.local_time', 'Local time at the event')) + ':</strong> ' + esc(at) + ' (' + esc(ev.timezone.replace(/_/g, ' ')) + ')</p>';
+}
+
 function renderEventDetail(ev) {
   var d = new Date(ev.start_date);
   var endStr = ev.end_date ? localDate(ev.end_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'}) : '';
@@ -302,7 +327,11 @@ function renderEventDetail(ev) {
   var img = ev.image_url && /^https:\/\//.test(ev.image_url)
     ? '<figure class="detail-img"><img src="' + escUrl(_imgSized(ev.image_url, 900)) + '" alt="" width="900" height="240" decoding="async"></figure>' : '';
 
+  var me = window._supabaseUser;
+  var pendingNote = ev.status === 'pending' && me && (me.id === ev.user_id || isAdmin())
+    ? '<p class="ev-pending-note" role="note">' + esc(t('org.pending_note', 'Shared by link only until Sophia Commons approves it for the public calendar.')) + '</p>' : '';
   return '<div class="detail-hero">'
+    + pendingNote
     + img
     + badges
     + '<h1>' + esc(ev.title) + '</h1>'
@@ -310,14 +339,17 @@ function renderEventDetail(ev) {
     + '<div class="detail-body" style="white-space:pre-line;">' + esc(ev.description || '') + '</div>'
     + zoom
     + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold-text);font-weight:700;margin-bottom:12px;">' + t('event_detail.ticket_price').replace('${price}', ev.ticket_price) + '</p>' : '')
+    + (ev.price_text ? '<p class="ev-price">' + esc(t('org.price', 'Price')) + ': ' + esc(ev.price_text) + '</p>' : '')
     + '<div class="detail-actions">' + actions + '</div>'
     + _calButtonsHtml(ev)
     + (ev.signup_enabled ? '<div id="ev-signup" class="ev-signup"></div>' : '')
     + '<div id="ev-signups-list"></div>'
+    + '<div id="ev-share"></div>'
     + '</div>'
     + '<div class="detail-sidebar"><h4>' + t('event_detail.title') + '</h4>'
     + '<p><strong>' + t('event_detail.date') + ':</strong> ' + esc(dateStr) + '</p>'
     + '<p><strong>' + t('event_detail.time') + ':</strong> ' + esc(timeStr) + '</p>'
+    + _eventZoneLine(ev)
     + (ev.location_name ? '<p><strong>' + t('event_detail.venue') + ':</strong> ' + esc(ev.location_name) + '</p>' : '')
     + (ev.city ? '<p><strong>' + t('event_detail.city') + ':</strong> ' + esc(ev.city) + '</p>' : '')
     + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
@@ -336,7 +368,7 @@ function _initEventSignup(ev) {
   // The form itself lives on its own page, /signup/<id>, with no other links (owner, 2026-11-01);
   // the event page shows a button to it and how many have signed up.
   var box = document.getElementById('ev-signup');
-  var open = ev.signup_enabled && ['upcoming', 'ongoing'].indexOf(ev.status) !== -1
+  var open = ev.signup_enabled && ['pending', 'upcoming', 'ongoing'].indexOf(ev.status) !== -1
     && new Date(ev.end_date || ev.start_date).getTime() > Date.now() - 864e5;
   if (box && open) {
     box.innerHTML = '<h3>' + esc(t('signup.heading', 'Sign up for this event')) + ' <span class="ev-signup-count" id="ev-signup-count"></span></h3>'
@@ -1482,7 +1514,8 @@ const roomHistory = {};
 const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
   directory: '/directory', books: '/books', podcasts: '/podcasts',
-  memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', chat: '/chat', privacy: '/privacy', terms: '/terms', about: '/about', digest: '/digest'
+  memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', chat: '/chat', privacy: '/privacy', terms: '/terms', about: '/about', digest: '/digest',
+  'event-new': '/events/new', 'my-events': '/my-events'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
@@ -1503,6 +1536,8 @@ function _getSecMeta() {
     about:     { title: 'About | Sophia Commons', desc: 'Sophia Commons is a free, community-maintained directory for the anthroposophical world.' },
     privacy:   { title: 'Privacy | Sophia Commons', desc: 'What Sophia Commons collects, why, and how to have your data corrected or deleted.' },
     digest:    { title: t('meta.digest_title', 'Weekly digest archive | Sophia Commons'), desc: t('meta.digest_desc', 'Every past issue of the Sophia Commons weekly email: upcoming events, new videos and new places in the anthroposophical world.') },
+    'event-new': { title: t('org.meta_new', 'Create an event | Sophia Commons'), desc: t('org.meta_new_desc', 'Create your event page on Sophia Commons, share it with your group and collect sign-ups.') },
+    'my-events': { title: t('org.meta_mine', 'My events | Sophia Commons'), desc: t('org.meta_new_desc', 'Create your event page on Sophia Commons, share it with your group and collect sign-ups.') },
     terms:     { title: 'Terms of use | Sophia Commons', desc: 'The simple terms for using and contributing to the Sophia Commons directory.' }
   };
 }
@@ -1529,6 +1564,14 @@ function updateSEOMeta(title, desc, path) {
   if (twUrl) twUrl.setAttribute('content', fullUrl);
 }
 
+var _robotsDefault = null;
+function _setRobots(value) {
+  var m = document.querySelector('meta[name="robots"]');
+  if (!m) return;
+  if (_robotsDefault === null) _robotsDefault = m.getAttribute('content') || '';
+  m.setAttribute('content', value || _robotsDefault);
+}
+
 function showSec(id, skipPush) {
   var oldLd = document.getElementById('detail-jsonld'); if (oldLd) oldLd.remove();
   // News lives inside the combined Events & News page (below the events)
@@ -1553,6 +1596,10 @@ function showSec(id, skipPush) {
   if (id === 'podcasts') renderVideoSpotlight();
   if (id === 'home') renderHomeExtras();
   if (id === 'digest') renderDigestArchive();
+  // Organizer pages are private: not for search engines (the robots tag goes back to normal elsewhere)
+  _setRobots(id === 'event-new' || id === 'my-events' ? 'noindex, nofollow' : null);
+  if (id === 'event-new' && typeof renderEventForm === 'function') renderEventForm();
+  if (id === 'my-events' && typeof renderMyEvents === 'function') renderMyEvents();
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   if (_toNews) setTimeout(function() { var n = document.getElementById('sec-news'); if (n) n.scrollIntoView({ block: 'start' }); }, 50);
@@ -1950,6 +1997,8 @@ function applySignedInState() {
   document.getElementById('chat-input').placeholder = t('chat.input_placeholder').replace('{room}', 'general').replace('{username}', username);
   scrollMsgs();
   updateAdminVisibility();
+  var me = document.getElementById('myevents-link'); if (me) me.style.display = 'inline';
+  if (typeof organizerAuthChanged === 'function') organizerAuthChanged();
 }
 
 async function doSignOut() {
@@ -1962,6 +2011,7 @@ async function doSignOut() {
   document.getElementById('chat-gate-wrap').style.display = 'block';
   document.getElementById('chat-app').classList.remove('vis');
   updateAdminVisibility();
+  var me = document.getElementById('myevents-link'); if (me) me.style.display = 'none';
   showSec('home');
 }
 
@@ -4803,112 +4853,9 @@ function updateHeaderCalendar() {
 }
 
 // ── EVENT FORM ──
+// "Submit an event" opens the organizer page /events/new (events_organizer.js), 2026-11-01.
 function showEventForm() {
-  document.getElementById('event-submit-overlay').classList.add('open');
-}
-function closeEventForm() {
-  document.getElementById('event-submit-overlay').classList.remove('open');
-}
-
-// Parse the free-text time field ("9:00 AM - 5:00 PM", "14:30") into HH:MM (24h), or '' if unclear.
-function _parseStartTime(txt) {
-  var m = String(txt || '').trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a\.m\.|p\.m\.)?/i);
-  if (!m) return '';
-  var h = parseInt(m[1], 10), min = m[2] ? parseInt(m[2], 10) : 0, ap = (m[3] || '').toLowerCase().replace(/\./g, '');
-  if (!m[2] && !ap) return '';
-  if (ap === 'pm' && h < 12) h += 12;
-  if (ap === 'am' && h === 12) h = 0;
-  if (h > 23 || min > 59) return '';
-  return String(h).padStart(2, '0') + ':' + String(min).padStart(2, '0');
-}
-
-async function submitEvent(btn) {
-  var title = document.getElementById('esm-title').value.trim();
-  var date = document.getElementById('esm-date').value;
-  if (!title || !date) { scNotify(t('error.fill_title_date')); return; }
-
-  if (!sbReady()) { scNotify('We could not reach the server. Please try again in a moment.'); return; }
-  var userId = window._supabaseUser ? window._supabaseUser.id : null;
-  if (!userId) {
-    // events.user_id is required, so anonymous submissions always failed silently before.
-    closeEventForm();
-    openModal();
-    var desc = document.getElementById('modal-desc');
-    if (desc) desc.textContent = 'Please sign in (free) to submit an event. Your form entries are kept.';
-    return;
-  }
-
-  var description = document.getElementById('esm-desc').value.trim();
-  var endDate = document.getElementById('esm-end').value;
-  if (endDate && endDate < date) { scNotify('The end date is before the start date.'); return; }
-  var time = document.getElementById('esm-time').value.trim();
-  var cat = document.getElementById('esm-cat').value;
-  var loc = document.getElementById('esm-loc').value.trim() || 'TBD';
-  var org = document.getElementById('esm-org').value.trim();
-  var rawUrl = document.getElementById('esm-url').value.trim();
-  var url = _normalizeUrl(rawUrl);
-  if (rawUrl && !url) { scNotify('Please enter a valid event link (for example https://example.org).'); return; }
-
-  var catToEventType = {
-    'study': 'study_group', 'conference': 'conference', 'community': 'other',
-    'eurythmy': 'workshop', 'biodynamic': 'workshop', 'medicine': 'workshop'
-  };
-
-  var hhmm = _parseStartTime(time);
-  var startDate = hhmm ? date + 'T' + hhmm + ':00' : date + 'T00:00:00';
-  var fullDesc = (description || 'No description provided.') + (time ? '\n\nTime: ' + time : '');
-  var row = {
-    title: title,
-    description: fullDesc,
-    event_type: catToEventType[cat] || 'other',
-    start_date: startDate,
-    location_name: loc,
-    organizer_name: org,
-    status: 'pending',
-    is_free: true,
-    user_id: userId
-  };
-  if (endDate) row.end_date = endDate + 'T23:59:59';
-  if (url) row.organizer_url = url;
-  var signupBox = document.getElementById('esm-signup');
-  if (signupBox && signupBox.checked) {   // sign-ups on the event page (owner, 2026-10-31)
-    row.signup_enabled = true;
-    row.signup_questions = [1, 2, 3].map(function (i) {
-      var label = (document.getElementById('esm-q' + i).value || '').trim().slice(0, 120);
-      var type = document.getElementById('esm-q' + i + 't').value;
-      var opts = (document.getElementById('esm-q' + i + 'o').value || '').split(',').map(function (o) { return o.trim().slice(0, 60); }).filter(Boolean).slice(0, 10);
-      if (!label || (type === 'choice' && opts.length < 2)) return null;
-      return type === 'choice' ? { label: label, type: type, options: opts } : { label: label, type: type };
-    }).filter(Boolean);
-  }
-
-  if (btn) btn.disabled = true;
-  try {
-    var res = await _sb.from('events').insert([row]);
-    // Until the moderation migration adds 'pending' to the status CHECK, fall back to publishing.
-    if (res.error && res.error.code === '23514') {
-      row.status = 'upcoming';
-      res = await _sb.from('events').insert([row]);
-    }
-    if (res.error) throw res.error;
-
-    if (row.status === 'upcoming') {
-      calEvents.push({ date: date, title: title, cat: cat, loc: loc, org: org, time: time });
-      renderCalendar(); renderEventList(); renderMiniCal(); renderSidebarUpcoming(); updateHeaderCalendar();
-      scNotify('Thank you! Your event has been added to the calendar.');
-    } else {
-      scNotify('Thank you! Your event was submitted and will appear once it has been reviewed.');
-    }
-    closeEventForm();
-    ['esm-title','esm-date','esm-end','esm-time','esm-loc','esm-org','esm-desc','esm-url'].forEach(function(id) {
-      document.getElementById(id).value = '';
-    });
-  } catch (e) {
-    console.warn('Event submit error:', e);
-    scNotify('Sorry, the event could not be saved (' + (e.message || 'unknown error') + '). Please try again.');
-  } finally {
-    if (btn) btn.disabled = false;
-  }
+  if (typeof orgGo === 'function') orgGo('/events/new'); else showSec('event-new');
 }
 
 // Google Calendar sync (placeholder)
