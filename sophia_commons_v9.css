@@ -4073,9 +4073,12 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 }
 
 /* "+ create an event" under the right sidebar newsletter box (owner, 2026-11-01) */
-#rightbar .rb-create-event { display: flex; align-items: center; justify-content: center; min-height: 44px; margin: -6px 0 18px; border: 1px solid var(--gold); border-radius: 999px; color: var(--gold-text); font-size: 13px; font-weight: 700; text-decoration: none; transition: background 0.2s; }
-#rightbar .rb-create-event:hover { background: var(--gold-light); }
-#rightbar .rb-create-event:active { transform: scale(0.98); }
+#rightbar .rb-create-event { display: none; box-sizing: border-box; width: 100%; margin: -10px 0 16px; padding: 9px; border: none; border-radius: 50px;
+  background: var(--gold); color: var(--on-gold); font-family: 'Nunito Sans', sans-serif; font-size: 12px; font-weight: 600; line-height: normal;
+  text-align: center; text-decoration: none; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+#page:has(#sec-events.active) #rightbar .rb-create-event { display: block; }
+#rightbar .rb-create-event:hover { background: var(--gold-hover); }
+#rightbar .rb-create-event:active { transform: scale(0.97); }
 
 /* Account settings page (account.js, owner 2026-11-01) */
 #acc-root { max-width: 760px; }
