@@ -3263,6 +3263,8 @@ footer li a { display: inline-block; padding: 10px 0; }
 .adm-tools input { min-height: 44px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-primary); font: inherit; font-size: 13px; width: 220px; max-width: 100%; }
 .adm-btn { min-height: 44px; padding: 0 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-primary); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .adm-btn:hover { border-color: var(--gold); }
+.adm-btn-danger { color: var(--error); }
+.adm-btn-danger:hover { border-color: var(--error); }
 .adm-danger { color: #a3281b; }
 .adm-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
 .adm-stats div { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text-secondary); }

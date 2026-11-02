@@ -7170,7 +7170,9 @@ function _subRowHtml(s) {
   var st = s.unsubscribed_at ? 'unsubscribed' : (s.confirmed ? 'subscribed' : 'unconfirmed');
   return '<tr id="sub-row-' + esc(s.id) + '"><td><a href="mailto:' + esc(s.email) + '">' + esc(s.email) + '</a></td><td>' + esc(s.name || '') + '</td>'
     + '<td><span class="adm-pill adm-' + st + '">' + st + '</span></td><td>' + esc(_admDate(s.created_at)) + '</td>'
-    + '<td><button type="button" class="adm-btn" onclick="editSubscriber(\'' + esc(s.id) + '\')">Edit</button></td></tr>';
+    + '<td class="adm-sub-btns"><button type="button" class="adm-btn" onclick="editSubscriber(\'' + esc(s.id) + '\')">Edit</button>'
+    + (s.unsubscribed_at ? '' : '<button type="button" class="adm-btn" onclick="unsubscribeSubscriber(\'' + esc(s.id) + '\')">Unsubscribe</button>')
+    + '<button type="button" class="adm-btn adm-btn-danger" onclick="deleteSubscriber(\'' + esc(s.id) + '\')">Delete</button></td></tr>';
 }
 function renderAdminSubscribers() {
   var subsEl = document.getElementById('adm-subs-list');
@@ -7208,6 +7210,30 @@ async function saveSubscriber(id) {
   if (!r.data || !r.data.length) { status.textContent = 'Not saved: please sign in again as an admin.'; return; }
   _admSubs = _admSubs.map(function (x) { return x.id === id ? Object.assign({}, x, { email: email, name: name || null }) : x; });
   cancelSubscriber(id);
+}
+
+// Admin > Members: remove people from the newsletter (owner, 2026-11-01). Unsubscribe keeps the row with
+// unsubscribed_at set, so no digest goes to them and adding them by hand never re-adds them. Delete erases the
+// row for good (for someone who asks to have their data removed). RLS: "newsletter: admin update" / "admin delete".
+function _afterSubChange() { renderSubscriberWeeks(_admSubs); renderAdminSubscribers(); }
+async function unsubscribeSubscriber(id) {
+  var s = _findSub(id);
+  if (!isAdmin() || !s) return;
+  if (!confirm('Unsubscribe ' + s.email + '? They will get no more newsletters.')) return;
+  var when = new Date().toISOString();
+  var r = await _sb.from('newsletter_subscribers').update({ unsubscribed_at: when }).eq('id', id).select('id');
+  if (r.error || !r.data || !r.data.length) { scNotify('Could not unsubscribe: ' + (r.error ? r.error.message : 'please sign in again as an admin.')); return; }
+  _admSubs = _admSubs.map(function (x) { return x.id === id ? Object.assign({}, x, { unsubscribed_at: when }) : x; });
+  _afterSubChange();
+}
+async function deleteSubscriber(id) {
+  var s = _findSub(id);
+  if (!isAdmin() || !s) return;
+  if (!confirm('Delete ' + s.email + ' from the subscriber list for good? This cannot be undone.')) return;
+  var r = await _sb.from('newsletter_subscribers').delete().eq('id', id).select('id');
+  if (r.error || !r.data || !r.data.length) { scNotify('Could not delete: ' + (r.error ? r.error.message : 'please sign in again as an admin.')); return; }
+  _admSubs = _admSubs.filter(function (x) { return x.id !== id; });
+  _afterSubChange();
 }
 
 // Admin > Members: add people by hand (owner, 2026-10-24). One per line: "email", "Name, email"
