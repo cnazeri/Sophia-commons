@@ -589,7 +589,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.111.0",
+  "footer.version": "v1.112.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1292,5 +1292,10 @@
   "follow.check": "Проверьте почту: мы отправили письмо для подтверждения.",
   "follow.error": "Что-то пошло не так. Попробуйте еще раз.",
   "follow.confirmed": "Готово. Вы получите письмо, когда {name} добавит мероприятие.",
-  "follow.stopped": "Готово. Писем от {name} больше не будет."
+  "follow.stopped": "Готово. Писем от {name} больше не будет.",
+  "event_detail.more_events": "Другие мероприятия",
+  "event_detail.about": "О мероприятии",
+  "event_detail.register": "Как участвовать",
+  "signup.full_note": "Мест больше нет. Запишитесь в лист ожидания: если место освободится, вы перейдёте в список автоматически и получите письмо.",
+  "signup.waitlist_done": "Мест больше нет, вы в листе ожидания. Если место освободится, вы перейдёте в список автоматически, и мы вам напишем."
 }

@@ -589,7 +589,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.111.0",
+  "footer.version": "v1.112.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1292,5 +1292,10 @@
   "follow.check": "Bitte prüfen Sie Ihr Postfach auf eine Bestätigungs-E-Mail.",
   "follow.error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
   "follow.confirmed": "Erledigt. Sie erhalten eine E-Mail, wenn {name} eine Veranstaltung einträgt.",
-  "follow.stopped": "Erledigt. Sie erhalten keine weiteren E-Mails von {name}."
+  "follow.stopped": "Erledigt. Sie erhalten keine weiteren E-Mails von {name}.",
+  "event_detail.more_events": "Weitere Veranstaltungen",
+  "event_detail.about": "Über diese Veranstaltung",
+  "event_detail.register": "Teilnahme",
+  "signup.full_note": "Diese Veranstaltung ist ausgebucht. Tragen Sie sich in die Warteliste ein: Wird ein Platz frei, rücken Sie automatisch nach und bekommen eine E-Mail.",
+  "signup.waitlist_done": "Die Veranstaltung ist ausgebucht, Sie stehen auf der Warteliste. Wird ein Platz frei, rücken Sie automatisch nach und wir schreiben Ihnen."
 }

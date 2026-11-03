@@ -589,7 +589,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.111.0",
+  "footer.version": "v1.112.0",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -1292,5 +1292,10 @@
   "follow.check": "Revise su bandeja de entrada para confirmar.",
   "follow.error": "Algo salió mal. Inténtelo de nuevo.",
   "follow.confirmed": "Listo. Recibirá un correo cuando {name} publique un evento.",
-  "follow.stopped": "Listo. No recibirá más correos de {name}."
+  "follow.stopped": "Listo. No recibirá más correos de {name}.",
+  "event_detail.more_events": "Más eventos",
+  "event_detail.about": "Sobre este evento",
+  "event_detail.register": "Cómo asistir",
+  "signup.full_note": "Este evento está completo. Únase a la lista de espera: si se libera un lugar, avanza automáticamente y le enviamos un correo.",
+  "signup.waitlist_done": "El evento está completo, así que está en la lista de espera. Si se libera un lugar, avanza automáticamente y le escribimos."
 }

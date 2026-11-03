@@ -4137,3 +4137,37 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .follow-row button:disabled { opacity: .6; cursor: default; }
 .follow-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .follow-msg { margin-top: 6px; }
+
+/* ── EVENT PAGE ON ITS OWN (owner, 2026-11-03) ──
+   /event/<id> drops the side panels, the site menu and the top bar; only the logo and a link to more events
+   stay, and the sign-up form comes right after the title, next to the date, time and place. */
+#ev-focus-more { display: none; }
+body.ev-focus #topbar, body.ev-focus #mainnav-wrap, body.ev-focus #statsbar, body.ev-focus #postlink,
+body.ev-focus #hamburger-btn, body.ev-focus #leftbar, body.ev-focus #rightbar, body.ev-focus .menu-overlay,
+body.ev-focus #detail-back, body.ev-focus #sec-detail .nl-card, body.ev-focus #related-listings { display: none !important; }
+body.ev-focus #ev-focus-more {
+  display: inline-flex; align-items: center; gap: 6px; margin-left: auto; min-height: 44px; padding: 0 18px;
+  border: 1px solid var(--border); border-radius: 999px; color: var(--gold-text); font-weight: 700; font-size: 14px;
+  text-decoration: none; transition: border-color .2s, transform .2s;
+}
+body.ev-focus #ev-focus-more:hover { border-color: var(--gold); transform: translateY(-1px); }
+body.ev-focus #page { grid-template-columns: 1fr; }
+body.ev-focus #center { width: 100%; max-width: 1040px; margin: 0 auto; padding-top: 28px; }
+.ev-hero { margin-bottom: 18px; }
+.ev-hero .detail-meta { font-size: 15px; color: var(--text-secondary); margin-bottom: 0; }
+.ev-reg { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 18px; align-items: start; margin-bottom: 18px; }
+.ev-reg.ev-reg-solo { grid-template-columns: minmax(0, 1fr); }
+.ev-reg .ev-signup { margin: 0; padding: 22px 24px; background: var(--elevated); border-color: var(--border); border-radius: 16px; }
+.ev-reg .ev-signup h3 { font-size: 20px; }
+.ev-reg .ev-signup form { max-width: none; }
+.ev-reg .ev-reg-links .detail-actions { margin-top: 4px; }
+.ev-reg .ev-reg-links .detail-actions a { min-height: 44px; font-size: 15px; }
+.ev-reg .ev-facts { margin: 0; }
+.ev-facts .cal-add { margin-top: 12px; }
+.ev-about h2 { font-family: 'Lora', Georgia, serif; font-size: 1.2rem; margin: 0 0 10px; color: var(--text-primary); }
+.ev-about .detail-body:last-child { margin-bottom: 0; }
+@media (max-width: 760px) {
+  .ev-reg { grid-template-columns: minmax(0, 1fr); }
+  body.ev-focus #center { padding-top: 16px; }
+  .ev-reg .ev-signup { padding: 18px 16px; }
+}

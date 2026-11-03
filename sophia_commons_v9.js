@@ -45,6 +45,8 @@ async function showDetail(type, id, skipPush) {
   var container = document.getElementById('detail-content');
   container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + t('detail.loading') + '</div>';
   showSec('detail', true);
+  // The event page stands on its own, without the side panels or site menu (owner, 2026-11-03)
+  document.body.classList.toggle('ev-focus', type === 'event');
 
   // Push SEO-friendly detail URL
   if (!skipPush) {
@@ -123,6 +125,7 @@ function showStaticDetail(data) {
   var container = document.getElementById('detail-content');
   container.innerHTML = renderStaticDetail(data);
   showSec('detail');
+  document.body.classList.remove('ev-focus');
 }
 
 // ── RENDERERS ──
@@ -317,12 +320,18 @@ function renderEventDetail(ev) {
       + '<div><a href="' + escUrl(ev.online_url) + '" target="_blank" rel="noopener">' + esc(t('events.join_zoom', 'Join on Zoom')) + ' &#8599;</a></div></div>';
   }
 
-  var actions = '';
   // Sign-up forms (Google Forms etc.) are not ticket shops
   var isForm = /forms\.gle|docs\.google\.com\/forms|forms\.office\.com|typeform|jotform/i.test(ev.ticket_url || '');
-  if (ev.ticket_url) actions += '<a class="btn-primary-detail" href="' + escUrl(ev.ticket_url) + '" target="_blank" rel="noopener">' + (isForm ? t('event_detail.sign_up', 'Sign up to attend') : t('event_detail.get_tickets')) + ' &#8599;</a>';
-  if (ev.online_url) actions += '<a class="btn-primary-detail" href="' + escUrl(ev.online_url) + '" target="_blank">' + t('event_detail.join_online') + ' &#8599;</a>';
-  if (ev.organizer_url) actions += '<a class="btn-secondary-detail" href="' + escUrl(ev.organizer_url) + '" target="_blank">' + t('event_detail.organizer_website') + '</a>';
+  var ticketA = ev.ticket_url ? '<a class="btn-primary-detail" href="' + escUrl(ev.ticket_url) + '" target="_blank" rel="noopener">' + (isForm ? t('event_detail.sign_up', 'Sign up to attend') : t('event_detail.get_tickets')) + ' &#8599;</a>' : '';
+  var joinA = ev.online_url ? '<a class="btn-primary-detail" href="' + escUrl(ev.online_url) + '" target="_blank" rel="noopener">' + t('event_detail.join_online') + ' &#8599;</a>' : '';
+  // Registration comes first, next to the facts: our own form, else the ticket or join link
+  var reg = '';
+  if (ev.signup_enabled) reg = '<div id="ev-signup" class="ev-signup"></div>';
+  else if (ticketA || joinA) reg = '<div class="ev-signup ev-reg-links"><h3>' + esc(t('event_detail.register', 'How to attend')) + '</h3><div class="detail-actions">' + ticketA + joinA + '</div></div>';
+  var actions = (ev.signup_enabled ? ticketA + joinA : '')
+    + (ev.organizer_url ? '<a class="btn-secondary-detail" href="' + escUrl(ev.organizer_url) + '" target="_blank" rel="noopener">' + t('event_detail.organizer_website') + '</a>' : '');
+  var price = (ev.ticket_price ? '<p><strong>' + esc(t('org.price', 'Price')) + ':</strong> ' + esc(t('event_detail.ticket_price').replace('${price}', ev.ticket_price)) + '</p>' : '')
+    + (ev.price_text ? '<p><strong>' + esc(t('org.price', 'Price')) + ':</strong> ' + esc(ev.price_text) + '</p>' : '');
 
   var img = ev.image_url && /^https:\/\//.test(ev.image_url)
     ? '<figure class="detail-img"><img src="' + escUrl(_imgSized(ev.image_url, 900)) + '" alt="" decoding="async"></figure>' : '';
@@ -330,30 +339,31 @@ function renderEventDetail(ev) {
   var me = window._supabaseUser;
   var pendingNote = ev.status === 'pending' && me && (me.id === ev.user_id || isAdmin())
     ? '<p class="ev-pending-note" role="note">' + esc(t('org.pending_note', 'Shared by link only until Sophia Commons approves it for the public calendar.')) + '</p>' : '';
-  return '<div class="detail-hero">'
+  return '<div class="detail-hero ev-hero">'
     + pendingNote
     + img
     + badges
     + '<h1>' + esc(ev.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
-    + '<div class="detail-body" style="white-space:pre-line;">' + esc(ev.description || '') + '</div>'
-    + zoom
-    + (ev.ticket_price ? '<p style="font-size:14px;color:var(--gold-text);font-weight:700;margin-bottom:12px;">' + t('event_detail.ticket_price').replace('${price}', ev.ticket_price) + '</p>' : '')
-    + (ev.price_text ? '<p class="ev-price">' + esc(t('org.price', 'Price')) + ': ' + esc(ev.price_text) + '</p>' : '')
-    + '<div class="detail-actions">' + actions + '</div>'
-    + _calButtonsHtml(ev)
-    + (ev.signup_enabled ? '<div id="ev-signup" class="ev-signup"></div>' : '')
-    + '<div id="ev-signups-list"></div>'
-    + '<div id="ev-share"></div>'
     + '</div>'
-    + '<div class="detail-sidebar"><h4>' + t('event_detail.title') + '</h4>'
+    + '<div class="ev-reg' + (reg ? '' : ' ev-reg-solo') + '">' + reg
+    + '<div class="detail-sidebar ev-facts"><h4>' + t('event_detail.title') + '</h4>'
     + '<p><strong>' + t('event_detail.date') + ':</strong> ' + esc(dateStr) + '</p>'
     + '<p><strong>' + t('event_detail.time') + ':</strong> ' + esc(timeStr) + '</p>'
     + _eventZoneLine(ev)
     + (ev.location_name ? '<p><strong>' + t('event_detail.venue') + ':</strong> ' + esc(ev.location_name) + '</p>' : '')
     + (ev.city ? '<p><strong>' + t('event_detail.city') + ':</strong> ' + esc(ev.city) + '</p>' : '')
     + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
+    + price
+    + _calButtonsHtml(ev)
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'event\',\'' + ev.id + '\')">' + t('report.flag_btn') + '</button>' : '')
+    + '</div></div>'
+    + '<div id="ev-signups-list"></div>'
+    + '<div class="detail-hero ev-about">'
+    + (ev.description ? '<h2>' + esc(t('event_detail.about', 'About this event')) + '</h2><div class="detail-body" style="white-space:pre-line;">' + esc(ev.description) + '</div>' : '')
+    + zoom
+    + (actions ? '<div class="detail-actions">' + actions + '</div>' : '')
+    + '<div id="ev-share"></div>'
     + '</div>'
     + _nlCardHtml('event')
     + renderCommentsSection('event', ev.id)
@@ -390,21 +400,81 @@ function _initEventSignup(ev) {
   if (box && _signupOpen(ev)) {
     var closes = ev.signup_close_hours != null
       ? '<p class="ev-signup-closes">' + esc(t('signup.closes_on', 'Sign-ups close {date}').replace('{date}', localDate(new Date(_signupClosesAt(ev)).toISOString(), { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }))) + '</p>' : '';
+    // The form is on the event page itself again (owner, 2026-11-03); /signup/<id> stays for shared links and QR codes
     box.innerHTML = '<h3>' + esc(t('signup.heading', 'Sign up for this event')) + ' <span class="ev-signup-count" id="ev-signup-count"></span></h3>'
-      + '<a class="ev-signup-btn" id="ev-signup-btn" href="/signup/' + esc(ev.id) + '">' + esc(t('signup.submit', 'Sign up')) + '</a>' + closes;
+      + _eventSignupForm(ev) + closes;
     _sb.rpc('event_signup_spots', { p_event: ev.id }).then(function (r) {
-      var c = document.getElementById('ev-signup-count'), b = document.getElementById('ev-signup-btn');
+      var c = document.getElementById('ev-signup-count'), b = document.getElementById('ev-signup-btn'), n = document.getElementById('ev-wait-note');
       if (!r || r.error || !r.data) return;
       if (c) c.textContent = _signupSpotsText(r.data);
-      if (b && r.data.capacity && r.data.left <= 0) b.textContent = t('signup.join_waitlist', 'Join the waitlist');
+      if (r.data.capacity && r.data.left <= 0) {
+        if (b) b.textContent = t('signup.join_waitlist', 'Join the waitlist');
+        if (n) n.hidden = false;
+      }
     });
   } else if (box) {
-    if (ev.signup_enabled && ['pending', 'upcoming', 'ongoing'].indexOf(ev.status) !== -1 && new Date(ev.start_date).getTime() > Date.now())
-      box.innerHTML = '<p class="ev-signup-closed">' + esc(t('signup.closed', 'Sign-ups for this event are closed.')) + '</p>';
-    else box.remove();
+    box.innerHTML = '<h3>' + esc(t('signup.heading', 'Sign up for this event')) + '</h3>'
+      + '<p class="ev-signup-closed">' + esc(t('signup.closed', 'Sign-ups for this event are closed.')) + '</p>';
   }
   var me = window._supabaseUser;
   if (ev.signup_enabled && me && (me.id === ev.user_id || isAdmin())) _loadEventSignups(ev);
+}
+
+function _eventSignupForm(ev) {
+  var qs = (Array.isArray(ev.signup_questions) ? ev.signup_questions : []).slice(0, 3);
+  return '<form onsubmit="_sendEventSignup(event, \'' + esc(ev.id) + '\')" novalidate>'
+    + '<label>' + esc(t('signup.name', 'Your name')) + '<input name="name" required maxlength="120" autocomplete="name"></label>'
+    + '<label>' + esc(t('signup.email', 'Email')) + '<input name="email" type="email" required maxlength="200" autocomplete="email"></label>'
+    + '<label>' + esc(t('signup.attending', 'Number of people')) + '<input name="attending" type="number" min="1" max="20" value="1"></label>'
+    + qs.map(function (q, i) {
+      var f = 'q' + i;
+      if (q.type === 'yesno') return '<fieldset class="ev-signup-yn"><legend>' + esc(q.label) + '</legend>'
+        + '<label><input type="radio" name="' + f + '" value="Yes"> ' + esc(t('common.yes', 'Yes')) + '</label>'
+        + '<label><input type="radio" name="' + f + '" value="No"> ' + esc(t('common.no', 'No')) + '</label></fieldset>';
+      if (q.type === 'choice') return '<label><span>' + esc(q.label) + '</span><select name="' + f + '"><option value=""></option>'
+        + (q.options || []).map(function (o) { return '<option>' + esc(o) + '</option>'; }).join('') + '</select></label>';
+      return '<label><span>' + esc(q.label) + '</span><input name="' + f + '" maxlength="500"></label>';
+    }).join('')
+    + '<label>' + esc(t('signup.note', 'Note for the organizer (optional)')) + '<textarea name="note" rows="2" maxlength="1000"></textarea></label>'
+    + '<input name="website" class="ev-hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
+    + '<p class="ev-signup-privacy" id="ev-wait-note" hidden>' + esc(t('signup.full_note', 'This event is full. Join the waitlist and you move up automatically, with an email, if a place opens.')) + '</p>'
+    + '<button type="submit" class="ev-signup-btn" id="ev-signup-btn">' + esc(t('signup.submit', 'Sign up')) + '</button>'
+    + '<p class="ev-signup-msg" role="status"></p>'
+    + '<p class="ev-signup-privacy">' + esc(t('signup.privacy', 'Only the organizer and Sophia Commons see your details. You will get a confirmation email.')) + '</p>'
+    + '</form>';
+}
+
+async function _sendEventSignup(e, eventId) {
+  e.preventDefault();
+  var f = e.target, msg = f.querySelector('.ev-signup-msg'), btn = f.querySelector('button[type=submit]');
+  var val = function (n) { var x = f.elements[n]; return x ? (x.value || '').trim() : ''; };
+  if (!val('name') || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val('email'))) {
+    msg.textContent = t('signup.need_name_email', 'Please give your name and a valid email address.'); return;
+  }
+  var answers = [0, 1, 2].map(function (i) {
+    var x = f.elements['q' + i]; if (!x) return null;
+    if (x.length && x[0] && x[0].type === 'radio') { var c = f.querySelector('input[name=q' + i + ']:checked'); return c ? c.value : ''; }
+    return (x.value || '').trim();
+  }).filter(function (a) { return a !== null; });
+  btn.disabled = true; msg.textContent = t('signup.sending', 'Sending...');
+  try {
+    var r = await fetch(SUPABASE_URL + '/functions/v1/event-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+      body: JSON.stringify({ event_id: eventId, name: val('name'), email: val('email'), attending: val('attending'), note: val('note'),
+        answers: answers, website: val('website'), tz: Intl.DateTimeFormat().resolvedOptions().timeZone })
+    });
+    var body = await r.json().catch(function () { return {}; });
+    if (!r.ok) throw new Error(body.error || 'failed');
+    f.innerHTML = '<p class="ev-signup-done">' + esc(body.waitlist
+      ? t('signup.waitlist_done', 'This event is full, so you are on the waitlist. If a place opens up you move up automatically and we email you.')
+      : t('signup.done', 'Thank you, you are signed up. A confirmation is on its way to your email.')) + '</p>';
+    var c = document.getElementById('ev-signup-count');
+    if (c) c.textContent = _signupSpotsText({ count: body.count || 0, capacity: body.left != null, left: body.left });
+  } catch (err) {
+    btn.disabled = false;
+    msg.textContent = err.message && err.message !== 'failed' ? err.message : t('signup.error', 'Your sign-up could not be sent. Please try again.');
+  }
 }
 
 var _evSignups = [], _evSignupsEv = null;
@@ -1650,6 +1720,7 @@ function _setRobots(value) {
 }
 
 function showSec(id, skipPush) {
+  if (id !== 'detail') document.body.classList.remove('ev-focus');
   var oldLd = document.getElementById('detail-jsonld'); if (oldLd) oldLd.remove();
   // News lives inside the combined Events & News page (below the events)
   var _toNews = (id === 'news');

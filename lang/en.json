@@ -593,7 +593,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.111.0",
+  "footer.version": "v1.112.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -1231,5 +1231,10 @@
   "follow.check": "Check your inbox for a confirmation email.",
   "follow.error": "Something went wrong. Please try again.",
   "follow.confirmed": "Done. You will get an email when {name} adds an event.",
-  "follow.stopped": "Done. You will not get more emails from {name}."
+  "follow.stopped": "Done. You will not get more emails from {name}.",
+  "event_detail.more_events": "More events",
+  "event_detail.about": "About this event",
+  "event_detail.register": "How to attend",
+  "signup.full_note": "This event is full. Join the waitlist and you move up automatically, with an email, if a place opens.",
+  "signup.waitlist_done": "This event is full, so you are on the waitlist. If a place opens up you move up automatically and we email you."
 }
