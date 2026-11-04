@@ -1,10 +1,19 @@
 {
- "generated_at": "2026-11-03T20:07:25.985983+00:00",
+ "generated_at": "2026-11-04T20:26:22.238329+00:00",
  "channels": [
   {
    "slug": "goetheanum",
    "name": "Goetheanum",
    "latest": [
+    {
+     "video_id": "cu4tpS2fnbU",
+     "title": "Im Klappern der Schreibmaschine",
+     "url": "https://www.youtube.com/watch?v=cu4tpS2fnbU",
+     "thumbnail_url": "https://i4.ytimg.com/vi/cu4tpS2fnbU/hqdefault.jpg",
+     "published_at": "2026-11-04T12:02:51+00:00",
+     "description": "🔗 jetzt auf Goetheanum.TV: https://goetheanum.tv/programs/im-klappern-der-schreibmaschine-selg\n\nPeter Selg würdigt Helene Finckh (1883–1960), die brillante Stenografin Rudolf Steiners. Sie hielt rund ein Drittel seines Vortragswerks – etwa 1700 Vorträge – wortgetreu fest, übertrug sie in Reinschrift und bewahrte so spirituell zentrale Inhalte. Der Vortrag schildert ihren Weg von Stuttgart ans Goetheanum, geprägt von Verlusten und stiller Hingabe, und zeigt, wie ihre Arbeit das gesprochene Wort Steiners dauerhaft macht.\n\nEin Beitrag von Peter Selg zum Festakt zur Vollendung der Rudolf-Steiner-Gesamtausgabe.",
+     "channel_slug": "goetheanum"
+    },
     {
      "video_id": "sHSFsCFmrMo",
      "title": "Sprich auch du",
@@ -21,15 +30,6 @@
      "thumbnail_url": "https://i1.ytimg.com/vi/LlSEp7bHjBI/hqdefault.jpg",
      "published_at": "2026-10-28T11:02:35+00:00",
      "description": "🔗 Jetzt auf Goetheanum TV: https://goetheanum.tv/programs/podiumsdiskussion-drei-generationen-archivleiterinnen\n\nWas für eine Transformation: Von ehemals 17 Mitarbeitenden schrumpfte das Team des Rudolf-Steiner-Archivs zuletzt auf 9 – und das mitten in der Phase, in der die monumentale, 450-bändige Gesamtausgabe (GA) gedruckt abgeschlossen wurde. In einer feierlichen und zugleich nahbaren Gesprächsrunde blicken die aktuelle Archivleitung sowie ihre zwei Vorgängergenerationen zurück auf Krisen, Meilensteine und skurrile Funde im Keller des Archivs.\n\nEin Beitrag mit Walter Kugler, David Mark Hoffmann, Angelika Schmitt und Philip Kovce zum Festakt zur Vollendung der Rudolf-Steiner-Gesamtausgabe.",
-     "channel_slug": "goetheanum"
-    },
-    {
-     "video_id": "0DtVCWpBRyo",
-     "title": "J. S. Bach und César Franck",
-     "url": "https://www.youtube.com/watch?v=0DtVCWpBRyo",
-     "thumbnail_url": "https://i1.ytimg.com/vi/0DtVCWpBRyo/hqdefault.jpg",
-     "published_at": "2026-10-26T12:03:06+00:00",
-     "description": "Wie unterschiedlich kann Musik in Bewegung sichtbar werden?\n\nGabrielle Armenier gestaltet beim Eurythmie-Festival 2025 Werke von Johann Sebastian Bach und César Franck eurythmisch. Dabei treten musikalische Struktur, Bewegung und Raum in einen lebendigen Dialog.\n\n🎥 Jetzt auf Goetheanum TV anschauen: https://goetheanum.tv/programs/j-s-bach-und-cesar-franck-eurythmie-festival-2025",
      "channel_slug": "goetheanum"
     }
    ]
@@ -237,30 +237,30 @@
    "name": "AnthroWorld",
    "latest": [
     {
-     "video_id": "tKCizPNYEbY",
-     "title": "339. Folge Die Apokalypse des Johannes/Das Neue Jerusalem/ Dr. Wolfgang Peter von www.anthrowiki.at",
-     "url": "https://www.youtube.com/watch?v=tKCizPNYEbY",
-     "thumbnail_url": "https://i1.ytimg.com/vi/tKCizPNYEbY/hqdefault.jpg",
-     "published_at": "2026-10-27T08:42:03+00:00",
+     "video_id": "q6_Rr1tYT8U",
+     "title": "10. Folge/11. Staffel | Die Nebenübungen in Gruppenarbeit | Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=q6_Rr1tYT8U",
+     "thumbnail_url": "https://i2.ytimg.com/vi/q6_Rr1tYT8U/hqdefault.jpg",
+     "published_at": "2026-11-04T19:15:36+00:00",
+     "description": "Treffen vom 4. November 2026\n\nDiese Gruppe trifft sich wöchentlich zum Austausch über die eigenen Erfahrungen und Anliegen mit den Nebenübungen von Rudolf Steiner. Immer mittwochs 10:00h. Die Ausstrahlung findet i.d.R. am Folgetag statt.\n\nHast du Interesse mitzumachen? Dann informiere dich hier https://anthro.world/Die_Neben%C3%BCbungen_von_Rudolf_Steiner_in_Gruppenarbeit \n\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://steiner.wiki\nhttps://biodyn.wiki",
+     "channel_slug": "anthroworld"
+    },
+    {
+     "video_id": "Ub_lNtgjJgE",
+     "title": "342. Folge Die Apokalypse des Johannes/Das Neue Jerusalem/ Dr. Wolfgang Peter von www.anthrowiki.at",
+     "url": "https://www.youtube.com/watch?v=Ub_lNtgjJgE",
+     "thumbnail_url": "https://i2.ytimg.com/vi/Ub_lNtgjJgE/hqdefault.jpg",
+     "published_at": "2026-11-04T09:03:06+00:00",
      "description": "Hier findest du nähere Informationen über die von Wolfgang gehaltenen Vorträge aus der Reihe \"Die Apokalypse des Johannes\": https://anthro.world\n\nSo kommt deine Spende bei Wolfgang an: https://anthro.wiki/AnthroWiki:Spenden. Herzlichen Dank!\n\nWeitere Informationen:\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://biodyn.wiki \n#christusimpuls\n#rudolfsteiner\n#anthroposophie",
      "channel_slug": "anthroworld"
     },
     {
-     "video_id": "f0UmRw5NRM4",
-     "title": "32. Folge | Lesekreis | Das Hereinwirken geistiger Wesenheiten in den Menschen | Rudolf Steiner",
-     "url": "https://www.youtube.com/watch?v=f0UmRw5NRM4",
-     "thumbnail_url": "https://i3.ytimg.com/vi/f0UmRw5NRM4/hqdefault.jpg",
-     "published_at": "2026-10-29T06:34:11+00:00",
-     "description": "Lesekreis \"Das Hereinwirken geistiger Wesenheiten in den Menschen\" vom 28. Oktober 2026, GA 102\n(13 Vorträge von Rudolf Steiner, gehalten in Berlin 1908)\n\nDokumentation des Lesekreises:\nhttps://anthro.world/Das_Hereinwirken_geistiger_Wesenheiten_in_den_Menschen_(GA_102)_als_online_Lesekreis#Inhalte_der_Vortr%C3%A4ge\n\nTipp: Im Vortrag fallen immer wieder Fachbegriffe aus der Anthroposophie. Wer gerne Näheres zu bestimmten Themen oder Begriffen der Anthroposophie recherchieren möchte, dem empfehlen wir das „Gesamtglossar“ auf anthro.world (Link https://anthro.world/Gesamtglossar_A#A). Beim Öffnen findet ihr oben eine Alphabet-Leiste, über die gesuchte Begriffe gefunden werden können. Die Inhalte sind verlinkt mit Anthrowiki und den Glossareinträgen, d.h. Aussagen diverser Vortragender zum gesuchten Begriff.\nDanke für euer Interesse und euer Mitdenken!\n\n00:00:00 Vorspann\n00:00:51 Lesen des 30. Wochenspruches\n00:02:37 Zusammenfassung des Gelesenen aus Folge 31\n00:11:00 GA 102, S. 160 (https://steiner.wiki/GA_102#160) „Das haben wir öfter besprochen …“\n00:13:38 Zweitlesung des vorherigen Absatzes\n00:16:31 Gespräch über das nachtodliche Lebenstableau und die rätselhafte Berechnung Rudolf Steiners für dessen Dauer\n00:20:29 GA 102, S. 161 (https://steiner.wiki/GA_102#161) „Nun wissen wir auch noch …“\n00:23:58 Zweitlesung des vorherigen Absatzes\n00:26:49 Gespräch über die nachtodliche Umgestaltung der Erde, woran erkennen wir das am physischen Plan?\n00:35:13 GA 102, S. 162 (https://steiner.wiki/GA_102#162) „Und in der Tat …“\n00:38:33 Zweitlesung des vorherigen Absatzes\n00:42:06 Gespräch über das Erfassen des Begriffes „Volksgeist“. Was ist das?\n00:50:13 GA 102, S. 163 (https://steiner.wiki/GA_102#163) „Nehmen wir das …“\n00:53:44 Zweitlesung des vorherigen Absatzes\n00:56:36 GA 102, S. 164 (https://steiner.wiki/GA_102#164) „Sie haben nicht von …“\n00:57:56 Zweitlesung des vorherigen Absatzes\n00:59:33 Gespräch über die Erzengel und ihre Verbindung zu den Tieren\n01:05:04 Verabsch",
-     "channel_slug": "anthroworld"
-    },
-    {
-     "video_id": "77cI2BjuKfs",
-     "title": "4. Folge | Lesekreis | Aus der Akasha-Forschung. Das Fünfte Evangelium | Rudolf Steiner | 2026",
-     "url": "https://www.youtube.com/watch?v=77cI2BjuKfs",
-     "thumbnail_url": "https://i4.ytimg.com/vi/77cI2BjuKfs/hqdefault.jpg",
-     "published_at": "2026-10-28T23:13:58+00:00",
-     "description": "Lesekreis \"Aus der Akasha-Forschung/Das Fünfte Evangelium\" vom 20. Oktober 2026, GA 148, (18 Vorträge von Rudolf Steiner, 1913 und 1914 gehalten in verschiedenen Städten)\n\nTipp: Im Vortrag fallen immer wieder Fachbegriffe aus der Anthroposophie. Wer gerne Näheres zu bestimmten Themen oder Begriffen der Anthroposophie recherchieren möchte, dem empfehlen wir das „Gesamtglossar“ auf anthro.world (Link https://anthro.world/Gesamtglossar_A#A). Beim Öffnen findet ihr oben eine Alphabet-Leiste, über die gesuchte Begriffe gefunden werden können. Die Inhalte sind verlinkt mit Anthrowiki und den Glossareinträgen, d.h. Aussagen diverser Vortragender zum gesuchten Begriff.\nDanke für euer Interesse und euer Mitdenken!\n\n00:00:00 Begrüßung und Einführung in den Lesekreis\n00:01:17 Lesen des 30. Wochenspruches, Michaela\n00:03:06 Rückblick: Zusammenfassung des Gelesenen aus der dritten Folge: der Christusimpuls und das Pfingstereignis, Susanne\n00:07:24 Beginn der vierten Folge GA 148, S. 26 (https://steiner.wiki/GA_148#26) „Offen gestanden: mit einem Gefühl…“ Christine\n00:12:04 Zweitlesung des vorherigen Absatzes, Michaela\n00:15:47 GA 146, S. 26 (https://steiner.wiki/GA_146#26) „Es fällt der hellsehende Blick…“ Ute\n00:19:19 Zweitlesung des vorherigen Absatzes, Susanne\n00:23:15 Austausch über Sonnenfinsternis und ihre Wirkung auf die Natur und die „kunstlose Technik“ und die dämonischen Erscheinungen\n00:31:29 GA 148, S. 28 (https://steiner.wiki/GA_148#28) „Das alles stellt sich in einem hohen Masse dar, …“ Christine\n00:33:33 Zweitlesung des vorherigen Absatzes, Michaela\n00:35:25 GA 148, S. 28 (https://steiner.wiki/GA_148#28) „Und was liest man dann…“ Ute\n00:37:59 Zweitlesung des vorherigen Absatzes, Susanne\n00:41:05 Austausch über das Wissen, die Intellektualität, den Christusimpuls, Christuswärme\n00:46:29 GA 148, S. 29 (https://steiner.wiki/GA_148#29): „Man weiß dann…“ Christine\n00:48:55 Zweitlesung des vorherigen Absatzes, Michaela\n00:51:35 Austausch über das Gleichnis: Intellektual",
+     "video_id": "cVUU3tiES_c",
+     "title": "341. Folge Die Apokalypse des Johannes/Das Neue Jerusalem/ Dr. Wolfgang Peter von www.anthrowiki.at",
+     "url": "https://www.youtube.com/watch?v=cVUU3tiES_c",
+     "thumbnail_url": "https://i4.ytimg.com/vi/cVUU3tiES_c/hqdefault.jpg",
+     "published_at": "2026-11-04T09:01:57+00:00",
+     "description": "Hier findest du nähere Informationen über die von Wolfgang gehaltenen Vorträge aus der Reihe \"Die Apokalypse des Johannes\": https://anthro.world\n\nSo kommt deine Spende bei Wolfgang an: https://anthro.wiki/AnthroWiki:Spenden. Herzlichen Dank!\n\nWeitere Informationen:\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://biodyn.wiki \n#christusimpuls\n#rudolfsteiner\n#anthroposophie",
      "channel_slug": "anthroworld"
     }
    ]
@@ -468,6 +468,15 @@
    "name": "Rudolf Steiner und die Anthroposophie",
    "latest": [
     {
+     "video_id": "VG4kgIQigg8",
+     "title": "GEN Z, 9.11., Schicksalstag der Deutschen und der Michaelskampf",
+     "url": "https://www.youtube.com/watch?v=VG4kgIQigg8",
+     "thumbnail_url": "https://i3.ytimg.com/vi/VG4kgIQigg8/hqdefault.jpg",
+     "published_at": "2026-11-04T17:00:00+00:00",
+     "description": "Anmeldung und weitere Infos zur Veranstaltung \"AGENDA 2033. Die Weltenwandler.\nProjektSchmiede: Gemeinsam durch Dick und Dünn\" vom 22.11. - 25.11.2026 auf Schloss Hohenfels:\nhttps://www.schloss-hohenfels.de/veranstaltung/agenda-2033-1126/\n\nnächster LiveChat: 7.11., 18-19 Uhr\nThema: 9.11.: Das Schicksal Deutschlands\nAnmeldung: kostenlose Teilnahme durch eine kurze Mail an: eva.birnthaler@weltenwandler.vision\n \nAnmeldung und weitere Infos zur Veranstaltung \"AGENDA 2033 | Die Weltenwandler:  Spirituelle Gemeinschaften und Ahriman\" vom 05.01. - 07.01.2027 auf Schloss Hohenfels:\nhttps://www.schloss-hohenfels.de/veranstaltung/agenda-2033-die-weltenwandler/\n\n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln!\nWir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende: https://www.paypal.com/donate/?hosted_button_id=CFKZFG2WEELQY\nSpende per Banküberweisung: \nWeltenwandler e.V.\nGLS Bank\nIBAN: DE76430609677918369701\nBIC: GENODEM1GLS\nHerzlichen Dank!\n\nIn unserem neuen Weltenwandler ONLINE-SHOP finden Sie Kunst zum Träumen & Bücher zum Aufwachen. Besuchen Sie uns gerne unter: https://weltenwandler.shop/",
+     "channel_slug": "rs-anthroposophie-de"
+    },
+    {
      "video_id": "orrHv1j0Ttk",
      "title": "Das „Grundmodell\" von Kulturoasen",
      "url": "https://www.youtube.com/watch?v=orrHv1j0Ttk",
@@ -483,15 +492,6 @@
      "thumbnail_url": "https://i1.ytimg.com/vi/dyOD1tnNA5k/hqdefault.jpg",
      "published_at": "2026-11-02T17:00:17+00:00",
      "description": "Meditationsschulungen:\nSchloss Hohenfels (Bodensee)\nStart: 15. bis 20. November 2026\n\nAnmeldung:\nE-Mail: thomas.mayer@geistesforschung.org\nTel. 0049-831-5709512\n\nAGENDA 2033. Die Weltenwandler 22.11. - 25.11.26\nhttps://www.schloss-hohenfels.de/veranstaltung/agenda-2033-1126/\n\nnächster LiveChat: 7.11., 18-19 Uhr Thema: 9.11.: Das Schicksal Deutschlands Anmeldung: kostenlose Teilnahme durch eine kurze Mail an: eva.birnthaler@weltenwandler.vision\n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln!\nWir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende: https://www.paypal.com/donate/?hosted_button_id=CFKZFG2WEELQY\nSpende per Banküberweisung: \nWeltenwandler e.V.\nGLS Bank\nIBAN: DE76430609677918369701\nBIC: GENODEM1GLS\nHerzlichen Dank!\n\nIn unserem neuen Weltenwandler ONLINE-SHOP finden Sie Kunst zum Träumen & Bücher zum Aufwachen. Besuchen Sie uns gerne unter: https://weltenwandler.shop/\nMusik im Intro- \nWonderful Things - Cinematic Music by CO.AG Music",
-     "channel_slug": "rs-anthroposophie-de"
-    },
-    {
-     "video_id": "AvpeWYjO6Bg",
-     "title": "Volkstanz als Stärkung für die Gruppenseele und den (deutschen) Volksgeist?",
-     "url": "https://www.youtube.com/watch?v=AvpeWYjO6Bg",
-     "thumbnail_url": "https://i2.ytimg.com/vi/AvpeWYjO6Bg/hqdefault.jpg",
-     "published_at": "2026-10-30T17:00:26+00:00",
-     "description": "Anmeldung und weitere Infos zur Veranstaltung \"Tanzseminar - Ein Seminar für alle Tanzbegeisterte\" vom 13.12. - 15.12.2026 auf Schloss Hohenfels:\nhttps://www.schloss-hohenfels.de/veranstaltung/tanzseminar/\n\nnächster LiveChat: 7.11., 18-19 Uhr Thema: 9.11.: Das Schicksal Deutschlands Anmeldung: kostenlose Teilnahme durch eine kurze Mail an: eva.birnthaler@weltenwandler.vision\n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln!\nWir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende: https://www.paypal.com/donate/?hosted_button_id=CFKZFG2WEELQY\nSpende per Banküberweisung: \nWeltenwandler e.V.\nGLS Bank\nIBAN: DE76430609677918369701\nBIC: GENODEM1GLS\nHerzlichen Dank!\n\nIn unserem neuen Weltenwandler ONLINE-SHOP finden Sie Kunst zum Träumen & Bücher zum Aufwachen. Besuchen Sie uns gerne unter: https://weltenwandler.shop/",
      "channel_slug": "rs-anthroposophie-de"
     }
    ]
@@ -633,30 +633,30 @@
    "name": "Editorial Antroposófica",
    "latest": [
     {
+     "video_id": "Hd1_jPryhKI",
+     "title": "Habilidades Sutiles | Autor Rubens Gimael",
+     "url": "https://www.youtube.com/watch?v=Hd1_jPryhKI",
+     "thumbnail_url": "https://i1.ytimg.com/vi/Hd1_jPryhKI/hqdefault.jpg",
+     "published_at": "2026-11-04T12:28:58+00:00",
+     "description": "✨ Así vivimos la presentación de Habilidades sutiles para líderes contemporáneos.\n\nEl pasado 23 de octubre recibimos en Editorial Antroposófica a Rubens Gimael, autor de esta obra, para compartir un encuentro de reflexión y conversación sobre las capacidades que necesitamos desarrollar para percibir, decidir y actuar en contextos cada vez más complejos. \nDurante el encuentro, también profundizamos en tres dimensiones fundamentales de nuestra experiencia: la espiritual, la material y la virtual. ¿Cómo equilibrar estas tres dimensiones en nuestras vidas? Una pregunta que abrió la posibilidad de explorar sus vínculos, tensiones y oportunidades, ampliando nuestra mirada sobre el ser humano y los desafíos de nuestro tiempo.\n\n💜 Gracias a Rubens Gimael, a BUHAR y a la Comunidad de Cristianos por acompañar y hacer posible este espacio de intercambio. Y a todas las personas que participaron con sus preguntas y reflexiones.\n\n📚Libro disponible en nuestra tienda online y showroom.\n\n\n#HabilidadesSutiles #SubtleSkills #RubensGimael #LiderazgoConsciente",
+     "channel_slug": "editorial-antroposofica"
+    },
+    {
+     "video_id": "EI5LUQhIHWs",
+     "title": "¿Hacia dónde va mi alma? Biografia, Nodos y Karma",
+     "url": "https://www.youtube.com/watch?v=EI5LUQhIHWs",
+     "thumbnail_url": "https://i2.ytimg.com/vi/EI5LUQhIHWs/hqdefault.jpg",
+     "published_at": "2026-11-04T12:25:54+00:00",
+     "description": "¿Alguna vez te preguntaste qué sentido tienen las experiencias que marcaron tu vida y hacia dónde te conduce tu propio camino?\n\nVerónica Daniela Galardi, consultora biográfica antroposófica y creadora del método astrobiográfico, nos invito a explorar en un Encuentro desde el Alma la relación entre nuestra biografía, los nodos lunares y el karma.\n\nComo parte de un taller vivencial presencial que se realizara segun esta perspectiva. Profundizar en el autoconocimiento a través del trabajo biográfico y artístico.\n\n📅 Viernes 20 de noviembre | 10 a 18 hs.\n📍 Editorial Antroposófica – Munro\n\nReserva tu lugar - Cupos limitados \nhttps://forms.gle/6Gks8BCBEA2iALQh6\n\n✨ ¡Te esperamos para compartir esta experiencia!\n\nEquipo Editorial Antroposófica\nEncuentros desde el Alma",
+     "channel_slug": "editorial-antroposofica"
+    },
+    {
      "video_id": "312lNkN9ctU",
      "title": "🌎 ¿Podemos construir juntos aunque pensemos diferente?",
      "url": "https://www.youtube.com/watch?v=312lNkN9ctU",
      "thumbnail_url": "https://i4.ytimg.com/vi/312lNkN9ctU/hqdefault.jpg",
      "published_at": "2026-11-03T13:32:59+00:00",
      "description": "¿Es necesario compartir una misma filosofía o visión del mundo para impulsar una iniciativa común?\n\nDurante nuestra charla sobre Trimembración Social, Juan Facundo Bottero respondió una pregunta que nos invita a reflexionar sobre la apertura, la libertad de pensamiento y la posibilidad de construir alianzas con personas que, aun desde distintas miradas, comparten ideales y causas comunes.\n\n💬 «Si se comparten ciertos ideales, se puede avanzar», nos recuerda Juan.\nUna reflexión sobre el valor de encontrarnos en aquello que nos une, sin necesidad de pensar todos de la misma manera.\n\n📚 ¡Últimos días para inscribirte al grupo de estudio de El Nuevo Orden Social, de Rudolf Steiner!\nJunto a Juan Facundo Bottero, seguiremos profundizando en las ideas de la trimembración social y sus posibilidades de aplicación en nuestra vida cotidiana.\n\n🗓️ 16, 23 y 30 de noviembre\n🕖 19 a 20:30 h (Argentina)\n💻 Modalidad online\n\n ¡Últimos días para sumarse!  \n👉 https://forms.gle/sEuXVoj3oxtAFFUD6\n Inscripciones abiertas por whatsApp: 114029.3134 \n\n\n#TrimembracionSocial #JuanFacundoBottero #RudolfSteiner #ElNuevoOrdenSocial #EditorialAntroposofica",
-     "channel_slug": "editorial-antroposofica"
-    },
-    {
-     "video_id": "J6-OG851-hk",
-     "title": "🌎 ¿Cómo llevar la fraternidad a la economía de nuestras escuelas? ¿Por dónde empezar?",
-     "url": "https://www.youtube.com/watch?v=J6-OG851-hk",
-     "thumbnail_url": "https://i3.ytimg.com/vi/J6-OG851-hk/hqdefault.jpg",
-     "published_at": "2026-10-23T13:17:48+00:00",
-     "description": "Una de las preguntas que surgieron en nuestra charla con Juan Facundo Bottero, disponible en YouTube.\n\n📖 ¿Querés seguir profundizando?\nSumate al Grupo de Estudio de El Nuevo Orden Social, de Rudolf Steiner, guiado por Juan Facundo Bottero. Tres encuentros para explorar cómo llevar los principios de libertad, igualdad y fraternidad a nuestra realidad cotidiana.\n\n📅 16, 23 y 30 de noviembre\n🕖 19 a 20:30 h (Argentina)\n💻 Online en vivo\n\n ¡Últimos días para sumarse!  \n👉 https://forms.gle/sEuXVoj3oxtAFFUD6\n Inscripciones abiertas por whatsApp: 114029.3134 \n\n·#TrimembraciónSocial #ElNuevoOrdenSocial #EconomíaFraterna #EducaciónWaldorf #EncuentrosDesdeElAlma",
-     "channel_slug": "editorial-antroposofica"
-    },
-    {
-     "video_id": "6el4gW693kI",
-     "title": "Imaginación, inspiración e intuición | Rubens Gimael",
-     "url": "https://www.youtube.com/watch?v=6el4gW693kI",
-     "thumbnail_url": "https://i3.ytimg.com/vi/6el4gW693kI/hqdefault.jpg",
-     "published_at": "2026-10-16T15:18:35+00:00",
-     "description": "🎙️ En este extracto de nuestro nuevo episodio de CONVERSANDO CON EL AUTOR en YouTube: RUBENS GIMAEL nos cuenta qué otras capacidades necesitamos desarrollar para afrontar los desafíos de nuestro tiempo. Y qué lo impulsó a escribir su libro. Una invitación a descubrir una nueva dimensión del liderazgo.\n\n▶️ El episodio lo podes ver completo en YouTube.\n\n#ConversandoConElAutor #RubensGimael #HabilidadesSutiles #EditorialAntroposofica #LiderazgoConsciente",
      "channel_slug": "editorial-antroposofica"
     }
    ]
@@ -831,6 +831,15 @@
    "name": "Cynthia Hoven Eurythmy",
    "latest": [
     {
+     "video_id": "qbpAu1ytOH8",
+     "title": "#1 Fire,Air,Water,Earth The Elements in Eurythmy 50 1HB",
+     "url": "https://www.youtube.com/watch?v=qbpAu1ytOH8",
+     "thumbnail_url": "https://i2.ytimg.com/vi/qbpAu1ytOH8/hqdefault.jpg",
+     "published_at": "2026-11-03T20:14:11+00:00",
+     "description": "Fire, Air, Water and Earth: A Eurythmy Journey\n    We have just passed through the triad of festivals known as Halloween, All Souls, and All Saints.  These were special days set aside for us to call to our departed friends and family and remember that they have not truly died. They are in another state of being. There they are invisible to our physical eyes, but they are near us. And we can evolve ourselves to become sensitive to their existence.\n     The \"so-called dead\"  live in a dimension without matter: they live in what we call the world of spiritual beings. And that is the world from which we have all come from, where we existed before our birth. In that world there were no elements. \n     When this life begin, we were clothed in the substances of the four elements---fire, air, water and earth. And these elements are present in everything we interact with here on earth, in fire and clouds, in clouds and fire.\nIn eurythmy, we have a wonderful doorway to experience the deeper realities of these elements, because we learn how to slip into the inner elemental powers of each of the consonants. And our doorway leads us through the gifts of the consonants.In week 1, we began with sensing the fourfold sheathes of our bodily self: Fire, Air, Water and Earth. We then continued with:\nWeight bears downward, Light streams upward\nThreefold walking, in straight lines and in spirals\nEarth sounds, with a focus on B, D and T\nThe constellation Leo, which corresponds to T and D\nHalleluiah, a eurythmy prayer",
+     "channel_slug": "cynthia-hoven"
+    },
+    {
      "video_id": "XmGed4LFmzI",
      "title": "#4 Eurythmy, the Art of the Living Word LS34",
      "url": "https://www.youtube.com/watch?v=XmGed4LFmzI",
@@ -846,15 +855,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/yRXzxCTO_eA/hqdefault.jpg",
      "published_at": "2026-09-25T04:05:07+00:00",
      "description": "The Origin and Development of Eurythmy \nEurythmy as Visible Speech \nWhat is this new art that focuses on making speech visible?\nIn this third lecture of our series, we focus on the formative forces of the sounds of language, which derive from cosmic, pre-physical formative forces and are at the very root of our world and of our humanness. We learn that our etheric body is constantly moving, shining, glimmering, and changing its shape with lightning speed as we speak and as we listen to speak. The shapes that it makes are the shapes we make doing eurythmy, and are at the same time the formative forces that have sculpted our own bodies and the world around us. As we get to know the World-Word we pernetrate to the source of what it means to be a Human Being, a bearer of the Logos.\nAll of these exercises are taught on our website: https://eurythmyonline.com",
-     "channel_slug": "cynthia-hoven"
-    },
-    {
-     "video_id": "il3NmQpjRiA",
-     "title": "The Development of the Etheric Body through Eurythmy",
-     "url": "https://www.youtube.com/watch?v=il3NmQpjRiA",
-     "thumbnail_url": "https://i2.ytimg.com/vi/il3NmQpjRiA/hqdefault.jpg",
-     "published_at": "2026-09-11T07:00:00+00:00",
-     "description": "The Origin and Development of Eurythmy @https://eurythmyonline.com\nRevealing the Shaping and Penetrating Forces of the Etheric World  \nIn this second lecture of our series, we see how Rudolf Steiner introduced three new major elements into the instructions given to the first eurythmy students. \nFirst, he introduced the laws of syntax, or grammar, and showed how the structural laws of thinking, which are fundamental to sentence building and to expressing thoughts, can be made visible in eurythmy. Specific forms were shown for nouns (differentiating concrete and abstract noouns; verbs (contrasting active, passive, and duration); prepositions, adjectives, articles, and more.\nNext, he introduced forms that have a \"cosmic\" dynamic, thereby beginning to a foundation for the fundamentals of relating eurythmy to the macrcosm. He also showed specific gestures for each of the different planets and their corresponding vowels, and to each of the signs of the zodiac and their corresponding consonants.\nFinally, he began to show the first elements of how to present musical elements in eurythmy. although this was a very primitive beginning for what later began to flourish. \nThus, with an extraordinary abundance of new content, the new art of eurythmy was beginning to flourish.\nTo see the second half of this video, go to https://eurythmyonline.com\n\nIn addition to its eurythmy curriculum, Eurythmyonline offers weekly Thursday evening lectures on a wide range of anthroposophical topics, including The Nature of the Human Being, Life after Death and Before Birth, Human and Cosmic Evolution, Living Healthily in an Age of Technology.",
      "channel_slug": "cynthia-hoven"
     }
    ]
@@ -963,30 +963,30 @@
    "name": "Logos Eurythmie",
    "latest": [
     {
+     "video_id": "55xu2KhEmxo",
+     "title": "Eurythmy Alphabet - Sound O",
+     "url": "https://www.youtube.com/watch?v=55xu2KhEmxo",
+     "thumbnail_url": "https://i2.ytimg.com/vi/55xu2KhEmxo/hqdefault.jpg",
+     "published_at": "2026-11-04T17:32:22+00:00",
+     "description": null,
+     "channel_slug": "logos-eurythmie"
+    },
+    {
+     "video_id": "KCilFG-oBcM",
+     "title": "Eurythmy Alphabet - Consonant D",
+     "url": "https://www.youtube.com/watch?v=KCilFG-oBcM",
+     "thumbnail_url": "https://i4.ytimg.com/vi/KCilFG-oBcM/hqdefault.jpg",
+     "published_at": "2026-11-04T15:54:42+00:00",
+     "description": "\"In this video, we will show you the eurythmy gesture for the consonant D, as given by Rudolf Steiner.\n\n 'Imagine a very beautiful, peaceful evening landscape. Not grandiose, but soft, gentle rolling hills. In the background, the sun is just setting between two hills. A few white clouds stand still, motionless in the sky, looking down upon a lovely meadow valley. A small stream flows by, murmuring quietly like a dream; trees and shrubs stand along its banks, reflecting in its still water; flowers bloom in the meadow, and on the slopes of the hills stand fruit trees full of ripening fruit. Perhaps, far off on one of the slopes, a person is still working quietly and peacefully, enveloped in this evening peace. Nature rests completely self-contained. And you walk through this valley, surrendered to and embraced by this peaceful mood, and with every single thing—be it a tree, the sun, the clouds in the sky, the flowers and shrubs of the meadow, the stream at your side, the person far away, the fruit of the orchard—you feel one and connected with everything, and you greet each one with this movement.' Then he made an unspeakably gentle, quietly lowering hand movement with the palm facing downward, several times in succession, repeatedly raising the relaxing hand and then lowering it again, stretched rather than strained down to the fingertips. It was like a leaf that had detached from its branch and, as if carried by the air, gently drifted down to the earth. 'That is a D. Learn to feel it as a reaction to a resting external influence. Practice it out of this mood, and with each \"This through you\" (Dies durch dich), turn your attention to a different thing in this external world. Even down to the feet, one should be gripped by the mood just described, and try to express it in the nature of one's step.'\n\nThis first description of the consonant D by Rudolf Steiner was written down by the first eurythmist, Lory Mayer-Smits.\"\n\n\n\n Here you can see the eurythmy figure for the ",
+     "channel_slug": "logos-eurythmie"
+    },
+    {
      "video_id": "a-hatwr9fq4",
      "title": "Eurythmie Alphabet - Consonne F",
      "url": "https://www.youtube.com/watch?v=a-hatwr9fq4",
      "thumbnail_url": "https://i2.ytimg.com/vi/a-hatwr9fq4/hqdefault.jpg",
      "published_at": "2026-10-30T15:04:48+00:00",
      "description": "Partie I \nDans cette vidéo, nous vous montrons le geste d’eurythmie de la consonne F, tel qu'il a été donné par Rudolf Steiner.\nLa première eurythmiste, Lory Maier-Smits, a noté la manière dont Rudolf Steiner a donné le F au début de l'eurythmie : « […] il dit avec animation : « Et maintenant, imaginez qu'une violente rafale de vent surgisse soudainement dans cette paix. Les nuages assombrissent le soleil, le ruisseau forme des vagues, les arbres et les arbustes se penchent profondément dans l'eau, les pommes crépitent en tombant des arbres, le chapeau est emporté de votre tête, et l'homme là-haut vous fait des signes de manière agitée. Une foule de questions et d'injonctions vous parviennent de ce monde extérieur qui était encore si paisible à l'instant. ‹ Ramasse-nous ›, supplient les pommes, ‹ viens me récupérer ›, crie le chapeau, ‹ ne t'approche pas trop de moi ›, prévient le ruisseau, ‹ veille à te mettre sous un toit protecteur ›, veut dire l'homme avec ses signes. Et maintenant, vous réagissez avec le même mouvement, mais cette fois-ci de manière très énergique et élastique. » Et une fois de plus, il exécuta le mouvement devant eux : de tous côtés, toujours un bref et énergique mouvement vers le bas, suivi d'un rebond élastique vers le haut. « Et c'est ainsi que vous apprenez à ressentir un F, une réaction à une influence incitatrice. […] Essayez à nouveau de traduire aussi avec les pieds que vous avez compris cette incitation. » »\nUne note de Rudolf Steiner : « F – Réaction à une influence incitatrice […]. »\n\nPartie II\nVous voyez ici l’esquisse de Rudolf Steiner pour la figure d’eurythmie du son F. Pour chacune des figures, il a indiqué trois couleurs: une première pour le mouvement, c’est-à-dire le vêtement, une deuxième pour le sentiment, c’est-à-dire le voile, et une troisième pour le caractère, c’est-à-dire la tension musculaire.\nPour le son F, il a indiqué les couleurs suivantes : tout d’abord, le blanc pour le mouvement, puis l’orange pour le sentimen",
-     "channel_slug": "logos-eurythmie"
-    },
-    {
-     "video_id": "dS-Wwuby7Co",
-     "title": "Eurythmie Alphabet - Consonant F",
-     "url": "https://www.youtube.com/watch?v=dS-Wwuby7Co",
-     "thumbnail_url": "https://i1.ytimg.com/vi/dS-Wwuby7Co/hqdefault.jpg",
-     "published_at": "2026-10-13T14:41:11+00:00",
-     "description": "In diesem Video zeigen wir Ihnen die eurythmische Gebärde des Konsonanten F, wie sie Rudolf Steiner gegeben hat.\n\nDie erste Eurythmistin, Lory Maier-Smits, schrieb auf, wie Rudolf Steiner zu Beginn der Eurythmie das F gegeben hat: „[…] lebhaft sagte er: «Und nun stellen Sie sich vor, ein heftiger Windstoß stößt plötzlich in diesen Frieden hinein. Die Wolken verdunkeln die Sonne, der Bach schlägt Wellen, Bäume und Sträucher neigen sich tief ins Wasser, die Äpfel prasseln von den Bäumen, der Hut wird Ihnen vom Kopf geweht, und der Mensch dort oben winkt Ihnen aufgeregt zu. Lauter Fragen und Aufforderungen dringen Ihnen aus der eben noch so ruhevollen Außenwelt entgegen. ‹ Hebe uns auf›, bitten die Äpfel, ‹ hol mich wieder›, ruft der Hut, ‹ komm mir nicht zu nahe›, warnt der Bach, ‹sorg, daß du unter ein schützendes Dach kommst›, will der Mann mit seinem Winken sagen. Und nun reagieren Sie mit der gleichen Bewegung, aber jetzt ganz energisch und elastisch.» Und wieder machte er die Bewegung vor, nach allen Seiten immer ein kurzes, energisches Herunter- und elastisch wieder Heraufschnellen. «Und so lernen Sie ein F empfinden, eine Reaktion auf auffordernden Einfluß. ‹ Für frohe Feste.› \n\nRudolf Steiner greift einen alten deutschen Ausdruck auf, um den Laut „F“ besser verständlich zu machen:\n„Man sagt nämlich, wenn einer über etwas Bescheid weiß: Er kennt die Sache aus dem ff. - Es ist eine außerordentlich interessante Empfindung, dieses: Einer kennt die Sache aus dem ff. - Wenn man das, was man heute auf der Straße findet: […] Er kennt die Sache aus dem ff -, vergleicht mit dem, was über das f in alten Mysterien gesagt worden ist, dann stellt sich etwas ganz Merkwürdiges heraus.\n\n In alten Mysterien, wo lebendig war: «Im Urbeginn war das Wort und das Wort war bei Gott..», wo also das lebendig war, was ich Ihnen gestern auseinandergesetzt habe, wo man wirklich das Schöpferische des Wortes, des Logos empfand - denn Logos ist nicht zu übersetzen mit Weisheit, mit dem manch",
-     "channel_slug": "logos-eurythmie"
-    },
-    {
-     "video_id": "kXZ9qSBJY1w",
-     "title": "Euritmia Alfabeto - Consonante D",
-     "url": "https://www.youtube.com/watch?v=kXZ9qSBJY1w",
-     "thumbnail_url": "https://i4.ytimg.com/vi/kXZ9qSBJY1w/hqdefault.jpg",
-     "published_at": "2026-08-31T08:10:45+00:00",
-     "description": "In questo video vi mostriamo il gesto euritmico della consonante D, così come è stato indicato da Rudolf Steiner.\n\n«Immaginate un bellissimo e pacifico paesaggio serale. Non grandioso, ma fatto di morbide e dolci catene collinari. Sullo sfondo il sole sta tramontando proprio tra due colline. Alcune nuvole bianche stanno ferme, immobili nel cielo, e guardano dall'alto una ridente valle prativa. Un piccolo ruscello scorre mormorando piano come un sogno, alberi e arbusti si trovano lungo la sua riva e si specchiano nelle sue acque tranquille, i fiori sbocciano nel prato e sui pendii delle colline ci sono alberi da frutto carichi di frutti che stanno maturando. Forse là in lontananza, su uno dei pendii, lavora ancora un uomo, silenzioso e calmo, avvolto in questa pace serale. La natura riposa interamente racchiusa in se stessa.\n\nE voi camminate attraverso questa valle, abbandonati e accolti in questa atmosfera serena, e con ogni cosa – che sia un albero, il sole, le nuvole nel cielo, i fiori e gli arbusti del prato, il ruscello al vostro fianco, l'uomo là in lontananza, i frutti degli alberi – con tutto vi sentite uno e connessi, e salutate ognuna di esse con questo movimento.»\n\nPoi fece un movimento della mano indicibilmente dolce, che si abbassava piano con il palmo rivolto verso il basso, più volte di seguito, sollevando ogni volta la mano che si rilassava verso l'alto e poi di nuovo, abbassandola verso il basso, con le dita più distese che tese fino alla punta. Era come una foglia che si era staccata dal suo ramo e, come portata dall'aria, si posava dolcemente a terra. «Questa è una D».\n\nImparate a percepirla come reazione a un influsso esterno silente. Esercitatevi a partire da questa atmosfera e con ogni: \"Questo attraverso te\", rivolgetevi a un'altra cosa in questo mondo esterno. Si dovrebbe essere afferrati dall'atmosfera appena descritta fin dentro i piedi, e cercare di esprimerla nel modo di camminare.»\n\nQuesta prima descrizione della consonante D di Rudolf St",
      "channel_slug": "logos-eurythmie"
     }
    ]
@@ -2052,6 +2052,15 @@
    "name": "Imgaja - Gerhard Anger",
    "latest": [
     {
+     "video_id": "3xAVqjfchQA",
+     "title": "Leitsatz 115:Rückschau gefälscht durch Luziferisches- Zukunft getäuscht durch Ahrimanisches, Steiner",
+     "url": "https://www.youtube.com/watch?v=3xAVqjfchQA",
+     "thumbnail_url": "https://i4.ytimg.com/vi/3xAVqjfchQA/hqdefault.jpg",
+     "published_at": "2026-11-04T06:00:17+00:00",
+     "description": "Eine in wöchentlichen Schritten durchgeführte Wiederholung der vorangegangenen Arbeit aus den Jahren 2023-2024. (Leitsätze 1 bis 185 und 34 Anmerkungen)\nPlayliste: Anthroposophischer Erkenntnisweg\nhttps://www.youtube.com/watch?v=MSmTAQqHWLk&list=PLEvbUjhEPXdOKVT8cZ9xwD8cTWeA1PP7i\n\n\"ANTHROPOSOPHISCHE LEITSÄTZE \nDER ERKENNTNISWEG DER ANTHROPOSOPHIE \nDAS MICHAEL-MYSTERIUM \n115. Der Mensch wandelt seinen Weg durch den Kosmos so, dass ihm die Rückschau in die Vorwelt gefälscht werden kann durch luziferische Impulse und das Vorwärtssinnen in die Zukunft getäuscht werden kann durch ahrimanische Verlockungen. “, Rudolf Steiner, GA26\n\nSie können dieses Video auch gerne auf der Homepage: http://www.imgaja.org/1/4000_AnthroposophischeLeitsaetze.html\nansehen.\n\nEine in wöchentlichen Schritten durchgeführte Wiederholung der vorangegangenen Arbeit aus den Jahren 2023-2024.\nPlayliste: Anthroposophischer Erkenntnisweg\nhttps://www.youtube.com/watch?v=MSmTAQqHWLk&list=PLEvbUjhEPXdOKVT8cZ9xwD8cTWeA1PP7i\n\nVon der Menscherkenntnis bis zur Welterkenntnis\nErkenntnisweg der Anthroposophie\n\nVeröffentlichte Bücher:\nMensch, Bod Verlag, ISBN: 978-3750400429 \nDie Bergpredigt, Bod Verlag, ISBN: ISBN-13    9783758330551\nTechnologie des Lebens. Bod Verlag, ISBN: 978-3-7597-6850-6\n\nWenn Sie meine Arbeit unterstützen wollen würde ich mich sehr freuen\nhttp://www.imgaja.org/1/0003_kontakt.html\nMit herzlichen Dank und Grüßen\nGerhard Anger\n\n#anthroposophie  \n#seele \n#erkenntnis \n#mysterien \n#meditation \n#esoterik \n#rudolfsteiner \n#selbsterkenntnis \n#christentum \n#geisteswissenschaft \n\nSie können dieses Video auch gerne auf der Homepage http://www.imgaja.org/1/L117.html ansehen \nDort können Sie auch den Text als PDF herunterladen.\nSowie die Audio oder Video Datei herunterladen.",
+     "channel_slug": "imgaja-gerhard-anger"
+    },
+    {
      "video_id": "5m8oI0KjVgc",
      "title": "Selbsterkenntnis des Menschen 4.Meditation: Vorstellung von dem «Hüter der Schwelle» bilden (Nr.26)",
      "url": "https://www.youtube.com/watch?v=5m8oI0KjVgc",
@@ -2067,15 +2076,6 @@
      "thumbnail_url": "https://i1.ytimg.com/vi/hZ0mAVVS_NM/hqdefault.jpg",
      "published_at": "2026-11-01T19:00:10+00:00",
      "description": "Christus und die moralische Weltordnung\n„. Daß unser karmisches Konto in der Zukunft so ausgeglichen wird, das heißt in eine solche Weltordnung hineingestellt wird gegen die Zukunft, wenn wir den Weg zum Christus gefunden, daß die Art unseres karmischen Ausgleiches das größtmöglichste Menschenheil für den Rest der Erdentwickelung hervorrufe, das wird die Sorge Christi sein. Mit dieser Übertragung des Richteramtes über die menschlichen Taten an den Christus ist aber verknüpft, daß dieser Christus auch unmittelbar eingreift in die menschlichen Geschicke. Die Menschen werden nach und nach die Fähigkeit erringen, den karmischen Ausgleich, die ausgleichende Tat, die in der Zukunft geschehen muß, zu schauen wie im Traumbilde.“, GA 130\n\nDie Verwandlung der Schöpfung\n„Der Christus musste aus dem Weltenall zu dem Menschen kommen, wenn er mit dem Menschen den Gang in die Ewigkeit antreten wollte. ... dass nur im Menschen der Keim ist für die ewige Weltenzukunft. ... Dasjenige, was da ist im weiten Umkreis der Sinne als Sterne, als Himmelskörper, es wird vergehen. Aber das Wort, der Logos, der erschienen ist in dem Christus, und der sich vereinigt mit dem ewigen Wesenskern des Menschen, der wird bleiben.“, GA183 \n„Menschheit wird sich hineinentfalten in eine Welt-Entwickelung. Das Göttlich-Geistige, dem der Mensch entstammt, kann als kosmisch sich ausbreitende Menschenwesenheit durchleuchten den Kosmos, der nur noch in dem Abbild des Göttlich-Geistigen vorhanden ist. Nicht mehr dieselbe Wesenheit, die einst als Kosmos war, wird da durch die Menschheit aufleuchten. Das Göttlich-Geistige wird im Durchgang durch das Menschentum ein Wesen erleben, das es vorher nicht offenbarte.“, GA26\n\nAus dem Video: \nDie Freiheit des Menschen (Teil 2) - Der Weltenplan - Das Christuswesen - Das Michaelzeitalter\nhttps://www.youtube.com/watch?v=YhrcVpHHYbU\n\nNäheres zur Anthroposophie in der Gesamtausgabe Rudolf Steiner:\n- Philosophie der Freiheit GA4 \n- Theosophie GA9 \n- Wie erlangt man Erkenntniss",
-     "channel_slug": "imgaja-gerhard-anger"
-    },
-    {
-     "video_id": "D2_R6xsmf-U",
-     "title": "Gebet: Jesus Christus Bergpredigt (Mt 5,1–7,29)",
-     "url": "https://www.youtube.com/watch?v=D2_R6xsmf-U",
-     "thumbnail_url": "https://i1.ytimg.com/vi/D2_R6xsmf-U/hqdefault.jpg",
-     "published_at": "2026-11-01T06:00:27+00:00",
-     "description": "„1. Von Gott erfüllt sind die, welche Bettler sind um Geist, denn in ihnen selbst ist das Reich der Himmel.\n2. Von Gott erfüllt sind die, welchen das Leid nicht abgenommen wird, (welche dem Leiden unterworfen sind), denn sie werden durch sich selbst sich Beistand suchen.\n3. Von Gott erfüllt sind die, welche ihre Leidenschaften zügeln, denn ihnen wird die Erde als Los zufallen.\n4. Von Gott erfüllt sind die, welche Hunger und Durst nach der Gerechtigkeit empfinden, denn sie werden durch sich selbst gesättigt werden.\n5. Von Gott erfüllt sind die Liebenden, denn sie werden Liebe erwecken.\n6. Von Gott erfüllt sind die im Herzen Reinen, denn sie werden Gott in sich schauen.\n7. Von Gott erfüllt sind die Friedenbringer, denn Söhne Gottes werden sie heißen.“ \n\n1910 übersetzt von Rudolf Steiner die ersten sieben Seligpreisungen in der originalen Reihenfolge: GA 268, S. 327\n\nBücher von Gerhard Anger:\nMensch, Bod Verlag, ISBN: 978-3750400429 \nHerzdenken, Bod Verlag, ISBN: 978-3750413610 \nDie Bergpredigt, Bod Verlag, ISBN: 978-3758330551\nTechnologie des Lebens. Bod Verlag, ISBN: 978-3-7597-6850-6\n\nWenn Sie meine Arbeit unterstützen wollen würde ich mich sehr freuen\nhttp://www.imgaja.org/1/0003_kontakt.html\n\nMit herzlichen Dank und Grüßen\nGerhard Anger\n\n#anthroposophie #christus #gott  #gebet",
      "channel_slug": "imgaja-gerhard-anger"
     }
    ]
@@ -3510,30 +3510,30 @@
    "name": "Rudolf Steiner - Antropozófia",
    "latest": [
     {
-     "video_id": "yi60wpj4ZV4",
-     "title": "🍁 Léleknaptár🍁 #antropozofia #rudolfsteiner",
-     "url": "https://www.youtube.com/watch?v=yi60wpj4ZV4",
-     "thumbnail_url": "https://i2.ytimg.com/vi/yi60wpj4ZV4/hqdefault.jpg",
-     "published_at": "2026-10-28T20:55:40+00:00",
-     "description": "🍁",
-     "channel_slug": "rudolf-steiner-antropoz-fia"
-    },
-    {
-     "video_id": "cUKuRkA8piw",
+     "video_id": "I-8K216vskg",
      "title": "Rudolf Steiner idézetek #antropozofia #rudolfsteiner",
-     "url": "https://www.youtube.com/watch?v=cUKuRkA8piw",
-     "thumbnail_url": "https://i4.ytimg.com/vi/cUKuRkA8piw/hqdefault.jpg",
-     "published_at": "2026-10-27T21:09:02+00:00",
-     "description": "\"Az ember akkor kreatív, \namikor cselekedetei révén \nemberibbé teszi a világot.\"\n\nRudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=I-8K216vskg",
+     "thumbnail_url": "https://i2.ytimg.com/vi/I-8K216vskg/hqdefault.jpg",
+     "published_at": "2026-11-04T14:36:31+00:00",
+     "description": "Rudolf Steiner:\nLéleknaptár - November 1. hete (nov. 3- -9.)\n\nA szellem mélységeiből\n a fény Sugárzó Napként tör kifelé:\nAz élet akaraterejévé válik\nS az érzekek tompaságában világít, \nHogy olyan eröket szabaditson fel, \nmelyekkel,\nA lélek törekvésel az ember müveiben \nKiforrott alkotóerövé válnak.",
      "channel_slug": "rudolf-steiner-antropoz-fia"
     },
     {
-     "video_id": "WjSBIOGU52w",
-     "title": "Rudolf Steiner - Az első és a második Goetheanum épületei képekben.",
-     "url": "https://www.youtube.com/watch?v=WjSBIOGU52w",
-     "thumbnail_url": "https://i4.ytimg.com/vi/WjSBIOGU52w/hqdefault.jpg",
-     "published_at": "2026-10-24T13:47:38+00:00",
-     "description": "A svájci Dornachban található Goetheanum és a környező kampusz épületei az antropozófus organikus építészet legjelentősebb alkotásai, amelyeket Rudolf Steiner tervezett. \n\nAz épületegyüttes formavilágát Johann Wolfgang von Goethe növényi metamorfózis-elmélete ihlette, ahol a formák plasztikusan, szervesen alakulnak át egymásba.\n\nAz alábbi táblázat összefoglalja a kampusz legfontosabb és legjellegzetesebb épületeit:\n\nÉpület neve Építés éve Jellemzők és funkció\nElső Goetheanum 1913–1920 Kétrétegű fa kupolaszerkezet beton alapon. 1922 szilveszterén gyújtogatás áldozata lett.\nMásodik Goetheanum 1925–1928 Monumentális, nyers látszóbeton (brutalista/expresszionista) épület. Ma az antropozófia központja egy 1000 fős színházteremmel.\nFűtőház (Heizhaus) 1914 A kampusz központi fűtését biztosítja. Jellegzetes, lángszerűen vagy levélszerűen feltörő, organikus beton kéményéről ismert.\nÜvegház (Glashaus) 1914 Két egymásba metsződő kupolát formázó épület. Eredetileg a Goetheanum üvegablakait csiszoló művészek stúdiója volt.\nDuldeck-ház (Haus Duldeck) 1915 Teljes egészében vasbetonból készült lakóház, amely szintén a kettős kupola motívumait hordozza magán.\nAsztalosműhely (Schreinerei) 1913–1914 A tűzvészt túlélő faépület. Itt vészelte át a pusztítást Steiner és Edith Maryon monumentális, 9 méteres faszobra, Az emberiség reprezentánsa.\nEuritmia-házak 1921 Három lakóépület, amelyek az antropozófus mozgásművészet, az euritmia művelőinek adtak otthont.\nTranszformátorház 1921 Elektromos alállomás, amelynek külső, kockaszerű formái a láthatatlan elektromos áram áramlását és dinamikáját hivatottak leképezni.\nKiadóhivatal (Verlagshaus) 1924 Az antropozófiai könyvek és iratok tárolására és terjesztésére szolgáló épület.\n\nA kampusz területén hivatalos vezetett túrák és kiállítások keretében mindegyik épület megtekinthető, a Második Goetheanum pedig ma is konferenciák, színdarabok (például Goethe Faust-jának teljes előadásai) és koncertek rendszeres helyszíne.",
+     "video_id": "f5gC4bNCZEQ",
+     "title": "Rudolf Steiner - János Apokalipszise , 13 előadás, 1908. jún. 17-30., Nürnberg",
+     "url": "https://www.youtube.com/watch?v=f5gC4bNCZEQ",
+     "thumbnail_url": "https://i3.ytimg.com/vi/f5gC4bNCZEQ/hqdefault.jpg",
+     "published_at": "2026-11-04T14:17:51+00:00",
+     "description": "Nyilvános előadás – Szellemtudomány, evangélium és az emberiség jövője.\n\n👉https://antropozofia.hu/ga104/\n\nEz az előadássorozat olyan haladottabb olvasóknak szól, akik az antropozófiában már járatosak és Rudolf Steiner műveit is behatóbban ismerik. \nAz Újszövetségben lévő apokalipszis magában véve is rejtélyes, sokértelmű írás, értelmezéséről kétezer éve vitatkoznak. \nA steineri, antropozófus magyarázat az emberiség teljes kultúrtörténetét átíveli és rámutat a múlt történéseihez szervesen kapcsolódó jövőbeli eseményekre.",
+     "channel_slug": "rudolf-steiner-antropoz-fia"
+    },
+    {
+     "video_id": "cews5glbbRY",
+     "title": "Hamarosan feltöltésre kerül! #antropozofia #rudolfsteiner",
+     "url": "https://www.youtube.com/watch?v=cews5glbbRY",
+     "thumbnail_url": "https://i4.ytimg.com/vi/cews5glbbRY/hqdefault.jpg",
+     "published_at": "2026-11-04T04:34:31+00:00",
+     "description": "https://antropozofia.hu/ga104/",
      "channel_slug": "rudolf-steiner-antropoz-fia"
     }
    ]
