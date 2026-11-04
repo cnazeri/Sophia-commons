@@ -1572,6 +1572,17 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "karl-fredrickson",
+      "name": "Karl Fredrickson",
+      "url": "https://www.youtube.com/@kfredson",
+      "channel_id": "UCiwUJAfmX5xuKxs5QgNqiQQ",
+      "language": "en",
+      "category": "lecturer",
+      "description": "Talks on community-building in American history from an anthroposophical view, and the history of the Threefold Farm in Chestnut Ridge, NY.",
+      "verified": false,
+      "added_from": "owner request 2026-11-04"
     }
   ]
 }
