@@ -3,10 +3,11 @@
 // instead of 4,000+ copies of the home page. Same markup as the static pages from
 // automation/prerender.mjs (both use automation/seo_html.mjs).
 // Fails open: any error returns the plain app shell, exactly as before this function existed.
-import { applySeo, listingPage, LISTING_COLUMNS, kmBetween } from '../../automation/seo_html.mjs';
+import { applySeo, listingPage, LISTING_COLUMNS, kmBetween, MIN_CITY, citySlug, listingPath } from '../../automation/seo_html.mjs';
 import { isCrawler, crawlerView, VARY_HEADERS } from '../../automation/crawler_view.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;   // readable address, /listing/waldorf-school-of-lexington (owner, 2026-11-05)
 let sb = null; // { url, key } read once per instance from the deployed sb-init.js (public key only)
 
 async function supabase(origin) {
@@ -25,12 +26,20 @@ async function rest({ url, key }, q) {
 }
 
 export default async (request, context) => {
-  const id = decodeURIComponent(new URL(request.url).pathname.split('/')[2] || '');
-  const shell = await context.next();
-  if (!UUID.test(id) || shell.status !== 200 || !(shell.headers.get('content-type') || '').includes('text/html')) return shell;
+  const reqUrl = new URL(request.url);
+  const key = decodeURIComponent(reqUrl.pathname.split('/')[2] || '');
+  const byId = UUID.test(key);
+  if (!byId && !SLUG.test(key)) return context.next();
   try {
-    const db = await supabase(new URL(request.url).origin);
-    const [entry] = await rest(db, `directory_entries?select=${LISTING_COLUMNS}&id=eq.${id}&status=eq.approved`);
+    const db = await supabase(reqUrl.origin);
+    const [entry] = await rest(db, `directory_entries?select=${LISTING_COLUMNS}&${byId ? 'id' : 'slug'}=eq.${encodeURIComponent(key)}&status=eq.approved`);
+    // An old /listing/<uuid> link: send it to the readable address for good (301), keeping any query string
+    if (byId && entry && entry.slug) {
+      return new Response(null, { status: 301, headers: { Location: listingPath(entry) + reqUrl.search, 'Cache-Control': 'public, max-age=86400' } });
+    }
+    const id = entry ? entry.id : '';
+    const shell = await context.next();
+    if (shell.status !== 200 || !(shell.headers.get('content-type') || '').includes('text/html')) return shell;
     const html = await shell.text();
     const headers = new Headers(shell.headers);
     headers.delete('content-length');
@@ -38,7 +47,7 @@ export default async (request, context) => {
 
     let related = [];
     if (entry.category && entry.country) {
-      related = await rest(db, `directory_entries?select=id,organization_name,city,location,country,website_url&status=eq.approved`
+      related = await rest(db, `directory_entries?select=id,slug,organization_name,city,location,country,website_url&status=eq.approved`
         + `&category=eq.${encodeURIComponent(entry.category)}&country=eq.${encodeURIComponent(entry.country)}&id=neq.${id}&order=organization_name.asc&limit=8`).catch(() => []);
     }
     // Nearby: anything within about 60 km (box query, then exact distance), not already listed above
@@ -46,22 +55,29 @@ export default async (request, context) => {
     const lat = Number(entry.latitude), lng = Number(entry.longitude);
     if (Number.isFinite(lat) && Number.isFinite(lng) && (lat || lng)) {
       const dLng = Math.min(3, 0.6 / Math.max(0.2, Math.cos(lat * Math.PI / 180)));
-      const box = await rest(db, `directory_entries?select=id,organization_name,city,location,country,category,latitude,longitude&status=eq.approved&id=neq.${id}`
+      const box = await rest(db, `directory_entries?select=id,slug,organization_name,city,location,country,category,latitude,longitude&status=eq.approved&id=neq.${id}`
         + `&latitude=gte.${lat - 0.55}&latitude=lte.${lat + 0.55}&longitude=gte.${lng - dLng}&longitude=lte.${lng + dLng}&limit=300`).catch(() => []);
       const seen = new Set(related.map(r => r.id));
       nearby = box.filter(n => !seen.has(n.id))
         .map(n => ({ ...n, _km: kmBetween({ latitude: lat, longitude: lng }, { latitude: Number(n.latitude), longitude: Number(n.longitude) }) }))
         .filter(n => n._km <= 60).sort((a, b) => a._km - b._km).slice(0, 8);
     }
+    // Does the city have its own page (MIN_CITY listings, matched like the prerender: same slug)?
+    let cityPage = false;
+    if (entry.city && entry.country) {
+      const same = await rest(db, `directory_entries?select=city&status=eq.approved&country=eq.${encodeURIComponent(entry.country)}`
+        + `&city=ilike.${encodeURIComponent(entry.city.trim().replace(/[*,()]/g, '_'))}&limit=20`).catch(() => []);
+      cityPage = same.filter(x => citySlug(x.city || '') === citySlug(entry.city)).length >= MIN_CITY;
+    }
     headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
     headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=3600, stale-while-revalidate=86400');
     for (const [k, v] of Object.entries(VARY_HEADERS)) headers.set(k, v);
-    const page = applySeo(html, listingPage(entry, related, nearby));
+    const page = applySeo(html, listingPage(entry, related, nearby, { cityPage }));
     // Search engines and AI crawlers get the lean copy (automation/crawler_view.mjs)
     return new Response(isCrawler(request.headers.get('user-agent')) ? crawlerView(page) : page, { status: 200, headers });
   } catch (err) {
-    console.error('listing-seo', id, String(err));
-    return shell.bodyUsed ? context.next() : shell;
+    console.error('listing-seo', key, String(err));
+    return context.next();
   }
 };
 

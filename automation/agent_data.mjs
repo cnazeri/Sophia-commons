@@ -1,7 +1,7 @@
 // Open data files for AI tools and developers, written by prerender.mjs at each deploy (owner, 2026-10-29):
 //   /data/directory.json, /data/directory.csv and /llms-full.txt
 // Public fields only: no email addresses or phone numbers.
-import { SITE, NOT_COUNTRIES } from './seo_html.mjs';
+import { SITE, NOT_COUNTRIES, listingPath } from './seo_html.mjs';
 
 // Plain label for each directory category (seo_html's categoryOf picks a page, which is not always the
 // best name: 'online' would read "Esoteric Studies").
@@ -13,7 +13,7 @@ export const CATEGORY_LABEL = {
 };
 export const categoryLabel = c => CATEGORY_LABEL[c] || 'Other';
 
-export const DATA_SELECT = 'id,organization_name,description,category,address,city,region,country,website_url,latitude,longitude,is_verified,updated_at';
+export const DATA_SELECT = 'id,slug,organization_name,description,category,address,city,region,country,website_url,latitude,longitude,is_verified,updated_at';
 const FIELDS = ['id', 'name', 'category', 'category_label', 'description', 'address', 'city', 'region', 'country', 'latitude', 'longitude', 'website', 'url', 'verified', 'updated'];
 
 const httpUrl = u => (u && /^https?:\/\//.test(u) ? u : null);
@@ -28,7 +28,7 @@ export function dataRow(e) {
     id: e.id, name: oneLine(e.organization_name), category: e.category, category_label: categoryLabel(e.category),
     description: noEmail(oneLine(e.description)) || null, address: oneLine(e.address) || null, city: e.city || null, region: e.region || null,
     country: e.country || null, latitude: num(e.latitude), longitude: num(e.longitude), website: httpUrl(e.website_url),
-    url: `${SITE}/listing/${e.id}`, verified: !!e.is_verified, updated: e.updated_at ? String(e.updated_at).slice(0, 10) : null,
+    url: SITE + listingPath(e), verified: !!e.is_verified, updated: e.updated_at ? String(e.updated_at).slice(0, 10) : null,
   };
 }
 

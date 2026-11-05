@@ -30,7 +30,7 @@ function claimBoxHtml(d) {
 // "Find us on Sophia Commons" badge: a ready-made link from the organization's own website back to
 // its listing (a backlink for search engines, a referral for visitors). Light and dark images in /img.
 function _badgeCode(d, dark) {
-  var url = 'https://sophiacommons.org/listing/' + d.id;
+  var url = 'https://sophiacommons.org' + (typeof _listingPath === 'function' ? _listingPath(d) : '/listing/' + d.id);
   return '<a href="' + url + '" title="' + esc(d.organization_name) + ' on Sophia Commons">'
     + '<img src="https://sophiacommons.org/img/badge-listed' + (dark ? '-dark' : '') + '.svg" alt="Find us on Sophia Commons" width="200" height="56"></a>';
 }
@@ -173,4 +173,70 @@ async function adminDecideClaim(id, approve) {
   var r = await _sb.rpc('admin_decide_claim', { claim_id: id, approve: approve });
   if (r.error) { scNotify('Error: ' + r.error.message); return; }
   loadAdminClaims();
+}
+
+// ── Claim by private link: /claim/<token> (owner, 2026-11-04) ──
+// The invite email goes to the listing's own email address, so opening the link and signing in is the
+// proof: the listing is theirs at once (claim_listing_with_token). The token waits in localStorage
+// while they sign in or confirm a new account, then the box opens again.
+var CLAIM_TOKEN_KEY = 'sc_claim_token';
+function _claimTokenSaved(v) {
+  try { if (v === undefined) return localStorage.getItem(CLAIM_TOKEN_KEY) || ''; if (v) localStorage.setItem(CLAIM_TOKEN_KEY, v); else localStorage.removeItem(CLAIM_TOKEN_KEY); } catch (e) {}
+  return '';
+}
+
+async function openClaimLink(token) {
+  if (!/^[A-Za-z0-9_-]{24,64}$/.test(token || '')) { showSec('directory', true); return; }
+  _claimTokenSaved(token);
+  showSec('directory', true);
+  try { history.replaceState(null, '', '/directory'); } catch (e) {}
+  for (var i = 0; i < 25 && !sbReady(); i++) await new Promise(function (res) { setTimeout(res, 200); });   // the client may still be starting
+  if (!sbReady()) { _claimModal('<p>' + esc(t('claim.link_offline', 'The site is busy right now. Please open the link again in a moment.')) + '</p>'); return; }
+  var r = await _sb.rpc('claim_token_info', { p_token: token });
+  var info = r.data && r.data[0];
+  if (r.error || !info) { _claimTokenSaved(null); _claimModal('<h3>' + esc(t('claim.link_bad', 'This claim link is not valid')) + '</h3><p>' + esc(t('claim.link_bad_help', 'Please open the listing and use "Claim this listing", or email hello@sophiacommons.org.')) + '</p>'); return; }
+  if (info.state !== 'ok') {
+    _claimTokenSaved(null);
+    var why = { used: t('claim.link_used', 'This claim link has already been used.'), expired: t('claim.link_expired', 'This claim link has expired.'),
+      claimed: t('claim.link_claimed', 'This listing is already managed.') }[info.state] || '';
+    _claimModal('<h3>' + esc(info.organization_name) + '</h3><p>' + esc(why) + '</p>' + _claimViewBtn(info.entry_id));
+    return;
+  }
+  _claimLinkBox(info);
+}
+
+function _claimViewBtn(id) {
+  return '<button type="button" class="claim-btn" onclick="closeClaimModal();showDetail(\'directory\',\'' + esc(id) + '\')">' + esc(t('claim.view_listing', 'View the listing')) + '</button>';
+}
+
+function _claimLinkBox(info) {
+  var body = signedIn
+    ? '<p>' + esc(t('claim.link_ready', 'Confirm and you can update the description, website, contact details and topics yourself, and post events for your group.')) + '</p>'
+      + '<button type="button" class="claim-btn" onclick="confirmClaimLink()">' + esc(t('claim.link_confirm', 'Yes, I manage this listing')) + '</button>'
+    : '<p>' + esc(t('claim.link_signin', 'Sign in, or create a free account, to manage this listing. It takes a minute, and this box opens again afterwards.')) + '</p>'
+      + '<button type="button" class="claim-btn" onclick="closeClaimModal();openModal()">' + esc(t('claim.link_signin_btn', 'Sign in or create an account')) + '</button>';
+  _claimModal('<h3>' + esc(t('claim.link_title', 'Manage your listing')) + '</h3><p class="claim-sub">' + esc(info.organization_name) + '</p>'
+    + body + '<div id="cl-status" class="claim-hint" role="status"></div>');
+}
+
+async function confirmClaimLink() {
+  var token = _claimTokenSaved(), st = document.getElementById('cl-status');
+  if (!token) return;
+  if (st) st.textContent = t('common.saving', 'Saving...');
+  var r = await _sb.rpc('claim_listing_with_token', { p_token: token });
+  if (r.error) { if (st) st.textContent = r.error.message; return; }
+  _claimTokenSaved(null);
+  _claimModal('<h3>' + esc(t('claim.link_done', 'Done: you now manage this listing')) + '</h3>'
+    + '<p>' + esc(t('claim.link_done_help', 'Check the details and fix anything that is out of date. You can come back any time: the listing page has an "Edit listing details" button for you.')) + '</p>'
+    + _claimViewBtn(r.data));
+}
+
+// Called after sign-in (from sophia_commons_v9.js): reopen a claim link that was waiting
+function claimAuthChanged() {
+  var token = _claimTokenSaved();
+  if (!token || !signedIn || !sbReady()) return;
+  _sb.rpc('claim_token_info', { p_token: token }).then(function (r) {
+    var info = r.data && r.data[0];
+    if (info && info.state === 'ok') _claimLinkBox(info); else _claimTokenSaved(null);
+  });
 }

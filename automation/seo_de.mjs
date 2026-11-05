@@ -2,7 +2,7 @@
 // About 40% of the directory is in German-speaking countries and Google already shows German searches
 // ("Waldorfschule Erftstadt"), so these pages answer them in German. Formal "Sie"; listing names stay as they are.
 // Plain JS with no runtime-specific imports, like seo_html.mjs.
-import { SITE, esc, attr, PLACE_CATS, placeCatOf } from './seo_html.mjs';
+import { SITE, esc, attr, PLACE_CATS, placeCatOf, listingPath } from './seo_html.mjs';
 
 export const DE_COUNTRIES = { Germany: ['Deutschland', 'in Deutschland'], Austria: ['Österreich', 'in Österreich'], Switzerland: ['Schweiz', 'in der Schweiz'] };
 export const fmtDe = n => Number(n).toLocaleString('de-DE');
@@ -26,7 +26,7 @@ export const partsOf = list => PLACE_CATS.map(pc => ({ pc, sub: list.filter(e =>
   .sort((a, b) => b.sub.length - a.sub.length);
 
 export function entryListDe(entries) {
-  return '<ul>' + entries.map(e => `<li><a href="/listing/${attr(e.id)}">${esc(e.organization_name)}</a>${e.city ? ' (' + esc(e.city) + ')' : ''}`
+  return '<ul>' + entries.map(e => `<li><a href="${attr(listingPath(e))}">${esc(e.organization_name)}</a>${e.city ? ' (' + esc(e.city) + ')' : ''}`
     + `${e.website_url && /^https?:\/\//.test(e.website_url) ? ` <a href="${attr(e.website_url)}" rel="nofollow noopener">Website</a>` : ''}</li>`).join('') + '</ul>';
 }
 

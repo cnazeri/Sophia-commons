@@ -25,12 +25,12 @@ export const CATEGORIES = [
 ];
 
 // Columns a listing page needs (public, anon-readable; email deliberately left out of static HTML)
-export const LISTING_COLUMNS = 'id,organization_name,description,category,address,city,region,location,country,website_url,facebook_url,phone,tags,photo_url,latitude,longitude,is_verified,updated_at';
+export const LISTING_COLUMNS = 'id,slug,organization_name,description,category,address,city,region,location,country,website_url,facebook_url,phone,tags,photo_url,latitude,longitude,is_verified,updated_at';
 
 export function place(e) { return [e.city || e.location, e.country].filter(Boolean).join(', '); }
 
 export function entryList(entries) {
-  return '<ul>' + entries.map(e => `<li><a href="/listing/${attr(e.id)}">${esc(e.organization_name)}</a>${place(e) ? ' (' + esc(place(e)) + ')' : ''}${e.website_url && /^https?:\/\//.test(e.website_url) ? ` <a href="${attr(e.website_url)}" rel="nofollow noopener">website</a>` : ''}</li>`).join('') + '</ul>';
+  return '<ul>' + entries.map(e => `<li><a href="${attr(listingPath(e))}">${esc(e.organization_name)}</a>${place(e) ? ' (' + esc(place(e)) + ')' : ''}${e.website_url && /^https?:\/\//.test(e.website_url) ? ` <a href="${attr(e.website_url)}" rel="nofollow noopener">website</a>` : ''}</li>`).join('') + '</ul>';
 }
 
 export function applySeo(template, { route, title, desc, bodyHtml = '', ld = null, ldId = 'prerender-jsonld', image = '', robots = '', h1 = '', lang = '', alternates = [] }) {
@@ -111,7 +111,8 @@ function listingDesc(about, { catLabel, where, addr, phone, website, facebook, n
 }
 
 // Everything applySeo needs for /listing/<id>. `related` = a few other listings to link to.
-export function listingPage(e, related = [], nearby = []) {
+// opts.cityPage: the listing's city has its own page (MIN_CITY listings), so the trail and links include it
+export function listingPage(e, related = [], nearby = [], opts = {}) {
   const [catUrl, catLabel] = categoryOf(e);
   const where = place(e);
   const name = e.organization_name || 'Listing';
@@ -132,13 +133,20 @@ export function listingPage(e, related = [], nearby = []) {
     tags.length ? `<li>Topics: ${tags.map(esc).join(', ')}</li>` : '',
     `<li>${e.is_verified ? 'Details checked by the Sophia Commons team' : 'Listed in the Sophia Commons directory'}${e.updated_at ? ', last updated ' + esc(String(e.updated_at).slice(0, 10)) : ''}</li>`,
   ].join('');
-  const bodyHtml = (about.length > desc.length ? `<p>${esc(about)}</p>` : '')
+  // Trail Home > Country > City > listing, on the page and as BreadcrumbList data (owner, 2026-11-05: help
+  // Google reach and index the country and city pages from the listings)
+  const hasCountry = e.country && !NOT_COUNTRIES.includes(e.country);
+  const cityRoute = hasCountry && opts.cityPage && e.city ? `/country/${countrySlug(e.country)}/${citySlug(e.city)}` : '';
+  const crumbs = [['Home', '/']].concat(hasCountry ? [[countryLabel(e.country), `/country/${countrySlug(e.country)}`]] : [[catLabel, catUrl]])
+    .concat(cityRoute ? [[cityShort(e.city), cityRoute]] : []);
+  const trail = `<nav aria-label="Breadcrumb"><p>` + crumbs.map(([n, r]) => `<a href="${r}">${esc(n)}</a>`).join(' &rsaquo; ') + ` &rsaquo; ${esc(name)}</p></nav>`;
+  const bodyHtml = trail + (about.length > desc.length ? `<p>${esc(about)}</p>` : '')
     + `<ul>${facts}</ul>`
     + (related.length ? `<h2>More ${esc(catLabel)}${e.country ? ' in ' + esc(e.country) : ''}</h2>` + entryList(related) : '')
     + nearbyHtml(e, nearby)
-    + placeLinks(e, related.length);
+    + placeLinks(e, related.length, cityRoute);
 
-  const route = '/listing/' + e.id;
+  const route = listingPath(e);
   const ld = {
     '@context': 'https://schema.org',
     '@type': schemaTypeOf(e),
@@ -152,7 +160,8 @@ export function listingPage(e, related = [], nearby = []) {
     ...(e.latitude && e.longitude ? { geo: { '@type': 'GeoCoordinates', latitude: Number(e.latitude), longitude: Number(e.longitude) } } : {}),
   };
 
-  return { route, title: `${name}${e.city || e.location ? ', ' + (e.city || e.location) : ''} | Sophia Commons`, desc, bodyHtml, ld, ldId: 'detail-jsonld', image };
+  const trailLd = breadcrumbLd(crumbs.concat([[name, route]]));
+  return { route, title: `${name}${e.city || e.location ? ', ' + (e.city || e.location) : ''} | Sophia Commons`, desc, bodyHtml, ld: [ld, trailLd], ldId: 'detail-jsonld', image };
 }
 
 // ── Events and news (/event/<id>, /article/<id>) ──
@@ -238,6 +247,9 @@ export function articlePage(n) {
 export const COUNTRY_LABEL = { USA: 'United States', UK: 'United Kingdom' };
 export const NOT_COUNTRIES = ['Online', 'International'];
 export const countryLabel = c => COUNTRY_LABEL[c] || c;
+// A listing's address: /listing/<slug> once it has one (owner, 2026-11-05), else /listing/<uuid>
+export const listingPath = e => '/listing/' + encodeURIComponent(e.slug || e.id);
+
 export const slugify = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
   .replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 export const countrySlug = c => slugify(countryLabel(c));
@@ -273,9 +285,10 @@ export function breadcrumbLd(items) {
 // Links from a listing up to its country page and category-in-country page. `sameCatCount` is how
 // many other listings share its category and country (the edge function asks for up to 8), so
 // >= MIN_COMBO - 1 means the category-in-country page exists and >= MIN_COUNTRY - 1 the country page.
-export function placeLinks(e, sameCatCount) {
+export function placeLinks(e, sameCatCount, cityRoute = '') {
   if (!e.country || NOT_COUNTRIES.includes(e.country) || sameCatCount < MIN_COUNTRY - 1) return '';
   const L = countryIn(e.country), pc = placeCatOf(e.category), links = [];
+  if (cityRoute) links.push(`<a href="${cityRoute}">Everything in ${esc(cityShort(e.city))}</a>`);
   if (pc && sameCatCount >= MIN_COMBO - 1) links.push(`<a href="/category/${pc[0]}/${countrySlug(e.country)}">${esc(pc[1])} in ${esc(L)}</a>`);
   links.push(`<a href="/country/${countrySlug(e.country)}">Everything in ${esc(L)}</a>`);
   return `<p>${links.join(' &middot; ')}</p>`;
@@ -292,7 +305,7 @@ export function nearbyHtml(e, nearby) {
   const near = e.city || e.location || e.organization_name;
   return `<h2>Nearby${near ? ': around ' + esc(near) : ''}</h2><ul>` + nearby.map(n => {
     const km = n._km < 1 ? 'under 1 km' : Math.round(n._km) + ' km';
-    return `<li><a href="/listing/${attr(n.id)}">${esc(n.organization_name)}</a> (${esc([n.city || n.location, categoryOf(n)[1]].filter(Boolean).join(', '))}, ${km})</li>`;
+    return `<li><a href="${attr(listingPath(n))}">${esc(n.organization_name)}</a> (${esc([n.city || n.location, categoryOf(n)[1]].filter(Boolean).join(', '))}, ${km})</li>`;
   }).join('') + '</ul>';
 }
 

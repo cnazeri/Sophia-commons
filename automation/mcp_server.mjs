@@ -3,7 +3,7 @@
 // Read-only: every query goes through the public REST API with the publishable key, so it sees only
 // what any visitor sees. Emails and phone numbers are never returned.
 // Served by netlify/edge-functions/mcp.js; plain JS so Node tests can load it too.
-import { SITE, kmBetween } from './seo_html.mjs';
+import { SITE, kmBetween, listingPath } from './seo_html.mjs';
 import { categoryLabel } from './agent_data.mjs';
 
 export const SERVER_VERSION = '1.0.0';
@@ -14,7 +14,7 @@ const CATEGORY_HELP = 'waldorf = Waldorf/Steiner schools and kindergartens; biod
   + 'camphill = Camphill communities; community = other intentional communities; eurythmy = eurythmy and the arts; medicine = anthroposophic medicine; '
   + 'societies = Anthroposophical Society branches and study groups; eldercare = care homes; online = online resources; social_media = groups and channels; science = Goethean science';
 
-const LISTING_COLS = 'id,organization_name,description,category,address,city,region,country,website_url,latitude,longitude,is_verified,updated_at';
+const LISTING_COLS = 'id,slug,organization_name,description,category,address,city,region,country,website_url,latitude,longitude,is_verified,updated_at';
 const EVENT_COLS = 'id,title,description,start_date,end_date,is_all_day,location_name,city,region,country,is_online,online_url,organizer_name,organizer_url,ticket_url,is_free,event_type,status';
 
 const INSTRUCTIONS = 'Sophia Commons (sophiacommons.org) is a free directory of anthroposophical life worldwide: about 4,500 Waldorf schools, biodynamic farms, '
@@ -90,7 +90,7 @@ function listingOut(e, full = false) {
   return {
     id: e.id, name: e.organization_name, category: e.category, category_label: categoryLabel(e.category),
     city: e.city || null, ...(full ? { address: e.address || null, region: e.region || null } : {}), country: e.country || null,
-    website: httpUrl(e.website_url), url: `${SITE}/listing/${e.id}`, verified: !!e.is_verified,
+    website: httpUrl(e.website_url), url: SITE + listingPath(e), verified: !!e.is_verified,
     description: full ? (e.description || null) : (shortText(e.description, 220) || null),
     ...(full && e.latitude != null ? { latitude: Number(e.latitude), longitude: Number(e.longitude) } : {}),
   };

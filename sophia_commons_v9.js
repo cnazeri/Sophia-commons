@@ -67,11 +67,17 @@ async function showDetail(type, id, skipPush) {
 
   try {
     if (type === 'directory') {
+      // Opened by its readable address (/listing/waldorf-school-of-lexington) or by its id (owner, 2026-11-05)
+      var byId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
       var { data, error } = await _sb.from('directory_entries')
-        .select('*').eq('id', id).single();
+        .select('*').eq(byId ? 'id' : 'slug', id).single();
       if (error || !data) { container.innerHTML = renderNotFound(); return; }
       container.innerHTML = renderDirectoryDetail(data);
-      updateSEOMeta(data.organization_name + ' | Sophia Commons', (data.description || '').substring(0, 160), '/listing/' + id);
+      var lpath = _listingPath(data);
+      if (location.pathname === '/listing/' + id && location.pathname !== lpath) {
+        history.replaceState({ type: 'detail', detailType: 'directory', detailId: data.id }, '', lpath + location.search);
+      }
+      updateSEOMeta(data.organization_name + ' | Sophia Commons', (data.description || '').substring(0, 160), lpath);
       _injectDirectorySEO(data);
       loadRelatedDirectory(data.category, data.id);
       if (typeof loadListingEvents === 'function') loadListingEvents(data);
@@ -157,7 +163,8 @@ function renderDirectoryDetail(d) {
         // Wikimedia Commons photos: "Author, License, via Wikimedia Commons|<file page>"
         ? '<figcaption>' + esc(t('dir.photo', 'Photo')) + ': <a href="' + escUrl(d.photo_credit.split('|')[1] || '') + '" target="_blank" rel="noopener">' + esc(d.photo_credit.split('|')[0]) + '</a></figcaption>'
         : (d.website_url ? '<figcaption>' + esc(t('dir.pic_credit', 'Image from')) + ' <a href="' + escUrl(d.website_url) + '" target="_blank" rel="noopener">' + esc(d.website_url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '')) + '</a></figcaption>' : '')) + '</figure>' : '';
-  return '<div class="detail-hero">'
+  return _listingTrail(d)
+    + '<div class="detail-hero">'
     + pic
     + badges
     + '<h1>' + esc(d.organization_name) + '</h1>'
@@ -176,6 +183,8 @@ function renderDirectoryDetail(d) {
     + (d.website_url ? '<p><strong>' + t('detail.website') + ':</strong> <a href="' + escUrl(d.website_url) + '" target="_blank">' + esc(d.website_url.replace('https://','').replace('http://','')) + '</a></p>' : '')
     + (d.facebook_url ? '<p><strong>Facebook:</strong> <a href="' + escUrl(d.facebook_url) + '" target="_blank" rel="noopener">' + esc(d.facebook_url.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, '')) + '</a></p>' : '')
     + '<p><strong>' + t('detail.status') + ':</strong> ' + (d.is_verified ? '<span style="color:var(--sage);font-weight:700;">&#10003; ' + t('detail.verified') + '</span>' : t('detail.listed')) + '</p>'
+    + (d.updated_at ? '<p class="detail-updated"><strong>' + esc(t('detail.updated', 'Last updated')) + ':</strong> ' + esc(localDate(d.updated_at, { month: 'long', year: 'numeric' })) + '</p>' : '')
+    + _suggestFixLink(d)
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'directory\',\'' + d.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + (typeof claimBoxHtml === 'function' ? claimBoxHtml(d) : '')
     + (typeof badgeBoxHtml === 'function' ? badgeBoxHtml(d) : '')
@@ -184,6 +193,31 @@ function renderDirectoryDetail(d) {
     + _nlCardHtml('listing')
     + renderCommentsSection('directory', d.id)
     + '<div id="related-listings"></div>';
+}
+
+// A listing's address: /listing/<slug> once it has one, else /listing/<uuid> (same as listingPath in automation/seo_html.mjs)
+function _listingPath(d) { return '/listing/' + encodeURIComponent(d.slug || d.id); }
+
+// Trail above a listing: Directory > Country > City (owner, 2026-11-05). Same links as the page search
+// engines get (automation/seo_html.mjs listingPage); the city page lists whatever is there.
+function _listingTrail(d) {
+  var c = String(d.country || '').trim();
+  if (!c || c === 'Online' || c === 'International') return '';
+  var cSlug = _citySlug(COUNTRY_LABEL[c] || c), city = String(d.city || '').trim(), cityKey = _citySlug(city);
+  var link = function (href, label, js) { return '<a href="' + href + '" onclick="' + js + ';return false;">' + esc(label) + '</a>'; };
+  return '<nav class="listing-trail" aria-label="' + esc(t('detail.trail', 'Where this is')) + '">'
+    + link('/directory', t('detail.trail_directory', 'Directory'), "showSec('directory')") + ' &rsaquo; '
+    + link('/country/' + cSlug, COUNTRY_LABEL[c] || c, "showPlace(null,'" + escJs(cSlug) + "')")
+    + (cityKey ? ' &rsaquo; ' + link('/country/' + cSlug + '/' + cityKey, city, "showPlace(null,'" + escJs(cSlug) + "',false,'" + escJs(cityKey) + "')") : '')
+    + '</nav>';
+}
+
+// "Suggest a fix": an email to the editor with the listing named, no account needed (owner, 2026-11-04)
+function _suggestFixLink(d) {
+  var subj = 'Fix for listing: ' + (d.organization_name || '');
+  var body = 'Listing: https://sophiacommons.org' + _listingPath(d) + '\n\nWhat should change?\n\n';
+  return '<p class="detail-fix"><a href="mailto:hello@sophiacommons.org?subject=' + encodeURIComponent(subj) + '&amp;body=' + encodeURIComponent(body) + '">'
+    + esc(t('detail.suggest_fix', 'Something wrong or out of date? Suggest a fix')) + '</a></p>';
 }
 
 // ── Add an event to Google, Outlook or Apple calendars ──
@@ -697,7 +731,7 @@ function _injectDirectorySEO(d) {
     '@type': d.is_verified ? 'Organization' : 'LocalBusiness',
     'name': d.organization_name,
     'description': (d.description || '').substring(0, 300),
-    'url': d.website_url || ('https://sophiacommons.org/listing/' + d.id),
+    'url': d.website_url || ('https://sophiacommons.org' + _listingPath(d)),
     'address': d.address || d.location ? {
       '@type': 'PostalAddress',
       'streetAddress': d.address || '',
@@ -1479,9 +1513,31 @@ async function showPlace(catSlug, cSlug, skipPush, cityKey) {
     window._catEntries = list;
     container.innerHTML = _dirListShell(list, '');
     _applyCatFilter('');
+    if (!pc) _placeEvents(container, COUNTRY_SLUG_ALIAS[cSlug] || [list[0].country], cityKey, cityName || (COUNTRY_LABEL[list[0].country] || list[0].country));
   } catch (e) {
     container.innerHTML = '<div class="empty-note">Could not load this page. Please try again.</div>';
   }
+}
+
+// Upcoming in-person events on country and city pages (owner, 2026-11-04). Keep the matching in step
+// with placeEvents() in automation/prerender.mjs: same country names, city by _citySlug.
+var PLACE_EVENTS_MAX = 6;
+async function _placeEvents(container, countries, cityKey, where) {
+  try {
+    var r = await _sb.from('events').select('id, title, start_date, is_all_day, city, location_name')
+      .in('status', ['upcoming', 'ongoing']).eq('is_online', false).in('country', countries)
+      .gte('start_date', new Date(Date.now() - 864e5).toISOString()).order('start_date').limit(100);
+    var list = (r.data || []).filter(function(e) { return !cityKey || _citySlug(e.city) === cityKey; }).slice(0, PLACE_EVENTS_MAX);
+    if (!list.length || !container.isConnected) return;
+    container.insertAdjacentHTML('afterbegin', '<section class="place-events"><h2>' + esc(t('place.events_in', 'Upcoming events in {where}').replace('{where}', where)) + '</h2><ul>'
+      + list.map(function(e) {
+        var day = e.is_all_day ? localDate(String(e.start_date).slice(0, 10), { weekday: 'short', month: 'short', day: 'numeric' })
+          : localDate(e.start_date, { weekday: 'short', month: 'short', day: 'numeric' });
+        return '<li><span class="place-ev-date">' + esc(day) + '</span> <a href="/event/' + esc(e.id) + '" onclick="showDetail(\'event\',\'' + escJs(e.id) + '\');return false;">' + esc(e.title) + '</a>'
+          + (e.city && !cityKey ? ' <span class="lmeta">' + esc(e.city) + '</span>' : '') + '</li>';
+      }).join('') + '</ul>'
+      + '<p><a href="/events" onclick="showSec(\'events\');return false;">' + esc(t('place.all_events', 'All events')) + ' &rarr;</a></p></section>');
+  } catch (e) { /* the listings are shown either way */ }
 }
 
 // ── ELDERCARE: real directory listings instead of placeholder names ──
@@ -1887,6 +1943,10 @@ function routeFromPath(pathname, isPopstate) {
   var p = (pathname || '/').replace(/^\/de(?=\/(country|category)\/)/, '');
   var skip = true; // never pushState when routing from URL
 
+  // Private claim link from an invite email: /claim/<token> (claims.js)
+  var claimMatch = p.match(/^\/claim\/([A-Za-z0-9_-]+)$/);
+  if (claimMatch && typeof openClaimLink === 'function') { openClaimLink(claimMatch[1]); return; }
+
   // Section routes
   if (PATH_TO_SEC[p]) {
     showSec(PATH_TO_SEC[p], skip);
@@ -2159,6 +2219,7 @@ function applySignedInState() {
   var ac = document.getElementById('account-link'); if (ac) ac.style.display = 'inline';
   if (document.getElementById('sec-account') && document.getElementById('sec-account').classList.contains('active') && typeof renderAccount === 'function') renderAccount();
   if (typeof organizerAuthChanged === 'function') organizerAuthChanged();
+  if (typeof claimAuthChanged === 'function') claimAuthChanged();
 }
 
 async function doSignOut() {
@@ -3448,6 +3509,44 @@ async function _mediaSearch(table, cols, q, withGroups) {
   } catch (e) { return []; }
 }
 
+// Steiner's books and single YouTube talks, matched by title (all words, in order). Never throws.
+// Owner, 2026-11-04: "karma" found nothing before, though the site has the books and the talks.
+async function _textSearch(table, cols, fields, q, order, n) {
+  var words = q.trim().split(/\s+/).map(function(w) { return w.replace(/[^\p{L}\p{N}]/gu, ''); }).filter(Boolean);
+  if (!words.length) return [];
+  var pat = '*' + words.join('*') + '*';
+  try {
+    var o = order.split('.');
+    var r = await _sb.from(table).select(cols).or(fields.map(function(f) { return f + '.ilike.' + pat; }).join(','))
+      .order(o[0], { ascending: o[1] !== 'desc' }).limit(n);
+    return r.error ? [] : (r.data || []);
+  } catch (e) { return []; }
+}
+
+function _bookVideoResultsHtml(books, vids) {
+  var head = function(label, n) { return '<div class="sr-media-h">' + esc(label) + ' (' + n + ')</div>'; };
+  var html = '';
+  if (books.length) {
+    html += '<div class="sr-media">' + head(t('search_results.books', 'Books and lectures by Rudolf Steiner'), books.length);
+    books.forEach(function(b) {
+      var link = b.archive_url || b.amazon_url;
+      var name = esc(b.title) + (b.ga_number ? ' <span class="lmeta">' + esc(/^GA/i.test(String(b.ga_number)) ? b.ga_number : 'GA ' + b.ga_number) + '</span>' : '');
+      html += '<div class="sr-media-row">' + (link ? '<a class="ltitle" href="' + escUrl(link) + '" target="_blank" rel="noopener">' + name + '</a>' : name)
+        + (b.archive_url ? ' <span class="lmeta">' + esc(t('search_results.read_free', 'read free in the archive')) + '</span>' : '') + '</div>';
+    });
+    html += '<div class="sr-media-row"><a href="/books" onclick="showSec(\'books\');return false;">' + esc(t('search_results.all_books', 'All books')) + ' &rarr;</a></div></div>';
+  }
+  if (vids.length) {
+    html += '<div class="sr-media">' + head(t('search_results.videos', 'Videos'), vids.length);
+    vids.forEach(function(v) {
+      html += '<div class="sr-media-row"><a class="ltitle" href="' + escUrl(v.url) + '" target="_blank" rel="noopener">' + esc(v.title) + '</a>'
+        + (v.published_at ? ' <span class="lmeta">' + esc(localDate(v.published_at, { month: 'short', year: 'numeric' })) + '</span>' : '') + '</div>';
+    });
+    html += '</div>';
+  }
+  return html;
+}
+
 function _mediaResultsHtml(yt, fb) {
   var head = function(label, n) { return '<div class="sr-media-h">' + esc(label) + ' (' + n + ')</div>'; };
   var html = '';
@@ -3495,14 +3594,16 @@ async function _doSupabaseSearch(q) {
         .textSearch('search_vector', tsQuery)
         .limit(15),
       _mediaSearch('youtube_channels', 'slug, name, description, url, language, category', q, true),
-      _mediaSearch('facebook_pages', 'slug, name, description, url, kind, country', q, false)
+      _mediaSearch('facebook_pages', 'slug, name, description, url, kind, country', q, false),
+      _textSearch('steiner_books', 'id, ga_number, title, archive_url, amazon_url', ['title'], q, 'ga_number', 10),
+      _textSearch('youtube_videos', 'video_id, channel_slug, title, url, published_at', ['title'], q, 'published_at.desc', 10)
     ]);
 
     var dirResults = (!results[0].error && results[0].data) ? results[0].data : [];
     var evResults = (!results[1].error && results[1].data) ? results[1].data : [];
     var newsResults = (!results[2].error && results[2].data) ? results[2].data : [];
-    var ytResults = results[3], fbResults = results[4];
-    var totalCount = dirResults.length + evResults.length + newsResults.length + ytResults.length + fbResults.length;
+    var ytResults = results[3], fbResults = results[4], bookResults = results[5], vidResults = results[6];
+    var totalCount = dirResults.length + evResults.length + newsResults.length + ytResults.length + fbResults.length + bookResults.length + vidResults.length;
 
     if (totalCount === 0) {
       _showSearchResults(q, '<div style="text-align:center;padding:32px 0;color:var(--text-muted);">' +
@@ -3560,7 +3661,7 @@ async function _doSupabaseSearch(q) {
       html += '</div>';
     }
 
-    html += _mediaResultsHtml(ytResults, fbResults);
+    html += _mediaResultsHtml(ytResults, fbResults) + _bookVideoResultsHtml(bookResults, vidResults);
     _showSearchResults(q, html, totalCount);
   } catch(e) {
     console.warn('Supabase search error, falling back to local:', e);
@@ -4833,14 +4934,10 @@ function renderHomeUpcoming() {
   var slides = _featSlides(live);
   var feat = slides[0];
   var rest = live.filter(function(e) { return slides.indexOf(e) === -1; });
-  // Happening now: started on or before today and not yet over (multi-day conferences, tours)
-  var now = rest.filter(function(e) { return e.date < today; }).slice(0, 4);
   // Under the featured slider only "Happening now" (the "Coming up" list was removed, owner 2026-10-18;
-  // the full list is one tap away on Events & News)
-  var gridHtml = now.length
-    ? '<div class="home-ev-grid only-now"><div class="home-ev-col"><h4 class="home-ev-sub" aria-level="3"><span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) + '</h4>'
-      + '<div class="home-ev-rows">' + now.map(_homeEvRow).join('') + '</div></div></div>'
-    : '';
+  // the full list is one tap away on Events & News). Events under way now lead the merged "Near you" list.
+  var gridHtml = '';
+  box._nowPool = rest;
   // The deploy writes the featured banner into the page so it shows with the first paint. Keep that
   // node (same event, English) rather than redrawing it, which phones would count as a late paint.
   var kept = feat && (typeof SC_I18N === 'undefined' || SC_I18N.getLang() === 'en') ? box.querySelector('.feat-ev[data-id="' + feat.id + '"]') : null;
@@ -4856,6 +4953,49 @@ function renderHomeUpcoming() {
   }
   if (slides.length > 1) _mountFeatSlider(box.querySelector('.feat-ev'), slides);
   renderHomeNear(slides);
+}
+
+// Happening now: started before today and not yet over (multi-day conferences, tours), only in the
+// visitor's region plus online ones, latest start first (owner, 2026-11-05: a visitor in North America
+// should not see a conference in Dornach). Region unknown: everything, as before. They lead the one
+// merged "Near you" list (owner, 2026-11-05), tagged "Happening now".
+var NOW_MAX = 3;
+var NOW_REGIONS = {
+  north_america: ['USA', 'Canada', 'Mexico'],
+  latin_america: ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru', 'Uruguay', 'Ecuador', 'Bolivia', 'Paraguay', 'Venezuela', 'Costa Rica', 'Guatemala', 'Dominican Republic'],
+  europe: ['UK', 'Ireland', 'Germany', 'Switzerland', 'Austria', 'France', 'Netherlands', 'Belgium', 'Luxembourg', 'Norway', 'Sweden', 'Denmark', 'Finland', 'Iceland',
+    'Italy', 'Spain', 'Portugal', 'Czech Republic', 'Slovakia', 'Hungary', 'Romania', 'Poland', 'Estonia', 'Latvia', 'Lithuania', 'Slovenia', 'Croatia', 'Serbia',
+    'Bulgaria', 'Greece', 'Ukraine', 'Russia', 'Georgia', 'Liechtenstein'],
+  africa: ['South Africa', 'Kenya', 'Tanzania', 'Botswana', 'Egypt', 'Namibia', 'Uganda', 'Ghana', 'Nigeria'],
+  asia: ['India', 'Japan', 'China', 'South Korea', 'Taiwan', 'Thailand', 'Philippines', 'Vietnam', 'Israel', 'Malaysia', 'Indonesia', 'Turkey', 'Nepal', 'Singapore'],
+  oceania: ['Australia', 'New Zealand']
+};
+var NOW_REGION_LABEL = { north_america: 'North America', latin_america: 'Latin America', europe: 'Europe', africa: 'Africa', asia: 'Asia', oceania: 'Australia and New Zealand' };
+function _regionOfCountry(c) {
+  var k = _nearCountry(c);
+  for (var r in NOW_REGIONS) if (NOW_REGIONS[r].indexOf(k) !== -1) return r;
+  return '';
+}
+function _visitorRegion() {
+  var place = _nearPlace();
+  if (place && place !== 'online') { var r = _regionOfCountry(place); if (r) return r; }
+  var tz = '';
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+  if (/^America\/(Sao_Paulo|Argentina|Santiago|Bogota|Lima|Montevideo|Caracas|La_Paz|Asuncion|Guayaquil|Costa_Rica|Guatemala|Santo_Domingo|Belem|Fortaleza|Recife|Manaus|Bahia)/.test(tz)) return 'latin_america';
+  if (/^(America\/|Pacific\/Honolulu)/.test(tz)) return 'north_america';
+  if (/^Europe\//.test(tz) || tz === 'Atlantic/Reykjavik') return 'europe';
+  if (/^Africa\//.test(tz)) return 'africa';
+  if (/^Asia\//.test(tz)) return 'asia';
+  if (/^(Australia\/|Pacific\/Auckland)/.test(tz)) return 'oceania';
+  return '';
+}
+// Events already under way in the visitor's region (plus online ones), latest start first
+function _homeNowRows() {
+  var up = document.getElementById('home-upcoming');
+  var today = _localDay(new Date()), region = _visitorRegion();
+  return (up && up._nowPool || []).filter(function(e) {
+    return e.date < today && (!region || e.online || _regionOfCountry(e.country) === region);
+  }).sort(function(a, b) { return a.date > b.date ? -1 : a.date < b.date ? 1 : 0; }).slice(0, NOW_MAX);
 }
 
 // ── Home: events near you (owner plan, Phase C, 2026-11-02) ──
@@ -4905,16 +5045,18 @@ function renderHomeNear(slides) {
     var fresh = all.filter(function (e) { return skip.indexOf(e) === -1; });
     return (fresh.length ? fresh : all).slice(0, NEAR_MAX);
   };
-  var rows = place && place !== 'online' ? pick(function (e) { return !e.online && _nearCountry(e.country) === place; }) : [];
+  var nowRows = _homeNowRows();
+  var notNow = function (e) { return nowRows.indexOf(e) === -1 && e.date >= today; };
+  var rows = place && place !== 'online' ? pick(function (e) { return notNow(e) && !e.online && _nearCountry(e.country) === place; }) : [];
   var online = !rows.length;
-  if (online) rows = pick(function (e) { return e.online; });
-  if (!rows.length) { box.innerHTML = ''; return; }
+  if (online) rows = pick(function (e) { return notNow(e) && e.online; });
+  if (!rows.length && !nowRows.length) { box.innerHTML = ''; return; }
   var label = online
     ? (place && place !== 'online' ? t('home.near_online_instead', 'Nothing coming up in {place} yet. Online events').replace('{place}', place) : t('home.near_online', 'Online events'))
     : t('home.near_heading', 'Near you: {place}').replace('{place}', place);
   box.innerHTML = '<h4 class="home-ev-sub" aria-level="3">' + esc(label)
     + ' <button type="button" class="near-change" aria-expanded="false" onclick="toggleNearPicker(this)">' + esc(t('home.near_change', 'change')) + '</button></h4>'
-    + '<div class="home-ev-rows">' + rows.map(_homeEvRow).join('') + '</div>';
+    + '<div class="home-ev-rows">' + nowRows.map(function (e) { return _homeEvRow(e, true); }).join('') + rows.map(function (e) { return _homeEvRow(e); }).join('') + '</div>';
 }
 
 function toggleNearPicker(btn) {
@@ -5066,7 +5208,7 @@ function _featBannerHtml(feat) {
     + '</div></div>';
 }
 
-function _homeEvRow(ev) {
+function _homeEvRow(ev, isNow) {
   var d = new Date(ev.date + 'T12:00:00');
   var cat = String(ev.cat || 'event');
   var titleHtml = ev.id
@@ -5075,7 +5217,7 @@ function _homeEvRow(ev) {
   var meta = _evMeta(ev);
   return '<div class="evrow">'
     + '<div class="evdate"><div class="mo">' + esc(localDate(ev.date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
-    + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5 aria-level="3">' + titleHtml + '</h5>'
+    + '<div class="evinfo"><div class="etag">' + (isNow ? '<span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) : esc(cat.charAt(0).toUpperCase() + cat.slice(1))) + '</div><h5 aria-level="3">' + titleHtml + '</h5>'
     + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
 }
 

@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { SITE, esc, attr, CATEGORIES, entryList, applySeo, NOT_COUNTRIES, countryLabel, countrySlug, PLACE_CATS, placeCatOf,
-  MIN_COUNTRY, MIN_COMBO, fmtN, breadcrumbLd, countryIn, MIN_CITY, citySlug, cityLabel, cityShort, placeFaq, countOf } from './seo_html.mjs';
+  MIN_COUNTRY, MIN_COMBO, fmtN, breadcrumbLd, countryIn, MIN_CITY, citySlug, cityLabel, cityShort, placeFaq, countOf, listingPath } from './seo_html.mjs';
 import { DATA_SELECT, directoryJson, directoryCsv, llmsFull } from './agent_data.mjs';
 import { DE_COUNTRIES, countryPageDe, cityPageDe, comboPageDe, hreflang } from './seo_de.mjs';
 
@@ -63,7 +63,7 @@ function itemListLd(name, url, entries) {
   return {
     '@context': 'https://schema.org', '@type': 'CollectionPage', name, url,
     mainEntity: { '@type': 'ItemList', numberOfItems: entries.length,
-      itemListElement: entries.slice(0, 500).map((e, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}/listing/${e.id}`, name: e.organization_name })) },
+      itemListElement: entries.slice(0, 500).map((e, i) => ({ '@type': 'ListItem', position: i + 1, url: SITE + listingPath(e), name: e.organization_name })) },
   };
 }
 
@@ -84,6 +84,15 @@ const events = await rest('/rest/v1/rpc/get_upcoming_events', { method: 'POST', 
 // Past events keep their pages (owner, 2026-10-31: people should find them later), so they stay in the sitemap
 const pastEvents = await rest(`/rest/v1/events?select=id,updated_at&status=eq.past&order=start_date.desc&limit=1000`).catch(() => []);
 const written = [];
+
+// Upcoming in-person events in a country or city (owner, 2026-11-04); same matching as _placeEvents() in the app
+const placeEvents = (countryNames, cityKey, where) => {
+  const list = events.filter(e => !e.is_online && countryNames.includes(e.country) && (!cityKey || citySlug(e.city || '') === cityKey)).slice(0, 6);
+  if (!list.length) return '';
+  return `<h2>Upcoming events in ${esc(where)}</h2><ul>` + list.map(e => `<li>${esc(String(e.start_date).slice(0, 10))}: <a href="/event/${e.id}">${esc(e.title)}</a>${!cityKey && e.city ? ' (' + esc(e.city) + ')' : ''}</li>`).join('') + '</ul>';
+};
+const countryNamesOf = country => country === 'USA' || country === 'United States' ? ['USA', 'United States'] : country === 'UK' || country === 'United Kingdom' ? ['UK', 'United Kingdom'] : [country];
+
 
 // Countries with enough listings get a page; category-in-country pages need MIN_COMBO listings
 const byCountry = new Map();
@@ -135,7 +144,7 @@ for (const [country, list] of countries) {
   const short = parts.slice(0, 2).map(x => x.pc[3]);
   const title = `Anthroposophy in ${Lin}${short.length ? ': ' + short.join(', ') + ' and More' : ''} | Sophia Commons`;
   const desc = `${fmtN(list.length)} anthroposophical listings in ${Lin}: ` + parts.slice(0, 3).map(x => countOf(x.sub.length, x.pc)).join(', ') + '. Addresses, websites and a map.';
-  let body = '<h2>By category</h2><ul>' + parts.map(x => `<li>${hasCombo(x.pc, country) ? `<a href="${comboRoute(x.pc, country)}">${esc(x.pc[1])} in ${esc(Lin)}</a>` : `<a href="/category/${x.pc[0]}">${esc(x.pc[1])}</a>`}: ${fmtN(x.sub.length)}</li>`).join('') + '</ul>'
+  let body = placeEvents(countryNamesOf(country), '', Lin) + '<h2>By category</h2><ul>' + parts.map(x => `<li>${hasCombo(x.pc, country) ? `<a href="${comboRoute(x.pc, country)}">${esc(x.pc[1])} in ${esc(Lin)}</a>` : `<a href="/category/${x.pc[0]}">${esc(x.pc[1])}</a>`}: ${fmtN(x.sub.length)}</li>`).join('') + '</ul>'
     + citiesHtml(list);
   for (const x of parts) {
     const big = hasCombo(x.pc, country) && x.sub.length > 25;
@@ -171,7 +180,8 @@ for (const { country, city, list, route } of cityPages) {
   const desc = `${fmtN(list.length)} anthroposophical places in ${where}, ${L}: ` + parts.slice(0, 3).map(x => countOf(x.sub.length, x.pc)).join(', ') + '. Addresses, websites and a map.';
   const near = cityPages.filter(c => c.country === country && c.route !== route).sort((a, b) => b.list.length - a.list.length).slice(0, 12);
   const faq = placeFaq(list, cityShort(city) === city ? where : `${cityShort(city)}`, 'the ' + esc(L) + ' page');
-  let body = parts.map(x => `<h2>${esc(x.pc[1])} in ${esc(cityShort(city))}</h2>` + entryList(x.sub)).join('') + (other.length ? `<h2>More in ${esc(cityShort(city))}</h2>` + entryList(other) : '')
+  let body = placeEvents(countryNamesOf(country), citySlug(city), cityShort(city))
+    + parts.map(x => `<h2>${esc(x.pc[1])} in ${esc(cityShort(city))}</h2>` + entryList(x.sub)).join('') + (other.length ? `<h2>More in ${esc(cityShort(city))}</h2>` + entryList(other) : '')
     + faq.html
     + (near.length ? `<h2>Other cities in ${esc(Lin)}</h2><p>` + near.map(c => `<a href="${c.route}">${esc(cityShort(c.city))}</a> (${c.list.length})`).join(', ') + '</p>' : '')
     + `<p><a href="/country/${countrySlug(country)}">Everything in ${esc(Lin)}</a> &middot; <a href="/directory">The world directory and map</a></p>`;
@@ -228,7 +238,7 @@ for (const [slug, label, desc] of SECTIONS) {
 const urls = [{ loc: SITE + '/', pri: '1.0' }]
   .concat(written.map(r => ({ loc: SITE + r })))
   .concat([{ loc: SITE + '/privacy' }, { loc: SITE + '/terms' }, { loc: SITE + '/region/verified' }])
-  .concat(dir.map(e => ({ loc: `${SITE}/listing/${e.id}`, lastmod: day(e.updated_at) })))
+  .concat(dir.map(e => ({ loc: SITE + listingPath(e), lastmod: day(e.updated_at) })))
   .concat(events.map(ev => ({ loc: `${SITE}/event/${ev.id}` })))
   .concat(pastEvents.map(ev => ({ loc: `${SITE}/event/${ev.id}`, lastmod: day(ev.updated_at) })));
 const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -296,11 +306,9 @@ function homeGrid(feat) {
       + '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + '</div><h5 aria-level="3"><a href="/event/' + attr(ev.id) + '">' + esc(ev.title) + '</a></h5>'
       + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
   };
-  // Only "Happening now" under the featured event (no "Coming up" list), same as the app
-  return now.length
-    ? '<div class="home-ev-grid only-now"><div class="home-ev-col"><h4 class="home-ev-sub" aria-level="3"><span class="live-dot" aria-hidden="true"></span>Happening now</h4>'
-      + '<div class="home-ev-rows">' + now.map(row).join('') + '</div></div></div>'
-    : '';
+  // "Happening now" depends on the visitor's region, so the app draws it inside "Near you" (owner,
+  // 2026-11-05); the static page leaves it out rather than flash events from another continent.
+  return '';
 }
 
 console.log(`prerender: ${countries.length} country pages, ${combos.length} category-in-country pages, ${cityPages.length} city pages`);
