@@ -327,9 +327,10 @@ function renderEventDetail(ev) {
   // Registration comes first, next to the facts: our own form, else the ticket or join link
   var reg = '';
   if (ev.signup_enabled) reg = '<div id="ev-signup" class="ev-signup"></div>';
-  else if (ticketA || joinA) reg = '<div class="ev-signup ev-reg-links"><h3>' + esc(t('event_detail.register', 'How to attend')) + '</h3><div class="detail-actions">' + ticketA + joinA + '</div></div>';
+  else if (ticketA || joinA) reg = '<div class="ev-signup ev-reg-links"><h3>' + esc(t('event_detail.register', 'How to attend')) + '</h3>' + _eventDonateNote(ev) + '<div class="detail-actions">' + ticketA + joinA + '</div></div>';
   var actions = (ev.signup_enabled ? ticketA + joinA : '')
-    + (ev.organizer_url ? '<a class="btn-secondary-detail" href="' + escUrl(ev.organizer_url) + '" target="_blank" rel="noopener">' + t('event_detail.organizer_website') + '</a>' : '');
+    + (ev.organizer_url ? '<a class="btn-secondary-detail" href="' + escUrl(ev.organizer_url) + '" target="_blank" rel="noopener">' + t('event_detail.organizer_website') + '</a>' : '')
+    + (ev.donation_url && /^https?:\/\//i.test(ev.donation_url) ? '<a class="btn-secondary-detail" href="' + escUrl(ev.donation_url) + '" target="_blank" rel="noopener">' + esc(t('event_detail.donate', 'Donate')) + ' &#8599;</a>' : '');
   var price = (ev.ticket_price ? '<p><strong>' + esc(t('org.price', 'Price')) + ':</strong> ' + esc(t('event_detail.ticket_price').replace('${price}', ev.ticket_price)) + '</p>' : '')
     + (ev.price_text ? '<p><strong>' + esc(t('org.price', 'Price')) + ':</strong> ' + esc(ev.price_text) + '</p>' : '');
 
@@ -338,7 +339,7 @@ function renderEventDetail(ev) {
 
   var me = window._supabaseUser;
   var pendingNote = ev.status === 'pending' && me && (me.id === ev.user_id || isAdmin())
-    ? '<p class="ev-pending-note" role="note">' + esc(t('org.pending_note', 'Shared by link only until Sophia Commons approves it for the public calendar.')) + '</p>' : '';
+    ? '<p class="ev-pending-note" role="note">' + esc(t('org.unlisted_note', 'Private event: it is not on the public calendar. Only people with the link or QR code can open it.')) + '</p>' : '';
   return '<div class="detail-hero ev-hero">'
     + pendingNote
     + img
@@ -420,9 +421,17 @@ function _initEventSignup(ev) {
   if (ev.signup_enabled && me && (me.id === ev.user_id || isAdmin())) _loadEventSignups(ev);
 }
 
+// "Suggested donation: $15. Donate here" at the top of the sign-up form (owner, 2026-11-04)
+function _eventDonateNote(ev) {
+  if (!ev.donation_url || !/^https?:\/\//i.test(ev.donation_url)) return '';
+  var amount = ev.price_text && !/^(free|kostenlos|gratis|frei|бесплатно)$/i.test(ev.price_text) ? ev.price_text : '';
+  return '<p class="ev-donate">' + esc(amount ? t('signup.donation_amount', 'Suggested donation: {amount}.').replace('{amount}', amount) : t('signup.donation', 'A donation is suggested.'))
+    + ' <a href="' + escUrl(ev.donation_url) + '" target="_blank" rel="noopener">' + esc(t('signup.donate_here', 'Donate here')) + ' &#8599;</a></p>';
+}
+
 function _eventSignupForm(ev) {
   var qs = (Array.isArray(ev.signup_questions) ? ev.signup_questions : []).slice(0, 3);
-  return '<form onsubmit="_sendEventSignup(event, \'' + esc(ev.id) + '\')" novalidate>'
+  return _eventDonateNote(ev) + '<form onsubmit="_sendEventSignup(event, \'' + esc(ev.id) + '\')" novalidate>'
     + '<label>' + esc(t('signup.name', 'Your name')) + '<input name="name" required maxlength="120" autocomplete="name"></label>'
     + '<label>' + esc(t('signup.email', 'Email')) + '<input name="email" type="email" required maxlength="200" autocomplete="email"></label>'
     + '<label>' + esc(t('signup.attending', 'Number of people')) + '<input name="attending" type="number" min="1" max="20" value="1"></label>'
@@ -5891,7 +5900,8 @@ async function loadAdminEvents() {
   var el = document.getElementById('admin-events-list');
   if (!sbReady()) { el.innerHTML = '<div class="admin-empty">' + t('error.supabase_not_connected') + '</div>'; return; }
   try {
-    var { data, error } = await _sb.from('events').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    // New member events, already live (or private by the organizer's choice), not looked at yet (needs_review, 2026-11-04)
+    var { data, error } = await _sb.from('events').select('*').eq('needs_review', true).neq('status', 'cancelled').order('created_at', { ascending: false });
     if (error) { el.innerHTML = '<div class="admin-empty">' + t('error.loading_events') + '</div>'; return; }
     if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">' + t('admin.no_pending_events') + '</div>'; return; }
     el.innerHTML = data.map(function(d) {
@@ -5909,8 +5919,9 @@ async function loadAdminEvents() {
         + '</div>'
         + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.description) + '</p>' : '')
         + '<div class="admin-actions">'
-        + '<button class="admin-btn-approve" onclick="adminApproveEvent(\'' + d.id + '\')">' + t('admin.approve') + '</button>'
-        + '<button class="admin-btn-reject" onclick="adminRejectEvent(\'' + d.id + '\')">' + t('admin.reject') + '</button>'
+        + '<a href="/event/' + d.id + '" target="_blank" rel="noopener">' + esc(d.status === 'pending' ? t('admin.event_private', 'Private (link only): open the page') : t('admin.event_live', 'Live now: open the page')) + ' &#8599;</a> '
+        + '<button class="admin-btn-approve" onclick="adminApproveEvent(\'' + d.id + '\')">' + esc(t('admin.event_seen', 'Looks good')) + '</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectEvent(\'' + d.id + '\')">' + esc(t('admin.event_take_down', 'Take down')) + '</button>'
         + '</div></div>';
     }).join('');
   } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + esc(e.message) + '</div>'; }
@@ -5919,7 +5930,8 @@ async function loadAdminEvents() {
 async function adminApproveEvent(id) {
   if (!sbReady()) return;
   try {
-    var ap = await _sb.from('events').update({ status: 'upcoming' }).eq('id', id);
+    // A 'pending' event is private by the organizer's choice now, so looking at it never makes it public
+    var ap = await _sb.from('events').update({ needs_review: false }).eq('id', id);
     if (ap.error) { scNotify('Error: ' + ap.error.message); return; }
     var card = document.getElementById('admin-event-' + id);
     if (card) card.remove();
@@ -5934,7 +5946,7 @@ async function adminRejectEvent(id) {
   if (!confirm(t('admin.confirm_reject_event'))) return;
   try {
     // 'rejected' is not an allowed events.status value; 'cancelled' hides it from the public calendar.
-    var rj = await _sb.from('events').update({ status: 'cancelled' }).eq('id', id);
+    var rj = await _sb.from('events').update({ status: 'cancelled', needs_review: false }).eq('id', id);
     if (rj.error) { scNotify('Error: ' + rj.error.message); return; }
     var card = document.getElementById('admin-event-' + id);
     if (card) card.remove();
@@ -6036,7 +6048,7 @@ function initAdminPanel() {
 // total shows on the Admin link in the top bar. A table that is missing just counts as 0.
 var ADMIN_PENDING = [
   { tab: 'listings',  table: 'listings_pending',  q: function (x) { return x.or('status.is.null,status.eq.pending'); } },
-  { tab: 'events',    table: 'events',            q: function (x) { return x.eq('status', 'pending'); } },
+  { tab: 'events',    table: 'events',            q: function (x) { return x.eq('needs_review', true).neq('status', 'cancelled'); } },
   { tab: 'memorials', table: 'memorials_pending', q: function (x) { return x.eq('status', 'pending'); } },
   { tab: 'reports',   table: 'reports',           q: function (x) { return x.eq('status', 'pending'); } },
   { tab: 'claims',    table: 'listing_claims',    q: function (x) { return x.eq('status', 'pending'); } },

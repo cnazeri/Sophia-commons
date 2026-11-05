@@ -51,20 +51,25 @@ function when(ev: Row) {
   return ev.is_all_day ? day : `${day}, ${d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: tz, timeZoneName: "short" })}`;
 }
 
-function mail(title: string, body: string) {
+// Emails to attendees carry the host's name, else the event title (owner, 2026-11-04); emails to the
+// organizer keep "Sophia Commons". The From line reads "<host> via Sophia Commons".
+const host = (ev: Row) => String(ev.organizer_name || ev.title || "Sophia Commons").replace(/[\u0000-\u001f<>"]/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
+const fromHost = (ev: Row) => `${host(ev).replace(/[,;:@\\]/g, " ").slice(0, 60)} via Sophia Commons <hello@sophiacommons.org>`;
+
+function mail(title: string, body: string, brand = "Sophia Commons") {
   return `<!doctype html><html><body style="margin:0;background:#FDFBF7;font-family:Georgia,serif;color:#2d2a26">
 <div style="max-width:560px;margin:0 auto;padding:28px 22px">
-<div style="font-size:20px;font-weight:bold;margin-bottom:4px">Sophia Commons</div>
+<div style="font-size:20px;font-weight:bold;margin-bottom:4px">${esc(brand)}</div>
 <div style="font-size:13px;color:#7a7368;margin-bottom:20px">${esc(title)}</div>
 <div style="background:#fff;border:1px solid #ece6da;border-radius:10px;padding:22px;font-size:15px;line-height:1.55">${body}</div>
-<div style="font-size:12px;color:#7a7368;margin-top:16px">Sophia Commons, the anthroposophical directory and calendar: <a href="${SITE}" style="color:#8a6d1f">sophiacommons.org</a></div>
+<div style="font-size:12px;color:#7a7368;margin-top:16px">Sent through Sophia Commons, the anthroposophical directory and calendar: <a href="${SITE}" style="color:#8a6d1f">sophiacommons.org</a></div>
 </div></body></html>`;
 }
 
 function details(ev: Row) {
-  const place = ev.is_online ? "Online" : [ev.location_name, ev.address || ev.city].filter(Boolean).join(", ");
+  const place = ev.is_online ? "Online" : ["In person", ev.location_name, ev.address || ev.city].filter(Boolean).join(", ");
   return `<p style="margin:0 0 6px"><b>${esc(ev.title)}</b></p><p style="margin:0 0 6px">${esc(when(ev))}</p>`
-    + (place ? `<p style="margin:0 0 6px">${esc(place)}</p>` : "")
+    + (place ? `<p style="margin:0 0 6px">Event location: ${esc(place)}</p>` : "")
     + (ev.organizer_name ? `<p style="margin:0 0 6px">Hosted by ${esc(ev.organizer_name)}</p>` : "");
 }
 const joinLine = (ev: Row) => ev.is_online && ev.online_url
@@ -73,10 +78,10 @@ const cancelLine = (s: Row) => `<p style="margin:14px 0 0;font-size:13px;color:#
 
 function promotedMail(ev: Row, s: Row): Mail {
   return {
-    from: FROM_ADDRESS, reply_to: REPLY_TO, to: [s.email], subject: `A place opened up: you're signed up for ${ev.title}`,
+    from: fromHost(ev), reply_to: REPLY_TO, to: [s.email], subject: `A place opened up: you're signed up for ${ev.title}`,
     html: mail("You're off the waitlist", `<p style="margin:0 0 14px">Dear ${esc(s.name)},</p>
       <p style="margin:0 0 14px">Good news: a place opened up and you are now signed up${s.attending > 1 ? ` (${s.attending} people)` : ""}.</p>${details(ev)}${joinLine(ev)}
-      <p style="margin:14px 0 0"><a href="${SITE}/event/${ev.id}" style="color:#8a6d1f;font-weight:bold">See the event page</a></p>${cancelLine(s)}`),
+      <p style="margin:14px 0 0"><a href="${SITE}/event/${ev.id}" style="color:#8a6d1f;font-weight:bold">See the event page</a></p>${cancelLine(s)}`, host(ev)),
   };
 }
 
@@ -196,14 +201,14 @@ serve(async (req) => {
       if (!people?.length) return out({ error: "Nobody has signed up yet." }, 400);
       const { data: me } = await db.auth.getUser(token);
       const replyTo = me?.user?.email || REPLY_TO;
-      const from = ev.organizer_name ? `${ev.organizer_name.replace(/[<>"]/g, "").slice(0, 60)} via Sophia Commons <hello@sophiacommons.org>` : FROM_ADDRESS;
+      const from = fromHost(ev);
       const paragraphs = body.split(/\n{2,}/).map((p) => `<p style="margin:0 0 12px">${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
       const mails: Mail[] = (people as Row[]).map((p) => ({
         from, reply_to: replyTo, to: [p.email], subject,
         html: mail(`A message about ${ev.title}`, `<p style="margin:0 0 14px">Dear ${esc(p.name)},</p>${paragraphs}
           <hr style="border:0;border-top:1px solid #ece6da;margin:16px 0">${details(ev)}
           <p style="margin:12px 0 0;font-size:13px;color:#7a7368">You get this because you signed up for this event. Reply to this email to answer the organizer.</p>`
-          + (p.status === "confirmed" ? cancelLine(p) : "")),
+          + (p.status === "confirmed" ? cancelLine(p) : ""), host(ev)),
       }));
       const sent = await send(mails);
       await db.from("event_messages").insert({ event_id: ev.id, user_id: me?.user?.id, subject, body, sent_to: sent });
@@ -223,10 +228,10 @@ serve(async (req) => {
           .eq("event_id", ev.id).eq("status", "confirmed").is("reminded_at", null);
         if (!people?.length) continue;
         const mails: Mail[] = (people as Row[]).map((p) => ({
-          from: FROM_ADDRESS, reply_to: REPLY_TO, to: [p.email], subject: `Reminder: ${ev.title}`,
+          from: fromHost(ev), reply_to: REPLY_TO, to: [p.email], subject: `Reminder: ${ev.title}`,
           html: mail("See you soon", `<p style="margin:0 0 14px">Dear ${esc(p.name)},</p>
             <p style="margin:0 0 14px">A friendly reminder that you are signed up${p.attending > 1 ? ` (${p.attending} people)` : ""} for:</p>${details(ev)}${joinLine(ev)}
-            <p style="margin:14px 0 0"><a href="${SITE}/event/${ev.id}" style="color:#8a6d1f;font-weight:bold">See the event page</a></p>${cancelLine(p)}`),
+            <p style="margin:14px 0 0"><a href="${SITE}/event/${ev.id}" style="color:#8a6d1f;font-weight:bold">See the event page</a></p>${cancelLine(p)}`, host(ev)),
         }));
         const sent = await send(mails);
         if (sent) {   // mark only what went out, so a failed send is retried on the next run

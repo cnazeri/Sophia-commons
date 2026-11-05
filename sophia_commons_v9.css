@@ -4059,7 +4059,13 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .ev-share-btns a, .ev-share-btns button, .ev-qr button { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border: 1.5px solid var(--border-strong); border-radius: 999px; background: var(--elevated); color: var(--gold-text); font: inherit; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; }
 .ev-share-btns a:hover, .ev-share-btns button:hover, .ev-qr button:hover { border-color: var(--gold); }
 .ev-qr { display: flex; gap: var(--sp-4); align-items: center; flex-wrap: wrap; margin-top: 14px; }
-.ev-qr canvas { width: 140px; height: 140px; background: #fff; border-radius: 6px; flex: none; }
+.ev-qr > .ev-qr-code { width: 140px; height: 140px; background: #fff; border-radius: 6px; flex: none; overflow: hidden; }
+.ev-qr-code svg { display: block; width: 100%; height: 100%; }
+.ev-qr button.ev-qr-svg { border: 0; padding: 4px 0; min-height: 44px; background: none; text-decoration: underline; font-weight: 600; }
+.evf-zone-check { margin: 6px 0 0; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.evf-zone-check:empty { display: none; }
+.ev-donate { margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; background: var(--elevated); border: 1px solid var(--border-strong); font-size: 14px; }
+.ev-donate a { color: var(--gold-text); font-weight: 700; }
 .ev-qr > div { flex: 1 1 200px; display: grid; gap: 8px; justify-items: start; }
 .ev-qr-note { font-size: 13px; color: var(--text-muted); margin: 0; }
 .ev-share-msg:empty { display: none; }
@@ -4114,7 +4120,7 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 .ev-msg { margin-top: 16px; border-top: 1px solid var(--border-subtle); padding-top: 12px; }
 .ev-msg summary { cursor: pointer; font-weight: 600; color: var(--gold-text); min-height: 32px; }
 .ev-msg form { display: grid; gap: 6px; margin-top: 10px; }
-.ev-msg input:not([type=checkbox]), .ev-msg textarea { width: 100%; box-sizing: border-box; padding: 9px 12px; font: inherit; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg); color: var(--text); }
+.ev-msg input:not([type=checkbox]), .ev-msg textarea { width: 100%; box-sizing: border-box; padding: 9px 12px; font: inherit; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg); color: var(--text-primary); }
 .ev-msg .org-btn { justify-self: start; }
 .ev-msg-status { font-size: 13px; margin: 0; }
 

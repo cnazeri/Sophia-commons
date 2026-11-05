@@ -50,7 +50,7 @@ function renderAccount() {
   });
 }
 
-var _ACC_EVENT_STATUS = { pending: ['Awaiting approval', 'org.st_pending'], upcoming: ['Listed', 'org.st_listed'], ongoing: ['Listed', 'org.st_listed'],
+var _ACC_EVENT_STATUS = { pending: ['Private (link only)', 'org.st_unlisted'], upcoming: ['Listed', 'org.st_listed'], ongoing: ['Listed', 'org.st_listed'],
   past: ['Past', 'org.st_past'], cancelled: ['Cancelled', 'org.st_cancelled'], rejected: ['Not listed', 'acc.st_rejected'] };
 var _ACC_LISTING_STATUS = { approved: ['Listed', 'org.st_listed'], pending: ['Awaiting approval', 'org.st_pending'], rejected: ['Not listed', 'acc.st_rejected'] };
 function _accPill(map, st) { var x = map[st] || [st, '']; return '<span class="acc-pill acc-' + _accEsc(st) + '">' + _accEsc(x[1] ? t(x[1], x[0]) : x[0]) + '</span>'; }

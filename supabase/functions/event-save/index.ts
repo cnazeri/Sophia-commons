@@ -2,8 +2,10 @@
 // Deploy WITH JWT verification (no --no-verify-jwt): only signed-in members can call it.
 //
 // - Every field is checked here; organizers can never set status, featured or user_id.
-// - New events are 'upcoming' (listed) when the organizer has claimed a directory listing, else 'pending'
-//   (unlisted: the page opens by its link through get_event, and the owner gets an email to review it).
+// - New events are 'upcoming' (listed) at once (owner, 2026-11-04: no waiting for approval). Events made by
+//   anyone but an admin get needs_review = true, so they show under Admin > Events, and the owner gets an email.
+//   An organizer can make an event private instead (is_public false): it is saved as 'pending', which keeps it
+//   off the calendar, search, sitemap and digest, while its page and sign-up form open by link (get_event).
 // - Edits keep the event's status. Only the event's owner (events.user_id) or an admin can edit it.
 // - Repeats: weekly, or monthly on the same weekday (e.g. every 2nd Tuesday), up to 12 dates, stored as
 //   separate rows that share series_id. Times are entered in the event's own time zone and stored in UTC.
@@ -186,6 +188,7 @@ async function buildEvent(db: ReturnType<typeof createClient>, uid: string, admi
   const price = line(e.price_text, 100);
   const organizerName = line(e.organizer_name, 200);
   const organizerUrl = httpUrl(e.organizer_url, "the organizer");
+  const donationUrl = httpUrl(e.donation_url, "the donation page");
 
   // Linked listing: only one the organizer has claimed (admins may link any). An unchanged link is kept as is.
   let entry: string | null = null;
@@ -214,6 +217,7 @@ async function buildEvent(db: ReturnType<typeof createClient>, uid: string, admi
     is_free: !price || FREE_WORDS.test(price),
     organizer_name: organizerName || null,
     organizer_url: organizerUrl,
+    donation_url: donationUrl,
     directory_entry_id: entry,
     signup_enabled: signup,
     signup_questions: signup ? questions(e.signup_questions) : [],
@@ -236,14 +240,14 @@ async function emailOwner(rows: Row[], organizer: string) {
   if (!key || !rows.length) return;
   const first = rows[0];
   const list = rows.map((r) => `<li><a href="${SITE}/event/${r.id}">${esc(String(r.start_date).slice(0, 16).replace("T", " "))} UTC</a></li>`).join("");
-  const html = `<p>A new event is waiting for approval: <b>${esc(first.title)}</b></p>
+  const html = `<p>A new event was created and is already on the calendar: <b>${esc(first.title)}</b></p>
 <p>From: ${esc(organizer)}${first.organizer_name ? ` (organizer: ${esc(first.organizer_name)})` : ""}</p>
 <ul>${list}</ul>
-<p>It can already be shared by its link. Approve or reject it under Admin &gt; Events on <a href="${SITE}">sophiacommons.org</a> (sign in first).</p>`;
+<p>Look it over under Admin &gt; Events on <a href="${SITE}">sophiacommons.org</a> (sign in first): mark it as seen, or take it down.</p>`;
   try {
     await fetch("https://api.resend.com/emails", {
       method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: FROM_ADDRESS, to: [OWNER_EMAIL], subject: `Event to approve: ${first.title}`, html }),
+      body: JSON.stringify({ from: FROM_ADDRESS, to: [OWNER_EMAIL], subject: `New event: ${first.title}`, html }),
     });
   } catch (_) { /* the event is saved; the note is best effort */ }
 }
@@ -283,6 +287,8 @@ serve(async (req) => {
       if (!old || (old.user_id !== uid && !admin)) return out({ error: "You can only edit your own events." }, 403);
       const { columns, dates } = await buildEvent(db, uid, admin, ev, false, old.directory_entry_id);
       const row: Row = { ...columns, start_date: dates[0].start, end_date: dates[0].end, updated_at: new Date().toISOString() };
+      // The organizer can switch between public and private; other states (ongoing, past, cancelled) stay as they are
+      if (typeof ev.is_public === "boolean" && ["pending", "upcoming"].includes(String(old.status))) row.status = ev.is_public ? "upcoming" : "pending";
       if (input.image) row.image_url = await uploadImage(db, uid, input.image);
       else if (input.remove_image === true) row.image_url = null;
       // status, featured, user_id and series_id are never taken from the request
@@ -308,17 +314,17 @@ serve(async (req) => {
       if ((count ?? 0) >= MAX_NEW_ROWS_PER_DAY) return out({ error: "You have added many events today. Please try again tomorrow." }, 429);
     }
     const { columns, dates } = await buildEvent(db, uid, admin, ev, true, null);
-    // Trusted organizers (anyone who has claimed a listing) are listed at once; others wait for approval
-    const { count: claimed } = await db.from("directory_entries").select("id", { count: "exact", head: true }).eq("claimed_by", uid);
-    const status = admin || (claimed ?? 0) > 0 ? "upcoming" : "pending";
+    // Listed at once; the owner looks at new events afterwards under Admin > Events (needs_review)
+    // Public (default) is listed on the calendar; private ('pending') opens only by its link and QR code
+    const status = ev.is_public === false ? "pending" : "upcoming", review = !admin;
     const imageUrl = input.image ? await uploadImage(db, uid, input.image) : ownImageUrl(input.copy_image_url);
     const series = dates.length > 1 ? crypto.randomUUID() : null;
     const rows = dates.map((d) => ({ ...columns, start_date: d.start, end_date: d.end, image_url: imageUrl,
-      series_id: series, status, featured: false, user_id: uid }));
+      series_id: series, status, needs_review: review, featured: false, user_id: uid }));
     const { data, error } = await db.from("events").insert(rows).select("id, title, status, start_date, organizer_name, signup_enabled");
     if (error) throw new Error("insert: " + error.message);
     const saved = (data || []).sort((a: Row, b: Row) => String(a.start_date).localeCompare(String(b.start_date)));
-    if (status === "pending") await emailOwner(saved, user.email || uid);
+    if (review) await emailOwner(saved, user.email || uid);
     return out({ ok: true, status, events: saved.map(links) });
   } catch (err) {
     if (err instanceof Invalid) return out({ error: err.message }, 400);

@@ -115,17 +115,35 @@ function _evfInput(name, type, attrs) {
   return '<input id="evf-' + name + '" name="' + name + '" type="' + type + '" aria-describedby="evf-' + name + '-err"' + (attrs || '') + '>';
 }
 
+// Common zones first, then every zone the browser knows (owner, 2026-11-04: any organizer can find theirs)
 function _evfZoneOptions(selected) {
-  var zones = ORG_ZONES.filter(_orgZoneOk);
-  if (selected && zones.indexOf(selected) === -1 && _orgZoneOk(selected)) zones.unshift(selected);
-  return zones.map(function (z) {
+  var common = ORG_ZONES.filter(_orgZoneOk);
+  if (selected && common.indexOf(selected) === -1 && _orgZoneOk(selected)) common.unshift(selected);
+  var all = [];
+  try { all = Intl.supportedValuesOf('timeZone').filter(function (z) { return common.indexOf(z) === -1; }); } catch (e) {}
+  var opt = function (z) {
     var off = '';
     try {
       var parts = new Intl.DateTimeFormat('en-US', { timeZone: z, timeZoneName: 'shortOffset' }).formatToParts(new Date());
       off = (parts.filter(function (p) { return p.type === 'timeZoneName'; })[0] || {}).value || '';
     } catch (e) {}
     return '<option value="' + esc(z) + '"' + (z === selected ? ' selected' : '') + '>' + esc(z.replace(/_/g, ' ') + (off ? ' (' + off + ')' : '')) + '</option>';
-  }).join('');
+  };
+  if (!all.length) return common.map(opt).join('');
+  return '<optgroup label="' + esc(t('org.zones_common', 'Common')) + '">' + common.map(opt).join('') + '</optgroup>'
+    + '<optgroup label="' + esc(t('org.zones_all', 'All time zones')) + '">' + all.map(opt).join('') + '</optgroup>';
+}
+
+// "Starts Sat, Nov 7, 12:00 PM, Los Angeles time" so the organizer can see the zone is right
+function _evfZoneCheck() {
+  var el = document.getElementById('evf-zone-check');
+  if (!el) return;
+  var day = _evfVal('start_date'), time = _evfVal('start_time'), z = _evfVal('timezone');
+  if (!day || !time || !z || document.getElementById('evf-allday').checked) { el.textContent = ''; return; }
+  var d = new Date(day + 'T12:00:00Z');
+  var hm = time.split(':'), h = +hm[0], label = (h % 12 || 12) + ':' + hm[1] + (h < 12 ? ' AM' : ' PM');
+  var city = z.split('/').pop().replace(/_/g, ' ');
+  el.textContent = t('org.zone_check', 'Starts {when}, {city} time.').replace('{when}', d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) + ', ' + label).replace('{city}', city);
 }
 
 function _evfTypeOptions() {
@@ -149,10 +167,10 @@ function _evfHtml(listings, isEdit) {
       '<select id="evf-listing" name="listing" onchange="_evfListingChanged()"><option value="">' + esc(t('org.no_listing', 'None')) + '</option>'
       + listings.map(function (l) { return '<option value="' + esc(l.id) + '">' + esc(l.organization_name) + '</option>'; }).join('') + '</select>',
       t('org.listing_hint', 'The event is shown on your listing page, and it is listed on the calendar right away.'))
-    : '<p class="evf-hint evf-claim-hint">' + esc(t('org.claim_hint', 'Tip: if your group has a listing on Sophia Commons, claim it (on its page) and your events are listed right away, without waiting for approval.')) + '</p>';
+    : '<p class="evf-hint evf-claim-hint">' + esc(t('org.claim_hint_live', 'Tip: if your group has a listing on Sophia Commons, claim it (on its page) and your events also show on your listing page.')) + '</p>';
   return '<form class="evf" id="evf" novalidate onsubmit="saveEventForm(event)">'
     + '<h2 class="evf-title">' + esc(isEdit ? t('org.edit_heading', 'Edit your event') : t('org.new_heading', 'Create your event page')) + '</h2>'
-    + (isEdit ? '' : '<p class="evf-lead">' + esc(t('org.lead', 'Share it with your people right away. It appears on the public Sophia Commons calendar once it has been approved.')) + '</p>')
+    + (isEdit ? '' : '<p class="evf-lead">' + esc(t('org.lead_live', 'Share it with your people right away. A public event is listed on the Sophia Commons calendar as soon as you create it.')) + '</p>')
     + '<p class="evf-mine"><a href="/my-events" onclick="orgGo(\'/my-events\');return false;">' + esc(t('org.my_events_link_long', 'See all my events')) + ' &rarr;</a></p>'
     + '<fieldset><legend>' + esc(t('org.s_what', 'What')) + '</legend>'
     + _evfField('title', t('org.f_title', 'Event title') + ' *', _evfInput('title', 'text', ' maxlength="200" required'))
@@ -161,12 +179,14 @@ function _evfHtml(listings, isEdit) {
     + _evfField('price', t('org.f_price', 'Price'), _evfInput('price', 'text', ' maxlength="100" placeholder="' + esc(t('org.price_placeholder', 'Free, or for example $30 per family')) + '"'))
     + '</fieldset>'
     + '<fieldset><legend>' + esc(t('org.s_when', 'When')) + '</legend>'
-    + '<div class="evf-row">' + _evfField('start_date', t('org.f_start_date', 'Start date') + ' *', _evfInput('start_date', 'date', ' required onchange="_evfRepeatLabels()"'))
-    + _evfField('start_time', t('org.f_start_time', 'Start time'), _evfInput('start_time', 'time', '')) + '</div>'
+    + '<div class="evf-row">' + _evfField('start_date', t('org.f_start_date', 'Start date') + ' *', _evfInput('start_date', 'date', ' required onchange="_evfRepeatLabels();_evfZoneCheck()"'))
+    + _evfField('start_time', t('org.f_start_time', 'Start time'), _evfInput('start_time', 'time', ' onchange="_evfZoneCheck()"')) + '</div>'
     + '<div class="evf-row">' + _evfField('end_date', t('org.f_end_date', 'End date'), _evfInput('end_date', 'date', ''), t('org.end_date_hint', 'Only if it lasts more than one day.'))
     + _evfField('end_time', t('org.f_end_time', 'End time'), _evfInput('end_time', 'time', '')) + '</div>'
+    + _evfField('timezone', t('org.f_timezone_event', 'Time zone of the event') + ' *', '<select id="evf-timezone" name="timezone" onchange="_evfZoneCheck()"></select>'
+      + '<p class="evf-zone-check" id="evf-zone-check" aria-live="polite"></p>',
+      t('org.timezone_hint_long', 'The zone the start and end times are in. For an online event, the host\'s zone. Visitors see the time in their own zone.'))
     + '<label class="evf-check"><input type="checkbox" id="evf-allday" onchange="_evfAllDay()"> ' + esc(t('org.f_all_day', 'All day (no set times)')) + '</label>'
-    + _evfField('timezone', t('org.f_timezone', 'Time zone'), '<select id="evf-timezone" name="timezone"></select>', t('org.timezone_hint', 'Visitors see the time in their own time zone.'))
     + (isEdit ? '' : '<div class="evf-row">' + _evfField('repeat', t('org.f_repeat', 'Repeat'), '<select id="evf-repeat" onchange="_evfRepeatChanged()"><option value="none">' + esc(t('org.repeat_none', 'Does not repeat')) + '</option>'
       + '<option value="weekly"></option><option value="monthly"></option></select>')
       + _evfField('repeat_count', t('org.f_repeat_count', 'Number of dates'), '<select id="evf-repeat_count">' + [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (n) { return '<option>' + n + '</option>'; }).join('') + '</select>') + '</div>')
@@ -185,6 +205,8 @@ function _evfHtml(listings, isEdit) {
     + listingSel
     + _evfField('organizer', t('org.f_organizer', 'Organizer'), _evfInput('organizer', 'text', ' maxlength="200" autocomplete="organization"'))
     + _evfField('organizer_url', t('org.f_organizer_url', 'Organizer website'), _evfInput('organizer_url', 'url', ' maxlength="500" placeholder="https://"'))
+    + _evfField('donation_url', t('org.f_donation_url', 'Donation link (optional)'), _evfInput('donation_url', 'url', ' maxlength="500" placeholder="https://"'),
+      t('org.donation_hint', 'For a suggested donation, for example a PayPal or donation page. It is shown on the sign-up form, with the amount from Price.'))
     + _evfField('image', t('org.f_image', 'Picture'), '<input id="evf-image" name="image" type="file" accept="image/jpeg,image/png,image/webp" onchange="_evfImagePicked(this)" aria-describedby="evf-image-err">'
       + '<div id="evf-image-preview" class="evf-image-preview" hidden></div>', t('org.image_hint', 'JPG, PNG or WebP, up to 5 MB. A wide picture works best.'))
     + '</fieldset>'
@@ -201,6 +223,10 @@ function _evfHtml(listings, isEdit) {
       + '<option value="48">' + esc(t('signup.close_2d', '2 days before')) + '</option>'
       + '<option value="168">' + esc(t('signup.close_1w', '1 week before')) + '</option></select>')
     + '</div>'
+    + '</fieldset>'
+    + '<fieldset><legend>' + esc(t('org.s_visibility', 'Who can find it')) + '</legend>'
+    + '<label class="evf-check"><input type="checkbox" id="evf-public" checked> ' + esc(t('org.f_public', 'Make it public: list it on the Sophia Commons calendar, so anyone browsing the site can find it')) + '</label>'
+    + '<p class="evf-hint">' + esc(t('org.public_hint', 'Untick it to keep the event private: only people you send the link or QR code to can open it.')) + '</p>'
     + '</fieldset>'
     + '<button type="submit" class="org-btn evf-submit" id="evf-submit">' + esc(isEdit ? t('org.save', 'Save changes') : t('org.create', 'Create event')) + '</button>'
     + '<p class="evf-status" id="evf-status" role="status"></p>'
@@ -250,7 +276,8 @@ function _evfFill(ev, isCopy, listings) {
   else { _evfSet('venue', ev.location_name === 'Online' ? '' : ev.location_name); _evfSet('address', ev.address); _evfSet('city', ev.city); _evfSet('region', ev.region); _evfSet('country', ev.country); }
   _evfMode();
   if (ev.directory_entry_id && listings.some(function (l) { return l.id === ev.directory_entry_id; })) _evfSet('listing', ev.directory_entry_id);
-  _evfSet('organizer', ev.organizer_name); _evfSet('organizer_url', ev.organizer_url);
+  if (!isCopy) document.getElementById('evf-public').checked = ev.status !== 'pending';
+  _evfSet('organizer', ev.organizer_name); _evfSet('organizer_url', ev.organizer_url); _evfSet('donation_url', ev.donation_url);
   if (ev.image_url && /^https:\/\//.test(ev.image_url)) {
     if (isCopy) _evfState.copyImageUrl = ev.image_url;
     _evfShowPreview(ev.image_url);
@@ -278,6 +305,7 @@ function _evfAllDay() {
   ['start_time', 'end_time', 'timezone'].forEach(function (n) {
     var f = document.querySelector('.evf-field[data-f="' + n + '"]'); if (f) f.hidden = on;
   });
+  _evfZoneCheck();
 }
 function _evfMode() {
   var online = document.querySelector('input[name="evf-mode"]:checked').value === 'online';
@@ -365,6 +393,7 @@ function _evfCollect() {
   need('online_url', !online || /^https?:\/\/\S+\.\S+/i.test(_evfVal('online_url')), t('org.err_online_url', 'Please give the full link to join, starting with https://'));
   need('city', online || _evfVal('city') || _evfVal('venue'), t('org.err_place', 'Please give the venue or the city.'));
   need('organizer_url', _orgUrlOk(_evfVal('organizer_url')), t('org.err_url', 'Please enter a valid web address, for example https://example.org'));
+  need('donation_url', _orgUrlOk(_evfVal('donation_url')), t('org.err_url', 'Please enter a valid web address, for example https://example.org'));
   var cap = _evfVal('capacity');
   need('capacity', !cap || (/^\d+$/.test(cap) && +cap >= 1 && +cap <= 10000), t('signup.err_capacity', 'Please enter a number of places from 1 to 10000, or leave it empty.'));
   if (errs.length) {
@@ -381,13 +410,14 @@ function _evfCollect() {
     is_online: online, online_url: online ? _evfVal('online_url') : '',
     location_name: online ? '' : _evfVal('venue'), address: online ? '' : _evfVal('address'), city: online ? '' : _evfVal('city'),
     region: online ? '' : _evfVal('region'), country: online ? '' : _evfVal('country'),
-    directory_entry_id: _evfVal('listing'), organizer_name: _evfVal('organizer'), organizer_url: _evfVal('organizer_url'),
+    directory_entry_id: _evfVal('listing'), organizer_name: _evfVal('organizer'), organizer_url: _evfVal('organizer_url'), donation_url: _evfVal('donation_url'),
     signup_enabled: signup,
     signup_questions: signup ? [1, 2, 3].map(function (i) {
       return { label: _evfVal('q' + i), type: _evfVal('q' + i + 't'), options: _evfVal('q' + i + 'o').split(',').map(function (o) { return o.trim(); }).filter(Boolean) };
     }).filter(function (q) { return q.label; }) : [],
     signup_capacity: signup ? _evfVal('capacity') : '',
-    signup_close_hours: signup ? _evfVal('close') : ''
+    signup_close_hours: signup ? _evfVal('close') : '',
+    is_public: document.getElementById('evf-public').checked
   } };
 }
 
@@ -429,7 +459,7 @@ function _evfDone(out, ev) {
   _orgDropEventCache();
   var root = document.getElementById('evf-root'), edited = _evfState.mode === 'edit';
   var when = out.status === 'pending'
-    ? t('org.done_pending', 'Share the link with your group now. It will appear on the public calendar once Sophia Commons approves it.')
+    ? t('org.done_unlisted', 'It is private: it is not on the public calendar, and only people with the link or QR code can open it.')
     : t('org.done_listed', 'It is listed on the public Sophia Commons calendar.');
   var kitEv = { id: first.id, title: ev.title, start_date: first.start_date, is_all_day: ev.is_all_day, status: out.status,
     signup_enabled: !!first.signup, end_date: null };
@@ -474,7 +504,7 @@ function _orgStatus(ev) {
   if (ev.status === 'cancelled') return { key: 'cancelled', label: t('org.st_cancelled', 'Cancelled') };
   if (ev.status === 'rejected') return { key: 'rejected', label: t('org.st_rejected', 'Not approved') };
   if (ev.status === 'past' || _orgIsOver(ev)) return { key: 'past', label: t('org.st_past', 'Past') };
-  if (ev.status === 'pending') return { key: 'pending', label: t('org.st_pending', 'Awaiting approval') };
+  if (ev.status === 'pending') return { key: 'pending', label: t('org.st_unlisted', 'Private (link only)') };
   return { key: 'listed', label: t('org.st_listed', 'Listed') };
 }
 
@@ -560,9 +590,10 @@ function _renderShareKit(box, ev) {
     + '<a href="mailto:?subject=' + encodeURIComponent(ev.title) + '&amp;body=' + encodeURIComponent(msg) + '">' + esc(t('org.share_email', 'Email')) + '</a>'
     + '<a href="https://wa.me/?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">WhatsApp</a>'
     + '</div>'
-    + '<div class="ev-qr"><canvas id="qr-' + esc(ev.id) + '" width="220" height="220" role="img" aria-label="' + esc(t('org.qr_aria', 'QR code for the link')) + '"></canvas>'
+    + '<div class="ev-qr"><div class="ev-qr-code" id="qr-' + esc(ev.id) + '" role="img" aria-label="' + esc(t('org.qr_aria', 'QR code for the link')) + '"></div>'
     + '<div><p class="ev-qr-note">' + esc(signup ? t('org.qr_signup', 'QR code for the sign-up page. Print it on a flyer or poster.') : t('org.qr_event', 'QR code for the event page. Print it on a flyer or poster.')) + '</p>'
-    + '<button type="button" onclick="_orgQrDownload(\'' + id + '\')">' + esc(t('org.qr_download', 'Download QR code (PNG)')) + '</button></div></div>'
+    + '<button type="button" onclick="_orgQrDownload(\'' + id + '\', \'png\')">' + esc(t('org.qr_download', 'Download QR code (PNG)')) + '</button>'
+    + '<button type="button" class="ev-qr-svg" onclick="_orgQrDownload(\'' + id + '\', \'svg\')">' + esc(t('org.qr_download_svg', 'Download as SVG (sharpest for print)')) + '</button></div></div>'
     + '<p class="ev-share-msg" role="status" id="share-msg-' + esc(ev.id) + '"></p></div>';
   _orgDrawQr('qr-' + ev.id, qrFor);
 }
@@ -602,32 +633,50 @@ function _orgLoadQr() {
   return _orgQrLoading;
 }
 
+// The QR code is drawn as SVG, not on a canvas: some privacy extensions block canvas drawing and left
+// the box blank (owner's screenshot, 2026-11-04). The PNG for download is made from the SVG on click.
 var ORG_QR_PRINT_PX = 1024;   // the downloaded PNG is big enough for a poster
-function _orgDrawQr(canvasId, text) {
+var _orgQrSvg = {};
+function _orgQrSvgText(qr) {
+  var n = qr.getModuleCount(), quiet = 4, size = n + 2 * quiet, d = '';
+  for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (qr.isDark(r, k)) d += 'M' + (k + quiet) + ' ' + (r + quiet) + 'h1v1h-1z';
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size + '" width="' + ORG_QR_PRINT_PX + '" height="' + ORG_QR_PRINT_PX + '" shape-rendering="crispEdges">'
+    + '<rect width="' + size + '" height="' + size + '" fill="#fff"/><path d="' + d + '" fill="#000"/></svg>';
+}
+function _orgDrawQr(boxId, text) {
   _orgLoadQr().then(function (qrcode) {
-    var c = document.getElementById(canvasId);
-    if (!c) return;
+    var box = document.getElementById(boxId);
+    if (!box) return;
     var qr = qrcode(0, 'M'); qr.addData(text); qr.make();
-    var n = qr.getModuleCount(), quiet = 4, cell = Math.floor(ORG_QR_PRINT_PX / (n + 2 * quiet));
-    c.width = c.height = cell * (n + 2 * quiet);
-    var ctx = c.getContext('2d');
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
-    ctx.fillStyle = '#000000';
-    for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (qr.isDark(r, k)) ctx.fillRect((k + quiet) * cell, (r + quiet) * cell, cell, cell);
-    c.setAttribute('data-ready', '1');
+    _orgQrSvg[boxId] = _orgQrSvgText(qr);
+    box.innerHTML = _orgQrSvg[boxId];
+    box.setAttribute('data-ready', '1');
   }).catch(function () {
-    var c = document.getElementById(canvasId);
-    if (c && c.parentNode) c.parentNode.innerHTML = '<p class="ev-qr-note">' + esc(t('org.qr_failed', 'The QR code could not be made right now.')) + '</p>';
+    var box = document.getElementById(boxId);
+    if (box && box.parentNode) box.parentNode.innerHTML = '<p class="ev-qr-note">' + esc(t('org.qr_failed', 'The QR code could not be made right now.')) + '</p>';
   });
 }
 
-function _orgQrDownload(id) {
-  var c = document.getElementById('qr-' + id), ev = _orgShareStore[id] || {};
-  if (!c || !c.getAttribute('data-ready')) return;
-  var a = document.createElement('a');
-  a.href = c.toDataURL('image/png');
-  a.download = 'QR ' + String(ev.title || 'event').replace(/[^\w\- ]+/g, '').trim().slice(0, 50) + '.png';
-  document.body.appendChild(a); a.click(); a.remove();
+function _orgQrDownload(id, kind) {
+  var svg = _orgQrSvg['qr-' + id], ev = _orgShareStore[id] || {};
+  if (!svg) return;
+  var name = 'QR ' + String(ev.title || 'event').replace(/[^\w\- ]+/g, '').trim().slice(0, 50);
+  var save = function (href, ext) {
+    var a = document.createElement('a'); a.href = href; a.download = name + '.' + ext;
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+  var svgUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  if (kind === 'svg') { save(svgUrl, 'svg'); return; }
+  var img = new Image();
+  img.onload = function () {
+    try {
+      var c = document.createElement('canvas'); c.width = c.height = ORG_QR_PRINT_PX;
+      c.getContext('2d').drawImage(img, 0, 0, ORG_QR_PRINT_PX, ORG_QR_PRINT_PX);
+      save(c.toDataURL('image/png'), 'png');
+    } catch (e) { save(svgUrl, 'svg'); }
+  };
+  img.onerror = function () { save(svgUrl, 'svg'); };
+  img.src = svgUrl;
 }
 
 // ══════════════ LISTING PAGE: UPCOMING EVENTS ══════════════

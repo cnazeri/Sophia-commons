@@ -10,6 +10,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SITE = "https://sophiacommons.org";
 const FROM_ADDRESS = "Sophia Commons <hello@sophiacommons.org>";
+type Row = Record<string, any>;
 const REPLY_TO = "hello@sophiacommons.org";
 const ORIGINS = [SITE, "https://www.sophiacommons.org"];
 
@@ -28,13 +29,18 @@ function when(ev: { start_date: string; is_all_day: boolean }, tz: string) {
   return ev.is_all_day ? day : `${day}, ${d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: tz, timeZoneName: "short" })}`;
 }
 
-function mail(title: string, body: string) {
+// Emails to attendees carry the host's name, else the event title (owner, 2026-11-04); emails to the
+// organizer keep "Sophia Commons". The From line reads "<host> via Sophia Commons".
+const host = (ev: Row) => String(ev.organizer_name || ev.title || "Sophia Commons").replace(/[\u0000-\u001f<>"]/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
+const fromHost = (ev: Row) => `${host(ev).replace(/[,;:@\\]/g, " ").slice(0, 60)} via Sophia Commons <hello@sophiacommons.org>`;
+
+function mail(title: string, body: string, brand = "Sophia Commons") {
   return `<!doctype html><html><body style="margin:0;background:#FDFBF7;font-family:Georgia,serif;color:#2d2a26">
 <div style="max-width:560px;margin:0 auto;padding:28px 22px">
-<div style="font-size:20px;font-weight:bold;margin-bottom:4px">Sophia Commons</div>
+<div style="font-size:20px;font-weight:bold;margin-bottom:4px">${esc(brand)}</div>
 <div style="font-size:13px;color:#7a7368;margin-bottom:20px">${esc(title)}</div>
 <div style="background:#fff;border:1px solid #ece6da;border-radius:10px;padding:22px;font-size:15px;line-height:1.55">${body}</div>
-<div style="font-size:12px;color:#7a7368;margin-top:16px">Sophia Commons, the anthroposophical directory and calendar: <a href="${SITE}" style="color:#8a6d1f">sophiacommons.org</a></div>
+<div style="font-size:12px;color:#7a7368;margin-top:16px">Sent through Sophia Commons, the anthroposophical directory and calendar: <a href="${SITE}" style="color:#8a6d1f">sophiacommons.org</a></div>
 </div></body></html>`;
 }
 
@@ -62,7 +68,7 @@ serve(async (req) => {
 
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: ev } = await db.from("events")
-    .select("id, title, start_date, end_date, is_all_day, location_name, address, city, is_online, online_url, organizer_name, user_id, status, signup_enabled, signup_questions, signup_capacity, signup_close_hours")
+    .select("id, title, start_date, end_date, is_all_day, location_name, address, city, is_online, online_url, organizer_name, price_text, donation_url, user_id, status, signup_enabled, signup_questions, signup_capacity, signup_close_hours")
     .eq("id", eventId).maybeSingle();
   if (!ev || !ev.signup_enabled || !["pending", "upcoming", "ongoing"].includes(ev.status)) {
     return out({ error: "This event is not taking sign-ups." }, 400);
@@ -98,24 +104,25 @@ serve(async (req) => {
   // Emails: a failure here never undoes the sign-up
   const key = Deno.env.get("RESEND_API_KEY");
   const page = `${SITE}/event/${ev.id}`;
-  const place = ev.is_online ? "Online" : [ev.location_name, ev.address || ev.city].filter(Boolean).join(", ");
+  const place = ev.is_online ? "Online" : ["In person", ev.location_name, ev.address || ev.city].filter(Boolean).join(", ");
   const details = `<p style="margin:0 0 6px"><b>${esc(ev.title)}</b></p><p style="margin:0 0 6px">${esc(when(ev, tz))}</p>`
-    + (place ? `<p style="margin:0 0 6px">${esc(place)}</p>` : "")
+    + (place ? `<p style="margin:0 0 6px">Event location: ${esc(place)}</p>` : "")
     + (ev.organizer_name ? `<p style="margin:0 0 6px">Hosted by ${esc(ev.organizer_name)}</p>` : "");
   const answerList = answers.filter((a) => a.answer).map((a) => `<li>${esc(a.label)}: ${esc(a.answer)}</li>`).join("");
   const messages = [{
-    from: FROM_ADDRESS, reply_to: REPLY_TO, to: [email],
+    from: fromHost(ev), reply_to: REPLY_TO, to: [email],
     subject: waitlist ? `You're on the waitlist: ${ev.title}` : `You're signed up: ${ev.title}`,
     html: waitlist
       ? mail("Waitlist", `<p style="margin:0 0 14px">Dear ${esc(name)},</p>
       <p style="margin:0 0 14px">This event is full right now, so you are on the waitlist${attending > 1 ? ` (${attending} people)` : ""}. If a place opens up, you move up automatically and we email you straight away.</p>${details}
       <p style="margin:14px 0 0"><a href="${page}" style="color:#8a6d1f;font-weight:bold">See the event page</a></p>
-      <p style="margin:14px 0 0;font-size:13px;color:#7a7368">No longer interested? <a href="${cancelUrl}" style="color:#8a6d1f">Leave the waitlist</a>.</p>`)
+      <p style="margin:14px 0 0;font-size:13px;color:#7a7368">No longer interested? <a href="${cancelUrl}" style="color:#8a6d1f">Leave the waitlist</a>.</p>`, host(ev))
       : mail("Sign-up confirmation", `<p style="margin:0 0 14px">Dear ${esc(name)},</p>
       <p style="margin:0 0 14px">Thank you for signing up${attending > 1 ? ` (${attending} people)` : ""}. Here are the details:</p>${details}
+      ${/^https?:\/\//i.test(ev.donation_url || "") ? `<p style="margin:12px 0 0">${ev.price_text && !/^(free|kostenlos|gratis|frei)$/i.test(ev.price_text) ? `Suggested donation: ${esc(ev.price_text)}.` : "A donation is suggested."} <a href="${esc(ev.donation_url)}" style="color:#8a6d1f">Donate here</a></p>` : ""}
       ${ev.is_online && ev.online_url ? `<p style="margin:12px 0 0">Join online: <a href="${esc(ev.online_url)}" style="color:#8a6d1f">${esc(ev.online_url)}</a></p>` : ""}
       <p style="margin:14px 0 0"><a href="${page}" style="color:#8a6d1f;font-weight:bold">See the event page</a></p>
-      <p style="margin:14px 0 0;font-size:13px;color:#7a7368">Can no longer come? <a href="${cancelUrl}" style="color:#8a6d1f">Cancel your sign-up</a> so someone else can have your place.</p>`),
+      <p style="margin:14px 0 0;font-size:13px;color:#7a7368">Can no longer come? <a href="${cancelUrl}" style="color:#8a6d1f">Cancel your sign-up</a> so someone else can have your place.</p>`, host(ev)),
   }];
   if (ev.user_id) {
     const { data: u } = await db.auth.admin.getUserById(ev.user_id);
