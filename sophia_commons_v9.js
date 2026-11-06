@@ -6261,7 +6261,9 @@ async function loadAdminOutreach() {
   _outreachRows = r.data || [];
   if (!_outreachRows.length) { el.innerHTML = '<div class="admin-empty">Nothing ' + esc(status) + '.</div>'; return; }
   var when = function (iso) { return new Date(iso).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); };
-  el.innerHTML = '<div class="adm-note">' + _outreachRows.length + ' ' + esc(status) + '</div>'
+  var lim = { cap: 99, bulk: 85, sent: 0 };
+  try { lim = await _emailLimits(); } catch (e) {}
+  el.innerHTML = '<div class="adm-note">' + _outreachRows.length + ' ' + esc(status) + ' \u00b7 Emails sent today: ' + lim.sent + ' of ' + lim.cap + '. Newsletters and invites stop at ' + lim.bulk + ' a day; the rest waits for the next day.</div>'
     + (status === 'queued' ? _outreachBulkHtml(_outreachRows.length) : '')
     + _outreachRows.map(function (o, i) {
     var gmail = 'https://mail.google.com/mail/?authuser=' + encodeURIComponent(OUTREACH_GMAIL) + '&view=cm&fs=1&to=' + encodeURIComponent(o.to_email)
@@ -8029,13 +8031,14 @@ async function approveDigest(id, sendEmail) {
   if (!isAdmin()) return;
   if (sendEmail) {
     await loadNewsletterSubscriberCount();
-    if (!confirm('Email this digest to ' + _newsletterSubscriberCount + ' subscriber(s) and publish it on the News page?')) return;
+    if (!confirm('Email this digest to ' + _newsletterSubscriberCount + ' subscriber(s) and publish it on the News page?' + (await _emailLimitNote(_newsletterSubscriberCount)))) return;
   }
   _digestStatus(sendEmail ? 'Sending...' : 'Publishing...');
   try {
     if (sendEmail) {
       var out = await _digestCall('send-newsletter', { news_id: id });
-      _digestStatus('Sent to ' + out.sent + ' of ' + out.total + ' subscribers' + (out.failed ? ' (' + out.failed + ' failed)' : '') + ', and published on the News page.', 'var(--success,#27ae60)');
+      _digestStatus('Sent to ' + out.sent + ' of ' + out.total + ' subscribers' + (out.failed ? ' (' + out.failed + ' failed)' : '')
+        + (out.remaining ? '. The other ' + out.remaining + ' go out automatically over the next days (daily email limit).' : '') + (out.sent ? ' Published on the News page.' : ''), 'var(--success,#27ae60)');
     } else {
       var r = await _sb.from('news').update({ status: 'published', published_at: new Date().toISOString() }).eq('id', id);
       if (r.error) throw r.error;
@@ -8143,6 +8146,19 @@ function _digestScheduleHtml(d) {
     + '<button class="admin-btn admin-btn-approve" onclick="scheduleDigest(\'' + jsId + '\')">Approve &amp; schedule</button></div>';
 }
 
+// Daily email limit (email_limits, email_daily): today's count, and how many days a send of n will take
+async function _emailLimits() {
+  var day = new Date().toISOString().slice(0, 10);
+  var r = await Promise.all([_sb.from('email_limits').select('daily_cap, bulk_cap').maybeSingle(), _sb.from('email_daily').select('sent').eq('day', day).maybeSingle()]);
+  return { cap: (r[0].data || {}).daily_cap || 99, bulk: (r[0].data || {}).bulk_cap || 85, sent: (r[1].data || {}).sent || 0 };
+}
+async function _emailLimitNote(n) {
+  try {
+    var l = await _emailLimits(), days = Math.ceil(n / l.bulk);
+    return days > 1 ? '\n\nWith the daily limit it goes out to about ' + l.bulk + ' people a day, over ' + days + ' days.' : '';
+  } catch (e) { return ''; }
+}
+
 async function scheduleDigest(id) {
   if (!isAdmin()) return;
   var v = function (k) { var el = document.getElementById('ds-' + k + '-' + id); return el ? el.value : ''; };
@@ -8152,7 +8168,7 @@ async function scheduleDigest(id) {
   if (isNaN(at) || at.getTime() < Date.now()) { _digestStatus('That time has already passed. Please pick a later one.', 'var(--error,#c0392b)'); return; }
   await loadNewsletterSubscriberCount();
   var label = at.toLocaleString('en-US', { timeZone: tz, weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
-  if (!confirm('Email this digest to ' + _newsletterSubscriberCount + ' subscriber(s) on ' + label + ', and publish it on the News page then?')) return;
+  if (!confirm('Email this digest to ' + _newsletterSubscriberCount + ' subscriber(s) on ' + label + ', and publish it on the News page then?' + (await _emailLimitNote(_newsletterSubscriberCount)))) return;
   try {
     var r = await _sb.from('news').update({ send_at: at.toISOString(), send_tz: tz }).eq('id', id).eq('status', 'pending').is('emailed_at', null);
     if (r.error) throw r.error;

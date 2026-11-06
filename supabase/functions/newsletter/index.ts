@@ -111,6 +111,7 @@ serve(async (req: Request) => {
       body: JSON.stringify({ from: FROM_ADDRESS, reply_to: REPLY_TO, to: [email], subject: "Confirm your Sophia Commons subscription", html: confirmEmailHtml(confirmUrl) }),
     });
     if (!res.ok) return json(req, { error: "send_failed" }, 502);
+    await supabase.rpc("email_quota_note", { p_n: 1 });   // the shared daily count
     return json(req, { ok: true, status: "pending_confirmation" });
   }
 

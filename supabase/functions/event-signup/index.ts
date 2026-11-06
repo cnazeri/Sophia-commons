@@ -140,7 +140,10 @@ serve(async (req) => {
       const r = await fetch("https://api.resend.com/emails/batch", {
         method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify(messages),
       });
-      if (r.ok) await db.from("event_signups").update({ emailed_at: new Date().toISOString() }).eq("id", row.id);
+      if (r.ok) {
+        await db.from("event_signups").update({ emailed_at: new Date().toISOString() }).eq("id", row.id);
+        await db.rpc("email_quota_note", { p_n: messages.length });   // the shared daily count
+      }
     } catch (_) { /* the sign-up is saved; the email is best effort */ }
   }
   const { data: spots } = await db.rpc("event_signup_spots", { p_event: eventId });

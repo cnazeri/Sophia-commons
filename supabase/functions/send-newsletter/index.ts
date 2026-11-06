@@ -39,6 +39,7 @@ function same(a: string, b: string) {
 }
 
 const ADMIN_EMAILS = ["cameron.nazeri@gmail.com", "cameron@sophiacommons.org", "admin@sophiacommons.org"];  // keep in sync with sophia_commons_v9.js; prefer app_metadata.role
+const CONTINUE_FROM_UTC = 14;   // a digest spread over days continues from 14:00 UTC (7 am Pacific, 10 am Eastern)
 const BATCH_SIZE = 100;   // Resend batch endpoint maximum
 const BATCH_DELAY_MS = 600;  // stay under 2 requests/second
 const FROM_ADDRESS = "Sophia Commons <newsletter@sophiacommons.org>";
@@ -127,49 +128,97 @@ serve(async (req: Request) => {
   // The server key can only run the scheduled send, and the scheduled send only runs with it
   if (isServer !== due) return jsonResponse({ error: "Forbidden" }, 403);
   if (due) {
-    const { data: ready, error: dueError } = await supabaseClient.from("news").select("id")
-      .eq("status", "pending").contains("tags", ["weekly-digest"]).is("emailed_at", null)
-      .lte("send_at", new Date().toISOString()).order("send_at").limit(1);
-    if (dueError) return jsonResponse({ error: "Could not check the schedule: " + dueError.message }, 500);
-    if (!ready || !ready.length) return jsonResponse({ message: "Nothing due", sent: 0 });
-    newsId = ready[0].id;
+    // First finish a digest that is going out over several days (mornings US time, so it does not land at night)
+    let pick: string | null = null;
+    if (new Date().getUTCHours() >= CONTINUE_FROM_UTC) {
+      const { data: going } = await supabaseClient.from("news").select("id").contains("tags", ["weekly-digest"])
+        .not("emailed_at", "is", null).is("email_done_at", null).order("emailed_at").limit(1);
+      pick = going?.[0]?.id ?? null;
+    }
+    if (!pick) {
+      const { data: ready, error: dueError } = await supabaseClient.from("news").select("id")
+        .eq("status", "pending").contains("tags", ["weekly-digest"]).is("emailed_at", null)
+        .lte("send_at", new Date().toISOString()).order("send_at").limit(1);
+      if (dueError) return jsonResponse({ error: "Could not check the schedule: " + dueError.message }, 500);
+      pick = ready?.[0]?.id ?? null;
+    }
+    if (!pick) return jsonResponse({ message: "Nothing due", sent: 0 });
+    newsId = pick;
   }
 
+  let started = false;   // this call is the first send of the digest
+  let row: Record<string, any> | null = null;
   if (newsId) {
-    // Claim the digest first (emailed_at is set only if still empty), so a double click or a
-    // retry can never email subscribers twice.
-    const { data: claimed, error: claimError } = await supabaseClient.from("news")
-      .update({ emailed_at: new Date().toISOString() })
-      .eq("id", newsId).is("emailed_at", null).contains("tags", ["weekly-digest"])
-      .select("id, title, body, email_subject, excerpt").maybeSingle();
-    if (claimError) return jsonResponse({ error: "Could not load digest: " + claimError.message }, 500);
-    if (!claimed) return jsonResponse({ error: "This digest was already emailed (or is not a weekly digest)." }, 409);
-    subject = (claimed.email_subject || claimed.title || "").trim();
-    html_content = (claimed.body || "").trim();
-    preheader = (claimed.excerpt || "").trim();
+    const { data: found, error: loadError } = await supabaseClient.from("news")
+      .select("id, title, body, email_subject, excerpt, status, emailed_at, emailed_count, email_done_at")
+      .eq("id", newsId).contains("tags", ["weekly-digest"]).maybeSingle();
+    if (loadError) return jsonResponse({ error: "Could not load digest: " + loadError.message }, 500);
+    row = found;
+    if (!row || row.email_done_at) return jsonResponse({ error: "This digest was already emailed (or is not a weekly digest)." }, 409);
+    if (row.emailed_at && !due) return jsonResponse({ error: "This digest is already going out; the rest follows automatically each day." }, 409);
+    if (!row.emailed_at) {
+      // Claim it first (emailed_at is set only if still empty), so a double click can never start it twice.
+      const { data: claimed } = await supabaseClient.from("news").update({ emailed_at: new Date().toISOString() })
+        .eq("id", newsId).is("emailed_at", null).select("id").maybeSingle();
+      if (!claimed) return jsonResponse({ error: "This digest was already emailed (or is not a weekly digest)." }, 409);
+      started = true;
+    }
+    subject = (row.email_subject || row.title || "").trim();
+    html_content = (row.body || "").trim();
+    preheader = (row.excerpt || "").trim();
     kicker = "Weekly digest \u00b7 " + subject.replace(/^.*?:\s*/, "");
   }
 
   if (!subject || !html_content) {
-    if (newsId) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
+    if (started) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
     return jsonResponse({ error: "Both 'subject' and 'html_content' are required" }, 400);
   }
 
   // ── Fetch confirmed subscribers ──
   const { data: subscribers, error: fetchError } = await supabaseClient
     .from("newsletter_subscribers")
-    .select("id, email, name, unsubscribe_token")
+    .select("id, email, name, unsubscribe_token, preferences")
     .eq("confirmed", true)
     .is("unsubscribed_at", null);
 
   if (fetchError) {
-    if (newsId) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
+    if (started) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
     return jsonResponse({ error: "Failed to fetch subscribers: " + fetchError.message }, 500);
   }
 
   if (!subscribers || subscribers.length === 0) {
-    if (newsId) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
+    if (started) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
     return jsonResponse({ message: "No confirmed subscribers found", sent: 0, failed: 0, total: 0 });
+  }
+
+  // ── Daily limit: everyone still waiting, people who signed up themselves first ──
+  let todo = subscribers;
+  if (newsId) {
+    const { data: done } = await supabaseClient.from("newsletter_deliveries").select("subscriber_id").eq("news_id", newsId).limit(20000);
+    const have = new Set((done || []).map((d: Record<string, string>) => d.subscriber_id));
+    const bulkAdded = (s: Record<string, any>) => (s.preferences?.batch ? 1 : 0);
+    todo = subscribers.filter((s) => !have.has(s.id)).sort((x, y) => bulkAdded(x) - bulkAdded(y));
+  }
+  const { data: granted, error: quotaError } = await supabaseClient.rpc("email_quota_take", { p_want: todo.length });
+  if (quotaError) {
+    if (started) await supabaseClient.from("news").update({ emailed_at: null }).eq("id", newsId);
+    return jsonResponse({ error: "Could not check the daily email limit: " + quotaError.message }, 500);
+  }
+  const allowed = Number(granted) || 0;
+  if (!newsId && allowed < todo.length) {
+    await supabaseClient.rpc("email_quota_note", { p_n: -allowed });
+    return jsonResponse({ error: `Only ${allowed} emails are left today, and this goes to ${todo.length} people. Use the weekly digest, which spreads over several days.` }, 429);
+  }
+  let list = todo.slice(0, allowed);
+  if (newsId && list.length) {
+    // Mark them before sending: even if two runs overlap, nobody gets the digest twice
+    const { data: mine } = await supabaseClient.from("newsletter_deliveries")
+      .upsert(list.map((s) => ({ news_id: newsId, subscriber_id: s.id })), { onConflict: "news_id,subscriber_id", ignoreDuplicates: true })
+      .select("subscriber_id");
+    const ids = new Set((mine || []).map((d: Record<string, string>) => d.subscriber_id));
+    const skipped = list.length - ids.size;
+    list = list.filter((s) => ids.has(s.id));
+    if (skipped) await supabaseClient.rpc("email_quota_note", { p_n: -skipped });
   }
 
   // ── Send in batches via Resend's batch endpoint (up to 100 emails per request) ──
@@ -179,8 +228,8 @@ serve(async (req: Request) => {
   let failed = 0;
   const errors: { email: string; error: string }[] = [];
 
-  for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
-    const batch = subscribers.slice(i, i + BATCH_SIZE);
+  for (let i = 0; i < list.length; i += BATCH_SIZE) {
+    const batch = list.slice(i, i + BATCH_SIZE);
     const payload = batch.map((subscriber) => ({
       from: FROM_ADDRESS, reply_to: REPLY_TO,
       to: [subscriber.email],
@@ -202,21 +251,28 @@ serve(async (req: Request) => {
       sent += batch.length;
     } catch (e) {
       failed += batch.length;
+      await supabaseClient.rpc("email_quota_note", { p_n: -batch.length });
+      if (newsId) await supabaseClient.from("newsletter_deliveries").delete().eq("news_id", newsId).in("subscriber_id", batch.map((s) => s.id));
       errors.push({ email: `${batch[0].email} (+${batch.length - 1} more)`, error: (e as Error).message });
     }
-    if (i + BATCH_SIZE < subscribers.length) await sleep(BATCH_DELAY_MS);
+    if (i + BATCH_SIZE < list.length) await sleep(BATCH_DELAY_MS);
   }
-  if (newsId) {
-    // Nothing went out: release the claim so the admin can try again. Otherwise publish it.
-    const done = sent === 0
-      ? { emailed_at: null }
-      : { emailed_count: sent, status: "published", published_at: new Date().toISOString() };
-    await supabaseClient.from("news").update(done).eq("id", newsId);
+  const remaining = todo.length - sent;
+  if (newsId && row) {
+    // First send failed outright: release the claim so the admin can try again. Published at the first
+    // success; finished once everyone has it. With no allowance left today it simply starts tomorrow.
+    const update: Record<string, unknown> = {};
+    if (sent === 0 && started && failed > 0) update.emailed_at = null;
+    if (sent > 0) update.emailed_count = (row.emailed_count || 0) + sent;
+    if (sent > 0 && row.status === "pending") { update.status = "published"; update.published_at = new Date().toISOString(); }
+    if (remaining === 0) update.email_done_at = new Date().toISOString();
+    if (Object.keys(update).length) await supabaseClient.from("news").update(update).eq("id", newsId);
   }
   return jsonResponse({
-    message: `Newsletter sent: ${sent} succeeded, ${failed} failed out of ${subscribers.length} subscribers`,
+    message: `Newsletter: ${sent} sent, ${failed} failed, ${remaining} waiting for the next days, of ${subscribers.length} subscribers`,
     sent,
     failed,
+    remaining,
     total: subscribers.length,
     errors: errors.length > 0 ? errors : undefined,
   });

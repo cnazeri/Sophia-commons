@@ -249,6 +249,7 @@ async function emailOwner(rows: Row[], organizer: string) {
       method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: FROM_ADDRESS, to: [OWNER_EMAIL], subject: `New event: ${first.title}`, html }),
     });
+    await createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!).rpc("email_quota_note", { p_n: 1 });   // the shared daily count
   } catch (_) { /* the event is saved; the note is best effort */ }
 }
 

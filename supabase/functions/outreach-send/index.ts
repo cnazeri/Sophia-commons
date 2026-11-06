@@ -2,6 +2,7 @@
 // Admin > Outreach sets status 'scheduled' and send_at; .github/workflows/outreach.yml calls this every hour
 // with the server key. Each run sends at most PER_RUN emails that are due, oldest first, from hello@ through
 // Resend, as plain text plus a simple HTML copy, and marks each row 'sent' or 'failed' (with the error).
+// The daily email limit (email_quota_take) comes first: what does not fit stays scheduled for the next run.
 // Deploy with --no-verify-jwt: only a server key is accepted (checked below), never a member's sign-in.
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -51,8 +52,12 @@ serve(async (req) => {
   const { data: unsub } = await db.from("newsletter_subscribers").select("email").not("unsubscribed_at", "is", null).limit(5000);
   const blocked = new Set((unsub || []).map((u: Row) => String(u.email).toLowerCase()));
 
+  const { data: granted, error: quotaError } = await db.rpc("email_quota_take", { p_want: (due || []).length });
+  if (quotaError) return out({ error: quotaError.message }, 500);
+  const allowed = Number(granted) || 0;
+
   let sent = 0, failed = 0, skipped = 0;
-  for (const { id } of (due || []) as Row[]) {
+  for (const { id } of ((due || []) as Row[]).slice(0, allowed)) {
     // Claim the row first, so two runs can never send the same email twice
     const { data: claimed } = await db.from("outreach_queue").update({ status: "sending" })
       .eq("id", id).eq("status", "scheduled").select("id, to_email, subject, body").maybeSingle();
@@ -78,5 +83,6 @@ serve(async (req) => {
       failed++;
     }
   }
-  return out({ ok: true, due: (due || []).length, sent, failed, skipped });
+  if (allowed > sent) await db.rpc("email_quota_note", { p_n: sent - allowed });   // give back what was not used
+  return out({ ok: true, due: (due || []).length, allowed, sent, failed, skipped });
 });

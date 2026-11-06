@@ -79,6 +79,7 @@ async function send(messages: Mail[]): Promise<number> {
       else console.error("resend", r.status, (await r.text()).slice(0, 200));
     } catch (e) { console.error("resend", String(e)); }
   }
+  if (sent) await createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!).rpc("email_quota_note", { p_n: sent });   // the shared daily count
   return sent;
 }
 
