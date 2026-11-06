@@ -3740,7 +3740,7 @@ var _sbMergedEventTitles = {};
 
 // Upcoming events: merged into calEvents (one sorted list, one count). A copy is kept in localStorage
 // so the home page can show events immediately on the next visit, before the network answers.
-var _EV_CACHE_KEY = 'sc_upcoming_events_v1';
+var _EV_CACHE_KEY = 'sc_upcoming_events_v2';   // v2 (2026-11-05): drop copies with an old event date
 var _cachedEventIds = [];
 var _EV_CACHE_FIELDS = ['id', 'title', 'description', 'event_type', 'start_date', 'end_date', 'is_all_day', 'location_name',
   'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name'];
@@ -5196,15 +5196,17 @@ function _featTag(ev) {
   return ev.date === _localDay(new Date()) ? t('home.today', 'Today') : t('home.coming_up', 'Coming up');
 }
 
+// No "Join on Zoom" button on the home page; a longer description and Read more instead (owner, 2026-11-05).
+// The join link stays on the event page.
+var FEAT_DESC_CHARS = 320;
 function _featBannerHtml(feat) {
-  var join = (feat.src || []).filter(function(x) { return /Join/.test(x[0]); })[0];
   return '<div class="feat-ev" data-id="' + esc(feat.id) + '">'
     + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(_imgSized(feat.img.src, 200)) + '" alt="" width="96" height="116">' : '')
     + '<div class="feat-ev-body"><div class="etag">' + esc(_featTag(feat)) + '</div>'
     + '<h5 aria-level="3"><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
     + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
-    + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(feat.desc, 160)) + '</p>' : '')
-    + (join ? '<a class="feat-ev-join" href="' + escUrl(join[1]) + '" target="_blank" rel="noopener">' + esc(/zoom/i.test(join[0]) ? t('events.join_zoom', 'Join on Zoom') : t('events.join_online', 'Join online')) + '</a>' : '')
+    + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(feat.desc, FEAT_DESC_CHARS)) + '</p>' : '')
+    + '<a class="feat-ev-more" href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(t('home.read_more', 'Read more')) + ' &rarr;</a>'
     + '</div></div>';
 }
 
@@ -6249,33 +6251,101 @@ async function loadAdminOutreach() {
   if (!el || !isAdmin() || !sbReady()) return;
   var status = (document.getElementById('outreach-filter') || {}).value || 'queued';
   el.innerHTML = '<div class="admin-empty">Loading...</div>';
-  var r = await _sb.from('outreach_queue').select('id, entry_id, to_email, organization, country, category, subject, body, batch, status, sent_at')
-    .eq('status', status).order('created_at', { ascending: true }).limit(500);
+  var q = _sb.from('outreach_queue').select('id, entry_id, to_email, organization, country, category, subject, body, batch, status, sent_at, send_at, last_error')
+    .eq('status', status);
+  q = status === 'scheduled' ? q.order('send_at', { ascending: true }) : q.order('created_at', { ascending: true });
+  var r = await q.limit(500);
   if (r.error) { el.innerHTML = '<div class="admin-empty">Could not load: ' + esc(r.error.message) + '</div>'; return; }
   _outreachRows = r.data || [];
   if (!_outreachRows.length) { el.innerHTML = '<div class="admin-empty">Nothing ' + esc(status) + '.</div>'; return; }
-  el.innerHTML = '<div class="adm-note">' + _outreachRows.length + ' ' + esc(status) + '</div>' + _outreachRows.map(function (o, i) {
+  var when = function (iso) { return new Date(iso).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); };
+  el.innerHTML = '<div class="adm-note">' + _outreachRows.length + ' ' + esc(status) + '</div>'
+    + (status === 'queued' ? _outreachBulkHtml(_outreachRows.length) : '')
+    + _outreachRows.map(function (o, i) {
     var gmail = 'https://mail.google.com/mail/?authuser=' + encodeURIComponent(OUTREACH_GMAIL) + '&view=cm&fs=1&to=' + encodeURIComponent(o.to_email)
       + '&su=' + encodeURIComponent(o.subject) + '&body=' + encodeURIComponent(o.body);
+    var acts;
+    if (o.status === 'queued') {
+      acts = '<label class="adm-post-meta">Send at <input type="datetime-local" id="ob-at-' + i + '" value="' + _outreachDefaultAt(i) + '"></label> '
+        + '<button type="button" class="adm-btn" onclick="scheduleOutreach(' + i + ')">Approve and schedule</button> '
+        + '<a class="adm-btn" href="' + escUrl(gmail) + '" target="_blank" rel="noopener">Open in Gmail</a> '
+        + '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'sent\')">Mark sent</button> '
+        + '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'skipped\')">Skip</button>';
+    } else if (o.status === 'scheduled') {
+      acts = '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'queued\')">Unschedule</button>';
+    } else {
+      acts = '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'queued\')">Back to queue</button>';
+    }
     return '<div class="adm-post outreach-row">'
-      + '<div><strong>' + esc(o.organization || o.to_email) + '</strong> <span class="adm-post-meta">' + esc([o.country, o.category, o.batch].filter(Boolean).join(' \u00b7 ')) + '</span></div>'
-      + '<div class="adm-post-meta">' + esc(o.to_email) + (o.sent_at ? ' \u00b7 sent ' + esc(new Date(o.sent_at).toLocaleDateString()) : '') + '</div>'
-      + '<details><summary>' + esc(o.subject) + '</summary><p>' + esc(o.body) + '</p></details>'
-      + '<div class="adm-post-acts">'
-      + (o.status === 'queued'
-        ? '<a class="adm-btn" href="' + escUrl(gmail) + '" target="_blank" rel="noopener">Open in Gmail</a> '
-          + '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'sent\')">Mark sent</button> '
-          + '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'skipped\')">Skip</button>'
-        : '<button type="button" class="adm-btn" onclick="setOutreachStatus(' + i + ', \'queued\')">Back to queue</button>')
+      + '<div><strong>' + esc(o.organization || o.to_email) + '</strong> <span class="adm-post-meta">' + esc([o.country, o.category, o.batch].filter(Boolean).join(' · ')) + '</span></div>'
+      + '<div class="adm-post-meta">' + esc(o.to_email)
+        + (o.status === 'scheduled' && o.send_at ? ' · sends ' + esc(when(o.send_at)) : '')
+        + (o.sent_at ? ' · sent ' + esc(new Date(o.sent_at).toLocaleDateString()) : '')
+        + (o.last_error ? ' · ' + esc(o.last_error) : '') + '</div>'
+      + '<details><summary>' + esc(o.subject) + '</summary><p style="white-space:pre-wrap">' + esc(o.body) + '</p></details>'
+      + '<div class="adm-post-acts">' + acts
       + (o.entry_id ? ' <a class="adm-btn" href="/listing/' + esc(o.entry_id) + '" target="_blank" rel="noopener">View listing</a>' : '')
       + '</div></div>';
   }).join('');
 }
 
+// Default send time for one row: tomorrow 10:00 local time (the owner can change it)
+function _outreachDefaultAt() {
+  var d = new Date(Date.now() + 864e5); d.setHours(10, 0, 0, 0);
+  var p = function (n) { return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T10:00';
+}
+
+// "Schedule all": spread every queued email over working days, N a day between 10:00 and 16:00 local time
+function _outreachBulkHtml(n) {
+  var d = new Date(Date.now() + 864e5), p = function (x) { return (x < 10 ? '0' : '') + x; };
+  return '<div class="adm-post outreach-bulk"><strong>Schedule all ' + n + ' queued</strong> '
+    + '<label class="adm-post-meta">starting <input type="date" id="ob-start" value="' + d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + '"></label> '
+    + '<label class="adm-post-meta"><select id="ob-perday">' + [5, 10, 15, 20, 30].map(function (x) { return '<option' + (x === 20 ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select> a day</label> '
+    + '<label class="adm-post-meta"><input type="checkbox" id="ob-weekdays" checked> weekdays only</label> '
+    + '<button type="button" class="adm-btn" onclick="scheduleAllOutreach()">Approve and schedule all</button>'
+    + '<div class="adm-post-meta" id="ob-status" role="status"></div></div>';
+}
+
+async function scheduleOutreach(i) {
+  var o = _outreachRows[i], v = (document.getElementById('ob-at-' + i) || {}).value;
+  if (!o || !v) return;
+  var at = new Date(v);
+  if (isNaN(at) || at.getTime() < Date.now() - 6e4) { scNotify('Please pick a time in the future.'); return; }
+  var r = await _sb.from('outreach_queue').update({ status: 'scheduled', send_at: at.toISOString(), approved_at: new Date().toISOString(), last_error: null })
+    .eq('id', o.id).eq('status', 'queued');
+  if (r.error) { scNotify('Could not schedule: ' + r.error.message); return; }
+  scNotify('Scheduled for ' + at.toLocaleString());
+  loadAdminOutreach();
+  checkAdminPendingCounts();
+}
+
+async function scheduleAllOutreach() {
+  var start = (document.getElementById('ob-start') || {}).value, per = parseInt((document.getElementById('ob-perday') || {}).value, 10) || 20;
+  var weekdays = (document.getElementById('ob-weekdays') || {}).checked, st = document.getElementById('ob-status');
+  if (!start || !_outreachRows.length) return;
+  if (!confirm('Approve all ' + _outreachRows.length + ' queued emails to send from hello@sophiacommons.org, ' + per + ' a day from ' + start + '?')) return;
+  var day = new Date(start + 'T00:00:00'), done = 0, slot = 0, gap = Math.floor(6 * 60 / per);   // minutes between emails in the 10:00 to 16:00 window
+  for (var i = 0; i < _outreachRows.length; i++) {
+    while (weekdays && (day.getDay() === 0 || day.getDay() === 6)) day = new Date(day.getTime() + 864e5);
+    var at = new Date(day.getTime()); at.setHours(10, 0, 0, 0); at = new Date(at.getTime() + slot * gap * 6e4);
+    var r = await _sb.from('outreach_queue').update({ status: 'scheduled', send_at: at.toISOString(), approved_at: new Date().toISOString(), last_error: null })
+      .eq('id', _outreachRows[i].id).eq('status', 'queued');
+    if (!r.error) done++;
+    if (st) st.textContent = 'Scheduled ' + done + ' of ' + _outreachRows.length + '...';
+    if (++slot >= per) { slot = 0; day = new Date(day.getTime() + 864e5); }
+  }
+  scNotify('Scheduled ' + done + ' emails.');
+  loadAdminOutreach();
+  checkAdminPendingCounts();
+}
+
 async function setOutreachStatus(i, status) {
   var o = _outreachRows[i];
   if (!o) return;
-  var r = await _sb.from('outreach_queue').update({ status: status, sent_at: status === 'sent' ? new Date().toISOString() : null }).eq('id', o.id);
+  var fields = { status: status, sent_at: status === 'sent' ? new Date().toISOString() : null };
+  if (status === 'queued') { fields.send_at = null; fields.approved_at = null; }
+  var r = await _sb.from('outreach_queue').update(fields).eq('id', o.id);
   if (r.error) { scNotify('Could not update: ' + r.error.message); return; }
   loadAdminOutreach();
   checkAdminPendingCounts();

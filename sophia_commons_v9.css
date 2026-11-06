@@ -4202,3 +4202,7 @@ body.ev-focus #center { width: 100%; max-width: 1040px; margin: 0 auto; padding-
 /* Listing trail: Directory > Country > City (owner, 2026-11-05) */
 .listing-trail { font-size: 14px; color: var(--text-secondary); margin: 0 0 12px; }
 .listing-trail a { color: var(--gold-text); display: inline-block; padding: 10px 2px; }
+
+/* Home featured event: Read more link instead of the Join button (owner, 2026-11-05) */
+.feat-ev-more { display: inline-block; padding: 10px 0; min-height: 44px; box-sizing: border-box; font-size: 13px; font-weight: 700; color: var(--gold-text); text-decoration: none; }
+.feat-ev-more:hover { text-decoration: underline; }

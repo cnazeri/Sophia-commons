@@ -589,7 +589,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.114.0",
+  "footer.version": "v1.115.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1346,5 +1346,6 @@
   "place.all_events": "Все мероприятия",
   "home.happening_now_in": "Сейчас идёт: {region}",
   "detail.trail": "Где это",
-  "detail.trail_directory": "Каталог"
+  "detail.trail_directory": "Каталог",
+  "home.read_more": "Подробнее"
 }

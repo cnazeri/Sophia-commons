@@ -593,7 +593,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.114.0",
+  "footer.version": "v1.115.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -1285,5 +1285,6 @@
   "place.all_events": "All events",
   "home.happening_now_in": "Happening now in {region}",
   "detail.trail": "Where this is",
-  "detail.trail_directory": "Directory"
+  "detail.trail_directory": "Directory",
+  "home.read_more": "Read more"
 }

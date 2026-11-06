@@ -1,0 +1,23 @@
+name: Scheduled outreach emails
+
+on:
+  schedule:
+    - cron: "7 * * * *"          # every hour at :07; sends only what the owner approved and is due
+  workflow_dispatch:             # "Run workflow" button in the Actions tab
+
+permissions: {}
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send approved outreach emails that are due (at most 8 per run)
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.DIGEST_CRON_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          code=$(curl -s -o out.json -w "%{http_code}" -X POST "$URL/functions/v1/outreach-send" \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{}')
+          cat out.json; echo
+          [ "$code" = "200" ] || { echo "outreach-send returned HTTP $code"; exit 1; }

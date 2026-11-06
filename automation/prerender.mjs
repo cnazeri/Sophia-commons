@@ -268,11 +268,12 @@ if (feat) {
   const img = feat.image_url && feat.image_url.includes('/storage/v1/object/public/')
     ? feat.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + '?width=200&quality=72&resize=contain' : feat.image_url;
   const when = new Date(feat.start_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Los_Angeles' });
-  const join = feat.online_url ? `<a class="feat-ev-join" href="${attr(feat.online_url)}" target="_blank" rel="noopener">${/zoom\./i.test(feat.online_url) ? 'Join on Zoom' : 'Join online'}</a>` : '';
+  // Same as the app's _featBannerHtml: longer description and Read more, no Join button (owner, 2026-11-05)
+  const more = `<a class="feat-ev-more" href="/event/${attr(feat.id)}">Read more &rarr;</a>`;
   const banner = `<div class="feat-ev" data-id="${attr(feat.id)}">`
     + (img ? `<img class="feat-ev-img" src="${attr(img)}" alt="" width="96" height="116" fetchpriority="high">` : '')
     + `<div class="feat-ev-body"><div class="etag">${feat.featured ? 'Featured event' : laDay(feat.start_date) === todayLA ? 'Today' : 'Coming up'}</div><h5 aria-level="3"><a href="/event/${attr(feat.id)}">${esc(feat.title)}</a></h5>`
-    + `<div class="emeta">${esc(when)}</div>` + (feat.description ? `<p class="feat-ev-desc">${esc(short(feat.description, 160))}</p>` : '') + join + '</div></div>';
+    + `<div class="emeta">${esc(when)}</div>` + (feat.description ? `<p class="feat-ev-desc">${esc(short(feat.description, 320))}</p>` : '') + more + '</div></div>';
   const homeFile = path.join(OUT, 'index.html');
   const home = fs.readFileSync(homeFile, 'utf8');
   const placeholder = /(<div class="listblock-body" id="home-upcoming"[^>]*>)\s*<div class="empty-note">[^<]*<\/div>/;
