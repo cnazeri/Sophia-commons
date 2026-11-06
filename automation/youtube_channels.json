@@ -1583,6 +1583,204 @@
       "description": "Talks on community-building in American history from an anthroposophical view, and the history of the Threefold Farm in Chestnut Ridge, NY.",
       "verified": false,
       "added_from": "owner request 2026-11-04"
+    },
+    {
+      "slug": "biodynamic-farming-2",
+      "name": "BIODYNAMIC FARMING",
+      "url": "https://www.youtube.com/channel/UCW_Ww8YamLtfUVZT5D7IlpQ",
+      "channel_id": "UCW_Ww8YamLtfUVZT5D7IlpQ",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "biodynamisk-forening",
+      "name": "Biodynamisk Forening",
+      "url": "https://www.youtube.com/channel/UCrQVS6bed9TkuPZKdUJe78w",
+      "channel_id": "UCrQVS6bed9TkuPZKdUJe78w",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "biose-organic-biodynamic-farm",
+      "name": "BIOSE | Organic & Biodynamic Farm",
+      "url": "https://www.youtube.com/channel/UCLtElh3tCJGo1hmc8OKnCjw",
+      "channel_id": "UCLtElh3tCJGo1hmc8OKnCjw",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "heart-of-mervin-kinesiology-eurythmy",
+      "name": "Heart of Mervin | Kinesiology & Eurythmy",
+      "url": "https://www.youtube.com/channel/UCd_ixw1jYjGUJyKjghY7Wng",
+      "channel_id": "UCd_ixw1jYjGUJyKjghY7Wng",
+      "language": null,
+      "category": "eurythmy",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "auriel-eurythmy",
+      "name": "Auriel-Eurythmy",
+      "url": "https://www.youtube.com/channel/UCVtoXy0yzeQTV4IhVxuyB5g",
+      "channel_id": "UCVtoXy0yzeQTV4IhVxuyB5g",
+      "language": null,
+      "category": "eurythmy",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "eurythmy-global",
+      "name": "Eurythmy Global",
+      "url": "https://www.youtube.com/channel/UCR_nze4xD7YJzoLyNm95Y4A",
+      "channel_id": "UCR_nze4xD7YJzoLyNm95Y4A",
+      "language": null,
+      "category": "eurythmy",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "eurythmy-wear",
+      "name": "Eurythmy Wear",
+      "url": "https://www.youtube.com/channel/UCv2bAHmwHiB20aI_T48-aJg",
+      "channel_id": "UCv2bAHmwHiB20aI_T48-aJg",
+      "language": null,
+      "category": "eurythmy",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "eurythmy-academy-of-ukraine",
+      "name": "Eurythmy Academy of Ukraine",
+      "url": "https://www.youtube.com/channel/UC9QW8pGQ76jd4LrDtLKtOTQ",
+      "channel_id": "UC9QW8pGQ76jd4LrDtLKtOTQ",
+      "language": null,
+      "category": "eurythmy",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "camphillkimberton",
+      "name": "CamphillKimberton",
+      "url": "https://www.youtube.com/channel/UCarpHDGy4MwL5d7JQMopSrA",
+      "channel_id": "UCarpHDGy4MwL5d7JQMopSrA",
+      "language": null,
+      "category": "camphill",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "webinar-on-biodynamic-calender-coh-bidar",
+      "name": "Webinar on Biodynamic Calender COH,Bidar",
+      "url": "https://www.youtube.com/channel/UCvPHHiBvigXBI5edGjspSNg",
+      "channel_id": "UCvPHHiBvigXBI5edGjspSNg",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "waldorf-handwork",
+      "name": "Waldorf Handwork",
+      "url": "https://www.youtube.com/channel/UCa3R-fh3wODMuzHwTOV7cJA",
+      "channel_id": "UCa3R-fh3wODMuzHwTOV7cJA",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "andrew-linnell",
+      "name": "Andrew Linnell",
+      "url": "https://www.youtube.com/channel/UCfeSTtYkkixoT4UoULJv2pw",
+      "channel_id": "UCfeSTtYkkixoT4UoULJv2pw",
+      "language": null,
+      "category": "other",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "rudolf-steiner-das-gesamtwerk",
+      "name": "Rudolf Steiner - Das Gesamtwerk",
+      "url": "https://www.youtube.com/channel/UCum_6s6bEGD6Ij6yjT1KPDA",
+      "channel_id": "UCum_6s6bEGD6Ij6yjT1KPDA",
+      "language": null,
+      "category": "steiner-lectures",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "gr-nes-goetheanum",
+      "name": "Grünes Goetheanum",
+      "url": "https://www.youtube.com/channel/UCSj9MCpMU-rqbw6CVVRDQEA",
+      "channel_id": "UCSj9MCpMU-rqbw6CVVRDQEA",
+      "language": null,
+      "category": "goetheanum",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "nairobi-waldorf-school-trust",
+      "name": "Nairobi Waldorf School Trust",
+      "url": "https://www.youtube.com/channel/UC__NuQ6BsQQ4LfG0DVfbSmA",
+      "channel_id": "UC__NuQ6BsQQ4LfG0DVfbSmA",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "rudolf-steiner-centar",
+      "name": "Rudolf Steiner Centar",
+      "url": "https://www.youtube.com/channel/UCUt2b8ltu6hGKdHRpoYFodw",
+      "channel_id": "UCUt2b8ltu6hGKdHRpoYFodw",
+      "language": null,
+      "category": "steiner-lectures",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "rudolf-steiner-filosofo",
+      "name": "Rudolf Steiner Filosofo",
+      "url": "https://www.youtube.com/channel/UCd3iv9tJmsEQB361JPrfsFg",
+      "channel_id": "UCd3iv9tJmsEQB361JPrfsFg",
+      "language": null,
+      "category": "steiner-lectures",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "rudolf-steiner-modern-erz-hlt",
+      "name": "Rudolf Steiner modern erzählt",
+      "url": "https://www.youtube.com/channel/UC9VculL9qwtKmlF-jF7J3EA",
+      "channel_id": "UC9VculL9qwtKmlF-jF7J3EA",
+      "language": null,
+      "category": "steiner-lectures",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }
