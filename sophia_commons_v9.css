@@ -4206,3 +4206,24 @@ body.ev-focus #center { width: 100%; max-width: 1040px; margin: 0 auto; padding-
 /* Home featured event: Read more link instead of the Join button (owner, 2026-11-05) */
 .feat-ev-more { display: inline-block; padding: 10px 0; min-height: 44px; box-sizing: border-box; font-size: 13px; font-weight: 700; color: var(--gold-text); text-decoration: none; }
 .feat-ev-more:hover { text-decoration: underline; }
+
+/* Calendar day view fills the page (owner, 2026-11-06: the 340px popup was too narrow) */
+.day-popup { width: calc(100vw - 48px); max-width: 1200px; height: calc(100dvh - 48px); max-height: none; box-sizing: border-box; padding: 32px; }
+.day-popup h4 { font-size: 24px; }
+.day-popup .dp-event { padding: 20px 0; }
+.day-popup .dp-event.has-img { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+.day-popup .dp-event h5 { font-size: 19px; }
+.day-popup .dp-desc { font-size: 15px; line-height: 1.6; max-width: 75ch; }
+.day-popup .dp-img { margin: 0; }
+@media (max-width: 760px) {
+  .day-popup { width: 100vw; height: 100dvh; border-radius: 0; padding: 20px 16px; }
+  .day-popup .dp-event.has-img { display: block; }
+  .day-popup .dp-img { margin: 0 0 10px; }
+}
+
+/* Weekly digest: send later (owner, 2026-11-06) */
+.digest-schedule { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 10px 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-size: 14px; }
+.digest-schedule label { display: inline-flex; align-items: center; gap: 6px; }
+.digest-schedule select { max-width: 260px; }
+.digest-schedule.is-set { border-color: var(--gold); }
+.digest-schedule .digest-note-label { flex-basis: 100%; margin: 0; }

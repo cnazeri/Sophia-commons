@@ -1,0 +1,23 @@
+name: Scheduled weekly digest
+
+on:
+  schedule:
+    - cron: "2,17,32,47 * * * *"   # every 15 minutes; emails a digest only when the owner set a time and it has come
+  workflow_dispatch:               # "Run workflow" button in the Actions tab
+
+permissions: {}
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Email the approved weekly digest if its send time has come
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.DIGEST_CRON_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          code=$(curl -s -o out.json -w "%{http_code}" -X POST "$URL/functions/v1/send-newsletter" \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{"due":true}')
+          cat out.json; echo
+          [ "$code" = "200" ] || { echo "send-newsletter returned HTTP $code"; exit 1; }

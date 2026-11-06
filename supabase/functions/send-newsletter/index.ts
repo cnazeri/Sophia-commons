@@ -3,7 +3,9 @@
 //  POST /functions/v1/send-newsletter
 //  Body: { subject: string, html_content: string }
 //     or { news_id: uuid }  (an approved weekly digest draft: sent once, then published)
-//  Auth: Bearer token (admin users only)
+//     or { due: true }     (server key only: emails a digest whose scheduled send_at has passed)
+//  Auth: Bearer token (admin users only), or a server key for { due: true }
+//  Deploy with --no-verify-jwt: the server key is not a JWT. The checks below still admit only the two callers.
 // ══════════════════════════════════════════
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -18,6 +20,22 @@ function serviceKey(): string {
     if (keys.default) return keys.default;
   } catch (_) { /* fall through */ }
   return Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+}
+
+// Every server key that may run the scheduled send (as event-signup-manage)
+function serverKeys(): string[] {
+  const keys: string[] = [];
+  try {
+    for (const v of Object.values(JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}"))) if (typeof v === "string" && v) keys.push(v);
+  } catch (_) { /* none */ }
+  for (const n of ["SUPABASE_SERVICE_ROLE_KEY", "DIGEST_CRON_KEY"]) { const v = Deno.env.get(n); if (v) keys.push(v); }
+  return keys;
+}
+function same(a: string, b: string) {
+  if (a.length !== b.length) return false;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
 }
 
 const ADMIN_EMAILS = ["cameron.nazeri@gmail.com", "cameron@sophiacommons.org", "admin@sophiacommons.org"];  // keep in sync with sophia_commons_v9.js; prefer app_metadata.role
@@ -68,20 +86,24 @@ serve(async (req: Request) => {
     return jsonResponse({ error: "RESEND_API_KEY not configured" }, 500);
   }
 
-  // Verify the caller is an authenticated admin
+  // Verify the caller is the scheduler (server key) or an authenticated admin
   const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
   const token = authHeader.replace("Bearer ", "");
-  const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+  const isServer = serverKeys().some((k) => same(token, k));
 
-  if (authError || !user) {
-    return jsonResponse({ error: "Invalid or expired token" }, 401);
-  }
+  if (!isServer) {
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
 
-  // Admin = app_metadata.role "admin" only (same rule as the database RLS). Users cannot set
-  // app_metadata themselves; an email address alone is not proof, since sign-ups can be auto-confirmed.
-  const isRoleAdmin = user.app_metadata?.role === "admin";
-  if (!isRoleAdmin) {
-    return jsonResponse({ error: "Forbidden: admin access required" }, 403);
+    if (authError || !user) {
+      return jsonResponse({ error: "Invalid or expired token" }, 401);
+    }
+
+    // Admin = app_metadata.role "admin" only (same rule as the database RLS). Users cannot set
+    // app_metadata themselves; an email address alone is not proof, since sign-ups can be auto-confirmed.
+    const isRoleAdmin = user.app_metadata?.role === "admin";
+    if (!isRoleAdmin) {
+      return jsonResponse({ error: "Forbidden: admin access required" }, 403);
+    }
   }
 
   // ── Parse request body ──
@@ -90,14 +112,27 @@ serve(async (req: Request) => {
   let newsId: string | null = null;
   let preheader = "";
   let kicker = "";
+  let due = false;
 
   try {
     const body = await req.json();
     subject = body.subject?.trim();
     html_content = body.html_content?.trim();
     newsId = typeof body.news_id === "string" ? body.news_id : null;
+    due = body.due === true;
   } catch {
     return jsonResponse({ error: "Invalid JSON body" }, 400);
+  }
+
+  // The server key can only run the scheduled send, and the scheduled send only runs with it
+  if (isServer !== due) return jsonResponse({ error: "Forbidden" }, 403);
+  if (due) {
+    const { data: ready, error: dueError } = await supabaseClient.from("news").select("id")
+      .eq("status", "pending").contains("tags", ["weekly-digest"]).is("emailed_at", null)
+      .lte("send_at", new Date().toISOString()).order("send_at").limit(1);
+    if (dueError) return jsonResponse({ error: "Could not check the schedule: " + dueError.message }, 500);
+    if (!ready || !ready.length) return jsonResponse({ message: "Nothing due", sent: 0 });
+    newsId = ready[0].id;
   }
 
   if (newsId) {

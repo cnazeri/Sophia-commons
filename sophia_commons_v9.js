@@ -3740,7 +3740,7 @@ var _sbMergedEventTitles = {};
 
 // Upcoming events: merged into calEvents (one sorted list, one count). A copy is kept in localStorage
 // so the home page can show events immediately on the next visit, before the network answers.
-var _EV_CACHE_KEY = 'sc_upcoming_events_v2';   // v2 (2026-11-05): drop copies with an old event date
+var _EV_CACHE_KEY = 'sc_upcoming_events_v3';   // raise the number to drop visitors' saved copies after an event is fixed
 var _cachedEventIds = [];
 var _EV_CACHE_FIELDS = ['id', 'title', 'description', 'event_type', 'start_date', 'end_date', 'is_all_day', 'location_name',
   'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name'];
@@ -4590,6 +4590,7 @@ function closeDayPopup(restore) {
   _dpReturnFocus = null;
 }
 
+var DP_DESC_CHARS = 800;
 function showDayEvents(dateStr, trigger) {
   var dayEvs = calEvents.filter(function(e) { return e.date === dateStr; });
   var label = localDate(dateStr, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -4614,8 +4615,9 @@ function showDayEvents(dateStr, trigger) {
   dayEvs.forEach(function(ev) {
     var dpMeta = _evMeta(ev);
     var dpTitle = ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="closeDayPopup(false);showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title);
-    html += '<div class="dp-event">' + _evImageHtml(ev) + '<h5>' + dpTitle + '</h5>' + (dpMeta ? '<div class="dp-meta">' + dpMeta + '</div>' : '')
-      + (ev.desc ? '<p class="dp-desc">' + _linkify(esc(_shortText(ev.desc, 320))) + '</p>' : '') + _evSourcesHtml(ev) + '</div>';
+    // The day view fills the page, picture beside the text (owner, 2026-11-06)
+    html += '<div class="dp-event' + (ev.img ? ' has-img' : '') + '">' + _evImageHtml(ev) + '<div class="dp-text"><h5>' + dpTitle + '</h5>' + (dpMeta ? '<div class="dp-meta">' + dpMeta + '</div>' : '')
+      + (ev.desc ? '<p class="dp-desc">' + _linkify(esc(_shortText(ev.desc, DP_DESC_CHARS))) + '</p>' : '') + _evSourcesHtml(ev) + '</div></div>';
   });
   popup.innerHTML = html;
   document.body.appendChild(popup);
@@ -8107,11 +8109,74 @@ async function saveDigestNote(id) {
   } catch (e) { _digestStatus('Error: ' + (e.message || 'could not save the note'), 'var(--error,#c0392b)'); }
 }
 
+// ── Send later: date, time and time zone for a draft (owner, 2026-11-06) ──
+// Saved on the draft (news.send_at, send_tz). A timer checks every 15 minutes and emails it then, as it reads
+// at that moment, so the note and draft can still be changed until it goes.
+var DIGEST_TZ_KEY = 'sc_digest_tz';
+
+// The moment (UTC) when a wall clock in a time zone shows this date and time
+function _zoneToUtc(day, time, tz) {
+  var wanted = new Date(day + 'T' + time + ':00Z').getTime(), guess = wanted;
+  for (var i = 0; i < 3; i++) {
+    var w = _orgInZone(new Date(guess).toISOString(), tz);
+    guess += wanted - new Date(w.day + 'T' + w.time + ':00Z').getTime();
+  }
+  return new Date(guess);
+}
+
+function _digestScheduleHtml(d) {
+  var id = esc(d.id), jsId = escJs(d.id);
+  if (d.send_at) {
+    var tz = d.send_tz || _orgZone();
+    var when = new Date(d.send_at).toLocaleString('en-US', { timeZone: tz, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    return '<div class="digest-schedule is-set"><strong>Scheduled: ' + esc(when) + '</strong> <span>(' + esc(tz.replace(/_/g, ' ')) + ')</span> '
+      + '<button class="admin-btn" onclick="cancelDigestSchedule(\'' + jsId + '\')">Cancel schedule</button>'
+      + '<div class="digest-note-label">It goes out as the draft reads at that time, within about 15 minutes.</div></div>';
+  }
+  var tzNow = _orgZone();
+  try { tzNow = localStorage.getItem(DIGEST_TZ_KEY) || tzNow; } catch (e) {}
+  var t0 = new Date(Date.now() + 864e5), p = function (n) { return (n < 10 ? '0' : '') + n; };
+  return '<div class="digest-schedule"><strong>Send later</strong> '
+    + '<label>Date <input type="date" id="ds-day-' + id + '" value="' + t0.getFullYear() + '-' + p(t0.getMonth() + 1) + '-' + p(t0.getDate()) + '"></label> '
+    + '<label>Time <input type="time" id="ds-time-' + id + '" value="08:00"></label> '
+    + '<label>Time zone <select id="ds-tz-' + id + '">' + _evfZoneOptions(tzNow) + '</select></label> '
+    + '<button class="admin-btn admin-btn-approve" onclick="scheduleDigest(\'' + jsId + '\')">Approve &amp; schedule</button></div>';
+}
+
+async function scheduleDigest(id) {
+  if (!isAdmin()) return;
+  var v = function (k) { var el = document.getElementById('ds-' + k + '-' + id); return el ? el.value : ''; };
+  var day = v('day'), time = v('time'), tz = v('tz');
+  if (!day || !time || !tz) { _digestStatus('Please pick the date, time and time zone.', 'var(--error,#c0392b)'); return; }
+  var at = _zoneToUtc(day, time, tz);
+  if (isNaN(at) || at.getTime() < Date.now()) { _digestStatus('That time has already passed. Please pick a later one.', 'var(--error,#c0392b)'); return; }
+  await loadNewsletterSubscriberCount();
+  var label = at.toLocaleString('en-US', { timeZone: tz, weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+  if (!confirm('Email this digest to ' + _newsletterSubscriberCount + ' subscriber(s) on ' + label + ', and publish it on the News page then?')) return;
+  try {
+    var r = await _sb.from('news').update({ send_at: at.toISOString(), send_tz: tz }).eq('id', id).eq('status', 'pending').is('emailed_at', null);
+    if (r.error) throw r.error;
+    try { localStorage.setItem(DIGEST_TZ_KEY, tz); } catch (e) {}
+    _digestStatus('Scheduled for ' + label + '.', 'var(--success,#27ae60)');
+    loadDigestDrafts();
+  } catch (e) { _digestStatus('Error: ' + (e.message || 'could not schedule'), 'var(--error,#c0392b)'); }
+}
+
+async function cancelDigestSchedule(id) {
+  if (!isAdmin()) return;
+  try {
+    var r = await _sb.from('news').update({ send_at: null, send_tz: null }).eq('id', id).eq('status', 'pending').is('emailed_at', null);
+    if (r.error) throw r.error;
+    _digestStatus('Schedule cancelled. Nothing will go out until you approve it again.', 'var(--gold-text)');
+    loadDigestDrafts();
+  } catch (e) { _digestStatus('Error: ' + (e.message || 'could not cancel'), 'var(--error,#c0392b)'); }
+}
+
 async function loadDigestDrafts() {
   var el = document.getElementById('digest-drafts');
   if (!el || !sbReady()) return;
   try {
-    var r = await _sb.from('news').select('id, title, body, excerpt, created_at')
+    var r = await _sb.from('news').select('id, title, body, excerpt, created_at, send_at, send_tz')
       .eq('status', 'pending').contains('tags', ['weekly-digest'])
       .order('created_at', { ascending: false }).limit(5);
     if (r.error || !r.data || !r.data.length) {
@@ -8128,8 +8193,9 @@ async function loadDigestDrafts() {
         + '<textarea class="digest-note" id="dn-' + esc(d.id) + '" rows="5">' + esc(_digestNoteText(d.body || '')) + '</textarea>'
         + '<div class="digest-draft-actions"><button class="admin-btn" onclick="saveDigestNote(\'' + id + '\')">Save note</button></div>'
         + '<details><summary>Preview the email</summary>' + _digestFrame(d.body || '') + '</details>'
+        + _digestScheduleHtml(d)
         + '<div class="digest-draft-actions">'
-        + '<button class="admin-btn admin-btn-approve" onclick="approveDigest(\'' + id + '\', true)">Approve &amp; email</button>'
+        + '<button class="admin-btn admin-btn-approve" onclick="approveDigest(\'' + id + '\', true)">Approve &amp; email now</button>'
         + '<button class="admin-btn" onclick="approveDigest(\'' + id + '\', false)">Publish only</button>'
         + '<button class="admin-btn admin-btn-reject" onclick="deleteDigest(\'' + id + '\')">Delete</button>'
         + '</div></div>';
