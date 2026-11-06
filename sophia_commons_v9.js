@@ -5056,7 +5056,7 @@ function renderHomeNear(slides) {
     : t('home.near_heading', 'Near you: {place}').replace('{place}', place);
   box.innerHTML = '<h4 class="home-ev-sub" aria-level="3">' + esc(label)
     + ' <button type="button" class="near-change" aria-expanded="false" onclick="toggleNearPicker(this)">' + esc(t('home.near_change', 'change')) + '</button></h4>'
-    + '<div class="home-ev-rows">' + nowRows.map(function (e) { return _homeEvRow(e, true); }).join('') + rows.map(function (e) { return _homeEvRow(e); }).join('') + '</div>';
+    + '<div class="home-ev-rows">' + nowRows.map(function (e) { return _homeEvRow(e, true); }).concat(rows.map(function (e) { return _homeEvRow(e); })).slice(0, NEAR_MAX).join('') + '</div>';   // one row of three (owner, 2026-11-06)
 }
 
 function toggleNearPicker(btn) {
