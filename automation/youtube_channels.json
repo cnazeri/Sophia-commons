@@ -1781,6 +1781,50 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "rudolf-steiner-topic",
+      "name": "Rudolf Steiner - Topic",
+      "url": "https://www.youtube.com/channel/UCRzsVfsWxOWcMN-GFZlGX2w",
+      "channel_id": "UCRzsVfsWxOWcMN-GFZlGX2w",
+      "language": null,
+      "category": "steiner-lectures",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "michael-mount-waldorf-school",
+      "name": "Michael Mount Waldorf School",
+      "url": "https://www.youtube.com/channel/UCDhkf33o4N_JmB55_y1Iztw",
+      "channel_id": "UCDhkf33o4N_JmB55_y1Iztw",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "waldorf-school-of-dupage",
+      "name": "Waldorf School of DuPage",
+      "url": "https://www.youtube.com/channel/UCfT0Or8k3HsbM5bX3Xrr35Q",
+      "channel_id": "UCfT0Or8k3HsbM5bX3Xrr35Q",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "mouvement-de-l-agriculture-biodynamique",
+      "name": "Mouvement de l'Agriculture Biodynamique",
+      "url": "https://www.youtube.com/channel/UCmaN2o3gwlakd-DV_w8G8KQ",
+      "channel_id": "UCmaN2o3gwlakd-DV_w8G8KQ",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }

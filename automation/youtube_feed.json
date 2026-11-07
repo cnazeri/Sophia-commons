@@ -1,10 +1,19 @@
 {
- "generated_at": "2026-11-06T19:58:26.319538+00:00",
+ "generated_at": "2026-11-07T18:03:22.770967+00:00",
  "channels": [
   {
    "slug": "goetheanum",
    "name": "Goetheanum",
    "latest": [
+    {
+     "video_id": "UKGfXO1_p8o",
+     "title": "🎶 Schubert bewegt – zum Zuhören, Entdecken und Mittanzen.",
+     "url": "https://www.youtube.com/watch?v=UKGfXO1_p8o",
+     "thumbnail_url": "https://i2.ytimg.com/vi/UKGfXO1_p8o/hqdefault.jpg",
+     "published_at": "2026-11-07T11:32:09+00:00",
+     "description": "Eine kleine Schubertiade bringt Musik, Gesang, Malerei und Literatur zusammen: Das Faust ic und weitere Mitwirkende laden zu einer Begegnung der Künste ein – mit Liedern und Tänzen von Franz Schubert und der Möglichkeit, selbst mitzumachen.\n\n📅 Freitag, 13. November 2026 · 19 Uhr\n📍 Holzhaus am Goetheanum\n✨ Eintritt frei · Kollekte\n\nMehr zum Abend: https://goetheanum.ch/de/veranstaltungen/mug-schubertiade-3",
+     "channel_slug": "goetheanum"
+    },
     {
      "video_id": "cu4tpS2fnbU",
      "title": "Im Klappern der Schreibmaschine",
@@ -21,15 +30,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/sHSFsCFmrMo/hqdefault.jpg",
      "published_at": "2026-11-02T12:31:13+00:00",
      "description": "Wie können Sprache, Dichtung und Bewegung einander begegnen?\n\nEurythmieBerlin bringt beim Eurythmie-Festival 2025 mit «Sprich auch du» Sprache in Bewegung. Eine Arbeit, in der Wort, Rhythmus und Geste zu einem gemeinsamen Ausdruck werden.\n\n🎥 Jetzt auf Goetheanum TV anschauen: https://goetheanum.tv/programs/eurythmieberlin-sprich-auch-du-eurythmie-festival-2025",
-     "channel_slug": "goetheanum"
-    },
-    {
-     "video_id": "LlSEp7bHjBI",
-     "title": "Podiumsdiskussion · Drei Generationen ArchivleiterInnen",
-     "url": "https://www.youtube.com/watch?v=LlSEp7bHjBI",
-     "thumbnail_url": "https://i1.ytimg.com/vi/LlSEp7bHjBI/hqdefault.jpg",
-     "published_at": "2026-10-28T11:02:35+00:00",
-     "description": "🔗 Jetzt auf Goetheanum TV: https://goetheanum.tv/programs/podiumsdiskussion-drei-generationen-archivleiterinnen\n\nWas für eine Transformation: Von ehemals 17 Mitarbeitenden schrumpfte das Team des Rudolf-Steiner-Archivs zuletzt auf 9 – und das mitten in der Phase, in der die monumentale, 450-bändige Gesamtausgabe (GA) gedruckt abgeschlossen wurde. In einer feierlichen und zugleich nahbaren Gesprächsrunde blicken die aktuelle Archivleitung sowie ihre zwei Vorgängergenerationen zurück auf Krisen, Meilensteine und skurrile Funde im Keller des Archivs.\n\nEin Beitrag mit Walter Kugler, David Mark Hoffmann, Angelika Schmitt und Philip Kovce zum Festakt zur Vollendung der Rudolf-Steiner-Gesamtausgabe.",
      "channel_slug": "goetheanum"
     }
    ]
@@ -237,6 +237,15 @@
    "name": "AnthroWorld",
    "latest": [
     {
+     "video_id": "kkeoOYZ8E8M",
+     "title": "Michael Rheinheimer | Faust als Goetheanist | Essen, 2026",
+     "url": "https://www.youtube.com/watch?v=kkeoOYZ8E8M",
+     "thumbnail_url": "https://i4.ytimg.com/vi/kkeoOYZ8E8M/hqdefault.jpg",
+     "published_at": "2026-11-07T14:40:15+00:00",
+     "description": "Hier sehen wir Michael Rheinheimer, Priester der Christengemeinschaft Bonn-Bad Godesberg am 5. November 2026 zu Gast bei der goetheanistisch-Anthroposophischen Vortragsinitiative von Maria Marg und Ulrich Roehm in der Kapelle des ChorForum Essen. \nThema des Vortrags: „Faust als Goetheanist“.\n\nZitat:\n„Faust 1 und 2, diese beiden Teile von Johann Wolfgang von Goethe, ist das Mysteriendrama des Goetheanismus. \nWas ist Goetheanismus? […] Goetheanismus könnte man sagen, ist eine Wissenschaftsmethode, die versucht, um es mit dem Faust zu sagen, das, was die Welt im Innersten zusammenhält. Nicht durch Spekulation, durch Hypothese, durch Vorstellungsmodelle zu erfassen und damit nur zum Augenblicke zu sagen …  „verweile doch, du bist so schön“ […] durch reine Wahrnehmung, durch vorurteilsloses Anschauen so beobachten zu können, dass ein Raum entsteht, in dem sich das Wesen der Dinge aus sich selbst heraus offenbaren kann. Oder vielleicht, um das mit den drei Erzengeln zu sagen, dass die Schöpfung, die herrlich ist wie am ersten Tag, dem Anblick der Menschen, die so ein goetheanistisches Wahrnehmungsorgan aus sich erbildet haben, Stärke geben kann.“\n\n\n\nhttps://anthro.world/Michael_Rheinheimer\nhttps://christengemeinschaft.de/bonn",
+     "channel_slug": "anthroworld"
+    },
+    {
      "video_id": "6CR6E2dCpog",
      "title": "33. Folge | Lesekreis | Das Hereinwirken geistiger Wesenheiten in den Menschen | Rudolf Steiner",
      "url": "https://www.youtube.com/watch?v=6CR6E2dCpog",
@@ -252,15 +261,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/q6_Rr1tYT8U/hqdefault.jpg",
      "published_at": "2026-11-04T19:15:36+00:00",
      "description": "Treffen vom 4. November 2026\n\nDiese Gruppe trifft sich wöchentlich zum Austausch über die eigenen Erfahrungen und Anliegen mit den Nebenübungen von Rudolf Steiner. Immer mittwochs 10:00h. Die Ausstrahlung findet i.d.R. am Folgetag statt.\n\nHast du Interesse mitzumachen? Dann informiere dich hier https://anthro.world/Die_Neben%C3%BCbungen_von_Rudolf_Steiner_in_Gruppenarbeit \n\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://steiner.wiki\nhttps://biodyn.wiki",
-     "channel_slug": "anthroworld"
-    },
-    {
-     "video_id": "Ub_lNtgjJgE",
-     "title": "342. Folge Die Apokalypse des Johannes/Das Neue Jerusalem/ Dr. Wolfgang Peter von www.anthrowiki.at",
-     "url": "https://www.youtube.com/watch?v=Ub_lNtgjJgE",
-     "thumbnail_url": "https://i2.ytimg.com/vi/Ub_lNtgjJgE/hqdefault.jpg",
-     "published_at": "2026-11-04T09:03:06+00:00",
-     "description": "Hier findest du nähere Informationen über die von Wolfgang gehaltenen Vorträge aus der Reihe \"Die Apokalypse des Johannes\": https://anthro.world\n\nSo kommt deine Spende bei Wolfgang an: https://anthro.wiki/AnthroWiki:Spenden. Herzlichen Dank!\n\nWeitere Informationen:\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://biodyn.wiki \n#christusimpuls\n#rudolfsteiner\n#anthroposophie",
      "channel_slug": "anthroworld"
     }
    ]
@@ -369,6 +369,15 @@
    "name": "Word of Rudolf Steiner",
    "latest": [
     {
+     "video_id": "56vUxfZPj1Y",
+     "title": "Síntomas ocultos de la perimenopausia",
+     "url": "https://www.youtube.com/watch?v=56vUxfZPj1Y",
+     "thumbnail_url": "https://i2.ytimg.com/vi/56vUxfZPj1Y/hqdefault.jpg",
+     "published_at": "2026-11-07T14:00:21+00:00",
+     "description": "¿Te han empezado a doler las articulaciones, sufres de insomnio repentino o experimentas despistes extraños y crees que te estás volviendo loca? A partir de los 35 años, el cuerpo de la mujer inicia una profunda transición biológica y una metamorfosis en todos los aspectos de la vida.\nEn este clip de 20 minutos extraído de nuestra charla completa, compartimos vuestras experiencias reales frente a estos cambios: desde despertarse a mitad de la noche sin poder volver a conciliar el sueño, hasta sufrir dolores articulares inexplicables o experimentar la molesta \"niebla mental\" (como intentar meter la plancha en la nevera).\nAnalizamos junto a la nutricionista funcional y antroposófica Dangella Romero cómo la caída de hormonas como la progesterona y los estrógenos afecta de forma directa al sistema nervioso, al hipotálamo, a la gestión de la glucosa cerebral y a la inflamación de nuestros tejidos. ¡Tu cuerpo no se está rompiendo, está cambiando y necesita una nueva forma de nutrición y ritmos!\n\n🌸 PROGRAMA ACADÉMICO: NUTRICIÓN EN PERIMENOPAUSIA\n\nSi deseas profundizar en esta etapa y aprender a acompañar tu biología paso a paso, te invitamos a formar parte de nuestro programa integral de 8 encuentros semanales.\n👉 INSCRÍBETE AQUÍ AL PROGRAMA INTEGRAL \"SABIDURÍA PARA LA MADUREZ RADIANTE\":\n🔗  https://forms.gle/PLUbL22dz8xBSaLj7",
+     "channel_slug": "word-of-rudolf-steiner"
+    },
+    {
      "video_id": "F_yMQCbysBU",
      "title": "\"Como PASTA y me empiezo a INCENDIAR\"",
      "url": "https://www.youtube.com/watch?v=F_yMQCbysBU",
@@ -384,15 +393,6 @@
      "thumbnail_url": "https://i1.ytimg.com/vi/TyCyaq3ICkE/hqdefault.jpg",
      "published_at": "2026-11-05T19:00:15+00:00",
      "description": "¿Por qué los 35 o los 40 años marcan un antes y un después en el cuerpo de la mujer? En esta entrevista profunda con la nutricionista Dangella Romero Glasinovic, derribamos los mitos de la perimenopausia y explicamos cómo transicionar esta etapa de forma natural, holística y sin sufrimiento.\n\n👉 INSCRÍBETE AQUÍ AL PROGRAMA INTEGRAL \"SABIDURÍA PARA LA MADUREZ RADIANTE\":\n🔗https://forms.gle/Vjd1v1LfAD1MJr2U6\n(Inicio: Martes 24 de noviembre de 2026 - Modalidad Online vía Zoom)\n\n🌸 SOBRE ESTA CHARLA\n\nLa perimenopausia no es una enfermedad, es una metamorfosis. A partir de los 35 años, la caída de la progesterona y el \"robo de la pregnenolona\" alteran profundamente nuestro sistema nervioso, manifestándose en insomnio, sofocos, inflamación y la temida \"niebla mental\".\nDesde la mirada de la nutrición antroposófica y funcional, Ángela Romero nos desvela las claves de la alimentación celular, la crononutrición y el respeto a los ritmos biológicos para equilibrar las hormonas de raíz y recuperar la vitalidad perdida. Si te has sentido incomprendida o frustrada con los cambios de tu cuerpo, este video es para ti.\n\n📚 PROGRAMA ACADÉMICO: NUTRICIÓN EN PERIMENOPAUSIA\n\nSi deseas ir más allá de esta entrevista y aprender a acompañar tu biología paso a paso, te invitamos a formar parte de nuestro programa integral de 8 encuentros semanales.\n🔹 ¿Qué aprenderemos?\n• Módulo 1: La Crisálida Hormonal y la biología de los 35+.\n• Módulo 2: Neurociencia de la transición: Estradiol y neblina mental.\n• Módulo 3: Parámetros hormonales, optimización mitocondrial y alternativa bioidéntica.\n• Módulo 4: El estroboloma intestinal, reciclaje de estrógenos y crononutrición.\n• Módulo 5: Control de insulina, sofocos y el método del plato ordenado.\n• Módulo 6: Macronutrientes, masa muscular y neuroplasticidad (Melena de León).\n• Módulo 7: Sarcopenia, reparación de fibroblastos y gestión de la carga mental.\n• Módulo 8: Fitoterapia, cocina alquímica y homeopatía antroposófica sin culpa.\n\n🔹 Información clave de",
-     "channel_slug": "word-of-rudolf-steiner"
-    },
-    {
-     "video_id": "Gu33EWb9NyY",
-     "title": "La terapia de reemplazo hormonal NO lo soluciona todo.",
-     "url": "https://www.youtube.com/watch?v=Gu33EWb9NyY",
-     "thumbnail_url": "https://i4.ytimg.com/vi/Gu33EWb9NyY/hqdefault.jpg",
-     "published_at": "2026-11-05T17:00:04+00:00",
-     "description": "¿Insomnio a las 4 AM? Es tu METABOLISMO🍷🍕 La nutricionista Dangella Romero nos explica por qué un desorden metabólico (como esa pizza o copa de vino por la noche) puede activar tus sofocos e insomnio a las 4 AM, independientemente de los reemplazos que tomes.\nLa clave de la perimenopausia no está solo en las hormonas, sino en tu compromiso con el músculo, tus ritmos diarios y tu microbiota.\n\n\n🌸 SABIDURÍA PARA LA MADUREZ RADIANTE\n¿Quieres sanar tu transición de forma natural y holística? Inscríbete al programa académico integral de 8 encuentros online que comienza este martes 24 de noviembre de 2026.\n\nToda la información del curso, precios y link de inscripción directa en la descripción del video largo de nuestro canal. ¡Te esperamos!\n\n#Perimenopausia #NutricionFuncional #HormonasNaturales #Sofocos #Insomnio #LaGrandezaDeLoHumano",
      "channel_slug": "word-of-rudolf-steiner"
     }
    ]
@@ -534,6 +534,15 @@
    "name": "Angelina liest Rudolf Steiner",
    "latest": [
     {
+     "video_id": "SwdV5-YmbMw",
+     "title": "Rudolf Steiner GA 234, 1. Vortrag: Anthroposophie, die Menschensehnsucht der Gegenwart",
+     "url": "https://www.youtube.com/watch?v=SwdV5-YmbMw",
+     "thumbnail_url": "https://i4.ytimg.com/vi/SwdV5-YmbMw/hqdefault.jpg",
+     "published_at": "2026-11-07T12:07:11+00:00",
+     "description": "Rudolf Steiner GA 234: Anthroposophie, eine Zusammenfassung nach 21 Jahren\n1. Vortrag, Dornach, 19. Januar 1924\nDie zwei drängenden Fragen der Menschenseele. Der Mensch kann\nnicht an die Natur heran, ohne daß er vernichtet wird. Die Natur\nkann nicht in das Innere des Menschen, ohne daß sie zum Schein\nwird. Die traditionellen Antworten der alten Wissenschaft, Kunst\nund Religion tragen nicht mehr. Anthroposophie will eine neue Antwort geben.",
+     "channel_slug": "angelina-liest"
+    },
+    {
      "video_id": "DwP4B1jUaww",
      "title": "Bin ich KI?",
      "url": "https://www.youtube.com/watch?v=DwP4B1jUaww",
@@ -549,15 +558,6 @@
      "thumbnail_url": "https://i1.ytimg.com/vi/hhsPbhsym5g/hqdefault.jpg",
      "published_at": "2026-09-26T19:32:10+00:00",
      "description": "Was meinen wir eigentlich, wenn wir von Liebe reden?\n\n\"(...) Der Okkultismus sagt: Die Liebe ist für die Welt dasjenige, was die Sonne für das äußere Leben ist. Es würden keine Seelen mehr gedeihen können, wenn die Liebe weg wäre von der Welt. Die Liebe ist die moralische Sonne der Welt. Wäre es für einen Menschen, der Wohlgefallen, Interesse hat an dem Blumenwachstum einer Wiese, nicht absurd, wenn er wünschen würde, daß die Sonne verschwinde aus der Welt? Ins Moralische übertragen heißt das: Man muß Interesse haben daran, daß eine gesunde Entwickelung sich durchringt in den Menschheitszusammenhängen. Weise ist es, wenn wir so viel Liebe wie möglich über die Erde ausgestreut haben. Einzig weise ist es, wenn wir die Liebe fördern auf der Erde. (...)\" Rudolf Steiner, Zürich, 17.12.1912\n\nDieser Vortrag stammt aus dem Jahr 1912, zu einer Zeit, da Rudolf Steiner noch innerhalb der Theosophischen Bewegung tätig war. Grade aus dem Inhalt dieses Vortrages kann man ersehen, welche Motive seiner Trennung von der Theosophischen Bewegung und der Begründung der Anthroposophischen Bewegung zu Grunde lagen.\n\nHome: https://angelinagazquez.ch",
-     "channel_slug": "angelina-liest"
-    },
-    {
-     "video_id": "4O1QaPg77rA",
-     "title": "Rudolf Steiner GA 223 1 Vortrag Der Jahreskreislauf als Atmungsvorgang der Erde...",
-     "url": "https://www.youtube.com/watch?v=4O1QaPg77rA",
-     "thumbnail_url": "https://i1.ytimg.com/vi/4O1QaPg77rA/hqdefault.jpg",
-     "published_at": "2026-04-03T18:53:15+00:00",
-     "description": "Rudolf Steiner GA 223\n\nDER JAHRESKREISLAUF ALS ATMUNGSVORGANG DER\nERDE UND DIE VIER GROSSEN FESTESZEITEN\n\nERSTER VORTRAG, Dornach, Karsamstag, 31. März 1923\nDer Jahreskreislauf als Atmungsvorgang der Erde und die damit verbundenen Feste. Wintersonnenwende, Einatmung: Geburt\nJesu. Ägyptische und chaldäische Mysterien. Ostern: Beginn der Ausatmung, Festsetzung des Osterfestes. Johanni: Ausatmung.\nMichaeli: Beginn der Einatmung. Michaels Kampf mit dem Drachen. Der 29. September. Das Michaelfest.\n\nhome (https://angelinagazquez.ch/)",
      "channel_slug": "angelina-liest"
     }
    ]
@@ -963,6 +963,15 @@
    "name": "Logos Eurythmie",
    "latest": [
     {
+     "video_id": "Nkb4lJV1CDQ",
+     "title": "Eurythmie Alfabet - Klank U",
+     "url": "https://www.youtube.com/watch?v=Nkb4lJV1CDQ",
+     "thumbnail_url": "https://i3.ytimg.com/vi/Nkb4lJV1CDQ/hqdefault.jpg",
+     "published_at": "2026-11-07T12:47:21+00:00",
+     "description": null,
+     "channel_slug": "logos-eurythmie"
+    },
+    {
      "video_id": "gwvKh2nZnJs",
      "title": "Eurythmie Alphabet - Laut O",
      "url": "https://www.youtube.com/watch?v=gwvKh2nZnJs",
@@ -978,15 +987,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/c-ig4kv_8AQ/hqdefault.jpg",
      "published_at": "2026-11-06T09:26:16+00:00",
      "description": "In deze video laten we u het eurythmische gebaar van de medeklinker F zien, zoals Rudolf Steiner het heeft gegeven.\n\nDe eerste Eurytmist, Lory Maier-Smits, schreef op hoe Rudolf Steiner aan het begin van de Eurythmie de F heeft toebedeeld: “… levendig zei hij: En nu stel u zich voor, een heftige windvlaag stoot plotseling in deze vrede naar binnen. De wolken verduisteren de zon, de beek slaat golven, bomen en struiken buigen zich diep in het water, de appels vallen uit de bomen, de hoed wordt u van het hoofd geworpen, en de mens daarboven wenkt u opgewonden toe. Verheven vragen en aanduidingen dringen uit de juist zo rustige buitenwereld tot u door. ‘Hef ons op’, vragen de appels, ‘haal mij terug’, roept de hoed, ‘kom mij niet te dichtbij’, waarschuwt de beek, ‘zorg dat u onder een beschermend dak komt’, wil de man met zijn wuiven zeggen. En nu reageert u met dezelfde beweging, maar nu heel energiek en elastisch.” En weer maakte hij de beweging voor, naar alle zijden telkens een korte, energieke neer- en elastisch weer omhoogschietende beweging. “En zo leert u een F te ervaren, een reactie op uitnodigende invloed. Voor vrolijke feesten.” Nogmaals Rudolf Steiner: “F – Reactie op uitnodigende invloed […].”\n\nHier ziet u het ontwerp van Rudolf Steiner voor de eurytmische figuur van de klank F. \nVoor de klank F heeft hij de volgende kleuren gegeven: eerst voor de beweging wit, daarna voor het gevoel oranje en daarna roodachtig voor het karakter.\n\nIn oude mysteriën, waar levend was: „In den begin was het Woord en het Woord was bij God…”, waar dus het levendige was, wat ik u gisteren heb uiteengezet, waar men werkelijk het Scheppende van het Woord, van het Logos voelde - want Logos is niet te vertalen met wijsheid, waarmee sommigen in de modernen hun onbegrip voor de oude dingen willen tonen, Logos is wel te vertalen met Verbum, Woord, […] nu, als men over het f sprak, dan zei men ongeveer het volgende in oude mysteriën, met name in de Vorder-Aziatische, Afrikaanse, Zuid-A",
-     "channel_slug": "logos-eurythmie"
-    },
-    {
-     "video_id": "TXu4ZZhhTEI",
-     "title": "Eurythmie Alfabet - Klank O",
-     "url": "https://www.youtube.com/watch?v=TXu4ZZhhTEI",
-     "thumbnail_url": "https://i1.ytimg.com/vi/TXu4ZZhhTEI/hqdefault.jpg",
-     "published_at": "2026-11-05T19:30:13+00:00",
-     "description": null,
      "channel_slug": "logos-eurythmie"
     }
    ]
@@ -1392,6 +1392,15 @@
    "name": "Waldorf Essentials with Melisa Nielsen",
    "latest": [
     {
+     "video_id": "2JsgJCW9Nc8",
+     "title": "What Makes Waldorf Essentials Like No Other",
+     "url": "https://www.youtube.com/watch?v=2JsgJCW9Nc8",
+     "thumbnail_url": "https://i3.ytimg.com/vi/2JsgJCW9Nc8/hqdefault.jpg",
+     "published_at": "2026-11-07T01:26:51+00:00",
+     "description": "Welcome, we'd love to have you stay. ♥️",
+     "channel_slug": "waldorf-essentials"
+    },
+    {
      "video_id": "dkmdKtTJBsw",
      "title": "Sex Education From a Waldorf Perspective",
      "url": "https://www.youtube.com/watch?v=dkmdKtTJBsw",
@@ -1407,15 +1416,6 @@
      "thumbnail_url": "https://i1.ytimg.com/vi/lEh-aiAjH60/hqdefault.jpg",
      "published_at": "2026-09-09T15:08:01+00:00",
      "description": "If last year is getting your down, let's work through it so you have the best school year this year!",
-     "channel_slug": "waldorf-essentials"
-    },
-    {
-     "video_id": "2B2JhBcM7qo",
-     "title": "How to Make Peace with Last Year",
-     "url": "https://www.youtube.com/watch?v=2B2JhBcM7qo",
-     "thumbnail_url": "https://i3.ytimg.com/vi/2B2JhBcM7qo/hqdefault.jpg",
-     "published_at": "2026-08-27T18:44:08+00:00",
-     "description": "If you are struggling with how your school year went last year, let's talk about it so we can make peace and prepare for this year. \n\n\n\nhttps://www.aurielslight.orgAuriel's Light is a non profit and all donations are tax deductible. \n\nCandle Access: Full Length Podcast Library + Gathering Replays \nhttps://www.aurielslight.org/donate\n\nLearn more about our Waldorf Homeschool Curriculum and Planning for Peace here:\nhttps://www.waldorfessentials.com/store\n\nLearn more about our Seasons of Seven homeschool program here:\nhttps://www.seasonsofseven.com\n\nInstagram:   / waldorf_essentials  \nFacebook:   / waldorfessentials  \nPinterest:   / waldorfessentials",
      "channel_slug": "waldorf-essentials"
     }
    ]
@@ -1986,6 +1986,15 @@
    "name": "D J Elliott",
    "latest": [
     {
+     "video_id": "5znlxvR2FqQ",
+     "title": "Reversal by Maurice Nicoll",
+     "url": "https://www.youtube.com/watch?v=5znlxvR2FqQ",
+     "thumbnail_url": "https://i2.ytimg.com/vi/5znlxvR2FqQ/hqdefault.jpg",
+     "published_at": "2026-11-07T11:15:16+00:00",
+     "description": "walking backwards to go forwards.",
+     "channel_slug": "dj-elliott"
+    },
+    {
      "video_id": "4OKhLn6FJBY",
      "title": "did artificial intelligence write this? #poetry #aishorts #writing",
      "url": "https://www.youtube.com/watch?v=4OKhLn6FJBY",
@@ -2001,15 +2010,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/UM_zVVOdZl8/hqdefault.jpg",
      "published_at": "2026-11-02T07:43:50+00:00",
      "description": null,
-     "channel_slug": "dj-elliott"
-    },
-    {
-     "video_id": "mTwlLfuFbCE",
-     "title": "George Ivanovitch Gurdjieff 29th October 1949",
-     "url": "https://www.youtube.com/watch?v=mTwlLfuFbCE",
-     "thumbnail_url": "https://i2.ytimg.com/vi/mTwlLfuFbCE/hqdefault.jpg",
-     "published_at": "2026-10-29T00:15:29+00:00",
-     "description": "a toast to Mr Gurdjieff",
      "channel_slug": "dj-elliott"
     }
    ]
@@ -2052,30 +2052,30 @@
    "name": "Imgaja - Gerhard Anger",
    "latest": [
     {
+     "video_id": "oxbx5adkf-A",
+     "title": "17.Stunde. Esoterische Unterweisungen, Freie Hochschule für Geisteswissenschaft, Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=oxbx5adkf-A",
+     "thumbnail_url": "https://i4.ytimg.com/vi/oxbx5adkf-A/hqdefault.jpg",
+     "published_at": "2026-11-07T17:00:25+00:00",
+     "description": "Weiterleitung: https://www.imgaja.org/1/hs0017_Stunde17v10.html  \nFreie Hochschule für Geisteswissenschaft, Esoterische Unterweisungen (von Rudolf Steiner)\nSie können dieses Video gerne auf der Webseite imgaja.org ansehen:\nhttps://www.imgaja.org/1/hs0017_Stunde17v10.html \n\nherzlichen Dank\nGerhard Anger",
+     "channel_slug": "imgaja-gerhard-anger"
+    },
+    {
+     "video_id": "Z5WdI_YJhx8",
+     "title": "Wahrspruchwort und Meditation: \"Ruhe Kraft und Streben\" (von Rudolf Steiner)",
+     "url": "https://www.youtube.com/watch?v=Z5WdI_YJhx8",
+     "thumbnail_url": "https://i3.ytimg.com/vi/Z5WdI_YJhx8/hqdefault.jpg",
+     "published_at": "2026-11-07T06:00:37+00:00",
+     "description": "„Ruhe Kraft und Streben\nIch trage Ruhe in mir,\nIch trage in mir selbst\nDie Kräfte, die mich stärken.\nIch will mich erfüllen\nMit dieser Kräfte Wärme,\nIch will mich durchdringen\nMit meines Willens Macht.\nUnd fühlen will ich\nWie Ruhe sich ergießt\nDurch all mein Sein,\nWenn ich mich stärke,\nDie Ruhe als Kraft\nIn mir zu finden\nDurch meines Strebens Macht.\"\n\nRudolf Steiner,GA268,Mantrische Sprüche,S.179\n\nBücher:\nMensch, Bod Verlag, ISBN: 978-3750400429 \nHerzdenken, Bod Verlag, ISBN: 978-3750413610 \nDie Bergpredigt, Bod Verlag, ISBN: 978-3758330551\nTechnologie des Lebens. Bod Verlag, ISBN: 978-3-7597-6850-6\n\nWenn Sie meine Arbeit unterstützen wollen würde ich mich sehr freuen\nUnterstützung zu finden auf meiner Homepage \nhttps://www.imgaja.org/1/0003_kontakt.html\n\nMit herzlichen Dank und Grüßen\nGerhard Anger\n\n#christus \n#meditation \n#seele \n#anthroposophie \n#mensch",
+     "channel_slug": "imgaja-gerhard-anger"
+    },
+    {
      "video_id": "tZKK7BWq8Dg",
      "title": "Zur Arbeit am Grundsteinspruch (von Rudolf Steiner) jeden Freitag 18.00 Uhr (gelesen von  G. Anger)",
      "url": "https://www.youtube.com/watch?v=tZKK7BWq8Dg",
      "thumbnail_url": "https://i1.ytimg.com/vi/tZKK7BWq8Dg/hqdefault.jpg",
      "published_at": "2026-11-06T17:00:10+00:00",
      "description": "Zur Arbeit am Grundsteinspruch der Anthroposophischen Gesellschaft die jeden Freitag um 18.00Uhr  (18.00Uhr Normalzeit = 19.00 Uhr während der SOMMERZEIT) stattfindet wird zeitgleich eine Aufzeichnung gesendet.Die Arbeit am Grundstein wird von mir jeden Freitag zu der angegebenen Zeit durchgeführt. Es wäre schön wenn dies als ein Hinweis auf die Arbeit an dem Grundsteinspruch von Rudolf Steiner entsprechend wahrgenommen werden kann.\n\nMit herzlichen Grüßen \nGerhard Anger    \n\n#christus#meditation #gemeinschaft #anthroposophie #mensch  #mantra #esoterik #rudolfsteiner",
-     "channel_slug": "imgaja-gerhard-anger"
-    },
-    {
-     "video_id": "2XtvPXuqC_A",
-     "title": "Hinweis Buch: Technologie des Lebens - Die Zukunft von Technik und Energieerzeugung",
-     "url": "https://www.youtube.com/watch?v=2XtvPXuqC_A",
-     "thumbnail_url": "https://i3.ytimg.com/vi/2XtvPXuqC_A/hqdefault.jpg",
-     "published_at": "2026-11-06T06:00:08+00:00",
-     "description": "Dieses Video ist auch auf der Internetseite:\nhttps://www.imgaja.org/1/0007_buecher.html\nanzusehen, dort ist es auch möglich den Text als PDF herunterzuladen.\n\nBuchtitel:  Technologie des Lebens\n  Die Zukunft von Technik und Energieerzeugung\n  Verstehen der moralischen Weltenordnung durch \n  die Anthroposophie Rudolf Steiners\nGenre: Ätherkräfte, Freie Energie, Naturwissenschaft, Anthroposophie, \nUmfang: 252 Seiten, Zeilen: 10.033, Wörter: 76.064\nZielgruppe: Fragen\nde, Techniker, Forscher, Suchende Menschen\nKann eine neue Freie Energieform gefunden, erforscht und angewendet werden. Gibt es den\nÄther, Vril, die Bilderkräfte? \nISBN:  978-3-7597-6850-6\n\nKurzinhalt: \nDer Weg zur Erkenntnis der Welt jenseits des engen Horizonts der Naturwissenschaft. Die Frage, wie Stoffe, Formen, Bewegungen, Energien und Materialien aus dem universellen Äther hervorgehen. Wie Kräfte, Energien und Heilformen hervorgebracht werden können. Die Suche nach dem wahren Code des Lebens durch die Wissenschaft vom Geist (Anthroposophie), die Mathematik der Forschung und Entwicklung von Technologien. Energieerzeugung durch die Beherrschung des Äthers, Heilung durch die Geheimnisse von Schwingung, Resonanz und Sphärenharmonie. Schauberger, Tesla, Rudolf Steiner, Walter Russell, John W. Keely und ihre bahnbrechenden Erkenntnisse der Kräfte des Universums. Die Suche nach den geisteswissenschaftlichen, mathematischen und physikalischen Grundlagen von: Casimir-Effekt, Superkavitation, Nullpunktenergie, Kalter Fusion, Shape Power, Vril und Raumkraft. Das genauere Verstehen und Erkennen von Wärmeäther, Lichtäther, Chemischen Äther und Lebensäther. Kosmische Zusammenhänge von Fixstern- und Wandelsternsystem mit den Elementarwesen und dem Pflanzenwachstum. Geisteswissenschaftliche Erarbeitung von Stoff-, Molekül- und Atommodellen.\n        \nGerne können Sie das Buch bei jedem Buchhändler Ihrer Wahl bestellen: ISBN:  978-3-7597-6850-6\nEinige größere bekannte Online-Händler \n        \nMit herzlichen Dank und Grü",
-     "channel_slug": "imgaja-gerhard-anger"
-    },
-    {
-     "video_id": "1Fe_4r2SESc",
-     "title": "Rudolf Steiner (1861-1925) und sein künstlerisches Schaffen",
-     "url": "https://www.youtube.com/watch?v=1Fe_4r2SESc",
-     "thumbnail_url": "https://i2.ytimg.com/vi/1Fe_4r2SESc/hqdefault.jpg",
-     "published_at": "2026-11-05T06:00:07+00:00",
-     "description": "„Deshalb wirken die großen Kunstwerke so ungeheuer, weil sie tief verbunden sind mit dem Sinn der Weltenordnung.“, Rudolf Steiner, GA132\n\nKunstwerke\n„Wir modernen Menschen müssen Kunstwerke schaffen, bei denen die Form mehr sagt als die Natur sagt, aber ganz natürlich spricht, sodass jede einzelne Linie, jede einzelne Farbe wie ein Naturgebet wird für das Göttliche. ... Eigentlich möchte jede Pflanze, jeder Baum in einem Gebet aufblicken zum Göttlichen. ... Holen wir heraus, was in Baum und Pflanze, in Wolke und Stein an Linienführung an Farbe, an innerer Lebendigkeit lebt, prägen wir es de Bildhauermaterial ein, dann spricht durch das Kunstwerk die Natur zu den Göttern. Wir entdecken den Logos in der Natur. Und uns erscheint in unserer Kunst eine höhere Natur als die Natur draußen, eine Natur, die nun ihrerseits auf ganz natürliche Weise den Logos hinaufströmen lässt zu der göttlich-geistigen Welt.“, Rudolf Steiner, GA257\n\nDas siebente Siegel\n„..das siebente Siegel ist das von dem «Mysterium des Gral»,..  ein Würfel, die Raumeswelt darstellend, daraus von allen Seiten des Würfels entspringend die Weltenschlange, insofern sie die im niederen sich auslebenden höheren Kräfte darstellt; aus dem Munde der Schlange die Weltenlinie .. das Sinnbild der gereinigten und geläuterten Weltenkräfte; und daraus entspringend, der «heilige Gral», dem die «Taube» gegenübersteht:. hinweisend .. auf das Geheimnis der Weltzeugung, von der die irdische ein niederer Abglanz ist. Die tiefsten Mysterien liegen in den Linien und Figuren.. dieses Siegels.“, Rudolf Steiner, GA34\n\n\nBücher von Gerhard Anger:\nMensch, Bod Verlag, ISBN: 978-3750400429 \nHerzdenken, Bod Verlag, ISBN: 978-3750413610 \nDie Bergpredigt, Bod Verlag, ISBN: 978-3758330551\nTechnologie des Lebens. Bod Verlag, ISBN: 978-3-7597-6850-6\n\nWenn Sie meine Arbeit unterstützen wollen würde ich mich sehr freuen\nhttp://www.imgaja.org/1/0003_kontakt.html\n\nMit herzlichen Dank und Grüßen\nGerhard Anger\n\n#kunst \n#seele \n#künstler \n#anthropo",
      "channel_slug": "imgaja-gerhard-anger"
     }
    ]
@@ -2916,30 +2916,30 @@
    "name": "Richmond Waldorf School",
    "latest": [
     {
-     "video_id": "REHTHqO86YY",
-     "title": "Playground Ribbon Cutting & Back-to-School Joy at RWS!",
-     "url": "https://www.youtube.com/watch?v=REHTHqO86YY",
-     "thumbnail_url": "https://i3.ytimg.com/vi/REHTHqO86YY/hqdefault.jpg",
-     "published_at": "2026-08-31T16:38:03+00:00",
-     "description": "Richmond Waldorf School began the new school year with a joyful celebration as families, faculty, alumni, trustees, friends, and neighbors gathered for our Playground Ribbon Cutting and Back-to-School Picnic.\n\nThe transformation includes new KOMPAN play equipment, improvements to the play and soccer field, and a reimagined bike pump track. Each element was thoughtfully designed to invite movement, exploration, healthy risk-taking, and creative outdoor play. The new pump track also strengthens our biking program, which provides students from Early Childhood through eighth grade with opportunities to develop coordination, confidence, and practical skills.\n\nIt was wonderful to see such a large crowd on campus, reconnecting after the summer, welcoming new families, and sharing in the excitement of this long-awaited moment. In a fitting reflection of the community effort behind the project, representatives from our faculty, Board of Trustees, alumni, and wider community came together to cut the ribbon and officially open the renovated playground. \n\nThank you to our community who celebrated with us! We can't wait to keep playing!",
+     "video_id": "Ps_fY5PDYYU",
+     "title": "Waldorf Education Unmuted",
+     "url": "https://www.youtube.com/watch?v=Ps_fY5PDYYU",
+     "thumbnail_url": "https://i1.ytimg.com/vi/Ps_fY5PDYYU/hqdefault.jpg",
+     "published_at": "2026-11-07T02:37:00+00:00",
+     "description": "Learning is joyful, interactive, and engaging at Richmond Waldorf School! From preschool through 8th grade, get a peek into a typical day for our students. \n\nLearn more at RichmondWaldorf.com\n\nFilmed and produced by Journey 7 Media",
      "channel_slug": "richmond-waldorf-school"
     },
     {
-     "video_id": "hocGKMzp6Y4",
-     "title": "Richmond Waldorf School: A Day in the Life",
-     "url": "https://www.youtube.com/watch?v=hocGKMzp6Y4",
-     "thumbnail_url": "https://i1.ytimg.com/vi/hocGKMzp6Y4/hqdefault.jpg",
-     "published_at": "2026-04-06T19:49:05+00:00",
-     "description": "A look into a day in the life of our students, from Early Childhood to Middle School. For more information on our school visit us online www.richmondwaldorf.com.",
+     "video_id": "5b-JU11i0P0",
+     "title": "Active Bodies. Active Minds. Whole People",
+     "url": "https://www.youtube.com/watch?v=5b-JU11i0P0",
+     "thumbnail_url": "https://i2.ytimg.com/vi/5b-JU11i0P0/hqdefault.jpg",
+     "published_at": "2026-11-07T02:33:16+00:00",
+     "description": "Richmond Waldorf students move their bodies everyday as part of our curriculum. Whether that be in biking class, movement arts, orchestra, or recess, an active learning environment builds a foundation for a balanced, engaged, and happy child! \n\nFilmed and produced by Journey 7 Media",
      "channel_slug": "richmond-waldorf-school"
     },
     {
-     "video_id": "zlNHermtwuc",
-     "title": "Richmond Waldorf School Lantern Walk Songs",
-     "url": "https://www.youtube.com/watch?v=zlNHermtwuc",
-     "thumbnail_url": "https://i3.ytimg.com/vi/zlNHermtwuc/hqdefault.jpg",
-     "published_at": "2024-10-23T00:44:58+00:00",
-     "description": "Songs for our annual Lantern Walk and Martinmas celebration, performed by Ms Maddie, Oak Class Lead Teacher. The 2024 Richmond Waldorf School Lantern Walk is Friday, November 8! \n\nLearn more about Waldorf education and the difference it can make on our website www.richmondwaldorf.com!",
+     "video_id": "TE0z2ZuIgd8",
+     "title": "Waldorf Experiential Learning",
+     "url": "https://www.youtube.com/watch?v=TE0z2ZuIgd8",
+     "thumbnail_url": "https://i1.ytimg.com/vi/TE0z2ZuIgd8/hqdefault.jpg",
+     "published_at": "2026-11-07T01:47:07+00:00",
+     "description": "Get a glimpse of Richmond Waldorf School students immersed in their learning, without screens! From preschool to middle school, we believe an approach that prioritizes hands-on, creative experiences helps form confident, capable learners!\n\nFilmed and produced by Journey 7 Media",
      "channel_slug": "richmond-waldorf-school"
     }
    ]
@@ -5173,6 +5173,105 @@
      "published_at": "2026-10-12T06:07:39+00:00",
      "description": "Das pdf \"Schwarze und weisse Magie\" https://payhip.com/b/OAEyb",
      "channel_slug": "rudolf-steiner-modern-erz-hlt"
+    }
+   ]
+  },
+  {
+   "slug": "michael-mount-waldorf-school",
+   "name": "Michael Mount Waldorf School",
+   "latest": [
+    {
+     "video_id": "EQm5KkZxqno",
+     "title": "Class 11 Project Presentations 2025 Night 3",
+     "url": "https://www.youtube.com/watch?v=EQm5KkZxqno",
+     "thumbnail_url": "https://i2.ytimg.com/vi/EQm5KkZxqno/hqdefault.jpg",
+     "published_at": "2025-09-29T11:11:45+00:00",
+     "description": "Waldorf education aims to nurture conscious individuals through dynamic education. In our High School, we view the Class 11 Projects as the culmination of the curriculum, and a vital element of this greater purpose. It meets the developmental question of “What can I achieve as an individual in the world?”. \n\nThe intention of the project is to give each student the opportunity to take on a substantial topic of their choice that stretches them beyond their comfort zone. This project spans a 9-month period, and the students experience what is required to bring work of this scale to a meaningful conclusion: the need for clarity in planning, the persistence to overcome challenges, the discipline of completing what has begun, the pressure of meeting deadlines, and the final step of sharing their achievements publicly. The fulfilment of meaningful work not only builds confidence and enthusiasm for future endeavours, but also imparts a sense of purpose and significance to their lives.\n\nStudents are asked to consider: “What is it that I would like to work on intensively, purely out of my own initiative?” Each student is given a personal mentor from amongst the High School teachers. It may also be necessary to have an outside mentor who is an expert in the chosen field of work. In shaping their projects, students are encouraged to find a balance between historical and theoretical study and practical, hands-on work.\n\nThe culmination of the year’s work is witnessed at the Project Presentation evenings – one of the most important events in the school calendar. Each student sets up a display of work, including the project book, made by the student in their bookbinding lessons. All components of the project are handwritten into this book. Each student shares a 10-12 minute presentation on their project to fellow students, parents, friends, and members of the greater community.  \n\nThe Class 11 Project develops capacities that are vital later in life: initiative in setting oneself a",
+     "channel_slug": "michael-mount-waldorf-school"
+    },
+    {
+     "video_id": "Buq7skZbWow",
+     "title": "Class 11 Project Presentations 2025 Night 2",
+     "url": "https://www.youtube.com/watch?v=Buq7skZbWow",
+     "thumbnail_url": "https://i3.ytimg.com/vi/Buq7skZbWow/hqdefault.jpg",
+     "published_at": "2025-09-29T11:11:41+00:00",
+     "description": "Waldorf education aims to nurture conscious individuals through dynamic education. In our High School, we view the Class 11 Projects as the culmination of the curriculum, and a vital element of this greater purpose. It meets the developmental question of “What can I achieve as an individual in the world?”. \n\nThe intention of the project is to give each student the opportunity to take on a substantial topic of their choice that stretches them beyond their comfort zone. This project spans a 9-month period, and the students experience what is required to bring work of this scale to a meaningful conclusion: the need for clarity in planning, the persistence to overcome challenges, the discipline of completing what has begun, the pressure of meeting deadlines, and the final step of sharing their achievements publicly. The fulfilment of meaningful work not only builds confidence and enthusiasm for future endeavours, but also imparts a sense of purpose and significance to their lives.\n\nStudents are asked to consider: “What is it that I would like to work on intensively, purely out of my own initiative?” Each student is given a personal mentor from amongst the High School teachers. It may also be necessary to have an outside mentor who is an expert in the chosen field of work. In shaping their projects, students are encouraged to find a balance between historical and theoretical study and practical, hands-on work.\n\nThe culmination of the year’s work is witnessed at the Project Presentation evenings – one of the most important events in the school calendar. Each student sets up a display of work, including the project book, made by the student in their bookbinding lessons. All components of the project are handwritten into this book. Each student shares a 10-12 minute presentation on their project to fellow students, parents, friends, and members of the greater community.  \n\nThe Class 11 Project develops capacities that are vital later in life: initiative in setting oneself a",
+     "channel_slug": "michael-mount-waldorf-school"
+    },
+    {
+     "video_id": "cyI9j7fWWb4",
+     "title": "Class 11 Project Presentations 2025 Night 1",
+     "url": "https://www.youtube.com/watch?v=cyI9j7fWWb4",
+     "thumbnail_url": "https://i4.ytimg.com/vi/cyI9j7fWWb4/hqdefault.jpg",
+     "published_at": "2025-09-29T11:11:37+00:00",
+     "description": "Waldorf education aims to nurture conscious individuals through dynamic education. In our High School, we view the Class 11 Projects as the culmination of the curriculum, and a vital element of this greater purpose. It meets the developmental question of “What can I achieve as an individual in the world?”. \n\nThe intention of the project is to give each student the opportunity to take on a substantial topic of their choice that stretches them beyond their comfort zone. This project spans a 9-month period, and the students experience what is required to bring work of this scale to a meaningful conclusion: the need for clarity in planning, the persistence to overcome challenges, the discipline of completing what has begun, the pressure of meeting deadlines, and the final step of sharing their achievements publicly. The fulfilment of meaningful work not only builds confidence and enthusiasm for future endeavours, but also imparts a sense of purpose and significance to their lives.\n\nStudents are asked to consider: “What is it that I would like to work on intensively, purely out of my own initiative?” Each student is given a personal mentor from amongst the High School teachers. It may also be necessary to have an outside mentor who is an expert in the chosen field of work. In shaping their projects, students are encouraged to find a balance between historical and theoretical study and practical, hands-on work.\n\nThe culmination of the year’s work is witnessed at the Project Presentation evenings – one of the most important events in the school calendar. Each student sets up a display of work, including the project book, made by the student in their bookbinding lessons. All components of the project are handwritten into this book. Each student shares a 10-12 minute presentation on their project to fellow students, parents, friends, and members of the greater community.  \n\nThe Class 11 Project develops capacities that are vital later in life: initiative in setting oneself a",
+     "channel_slug": "michael-mount-waldorf-school"
+    }
+   ]
+  },
+  {
+   "slug": "waldorf-school-of-dupage",
+   "name": "Waldorf School of DuPage",
+   "latest": [
+    {
+     "video_id": "koFqIBpcUvY",
+     "title": "How to build a desk",
+     "url": "https://www.youtube.com/watch?v=koFqIBpcUvY",
+     "thumbnail_url": "https://i4.ytimg.com/vi/koFqIBpcUvY/hqdefault.jpg",
+     "published_at": "2021-02-02T04:11:34+00:00",
+     "description": null,
+     "channel_slug": "waldorf-school-of-dupage"
+    },
+    {
+     "video_id": "thrsAJ-TMv4",
+     "title": "Waldorf Giving Tuesday",
+     "url": "https://www.youtube.com/watch?v=thrsAJ-TMv4",
+     "thumbnail_url": "https://i1.ytimg.com/vi/thrsAJ-TMv4/hqdefault.jpg",
+     "published_at": "2020-11-30T21:46:40+00:00",
+     "description": "This Giving Tuesday we extend our most sincere gratitude to our community. We are immensely proud of what we have accomplished and what we will continue to do together. \n\nFollow us on our Facebook Page and our Instagram to witness those moments you have made possible. To make a donation, visit www.waldorfdupage.org/donate.",
+     "channel_slug": "waldorf-school-of-dupage"
+    },
+    {
+     "video_id": "SHn8maelHvY",
+     "title": "The Mud Circle with Mrs. Mogavero",
+     "url": "https://www.youtube.com/watch?v=SHn8maelHvY",
+     "thumbnail_url": "https://i4.ytimg.com/vi/SHn8maelHvY/hqdefault.jpg",
+     "published_at": "2020-04-26T20:56:57+00:00",
+     "description": "Enjoy the \"mud circle\" lead by Early Childhood faculty Mrs. Mogavero.",
+     "channel_slug": "waldorf-school-of-dupage"
+    }
+   ]
+  },
+  {
+   "slug": "mouvement-de-l-agriculture-biodynamique",
+   "name": "Mouvement de l'Agriculture Biodynamique",
+   "latest": [
+    {
+     "video_id": "2qbEdXOQkbQ",
+     "title": "La bouse de corne : une préparation emblématique de la biodynamie. #biodynamie #jardin #agriculture",
+     "url": "https://www.youtube.com/watch?v=2qbEdXOQkbQ",
+     "thumbnail_url": "https://i3.ytimg.com/vi/2qbEdXOQkbQ/hqdefault.jpg",
+     "published_at": "2026-11-07T07:00:12+00:00",
+     "description": "Après plusieurs mois passés sous terre, les cornes de vache sont déterrées au printemps. À l'intérieur, on découvre une matière sombre, fine et proche d'un terreau : la bouse de corne, aussi appelée préparation 500.\n\nDiluée dans l'eau puis pulvérisée sur les sols, au printemps et à l'automne, elle fait partie des préparations utilisées en agriculture biodynamique pour accompagner la vie du sol.\n\nAprès plus d'un siècle de pratique, les observations de terrain sont nombreuses. Aujourd'hui, des recherches commencent également à explorer cette préparation : sa composition, les molécules qu'elle contient et les interactions avec les micro-organismes du sol.\nUn sujet passionnant, à la croisée des pratiques agricoles, de l'observation et de la recherche. 🌿\n\n#Biodynamie #AgricultureBiodynamique #Preparation500 #BouseDeCorne #VieDuSol #SolsVivants #Agroecologie #Viticulture #AgricultureDurable #MicrobiologieDesSols",
+     "channel_slug": "mouvement-de-l-agriculture-biodynamique"
+    },
+    {
+     "video_id": "Kwt90KBAAek",
+     "title": "🧐 Pourquoi enterrer de la bouse de vache dans une corne pendant l’hiver ? #biodynamie #préparations",
+     "url": "https://www.youtube.com/watch?v=Kwt90KBAAek",
+     "thumbnail_url": "https://i4.ytimg.com/vi/Kwt90KBAAek/hqdefault.jpg",
+     "published_at": "2026-11-05T17:25:54+00:00",
+     "description": "La bouse de corne est l’une des préparations emblématiques de la biodynamie. Elle consiste à faire maturer de la bouse de vache dans une corne enterrée durant la période hivernale.\n\nUtilisée au printemps et à l’automne, cette préparation est destinée, selon les principes de la biodynamie, à soutenir l’activité biologique du sol et sa structuration.\n\nMais comment la prépare-t-on concrètement ?\n\nDécouvrez les différentes étapes de son élaboration dans cette vidéo.",
+     "channel_slug": "mouvement-de-l-agriculture-biodynamique"
+    },
+    {
+     "video_id": "-4c5HnXzTjI",
+     "title": "Semer des engrais verts au potager en automne 🌱 | Biodynamie#biodynamie #engraisverts #solsfertiles",
+     "url": "https://www.youtube.com/watch?v=-4c5HnXzTjI",
+     "thumbnail_url": "https://i2.ytimg.com/vi/-4c5HnXzTjI/hqdefault.jpg",
+     "published_at": "2026-10-28T16:30:07+00:00",
+     "description": "Comment semer des engrais verts au potager et pourquoi cette pratique est-elle intéressante pour le sol ?\n\nDans cette vidéo, découvrez les principales étapes du semis : préparation du sol, dosage des graines, semis à la volée et tassement.\n\n🌿 Par la photosynthèse, les plantes captent le CO₂ atmosphérique et incorporent le carbone dans leur biomasse. Une partie peut ensuite rejoindre le sol par les racines et la décomposition des résidus végétaux. Le devenir de ce carbone dépend notamment des conditions du sol et de la gestion du couvert.\n\nLes engrais verts contribuent également à maintenir une couverture végétale, à limiter l'érosion et à soutenir la vie biologique du sol.\n\nNotre association partage ses pratiques et ses observations autour de la biodynamie, du jardin et de la fertilité des sols.\n\n#EngraisVerts #Biodynamie #Potager",
+     "channel_slug": "mouvement-de-l-agriculture-biodynamique"
     }
    ]
   }
