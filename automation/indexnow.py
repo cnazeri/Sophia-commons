@@ -29,8 +29,8 @@ def recent_urls() -> list[str]:
     urls = []
     for table, (col, path) in RECENT.items():
         rows = requests.get(f"{base}/rest/v1/{table}", headers=h, timeout=30, params={
-            "select": "id", col: "gte." + since, "status": status[table], "limit": "5000"}).json()
-        urls += [f"{SITE}{path}{r['id']}" for r in rows]
+            "select": "id,slug" if table == "directory_entries" else "id", col: "gte." + since, "status": status[table], "limit": "5000"}).json()
+        urls += [f"{SITE}{path}{r.get('slug') or r['id']}" for r in rows]   # listings use their readable address
     return urls
 
 

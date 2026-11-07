@@ -4341,7 +4341,16 @@ var ANTHRO_ANNIVERSARIES = [
     src: [_SRC.wiki('General Anthroposophical Society', 'General_Anthroposophical_Society'), ['Steiner, The Christmas Conference, GA 260 (e.Lib)', 'https://rudolfsteinerelib.org/GA/index.php?ga=GA0260']] },
   { key: 'koberwitz', month: 6, day: 7, year: 1924, title: 'Agriculture Course begins (Koberwitz)',
     desc: 'Steiner gave the eight lectures of the Agriculture Course at Koberwitz, 7 to 16 June 1924: the beginning of biodynamic farming.',
-    src: [_SRC.wiki('Biodynamic agriculture', 'Biodynamic_agriculture'), ['Paull (2020), The Koberwitzers', 'https://orgprints.org/38176/1/Paull2020.Koberwitzers.IJEPM.pdf']] }
+    src: [_SRC.wiki('Biodynamic agriculture', 'Biodynamic_agriculture'), ['Paull (2020), The Koberwitzers', 'https://orgprints.org/38176/1/Paull2020.Koberwitzers.IJEPM.pdf']] },
+  { key: 'montsegur', month: 3, day: 16, year: 1244, title: 'Last Stand of the Cathars at Montsegur',
+    desc: 'The Chateau de Montsegur, a mountain fortress in the French Pyrenees, surrendered after a nine-month siege. On 16 March 1244 about 210 Cathars were burned at the foot of the mountain.',
+    src: [_SRC.wiki('Siege of Montsegur', 'Siege_of_Monts%C3%A9gur')] },
+  { key: 'templars', month: 10, day: 13, year: 1307, title: 'Last Stand of the Knights Templar',
+    desc: 'On 13 October 1307 King Philip IV of France orchestrated the simultaneous, surprise arrest of hundreds of Knights Templar across France. Pope Clement V dissolved the order at the Council of Vienne in 1312.',
+    src: [['Knights Templar (AnthroWiki)', 'https://en.anthro.wiki/Knights_Templar'], _SRC.wiki('Trials of the Knights Templar', 'Trials_of_the_Knights_Templar')] },
+  { key: 'michael_age', month: 11, day: 9, year: 1879, title: 'Fall of the Spirits of Darkness and Beginning of the Michael Age',
+    desc: 'According to Rudolf Steiner\'s spiritual research, the Michael Age began in November 1879, after the Archangel Michael cast down the Spirits of Darkness.',
+    src: [['Michael Age (AnthroWiki)', 'https://en.anthro.wiki/Michael_age']] }
 ];
 
 function _computeEaster(yr) {
@@ -4869,13 +4878,19 @@ function renderSidebarUpcoming() {
 // Home "Seminars & Retreats": ONE learning event (workshop, retreat, study day, training, conference), the
 // next one in date order, as a card with its picture (owner, 2026-10-24). Weekly webinar series ("Mani
 // Webinar: ...") are skipped; they already fill the events slider just above.
+// In-person events only (owner, 2026-11-06): no online events, no join link, and no Zoom in the text, since
+// some Zoom talks are listed with a city and some events offer Zoom alongside the room.
+function _evInPerson(e) {
+  return !e.online && !(e.src || []).some(function(s) { return /^Join/.test(s[0]); })
+    && !/\bzoom\b|\bwebinar\b/i.test([e.title, e.loc, e.desc].join(' '));
+}
 var HOME_SEM_CATS = ['workshop', 'retreat', 'study_group', 'seminar', 'training', 'study', 'conference'];
 function renderHomeSeminars() {
   var block = document.getElementById('home-sem-block');
   var box = document.getElementById('home-sem');
   if (!block || !box) return;
   var today = _localDay(new Date());
-  var pool = calEvents.filter(function(e) { return e.id && HOME_SEM_CATS.indexOf(e.cat) !== -1 && e.date >= today; })
+  var pool = calEvents.filter(function(e) { return e.id && HOME_SEM_CATS.indexOf(e.cat) !== -1 && e.date >= today && _evInPerson(e); })
     .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
   var n = {};
   pool.forEach(function(e) { var k = _evSeriesKey(e); if (k) n[k] = (n[k] || 0) + 1; });
