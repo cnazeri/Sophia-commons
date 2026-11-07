@@ -1697,6 +1697,8 @@ footer {
   line-height: 1.75;
   margin-bottom: 24px;
 }
+.detail-body p { margin: 0 0 14px; }
+.detail-body p:last-child { margin-bottom: 0; }
 .detail-actions {
   display: flex;
   gap: 10px;

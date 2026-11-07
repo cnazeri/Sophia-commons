@@ -48,8 +48,10 @@ URL: {url}
 ARTICLE TEXT (from the page, may be cut short or missing):
 {text}
 
-Also write a summary of 1 or 2 plain sentences (under 260 characters) saying what happened, using only facts in
-the article text or headline. No hype, no em or en dashes, straight quotes only."""
+Also write a summary in your own words, using only facts in the article text or headline: 2 or 3 short paragraphs,
+90 to 170 words in all, separated by a blank line, with the who, what, where and when and any names, numbers and
+dates. Fewer words if the article says less; never pad. Do not copy sentences. No hype, no em or en dashes,
+straight quotes only."""
 
 SCHEMA = {
     'type': 'object', 'additionalProperties': False,
@@ -206,8 +208,9 @@ def main():
             if art['ok'] and art['url'].startswith('http') and 'news.google.com' not in art['url']:
                 patch['source_url'] = art['url']   # the publisher's page, not Google's redirect
             if verdict.get('summary'):
-                patch['excerpt'] = tidy(verdict['summary'], 280)
-                patch['body'] = tidy(verdict['summary'], 600)
+                paras = [tidy(p, 900) for p in re.split(r'\n\s*\n', verdict['summary']) if p.strip()]
+                patch['excerpt'] = tidy(paras[0], 280)
+                patch['body'] = '\n\n'.join(paras)
         counts[status] = counts.get(status, 0) + 1
         line = '%s  %s  %s | %s (%s)' % (status.upper()[:4], (when.date() if when else '????-??-??'), n['title'][:80], verdict['reason'], verdict.get('note', '')[:120])
         lines.append(line)

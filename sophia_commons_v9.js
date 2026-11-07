@@ -648,13 +648,18 @@ document.addEventListener('click', function(e) {
   routeFromPath(path);
 });
 
+function _paragraphs(text) {
+  return String(text).split(/\n\s*\n/).map(function(p) { return '<p>' + esc(p.trim()) + '</p>'; }).join('');
+}
+
 function renderNewsDetail(n) {
   var pubDate = n.published_at ? localDate(n.published_at, {month:'long', day:'numeric', year:'numeric'}) : '';
 
   var badges = '';
   if (n.featured) badges += '<span class="detail-badge category">' + t('news_detail.featured') + '</span>';
   if (n.tags && n.tags.length) {
-    n.tags.forEach(function(t) { badges += '<span class="detail-badge type">' + esc(t) + '</span>'; });
+    // Only subject tags: 'roundup', 'en' and 'review:...' are for the news robot and Admin
+    n.tags.forEach(function(t) { if (!/^(roundup|en|weekly-digest|review:.*)$/.test(t)) badges += '<span class="detail-badge type">' + esc(t) + '</span>'; });
   }
 
   var meta = '';
@@ -668,7 +673,7 @@ function renderNewsDetail(n) {
     + badges
     + '<h1>' + esc(n.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
-    + '<div class="detail-body">' + ((n.tags || []).indexOf('weekly-digest') >= 0 && n.body ? _sanitizeHtml(n.body) : esc(n.body || n.excerpt || '')) + '</div>'
+    + '<div class="detail-body">' + ((n.tags || []).indexOf('weekly-digest') >= 0 && n.body ? _sanitizeHtml(n.body) : _paragraphs(n.body || n.excerpt || '')) + '</div>'
     + (_notDigest(n) ? '' : _digestLinkHtml())
     + '<div class="detail-actions">' + actions + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'news\',\'' + n.id + '\')">' + t('report.flag_btn') + '</button>' : '') + '</div>'
     + '</div>'
@@ -4783,7 +4788,7 @@ function renderSeminars() {
   var today = new Date(); today.setHours(0, 0, 0, 0);
   var items = calEvents.filter(function(e) {
     return ['workshop', 'retreat', 'study_group', 'seminar', 'training', 'study'].indexOf(e.cat) !== -1
-      && new Date(e.date + 'T23:59:59') >= today;
+      && new Date(e.date + 'T23:59:59') >= today && _evInPerson(e);
   }).sort(function(a, b) { return a.date < b.date ? -1 : 1; }).slice(0, 6);
   if (!items.length) {
     container.innerHTML = '<p class="sem-empty">No upcoming seminars listed yet. Know of one? Use "Submit an event" to add it.</p>';
