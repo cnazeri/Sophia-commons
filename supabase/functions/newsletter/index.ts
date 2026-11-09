@@ -121,7 +121,8 @@ serve(async (req: Request) => {
     if (!UUID_RE.test(token)) return json(req, { error: "invalid_token" }, 400);
     if (body.action === "confirm") {
       const { data, error } = await supabase.from("newsletter_subscribers")
-        .update({ confirmed: true, confirmed_at: new Date().toISOString(), confirm_token: null, unsubscribed_at: null })
+        // the token is kept, so a second click on the same email link still says "subscribed" (owner, 2026-11-09)
+        .update({ confirmed: true, confirmed_at: new Date().toISOString(), unsubscribed_at: null })
         .eq("confirm_token", token).select("id");
       if (error) return json(req, { error: "save_failed" }, 500);
       if (!data || !data.length) return json(req, { error: "unknown_token" }, 404);
