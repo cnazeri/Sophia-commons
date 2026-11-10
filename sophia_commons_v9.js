@@ -4359,8 +4359,14 @@ var ANTHRO_ANNIVERSARIES = [
     desc: 'On 13 October 1307 King Philip IV of France orchestrated the simultaneous, surprise arrest of hundreds of Knights Templar across France. Pope Clement V dissolved the order at the Council of Vienne in 1312.',
     src: [['Knights Templar (AnthroWiki)', 'https://en.anthro.wiki/Knights_Templar'], _SRC.wiki('Trials of the Knights Templar', 'Trials_of_the_Knights_Templar')] },
   { key: 'michael_age', month: 11, day: 9, year: 1879, title: 'Fall of the Spirits of Darkness and Beginning of the Michael Age',
-    desc: 'According to Rudolf Steiner\'s spiritual research, the Michael Age began in November 1879, after the Archangel Michael cast down the Spirits of Darkness.',
-    src: [['Michael Age (AnthroWiki)', 'https://en.anthro.wiki/Michael_age']] }
+    desc: 'According to Rudolf Steiner\'s spiritual research, the Michael Age began in November 1879, after the Archangel Michael cast down the Spirits of Darkness.'
+      + '\n\nNovember 9th is known in Germany as Schicksalstag (Day of Fate or Day of Destiny) because a remarkable number of monumental, history-changing events, both tragic and triumphant, occurred on this exact date.'
+      + '\n\n9 November holds a power spot in the wheel of the year. It is just after the actual astrological Crossquarter time between the Autumn Equinox and the Winter Solstice, bringing us the festival season of All-Souls Tide, which opens us to the spiritual world where we can more powerfully work with the dead.'
+      + '\n\nRudolf Steiner notes that on this date in history, Goethe has Faust go down to the Mothers, the spiritual archetypes of existence. Mephisto-Ahriman sought to persuade Faust not to take up this poetic spiritual deed. He lied to him about the spirit light which gestates there in the darkness, and declared the spiritual world to be \'a nothing\'.'
+      + '\n\nOn 9 November 1888 Rudolf Steiner gave the lecture \'Goethe as the Founder of a New Science of Aesthetics\'. Afterward the Cistercian priest Wilhelm Neumann told him that while he was speaking, in a flash of karmic lightning, he saw Steiner as Thomas Aquinas. This was the initial event that led Steiner to the systematic construction of his Spiritual Scientific karmic research, which he later called his "core mission".'
+      + '\n\n3 x 7 years later, Rudolf Steiner spoke of the greatest spiritual event of our time: the incarnation of Ahriman in the West. In total Steiner spoke of this event in 8 lectures, 5 of which fell in November. In 1919 he gave the most precise indication as to when this incarnation would take place: "Before even a part of the 3rd millennium will have elapsed". One of Ahriman\'s tasks is to possess human beings with the fear of the spirit.'
+      + '\n\nDo we have the courage to overcome this fear, giving us the goal of recognizing the doings of this adversarial being, to see the signs of its incarnation here in America? If we take up this task in equanimity we help usher in a world-historical opportunity for the development of new spiritual capacities.',
+    src: [['Michael Age (AnthroWiki)', 'https://en.anthro.wiki/Michael_age'], ['Faust Goes Down to the Mothers (Reverse Ritual)', 'https://reverseritual.com/faust-goes-down-to-the-mothers/']] }
 ];
 
 function _computeEaster(yr) {
@@ -4610,6 +4616,16 @@ function closeDayPopup(restore) {
 }
 
 var DP_DESC_CHARS = 800;
+// The day view shows the first paragraph, as before. Calendar festivals and anniversaries have
+// no page of their own, so any further paragraphs open in place under "Read more" (owner, 2026-11-10).
+function _dpDescHtml(ev) {
+  if (!ev.desc) return '';
+  var html = '<p class="dp-desc">' + _linkify(esc(_shortText(ev.desc, DP_DESC_CHARS))) + '</p>';
+  var more = ev.id ? [] : String(ev.desc).split('\n\n').slice(1);
+  if (!more.length) return html;
+  return html + '<details class="dp-more"><summary>' + esc(t('home.read_more', 'Read more')) + '</summary>'
+    + more.map(function(p) { return '<p class="dp-desc">' + _linkify(esc(p)) + '</p>'; }).join('') + '</details>';
+}
 function showDayEvents(dateStr, trigger) {
   var dayEvs = calEvents.filter(function(e) { return e.date === dateStr; });
   var label = localDate(dateStr, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -4636,7 +4652,7 @@ function showDayEvents(dateStr, trigger) {
     var dpTitle = ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="closeDayPopup(false);showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title);
     // The day view fills the page, picture beside the text (owner, 2026-11-06)
     html += '<div class="dp-event' + (ev.img ? ' has-img' : '') + '">' + _evImageHtml(ev) + '<div class="dp-text"><h5>' + dpTitle + '</h5>' + (dpMeta ? '<div class="dp-meta">' + dpMeta + '</div>' : '')
-      + (ev.desc ? '<p class="dp-desc">' + _linkify(esc(_shortText(ev.desc, DP_DESC_CHARS))) + '</p>' : '') + _evSourcesHtml(ev) + '</div></div>';
+      + _dpDescHtml(ev) + _evSourcesHtml(ev) + '</div></div>';
   });
   popup.innerHTML = html;
   document.body.appendChild(popup);

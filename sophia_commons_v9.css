@@ -4190,3 +4190,9 @@ body.ev-focus #center { width: 100%; max-width: 1040px; margin: 0 auto; padding-
 .digest-schedule select { max-width: 260px; }
 .digest-schedule.is-set { border-color: var(--gold); }
 .digest-schedule .digest-note-label { flex-basis: 100%; margin: 0; }
+
+/* Day view: extra festival text opens in place (owner, 2026-11-10) */
+.day-popup .dp-more { margin: 4px 0 8px; }
+.day-popup .dp-more summary { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; color: var(--gold-text); font-weight: 600; }
+.day-popup .dp-more summary:focus-visible { outline: 2px solid var(--gold-text); outline-offset: 2px; }
+.day-popup .dp-more[open] summary { margin-bottom: 4px; }
