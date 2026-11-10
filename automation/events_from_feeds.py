@@ -20,6 +20,7 @@ import os
 import re
 import sys
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import requests
 
@@ -55,6 +56,18 @@ def plain(text, limit=None):
 norm = lambda s: re.sub(r'[^a-z0-9]+', '', (s or '').lower())[:40]
 
 
+def zone_name(z) -> str | None:
+    """A valid IANA zone name from a string or tzinfo (ZoneInfo, pytz, dateutil), else None."""
+    name = z if isinstance(z, str) else (getattr(z, 'key', None) or getattr(z, 'zone', None)) if z else None
+    if not name or '/' not in name:
+        return None
+    try:
+        ZoneInfo(name)
+        return name
+    except (ZoneInfoNotFoundError, ValueError):
+        return None
+
+
 def event_type(title, cats):
     text = (title + ' ' + ' '.join(cats)).lower()
     return next((t for t, pat in TYPE_WORDS if re.search(pat, text)), 'other')
@@ -70,6 +83,9 @@ def read_ical(src, until):
     r.raise_for_status()
     cal = icalendar.Calendar.from_ical(r.content)
     keep = re.compile(src['include'], re.I) if src.get('include') else None
+    # Times with no zone ("floating") are in the calendar's own zone, not UTC (2026-11-10)
+    cal_zone = zone_name(str(cal.get('X-WR-TIMEZONE') or '')) or zone_name(src.get('timezone'))
+    floating = ZoneInfo(cal_zone) if cal_zone else timezone.utc
     out = []
     for e in recurring_ical_events.of(cal).between(datetime.now(timezone.utc), until):
         title = str(e.get('SUMMARY') or '').strip()
@@ -78,13 +94,14 @@ def read_ical(src, until):
         start, end = e['DTSTART'].dt, (e['DTEND'].dt if e.get('DTEND') else None)
         all_day = not isinstance(start, datetime)
         utc = lambda d: (datetime(d.year, d.month, d.day, tzinfo=timezone.utc) if not isinstance(d, datetime)
-                         else (d if d.tzinfo else d.replace(tzinfo=timezone.utc)).astimezone(timezone.utc))
+                         else (d if d.tzinfo else d.replace(tzinfo=floating)).astimezone(timezone.utc))
+        ev_zone = None if all_day else (zone_name(start.tzinfo) or cal_zone)
         fmt = lambda d: utc(d).strftime('%Y-%m-%d %H:%M:%S') if d else None
         if all_day and end:
             end = end - timedelta(days=1)   # iCal all-day end dates are exclusive
         out.append({'id': f"{e.get('UID')}@{utc(start):%Y%m%d}", 'title': html.escape(title),
                     'description': html.escape(str(e.get('DESCRIPTION') or '')), 'all_day': all_day,
-                    'utc_start_date': fmt(start), 'utc_end_date': fmt(end),
+                    'utc_start_date': fmt(start), 'utc_end_date': fmt(end), 'timezone': ev_zone,
                     'venue': {'venue': str(e.get('LOCATION') or '')}, 'url': str(e.get('URL') or src['base'])})
     return out
 
@@ -125,6 +142,7 @@ def to_row(ev, src, owner):
         'description': re.sub(r'^[@\W]+(?=\w)', '', plain(ev.get('description'), 2000)) or f"{title}, with {src['name']}. Details and registration on the organizer's event page.",
         'event_type': event_type(title, [c.get('name', '') for c in ev.get('categories') or []]),
         'start_date': start.isoformat(), 'end_date': end.isoformat() if end and end > start else None, 'is_all_day': all_day,
+        'timezone': None if all_day else (zone_name(ev.get('timezone')) or zone_name(src.get('timezone'))),
         'location_name': (plain(venue.get('venue')) or None) if not online else (plain(venue.get('venue')) or 'Online'),
         'address': plain(venue.get('address')) or None, 'city': plain(venue.get('city')) or src.get('city'),
         'region': plain(venue.get('stateprovince') or venue.get('province') or venue.get('state')) or src.get('region'),

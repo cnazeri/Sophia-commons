@@ -68,7 +68,7 @@ export function applySeo(template, { route, title, desc, bodyHtml = '', ld = nul
 
 function shorten(t, n) {
   t = String(t || '').replace(/\s+/g, ' ').trim();
-  return t.length <= n ? t : t.slice(0, n - 3).replace(/\s+\S*$/, '') + '...';
+  return t.length <= n ? t : t.slice(0, n - 3).replace(/\s+\S*$/, '').replace(/[\s,;:]+$/, '') + '...';
 }
 
 export function categoryOf(e) {
@@ -99,8 +99,16 @@ export function schemaTypeOf(e) {
 
 // Search snippet: the listing's own text, then what the page offers, so even a one-line listing
 // gets a useful 120-158 character description. Only mentions what is really on the page.
-function listingDesc(about, { catLabel, where, addr, phone, website, facebook, nearbyN, relatedN, country }) {
-  const lead = about || `${catLabel}${where ? ' in ' + where : ''}.`;
+// A shared stock text ("Congregation of The Christian Community ...", "Waldorf kindergarten in Berlin")
+// gives hundreds of pages the same snippet, so a short text or one that does not name the place
+// starts with the listing's name and place (2026-11-10).
+function listingDesc(about, { name, city, catLabel, where, addr, phone, website, facebook, nearbyN, relatedN, country }) {
+  const low = about.toLowerCase();
+  const generic = about && (about.length < 70 || (city && !low.includes(city.toLowerCase())) || (!city && where && !low.includes(where.toLowerCase())));
+  const named = s => s && (low.includes(s.toLowerCase()) || name.toLowerCase().includes(s.toLowerCase()));
+  const spot = named(city) ? (named(country) ? '' : country || '') : where;
+  const tag = generic && !low.includes(name.toLowerCase()) ? `${name}${spot ? ', ' + spot : ''}: ` : '';
+  const lead = about ? tag + about : `${catLabel}${where ? ' in ' + where : ''}.`;
   if (lead.length >= 120) return shorten(lead, 158);
   const has = [addr ? 'address' : '', phone ? 'phone' : '', website ? 'website' : '', facebook ? 'Facebook page' : ''].filter(Boolean);
   const list = has.length > 1 ? has.slice(0, -1).join(', ') + ' and ' + has[has.length - 1] : has[0] || 'details';
@@ -121,7 +129,7 @@ export function listingPage(e, related = [], nearby = [], opts = {}) {
   const image = e.photo_url && /^https:\/\//.test(e.photo_url) ? e.photo_url.split('#')[0] : '';
   const tags = Array.isArray(e.tags) ? e.tags.filter(Boolean) : [];
   const addr = [e.address, e.region, e.country].filter(Boolean).join(', ');
-  const desc = listingDesc(about, { catLabel, where, addr: e.address, phone: e.phone, website, facebook, nearbyN: nearby.length, relatedN: related.length, country: e.country });
+  const desc = listingDesc(about, { name, city: e.city || e.location || '', catLabel, where, addr: e.address, phone: e.phone, website, facebook, nearbyN: nearby.length, relatedN: related.length, country: e.country });
 
   const facts = [
     `<li>Category: <a href="${catUrl}">${esc(catLabel)}</a></li>`,

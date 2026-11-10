@@ -157,6 +157,9 @@ function renderDirectoryDetail(d) {
   if (d.website_url) actions += '<a class="btn-primary-detail" href="' + escUrl(d.website_url) + '" target="_blank">' + t('detail.visit_website') + ' &#8599;</a>';
   if (d.email) actions += '<a class="btn-secondary-detail" href="mailto:' + esc(d.email) + '">' + t('detail.contact') + ' &#9993;</a>';
   if (d.phone) actions += '<a class="btn-secondary-detail" href="tel:' + esc(d.phone) + '">' + t('detail.call') + ' &#9742;</a>';
+  // Set by the link checks when the site failed three checks in a row (2026-11-10)
+  if (d.website_url && (d.badges || []).indexOf('website_down') !== -1)
+    actions += '<p class="detail-note">' + esc(t('dir.website_down', 'This website did not respond to our recent checks. It may have moved or closed.')) + '</p>';
 
   var pic = d.photo_url ? '<figure class="detail-pic' + (d.photo_url.indexOf('#contain') !== -1 ? ' is-logo' : '') + '"><img src="' + escUrl(_imgSized(d.photo_url.split('#')[0], 720)) + '" alt="' + esc(d.organization_name) + '" loading="lazy">'
     + (d.photo_credit

@@ -1717,6 +1717,12 @@ footer {
   text-decoration: none;
   transition: all 0.2s ease;
 }
+.detail-actions .detail-note {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
 .detail-actions .btn-primary-detail {
   background: var(--gold);
   color: var(--on-gold);
