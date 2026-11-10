@@ -1825,6 +1825,17 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "biodynamic-land-trust",
+      "name": "Biodynamic Land Trust",
+      "url": "https://www.youtube.com/channel/UCFEBDuoeGadbAIP7USKZvOQ",
+      "channel_id": "UCFEBDuoeGadbAIP7USKZvOQ",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }
