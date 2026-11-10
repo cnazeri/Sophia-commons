@@ -21,7 +21,6 @@ export const CATEGORIES = [
   ['esoteric-studies', 'Esoteric Studies', ['societies', 'online'], 'Study groups, courses and resources for the study of Rudolf Steiner\'s spiritual science.'],
   ['science-technology', 'Science & Technology', ['science'], 'Goethean science, research and moral technology from an anthroposophical perspective.'],
   ['online-resources', 'Online Resources', ['online'], 'Websites, archives, publishers, podcasts and online courses for the anthroposophical community.'],
-  ['social-media', 'Social Media', ['social_media'], 'Anthroposophical groups and channels on social media.'],
 ];
 
 // Columns a listing page needs (public, anon-readable; email deliberately left out of static HTML)

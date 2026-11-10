@@ -272,8 +272,8 @@ if (feat) {
   const more = `<a class="feat-ev-more" href="/event/${attr(feat.id)}">Read more &rarr;</a>`;
   const banner = `<div class="feat-ev" data-id="${attr(feat.id)}">`
     + (img ? `<img class="feat-ev-img" src="${attr(img)}" alt="" width="96" height="116" fetchpriority="high">` : '')
-    + `<div class="feat-ev-body"><div class="etag">${feat.featured ? 'Featured event' : laDay(feat.start_date) === todayLA ? 'Today' : 'Coming up'}</div><h5 aria-level="3"><a href="/event/${attr(feat.id)}">${esc(feat.title)}</a></h5>`
-    + `<div class="emeta">${esc(when)}</div>` + (feat.description ? `<p class="feat-ev-desc">${esc(short(feat.description, 320))}</p>` : '') + more + '</div></div>';
+    + `<div class="feat-ev-body"><div class="etag">${feat.featured ? 'Featured event' : laDay(feat.start_date) === todayLA ? 'Today' : 'Coming up'}</div><h5 aria-level="3"><a href="/event/${attr(feat.id)}">${esc(feat.title_en || feat.title)}</a></h5>`
+    + `<div class="emeta">${esc(when)}</div>` + (feat.description ? `<p class="feat-ev-desc">${esc(short(feat.description_en || feat.description, 320))}</p>` : '') + more + '</div></div>';
   const homeFile = path.join(OUT, 'index.html');
   const home = fs.readFileSync(homeFile, 'utf8');
   const placeholder = /(<div class="listblock-body" id="home-upcoming"[^>]*>)\s*<div class="empty-note">[^<]*<\/div>/;

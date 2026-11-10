@@ -9,6 +9,9 @@
 /category/jobs-&-volunteering  /category/jobs-volunteering  301
 /category/housing-&-room-rent  /category/housing-room-rent  301
 /category/books-&-library  /category/books-library  301
+# Social media has its own page, not a directory category (owner, 2026-11-09)
+/category/social-media  /podcasts  301
+/category/social-media/*  /podcasts  301
 # Sign-up form on its own page (owner, 2026-11-01)
 /signup/*  /signup.html  200
 /*    /index.html   200

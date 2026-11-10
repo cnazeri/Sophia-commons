@@ -130,7 +130,7 @@ try {
     window.__x = 0;
     _mergeSupabaseEventsIntoCalendar([{ id: 't1', title: '<img src=x onerror="window.__x=1">T', start_date: new Date(Date.now() + 864e5).toISOString() }]);
     // Event lists now show real thumbnails, so look only for the injected element
-    return document.querySelectorAll('#sidebar-upcoming img[onerror], #event-list img[onerror], #home-upcoming img[onerror], img[src="x"]').length;
+    return document.querySelectorAll('#event-list img[onerror], #home-upcoming img[onerror], img[src="x"]').length;
   });
   await page.waitForTimeout(300);
   check(xss === 0 && (await page.evaluate(() => window.__x)) === 0, 'event titles are escaped');
@@ -161,7 +161,8 @@ try {
   check(Math.abs(moon.drawn - moon.label) <= 15, `moon drawing matches label (${moon.drawn}% drawn vs ${moon.label}%)`);
 
   // The right sidebar no longer has a mini calendar (removed v1.51); the upcoming list stays
-  check(await page.$('#sidebar-upcoming') !== null, 'upcoming events list is in the right sidebar');
+  check(await page.$('#sidebar-upcoming') === null, 'no upcoming events list in the right sidebar (owner, 2026-11-09)');
+  check(await page.$('#home-sem-block') === null, 'no Seminars & Retreats block on the home page (owner, 2026-11-09)');
   await ctx.close();
 } finally {
   await browser.close();

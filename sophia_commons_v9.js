@@ -895,6 +895,7 @@ function _catKeyFromName(name) {
 function showCategory(name, skipPush, opts) {
   _clearPlaceFaq();
   name = _catKeyFromName(name);
+  if (name.toLowerCase() === 'social media') { showSec('podcasts'); return; }   // has its own page, not a directory category (owner, 2026-11-09)
   opts = opts || {};
   captureCurrentSection('category');
 
@@ -3745,10 +3746,10 @@ var _sbMergedEventTitles = {};
 
 // Upcoming events: merged into calEvents (one sorted list, one count). A copy is kept in localStorage
 // so the home page can show events immediately on the next visit, before the network answers.
-var _EV_CACHE_KEY = 'sc_upcoming_events_v3';   // raise the number to drop visitors' saved copies after an event is fixed
+var _EV_CACHE_KEY = 'sc_upcoming_events_v4';   // raise the number to drop visitors' saved copies after an event is fixed
 var _cachedEventIds = [];
 var _EV_CACHE_FIELDS = ['id', 'title', 'description', 'event_type', 'start_date', 'end_date', 'is_all_day', 'location_name',
-  'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name'];
+  'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name', 'title_en', 'description_en'];
 
 var _dbEventsShown = false;   // true once saved or live database events are in calEvents
 function _loadCachedEvents() {
@@ -3792,7 +3793,7 @@ async function loadEventsFromSupabase() {
 // Lists below the calendar and the home sliders filter to today onward, so only the calendar shows these.
 async function loadPastEventsFromSupabase() {
   try {
-    var r = await _sb.from('events').select(_EV_CACHE_FIELDS.filter(function(k) { return k !== 'category_name'; }).join(', '))
+    var r = await _sb.from('events').select(_EV_CACHE_FIELDS.filter(function(k) { return ['category_name', 'title_en', 'description_en'].indexOf(k) === -1; }).join(', '))
       .in('status', ['past', 'upcoming', 'ongoing']).lt('start_date', new Date().toISOString())
       .order('start_date', { ascending: false }).limit(1000);
     if (r.error || !r.data) { console.warn('Past events load failed:', r.error); return; }
@@ -3857,6 +3858,8 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       id: ev.id || null,
       date: dateStr,
       title: ev.title || '',
+      titleEn: ev.title_en || '',
+      descEn: ev.description_en || '',
       cat: cat,
       loc: loc,
       org: org,
@@ -3880,7 +3883,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
     console.log('Merged ' + merged + ' Supabase events into calendar');
     if (_secVisible('events')) { renderCalendar(); renderEventList(); renderSeminars(); }
     renderMiniCal();
-    renderSidebarUpcoming();
+    renderHomeUpcoming();
     updateHeaderCalendar();
   }
 }
@@ -3999,8 +4002,7 @@ var DIR_CARDS = [
   ['Societies & Organizations', ['societies']],
   ['Eldercare', ['eldercare']],
   ['Science & Technology', ['science']],
-  ['Online Resources', ['online']],
-  ['Social Media', ['social_media']]
+  ['Online Resources', ['online']]
 ];
 var DIR_CARD_NAMES = 5;
 
@@ -4853,57 +4855,14 @@ function mcNav(dir) {
   renderMiniCal();
 }
 
-// ── SIDEBAR UPCOMING EVENTS ──
-function renderSidebarUpcoming() {
-  var container = document.getElementById('sidebar-upcoming');
-  if (!container) return;
-  var today = new Date();
-  today.setHours(0,0,0,0);
-
-  var upcoming = calEvents.filter(function(e) {
-    return new Date(e.date + 'T23:59:59') >= today;
-  }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); }).slice(0, 4);
-
-  var html = '';
-  upcoming.forEach(function(ev) {
-    var d = new Date(ev.date + 'T12:00:00');
-    var mo = localDate(ev.date, { month: 'short' });
-    var dy = d.getDate();
-    html += '<div class="sb-ev">';
-    html += '<div class="sb-ev-date">' + mo + '<br>' + dy + '</div>';
-    html += '<div class="sb-ev-info"><h6 aria-level="3">' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title)) + '</h6>' + (ev.loc ? '<span>' + esc(ev.loc) + '</span>' : '') + '</div>';
-    html += '</div>';
-  });
-  container.innerHTML = html || '<div class="sb-empty">' + esc(t('events.none_yet', 'No upcoming events yet.')) + '</div>';
-  renderHomeUpcoming();
-}
-
 // Home page "Upcoming Events" card: previously three hard-coded spring 2026 events, all
 // auto-hidden once past, which left an empty box. Render from the live calendar instead.
-// Home "Seminars & Retreats": ONE learning event (workshop, retreat, study day, training, conference), the
-// next one in date order, as a card with its picture (owner, 2026-10-24). Weekly webinar series ("Mani
-// Webinar: ...") are skipped; they already fill the events slider just above.
 // In-person events only (owner, 2026-11-06): no online events, no join link, and no Zoom in the text, since
 // some Zoom talks are listed with a city and some events offer Zoom alongside the room.
 function _evInPerson(e) {
   return !e.online && !(e.src || []).some(function(s) { return /^Join/.test(s[0]); })
     && !/\bzoom\b|\bwebinar\b/i.test([e.title, e.loc, e.desc].join(' '));
 }
-var HOME_SEM_CATS = ['workshop', 'retreat', 'study_group', 'seminar', 'training', 'study', 'conference'];
-function renderHomeSeminars() {
-  var block = document.getElementById('home-sem-block');
-  var box = document.getElementById('home-sem');
-  if (!block || !box) return;
-  var today = _localDay(new Date());
-  var pool = calEvents.filter(function(e) { return e.id && HOME_SEM_CATS.indexOf(e.cat) !== -1 && e.date >= today && _evInPerson(e); })
-    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
-  var n = {};
-  pool.forEach(function(e) { var k = _evSeriesKey(e); if (k) n[k] = (n[k] || 0) + 1; });
-  var ev = pool.filter(function(e) { var k = _evSeriesKey(e); return !k || n[k] < 2; })[0] || pool[0];
-  block.hidden = !ev;
-  box.innerHTML = ev ? _homeSemCard(ev) : '';
-}
-
 // Home: the next monthly online gathering of The Christian Community in North America, as a card with
 // its picture and a Join button, above the highlighted social post (owner, 2026-10-29).
 var HOME_CC = /christian community in north america/i;
@@ -4925,21 +4884,7 @@ function renderHomeCC() {
     + (ev.time ? '<div class="emeta">' + esc(ev.time) + '</div>' : '') + '</div></div>';
 }
 
-function _homeSemCard(ev, tag, extra) {
-  var href = '/event/' + esc(ev.id);
-  var go = ' onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;"';
-  var cat = String(ev.cat || 'event').replace('_', ' ');
-  var meta = _evMeta(ev);
-  var img = ev.img && ev.img.src && /^https:\/\//.test(ev.img.src)
-    ? '<a class="sem-home-img" href="' + href + '"' + go + ' tabindex="-1" aria-hidden="true"><img src="' + escUrl(_imgSized(ev.img.src, 640)) + '" alt="" width="640" height="300" loading="lazy" decoding="async"></a>' : '';
-  return '<div class="sem-home">' + img
-    + '<div class="sem-home-body"><div class="etag">' + esc(tag || (cat.charAt(0).toUpperCase() + cat.slice(1))) + ' &middot; ' + esc(localDate(ev.date, { month: 'short', day: 'numeric', year: 'numeric' })) + '</div>'
-    + '<h5 aria-level="3"><a href="' + href + '"' + go + '>' + esc(ev.title) + '</a></h5>'
-    + (meta ? '<div class="emeta">' + meta + '</div>' : '') + (extra || '') + '</div></div>';
-}
-
 function renderHomeUpcoming() {
-  renderHomeSeminars();
   renderHomeCC();
   var box = document.getElementById('home-upcoming');
   if (!box) return;
@@ -4963,6 +4908,7 @@ function renderHomeUpcoming() {
   // The deploy writes the featured banner into the page so it shows with the first paint. Keep that
   // node (same event, English) rather than redrawing it, which phones would count as a late paint.
   var kept = feat && (typeof SC_I18N === 'undefined' || SC_I18N.getLang() === 'en') ? box.querySelector('.feat-ev[data-id="' + feat.id + '"]') : null;
+  if (kept && kept.querySelector('h5 a').textContent !== _homeTitle(feat)) kept = null;   // switched language: redraw
   // A slider that is already running gets rebuilt; the deploy's empty frame (no controls yet) is kept
   if (kept && kept.closest('.feat-slider') && kept.closest('.feat-slider').querySelector('.feat-ctrl')) kept = null;
   gridHtml += '<div id="home-near" class="home-near"></div>';
@@ -5148,7 +5094,7 @@ function _mountFeatSlider(first, slides) {
     el.setAttribute('aria-label', label(i));
   });
   var dots = slides.map(function(ev, i) {
-    return '<button type="button" class="feat-dot" aria-label="' + esc(label(i) + ': ' + ev.title) + '" onclick="featGo(' + i + ', true)"></button>';
+    return '<button type="button" class="feat-dot" aria-label="' + esc(label(i) + ': ' + _homeTitle(ev)) + '" onclick="featGo(' + i + ', true)"></button>';
   }).join('');
   slider.insertAdjacentHTML('beforeend', '<div class="feat-ctrl">'
     + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.previous', 'Previous')) + '" onclick="featGo(_featIdx - 1, true)">&#8249;</button>'
@@ -5221,13 +5167,19 @@ function _featTag(ev) {
 // No "Join on Zoom" button on the home page; a longer description and Read more instead (owner, 2026-11-05).
 // The join link stays on the event page.
 var FEAT_DESC_CHARS = 320;
+// Home slider and Near you: an English reader sees an English version of an event written in another
+// language (owner, 2026-11-09). The event's own page keeps the original.
+function _homeEnglish() { return typeof SC_I18N === 'undefined' || SC_I18N.getLang() === 'en'; }
+function _homeTitle(ev) { return ev.titleEn && _homeEnglish() ? ev.titleEn : ev.title; }
+function _homeDesc(ev) { return ev.descEn && _homeEnglish() ? ev.descEn : ev.desc; }
+
 function _featBannerHtml(feat) {
   return '<div class="feat-ev" data-id="' + esc(feat.id) + '">'
     + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(_imgSized(feat.img.src, 200)) + '" alt="" width="96" height="116">' : '')
     + '<div class="feat-ev-body"><div class="etag">' + esc(_featTag(feat)) + '</div>'
-    + '<h5 aria-level="3"><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(feat.title) + '</a></h5>'
+    + '<h5 aria-level="3"><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(_homeTitle(feat)) + '</a></h5>'
     + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
-    + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(feat.desc, FEAT_DESC_CHARS)) + '</p>' : '')
+    + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(_homeDesc(feat), FEAT_DESC_CHARS)) + '</p>' : '')
     + '<a class="feat-ev-more" href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(t('home.read_more', 'Read more')) + ' &rarr;</a>'
     + '</div></div>';
 }
@@ -5236,8 +5188,8 @@ function _homeEvRow(ev, isNow) {
   var d = new Date(ev.date + 'T12:00:00');
   var cat = String(ev.cat || 'event');
   var titleHtml = ev.id
-    ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>'
-    : '<a href="/events" onclick="showSec(\'events\');return false;">' + esc(ev.title) + '</a>';
+    ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(_homeTitle(ev)) + '</a>'
+    : '<a href="/events" onclick="showSec(\'events\');return false;">' + esc(_homeTitle(ev)) + '</a>';
   var meta = _evMeta(ev);
   return '<div class="evrow">'
     + '<div class="evdate"><div class="mo">' + esc(localDate(ev.date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
@@ -5386,7 +5338,7 @@ document.addEventListener('DOMContentLoaded', function() {
   _loadCachedEvents();
   if (_secVisible('events')) { renderCalendar(); renderEventList(); renderSeminars(); }
   renderMiniCal();
-  renderSidebarUpcoming();
+  renderHomeUpcoming();
   updateHeaderCalendar();
 });
 
@@ -5476,8 +5428,8 @@ function rerenderForLang() {
   var activeSection = document.querySelector('.pagesec.active');
   if (!activeSection) return;
   var id = activeSection.id.replace('sec-', '');
-  if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); renderSidebarUpcoming(); loadNewsFromSupabase(); }   // news sits on this page too
-  if (id === 'home') { renderSidebarUpcoming(); renderCotsWidget(); _homeNewsPromise = null; renderHomeExtras(); }   // home events box, slider and verse widget
+  if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); renderHomeUpcoming(); loadNewsFromSupabase(); }   // news sits on this page too
+  if (id === 'home') { renderHomeUpcoming(); renderCotsWidget(); _homeNewsPromise = null; renderHomeExtras(); }   // home events box, slider and verse widget
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
   if (id === 'marketplace') { renderMarketplace(); }
@@ -8839,6 +8791,34 @@ async function renderFacebookPages() {
     + _socialExtraHtml() + '</div></div>';
   el.innerHTML = html;
   updateMediaCount();
+  renderSocialDirectory(all);
+}
+
+// The directory's social media listings (Discord, Reddit, X, Instagram, Facebook groups), which live on
+// this page now (owner, 2026-11-09). Anything already listed in the blocks above is left out.
+var _socialDirRows = null;
+function _bareUrl(u) { return String(u || '').toLowerCase().split('?')[0].replace(/^https?:\/\/(www\.|m\.|web\.)?/, '').replace(/\/+$/, ''); }
+async function renderSocialDirectory(fbRows) {
+  var el = document.getElementById('social-more-block');
+  if (!el || !sbReady()) return;
+  if (!_socialDirRows) {
+    var r = await _sb.from('directory_entries').select('id, organization_name, website_url, location, is_verified')
+      .eq('status', 'approved').eq('category', 'social_media').order('organization_name');
+    if (r.error) { console.warn('Social listings failed:', r.error); return; }
+    _socialDirRows = r.data || [];
+  }
+  var seen = {};
+  fbRows.forEach(function (f) { seen[_bareUrl(f.url)] = true; });
+  (_socialExtraHtml().match(/href="[^"]+"/g) || []).forEach(function (a) { seen[_bareUrl(a.slice(6, -1))] = true; });
+  var rows = _socialDirRows.filter(function (e) { return !e.website_url || !seen[_bareUrl(e.website_url)]; });
+  if (!rows.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="listblock" style="margin-bottom:16px;"><div class="listblock-head"><h3>' + esc(t('podcasts.more_social', 'More Social Media')) + '</h3></div><div class="listblock-body">'
+    + rows.map(function (e) {
+        var link = e.website_url
+          ? '<a class="ltitle" href="' + escUrl(e.website_url) + '" target="_blank" rel="noopener">' + esc(e.organization_name) + '</a>'
+          : '<a class="ltitle" href="/listing/' + esc(e.id) + '" onclick="showDetail(\'directory\',\'' + esc(escJs(e.id)) + '\');return false;">' + esc(e.organization_name) + '</a>';
+        return '<div class="lrow">' + link + (e.location ? '<span class="lmeta">' + esc(e.location) + '</span>' : '') + (e.is_verified ? '<span class="lv">&#10003;</span>' : '') + '</div>';
+      }).join('') + '</div></div>';
 }
 
 // "Video & Social": hand-picked links on other platforms (Goetheanum TV, Instagram, ...), kept in the

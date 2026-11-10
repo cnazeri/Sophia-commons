@@ -2038,36 +2038,8 @@ footer {
 }
 .mc-grid .mc-d.other { color: var(--text-muted); opacity: .35; }
 
-/* ── SIDEBAR UPCOMING EVENTS ── */
-.sb-upcoming {
-  margin-bottom: 14px;
-}
-.sb-upcoming .sb-ev {
-  display: flex;
-  gap: 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-.sb-upcoming .sb-ev:last-child { border-bottom: none; }
-.sb-upcoming .sb-ev-date {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--gold-text);
-  text-align: center;
-  min-width: 30px;
-  line-height: 1.3;
-}
-.sb-upcoming .sb-ev-info h6 {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.35;
-  margin: 0;
-}
-.sb-upcoming .sb-ev-info span {
-  font-size: 10px;
-  color: var(--text-muted);
-}
+/* A last box alone on its row fills the row instead of leaving a gap (owner, 2026-11-09) */
+#dir-catgrid > .dir-card:last-child:nth-child(3n+1) { grid-column: 1 / -1; }
 
 /* ── SEMINARS & RETREATS LIST ── */
 .seminars-grid {
@@ -2877,8 +2849,6 @@ button[style*="background:var(--gold)"], a[style*="background:var(--gold)"] { co
 .cal-ev { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 .evinfo h5 a { color: inherit; }
 .evinfo h5 a:hover { color: var(--gold-text); }
-.sb-ev-info h6 a { color: inherit; }
-.sb-ev-info h6 a:hover { color: var(--gold-text); }
 .dp-event h5 a { color: var(--text-primary); }
 
 /* ── Page grid: never let one long word/nowrap widen the page ── */
@@ -2894,12 +2864,6 @@ footer { color: rgba(250,247,242,0.78); }
 .ftnl input::placeholder { color: rgba(250,247,242,0.6); }
 
 /* ── Home: community chat call-to-action (its background variable was undefined, so the text was invisible) ── */
-.chat-join-btn {
-  display: block; text-align: center; padding: 8px 12px; border-radius: 50px;
-  background: var(--gold); color: var(--on-gold); font-size: 12.5px; font-weight: 700;
-  transition: background .2s ease, transform .15s ease;
-}
-.chat-join-btn:hover { background: var(--gold-hover); color: var(--on-gold); text-decoration: none; transform: translateY(-1px); }
 
 /* ── Community spotlight (replaces invented "4,312 visits" stats) ── */
 .spotlight-card {
@@ -3016,7 +2980,6 @@ footer { color: rgba(250,247,242,0.78); }
 }
 @media (max-width: 540px) {
   #rightbar { grid-template-columns: 1fr; }
-  #rightbar .rb-cal .mini-cal { max-width: 340px; }
 }
 
 #cat-back::before { content: '\2190\00a0'; }
@@ -3366,14 +3329,6 @@ footer li a { display: inline-block; padding: 10px 0; }
 .fc-add { font-size: 12px; margin: 8px 0 2px; }
 .fc-add a { color: var(--gold-text); font-weight: 700; }
 
-/* ══════════════════ v1.22: one Podcasts, Video & Social Media block on the home page ══════════════════ */
-.media-block { grid-column: auto; }
-.media-cols { display: grid; grid-template-columns: 1fr; gap: 0; }
-.media-sub { font-size: 10px !important; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
-@media (max-width: 560px) {
-  .media-block { grid-column: auto; }
-  .media-cols { grid-template-columns: 1fr; }
-}
 
 /* ══════════════════ v1.23: monthly active users (admin Traffic) ══════════════════ */
 .mau-wrap { margin: 10px 0 22px; }

@@ -224,7 +224,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.116.4">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.117.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -486,14 +486,6 @@
     <div class="listblock-body" id="home-cc" style="padding:4px 10px 6px;"></div>
   </div>
   <div id="home-social"></div>
-  <!-- Seminars & Retreats: the next one study day, workshop, retreat or conference, with its picture (owner, 2026-10-24) -->
-  <div class="listblock reveal home-sem" id="home-sem-block" hidden style="margin-bottom:12px;">
-    <div class="listblock-head">
-      <h3 aria-level="2" data-i18n="home.sem_heading">Seminars &amp; Retreats</h3>
-      <a href="/events" onclick="showSec('events');return false;" data-i18n="home.sem_all">all events →</a>
-    </div>
-    <div class="listblock-body" id="home-sem" style="padding:4px 10px 6px;"></div>
-  </div>
   <!-- Jobs: featured job posts first, then the newest, in a slider like the news (owner, 2026-10-29) -->
   <div class="listblock reveal home-events home-news home-jobs" id="home-jobs-block" hidden style="margin-bottom:12px;">
     <div class="listblock-head">
@@ -650,6 +642,7 @@
   <div id="pod-video-spotlight" class="video-spotlight pod-video"></div>
   <div id="yt-channels-block"></div>
   <div id="fb-pages-block"></div>
+  <div id="social-more-block"></div>
   <div class="listblock reveal" id="featured-talk" style="margin-bottom:16px;"><div class="listblock-head"><h3 data-i18n="podcasts.featured_talk_heading">Featured Talk</h3></div>
     <div class="listblock-body">
       <div class="video-card" style="max-width:420px;">
@@ -675,7 +668,7 @@
   </div>
   <!-- Video & Social links: shown inside the Social Media block by renderFacebookPages() -->
   <template id="social-extra">
-    <div class="social-extra"><h4 class="media-top-h"><span data-i18n="podcasts.video_social_heading">Video &amp; Social</span> <a href="/category/social-media" onclick="showCategory('Social Media');return false;" data-i18n="podcasts.all_channels_link">all channels &rarr;</a></h4>
+    <div class="social-extra"><h4 class="media-top-h"><span data-i18n="podcasts.video_social_heading">Video &amp; Social</span></h4>
       <div class="lrow"><a class="ltitle" href="https://goetheanum.tv" target="_blank" rel="noopener">Goetheanum TV</a><span class="lmeta">Dornach, CH</span><span class="lv">✓</span></div>
       <div class="lrow"><a class="ltitle" href="https://dasgoetheanum.com/en" target="_blank" rel="noopener">Das Goetheanum Weekly</a><span class="lmeta">Online</span><span class="lv">✓</span></div>
       <div class="lrow"><a class="ltitle" href="https://www.youtube.com/@AnthroposophyUSA" target="_blank" rel="noopener">ASA YouTube Channel</a><span class="lmeta">YouTube</span><span class="lv">✓</span></div>
@@ -734,123 +727,6 @@
   </div>
 
 
-  <div class="catgrid">
-    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.societies_heading">Societies &amp; Organizations</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">14 →</a></div><ul>
-      <li><a href="https://goetheanum.ch/en/society" target="_blank">General Anthroposophical Society<sup>✓</sup></a></li>
-      <li><a href="https://anthroposophy.org/" target="_blank">Anthroposophical Society USA<sup>✓</sup></a></li>
-      <li><a href="https://www.anthroposophynyc.org/" target="_blank">Anthroposophy NYC<sup>✓</sup></a></li>
-      <li><a href="https://anthroposophyla.org/" target="_blank">ASA - Los Angeles Branch<sup>✓</sup></a></li>
-      <li><a href="https://anthroposophybayarea.org/" target="_blank">Anthroposophy Bay Area<sup>✓</sup></a></li>
-      <li><a href="https://www.rudolfsteiner.org/annarbor/" target="_blank">Rudolf Steiner House - Ann Arbor<sup>✓</sup></a></li>
-      <li><a href="https://www.sojournerbranch.org/" target="_blank">The Sojourner Branch, MA<sup>✓</sup></a></li>
-      <li><a href="https://rsh.anth.org.uk/" target="_blank">Rudolf Steiner House - London<sup>✓</sup></a></li>
-      <li><a href="https://anthroposophy.org.uk/" target="_blank">Anthroposophy in Great Britain<sup>✓</sup></a></li>
-      <li><a href="https://anthroposophy.ca/en/" target="_blank">Anth. Society Canada<sup>✓</sup></a></li>
-      <li><a href="https://www.anthroposophy.org.au/" target="_blank">Anth. Society Australia<sup>✓</sup></a></li>
-      <li><a href="https://www.seanz.org/" target="_blank">Steiner Education Aotearoa NZ<sup>✓</sup></a></li>
-    </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.waldorf_schools_heading">Waldorf Schools</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">36 →</a></div><ul>
-      <li><a href="https://www.waldorfeducation.org/" target="_blank">AWSNA (160+ schools)<sup>✓</sup></a></li>
-      <li><a href="https://www.publicwaldorf.org/" target="_blank">Alliance for Public Waldorf<sup>✓</sup></a></li>
-      <li><a href="https://waldorfearlychildhood.org/" target="_blank">Waldorf Early Childhood Assoc.<sup>✓</sup></a></li>
-      <li><a href="https://www.steiner.edu/" target="_blank">Rudolf Steiner School NYC<sup>✓</sup></a></li>
-      <li><a href="https://www.greenmeadow.org/" target="_blank">Green Meadow Waldorf<sup>✓</sup></a></li>
-      <li><a href="https://highlandhall.org/" target="_blank">Highland Hall Waldorf, CA<sup>✓</sup></a></li>
-      <li><a href="https://www.sacwaldorf.org/" target="_blank">Sacramento Waldorf School<sup>✓</sup></a></li>
-      <li><a href="https://www.kimberton.org/" target="_blank">Kimberton Waldorf School<sup>✓</sup></a></li>
-      <li><a href="https://www.highmowing.org/" target="_blank">High Mowing School, NH<sup>✓</sup></a></li>
-      <li><a href="https://hawthornevalley.org/" target="_blank">Hawthorne Valley Waldorf<sup>✓</sup></a></li>
-      <li><a href="https://desertmarigold.org/" target="_blank">Desert Marigold (Public), AZ<sup>✓</sup></a></li>
-      <li><a href="https://portlandvillageschool.org/" target="_blank">Portland Village School (Public)<sup>✓</sup></a></li>
-    </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.teacher_training_heading">Teacher Training</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">10 →</a></div><ul>
-      <li><a href="https://www.sunbridge.edu/" target="_blank">Sunbridge Institute<sup>✓</sup></a></li>
-      <li><a href="https://centerforanthroposophy.org/" target="_blank">Center for Anthroposophy<sup>✓</sup></a></li>
-      <li><a href="https://www.greatlakeswaldorf.org/" target="_blank">Great Lakes Waldorf Inst.<sup>✓</sup></a></li>
-      <li><a href="https://www.antioch.edu/academics/education/waldorf-education-med/" target="_blank">Antioch Univ. Waldorf M.Ed.<sup>✓</sup></a></li>
-      <li><a href="https://emerson.org.uk/" target="_blank">Emerson College, UK<sup>✓</sup></a></li>
-      <li><a href="https://www.alanus.edu/en/home" target="_blank">Alanus University, Germany<sup>✓</sup></a></li>
-      <li><a href="https://rscc.ca/" target="_blank">Rudolf Steiner College Canada<sup>✓</sup></a></li>
-      <li><a href="https://www.sophiainstitute.us/" target="_blank">Sophia Institute<sup>✓</sup></a></li>
-      <li><a href="https://studium.goetheanum.ch/en/online-studies" target="_blank">Goetheanum Studium Online<sup>✓</sup></a></li>
-    </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Biodynamic Agriculture');event.stopPropagation();" style="cursor:pointer;" data-i18n="directory.biodynamic_heading">Biodynamic Agriculture</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">12 →</a></div><ul>
-      <li><a href="https://www.biodynamics.com/" target="_blank">Biodynamic Association USA<sup>✓</sup></a></li>
-      <li><a href="https://demeter-usa.org/" target="_blank">Demeter USA<sup>✓</sup></a></li>
-      <li><a href="https://demeter.net/" target="_blank">Demeter International<sup>✓</sup></a></li>
-      <li><a href="https://hawthornevalley.org/" target="_blank">Hawthorne Valley Farm<sup>✓</sup></a></li>
-      <li><a href="https://www.kimbertoncsa.org/" target="_blank">Kimberton CSA<sup>✓</sup></a></li>
-      <li><a href="https://threefoldcommunityfarm.org/" target="_blank">Pfeiffer Center / Threefold Farm<sup>✓</sup></a></li>
-      <li><a href="https://www.freywine.com/" target="_blank">Frey Vineyards (biodynamic)<sup>✓</sup></a></li>
-      <li><a href="https://www.benziger.com/" target="_blank">Benziger Family Winery<sup>✓</sup></a></li>
-      <li><a href="https://www.biodynamic.org.uk/" target="_blank">Biodynamic Assoc. UK<sup>✓</sup></a></li>
-      <li><a href="https://biodynamics.net.au/" target="_blank">Biodynamic Assoc. Australia<sup>✓</sup></a></li>
-      <li><a href="https://biodynamic.org.nz/" target="_blank">Biodynamic Assoc. New Zealand<sup>✓</sup></a></li>
-    </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 onclick="showCategory('Anthroposophic Medicine');event.stopPropagation();" style="cursor:pointer;" data-i18n="directory.medicine_heading">Anthroposophic Medicine</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">14 →</a></div><ul>
-      <li><a href="https://anthroposophicmedicine.org/" target="_blank">PAAM (Physicians Assoc.)<sup>✓</sup></a></li>
-      <li><a href="https://www.ivaa.info/" target="_blank">IVAA International<sup>✓</sup></a></li>
-      <li><a href="https://medicalsection.goetheanum.ch/" target="_blank">Goetheanum Medical Section<sup>✓</sup></a></li>
-      <li><a href="https://www.klinik-arlesheim.ch/" target="_blank">Klinik Arlesheim<sup>✓</sup></a></li>
-      <li><a href="https://www.herdecke.de/" target="_blank">Gemeinschaftskrankenhaus Herdecke<sup>✓</sup></a></li>
-      <li><a href="https://www.filderklinik.de/" target="_blank">Filderklinik<sup>✓</sup></a></li>
-      <li><a href="https://www.raphaelhospital.co.uk/" target="_blank">Raphael Hospital, UK<sup>✓</sup></a></li>
-      <li><a href="https://www.weleda.com/" target="_blank">Weleda USA<sup>✓</sup></a></li>
-      <li><a href="https://shopuriel.com/" target="_blank">Uriel Pharmacy<sup>✓</sup></a></li>
-      <li><a href="https://www.truebotanica.com/" target="_blank">True Botanica<sup>✓</sup></a></li>
-      <li><a href="https://www.wala.world/en/" target="_blank">WALA Medicines<sup>✓</sup></a></li>
-    </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.camphill_heading">Camphill &amp; Communities</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">24 →</a></div><ul>
-      <li><a href="https://www.camphill.org/" target="_blank">Camphill Assoc. North America<sup>✓</sup></a></li>
-      <li><a href="https://camphillvillage.org/" target="_blank">Camphill Village USA, Copake<sup>✓</sup></a></li>
-      <li><a href="https://www.camphillkimberton.org/" target="_blank">Camphill Village Kimberton Hills<sup>✓</sup></a></li>
-      <li><a href="https://www.camphillschool.org/" target="_blank">The Camphill School<sup>✓</sup></a></li>
-      <li><a href="https://www.camphillsoltane.org/" target="_blank">Camphill Soltane<sup>✓</sup></a></li>
-      <li><a href="https://camphillca.org/" target="_blank">Camphill Communities CA<sup>✓</sup></a></li>
-      <li><a href="https://www.camphillminnesota.org/" target="_blank">Camphill Village Minnesota<sup>✓</sup></a></li>
-      <li><a href="https://www.heartbeetcamphill.org/" target="_blank">Heartbeet Lifesharing<sup>✓</sup></a></li>
-      <li><a href="https://www.triformcamphill.org/" target="_blank">Triform Camphill<sup>✓</sup></a></li>
-      <li><a href="https://www.camphillghent.org/" target="_blank">Camphill Ghent<sup>✓</sup></a></li>
-      <li><a href="https://www.plowsharefarm.org/" target="_blank">Plowshare Farm<sup>✓</sup></a></li>
-      <li><a href="https://www.communityhomestead.org/" target="_blank">Community Homestead, WI<sup>✓</sup></a></li>
-      <li><a href="https://threefold.org/" target="_blank">Threefold Community<sup>✓</sup></a></li>
-      <li><a href="https://www.fellowshipcommunity.org/" target="_blank">Fellowship Community<sup>✓</sup></a></li>
-      <li><a href="https://www.newtondee.org.uk/" target="_blank">Newton Dee Village, Scotland<sup>✓</sup></a></li>
-      <li><a href="https://www.cvt.org.uk/botton-village" target="_blank">Botton Village, UK<sup>✓</sup></a></li>
-    </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.eurythmy_heading">Eurythmy &amp; Arts</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">7 →</a></div><ul>
-      <li><a href="https://www.eurythmy.org/" target="_blank">Eurythmy Spring Valley<sup>✓</sup></a></li>
-      <li><a href="https://eana.org/" target="_blank">Eurythmy Assoc. North America<sup>✓</sup></a></li>
-      <li><a href="https://soundcircleeurythmy.org/" target="_blank">Sound Circle Eurythmy<sup>✓</sup></a></li>
-      <li><a href="https://therapeuticeurythmytraining.com/" target="_blank">Therapeutic Eurythmy Training<sup>✓</sup></a></li>
-      <li><a href="https://eurythmyuk.org/" target="_blank">Eurythmy UK (Peredur)<sup>✓</sup></a></li>
-      <li><a href="https://www.auriel-eurythmy.org/" target="_blank">Auriel Eurythmy, Mexico<sup>✓</sup></a></li>
-      <li><a href="https://creativespeech.org/" target="_blank">Speech Arts Assoc. NA<sup>✓</sup></a></li>
-    </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.publishers_heading">Publishers &amp; Media</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">11 →</a></div><ul>
-      <li><a href="https://steinerbooks.org/" target="_blank">SteinerBooks / Anthro. Press<sup>✓</sup></a></li>
-      <li><a href="https://www.rudolfsteinerpress.com/" target="_blank">Rudolf Steiner Press, UK<sup>✓</sup></a></li>
-      <li><a href="https://www.templelodge.com/" target="_blank">Temple Lodge Publishing<sup>✓</sup></a></li>
-      <li><a href="https://rsarchive.org/" target="_blank">Rudolf Steiner Archive<sup>✓</sup></a></li>
-      <li><a href="https://www.rudolfsteinerelib.org/" target="_blank">Rudolf Steiner e.Lib<sup>✓</sup></a></li>
-      <li><a href="https://www.waldorflibrary.org/" target="_blank">Waldorf Library Online<sup>✓</sup></a></li>
-      <li><a href="https://lilipoh.com/" target="_blank">LILIPOH Magazine<sup>✓</sup></a></li>
-      <li><a href="https://anthroposophy.org/being-human/" target="_blank">Being Human Magazine<sup>✓</sup></a></li>
-      <li><a href="https://www.newview.org.uk/" target="_blank">New View Magazine, UK<sup>✓</sup></a></li>
-      <li><a href="https://anthroposophy.org/podcast/" target="_blank">The Anthroposopher Podcast<sup>✓</sup></a></li>
-    </ul></div>
-    <div class="catblock reveal"><div class="catblock-head"><h3 data-i18n="directory.cc_heading">Christian Community</h3><a href="#" onclick="showSec('browse');return false;" class="alllink">46 →</a></div><ul>
-      <li><a href="https://www.thechristiancommunity.org/" target="_blank">CCNA - North America<sup>✓</sup></a></li>
-      <li><a href="https://www.thechristiancommunity.org/congregations-by-region/" target="_blank">16 NA Congregations<sup>✓</sup></a></li>
-      <li><a href="https://christengemeinschaft-international.org/en" target="_blank">International HQ, Berlin<sup>✓</sup></a></li>
-      <li><a href="https://www.christiancommunitynyc.org" target="_blank">New York City<sup>✓</sup></a></li>
-      <li><a href="http://www.thechristiancommunitysf.org" target="_blank">San Francisco<sup>✓</sup></a></li>
-      <li><a href="https://christiancommunitysacramento.org" target="_blank">Sacramento / Fair Oaks<sup>✓</sup></a></li>
-      <li><a href="http://thechicagochristiancommunity.org" target="_blank">Chicago<sup>✓</sup></a></li>
-      <li><a href="http://www.thechristiancommunity.co.uk" target="_blank">UK - National<sup>✓</sup></a></li>
-      <li><a href="https://www.christiancommunityseminary.ca" target="_blank">Seminary - Canada<sup>✓</sup></a></li>
-    </ul></div>
-  </div>
   <div id="dir-community">
   <hr class="soft">
   <div class="seclabel" data-i18n="home.community_resources">Community &amp; Resources</div>
@@ -918,57 +794,6 @@
     </div>
   </div>
 
-  <!-- Community Chat teaser + Podcasts teaser -->
-  <div class="catgrid" style="margin-top:0;">
-    <div class="catblock reveal" style="background:#faf6f2;border-color:#e0c8b8;">
-      <div class="catblock-head" style="background:#f5ece0;border-bottom-color:#e0c8b8;">
-        <h3 aria-level="2" style="color:var(--warm);" data-i18n="home.community_chat">Community Chat</h3>
-        <span style="font-size:10.5px;color:var(--warm);font-style:italic;" data-i18n="home.members_only">members only</span>
-      </div>
-      <ul style="padding:6px 10px 4px;">
-        <li style="margin-bottom:3px;font-size:11.5px;color:var(--muted);"># general &nbsp;·&nbsp; # waldorf-education</li>
-        <li style="margin-bottom:3px;font-size:11.5px;color:var(--muted);"># biodynamic &nbsp;·&nbsp; # medicine</li>
-        <li style="margin-bottom:3px;font-size:11.5px;color:var(--muted);"># eurythmy-arts &nbsp;·&nbsp; # study-groups</li>
-        <li style="margin-bottom:6px;font-size:11.5px;color:var(--muted);"># meetups &nbsp;·&nbsp; # christian-community</li>
-      </ul>
-      <div style="padding:0 10px 8px;">
-        <a href="#" class="chat-join-btn" onclick="handleChat();return false;" data-i18n="home.sign_in_to_join">sign in to join chat →</a>
-      </div>
-    </div>
-    <div class="catblock reveal">
-      <div class="catblock-head"><h3 aria-level="2" onclick="showCategory('Community & Camphill');event.stopPropagation();" style="cursor:pointer;" data-i18n="catmeta.camphill_name">Community &amp; Camphill</h3><span class="alllink">67</span></div>
-      <ul>
-        <li><a href="#" onclick="showSec('browse');return false;">Camphill communities</a></li>
-        <li><a href="#" onclick="showSec('browse');return false;">Co-worker positions</a></li>
-        <li><a href="#" onclick="showSec('browse');return false;">Intentional communities</a></li>
-        <li><a href="#" onclick="showSec('browse');return false;">Volunteer opportunities</a></li>
-        <li><a href="https://www.ic.org/directory/camphill-village-usa-inc/" target="_blank">Camphill Village USA<sup>✓</sup></a></li>
-        <li><a href="https://camphill.edu" target="_blank">Camphill Academy<sup>✓</sup></a></li>
-      </ul>
-    </div>
-    <div class="catblock reveal media-block">
-      <div class="catblock-head"><h3 aria-level="2" onclick="showSec('podcasts');event.stopPropagation();" style="cursor:pointer;" data-i18n="home.media_social">Podcasts, Video &amp; Social Media</h3><span class="alllink">48</span></div>
-      <div class="media-cols">
-        <ul>
-          <li class="media-sub" data-i18n="home.media_sub_podcasts">podcasts &amp; video</li>
-          <li><a href="#" onclick="showSec('podcasts');return false;">ASA Official Podcast<sup>✓</sup></a></li>
-          <li><a href="#" onclick="showSec('podcasts');return false;">Goetheanum Podcast<sup>✓</sup></a></li>
-          <li><a href="#" onclick="showSec('podcasts');return false;">Inner Work Path<sup>✓</sup></a></li>
-          <li><a href="#" onclick="showSec('podcasts');return false;">Rudolf Steiner Audio<sup>✓</sup></a></li>
-          <li><a href="/podcasts" onclick="showSec('podcasts');return false;" data-i18n="home.media_all_podcasts">all podcasts &amp; 66 YouTube channels →</a></li>
-        </ul>
-        <ul>
-          <li class="media-sub" data-i18n="home.media_sub_social">social media</li>
-          <li><a href="https://www.youtube.com/@Goetheanum" target="_blank" rel="noopener">Goetheanum TV (YouTube)<sup>✓</sup></a></li>
-          <li><a href="https://www.facebook.com/groups/QA.anthroposophia" target="_blank" rel="noopener">Anthroposophy Q&amp;A (Facebook)</a></li>
-          <li><a href="https://x.com/goetheanum" target="_blank" rel="noopener">Goetheanum (X/Twitter)<sup>✓</sup></a></li>
-          <li><a href="https://www.instagram.com/goetheanum_deutsch/" target="_blank" rel="noopener">Goetheanum (Instagram)<sup>✓</sup></a></li>
-          <li><a href="/category/social-media" onclick="showCategory('Social Media');return false;" data-i18n="home.media_all_social">all 25 social media pages →</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
   </div>
 </div>
 
@@ -990,11 +815,14 @@
       <div class="lrow res-row"><a class="ltitle" href="http://www.rudolf-steiner-handbuch.de/images/Handbook.pdf" target="_blank" rel="noopener">Rudolf Steiner Handbook (PDF, 35 MB)</a><span class="res-desc">Christian Karl&#39;s standard guide to finding your way through Rudolf Steiner&#39;s Collected Works, free to download.</span></div>
       <!-- First 10 stay in this order; the pull-down below is A-Z (owner, 2026-11-06) -->
       <div id="res-more" class="more-rows" hidden>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/basics-of-starwisdom" target="_blank" rel="noopener">A New Astrology: Basics of Star Wisdom</a><span class="res-desc">Five-part recorded webinar series on a western anthroposophic sidereal astrology, including how to read your birth chart, with Brian Gray, Robert Schiappacasse and David Tresemer. Paid course from The StarHouse.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/1732994" target="_blank" rel="noopener">A New Astrology, Series 2</a><span class="res-desc">Six-part webinar series, following Basics of Star Wisdom. From The StarHouse.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.anthromedics.org/" target="_blank" rel="noopener">Anthromedics</a><span class="res-desc">Online platform for anthroposophic medicine, with articles for practitioners.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://anthroposophysocial.com/" target="_blank" rel="noopener">Anthroposophy.Social</a><span class="res-desc">Online community for anthroposophy, hosted on Mighty Networks. You sign in to take part.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://anthrowiki.at/Hauptseite" target="_blank" rel="noopener">AnthroWiki (German)</a><span class="res-desc">German encyclopedia of anthroposophy with over 17,000 articles, online since 2004.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://anthro.world/Hauptseite" target="_blank" rel="noopener">AnthroWorld</a><span class="res-desc">Transcribed lectures, reading circles and courses, with video and keyword glossaries. In German.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.jpibiodynamics.org/blogs/applied-biodynamics" target="_blank" rel="noopener">Applied Biodynamics Archive</a><span class="res-desc">Josephine Porter Institute research journal, with back issues 1 to 109 free to read.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/1572761" target="_blank" rel="noopener">Astrology of Plagues: Pandemics in the Light of Star Wisdom</a><span class="res-desc">Three-part webinar series. From The StarHouse.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://astrosophy.app/" target="_blank" rel="noopener">Astrosophy</a><span class="res-desc">Star wisdom through spiritual science: today&#39;s planetary day, the daily sky, birth charts, biography and constitution.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.anthroposophy.org/being-human" target="_blank" rel="noopener">being human</a><span class="res-desc">Twice-yearly magazine of the Anthroposophical Society in America, with past issues online.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://eurythmie.net/" target="_blank" rel="noopener">Berufsverband Eurythmie</a><span class="res-desc">German professional association for eurythmy, with the journal Auftakt and publications.</span></div>
@@ -1010,8 +838,10 @@
       <div class="lrow res-row"><a class="ltitle" href="https://www.anthroposophie.net/steiner/bib_steiner_fuer_die_tage_der_woche.htm" target="_blank" rel="noopener">For the Days of the Week</a><span class="res-desc">One must devote attention and care to certain processes of the soul that one usually carries out carelessly and inattentively. There are eight such processes. (Rudolf Steiner, in German)</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.forschungsring.de/de/" target="_blank" rel="noopener">Forschungsring</a><span class="res-desc">German biodynamic research institute, founded 1946, with current projects and publications.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://dokumentationen.kulturimpuls.org/" target="_blank" rel="noopener">Forschungsstelle Kulturimpuls</a><span class="res-desc">About 1,500 biographies of 20th-century anthroposophists, plus entries on 55,000 other people. In German.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/goddesses-of-america" target="_blank" rel="noopener">Goddesses of America</a><span class="res-desc">Seven-part online course with Lila Tresemer. From The StarHouse.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="http://www.hamoves.net/" target="_blank" rel="noopener">HAmoves Eurythmy</a><span class="res-desc">The art of harmonious movement.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://iaswece.org/start-seite/" target="_blank" rel="noopener">IASWECE</a><span class="res-desc">International Waldorf early childhood network with articles, research and reading lists.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/1611020" target="_blank" rel="noopener">Illuminated Relationships</a><span class="res-desc">Four-part video series. From The StarHouse.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.threefolding.org/" target="_blank" rel="noopener">Institute for Social Threefolding</a><span class="res-desc">Essays, a glossary and a bibliography on Steiner's threefold social ideas.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.lebendigeerde.de" target="_blank" rel="noopener">Lebendige Erde</a><span class="res-desc">German subscription magazine on biodynamic agriculture, from Forschungsring.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://lilipoh.com/" target="_blank" rel="noopener">Lilipoh</a><span class="res-desc">US magazine on health, wellness and spirit from an anthroposophical view.</span></div>
@@ -1028,23 +858,31 @@
       <div class="lrow res-row"><a class="ltitle" href="https://www.rudolf-steiner.com/en" target="_blank" rel="noopener">Rudolf Steiner Archive (Dornach)</a><span class="res-desc">Steiner's estate archive in Dornach, with pages on its records, research, editions and exhibitions.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://anthroposophische-verlage.com/rudolf-steiner-gesamtausgabe-digital/" target="_blank" rel="noopener">Rudolf Steiner Gesamtausgabe digital</a><span class="res-desc">Paid online subscription to the complete works and notebooks, from Rudolf Steiner Verlag. In German.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://rudolfsteinerlibrary.org/" target="_blank" rel="noopener">Rudolf Steiner Library</a><span class="res-desc">US anthroposophical library of 50,000+ items, with an online catalog and lending by mail.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/1689520" target="_blank" rel="noopener">Sacred Sites as Consciousness Tools</a><span class="res-desc">Seven-part recorded webinar series led by Lila and David Tresemer. From The StarHouse.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.sektion-landwirtschaft.org/en/" target="_blank" rel="noopener">Section for Agriculture</a><span class="res-desc">Goetheanum section with biodynamic articles, a podcast, conference documentation and circular letters.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://ssw.goetheanum.org/en/" target="_blank" rel="noopener">Section for Literary Arts and Humanities</a><span class="res-desc">Goetheanum section on the science of the senses and language, with a media library.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://mas.goetheanum.ch/en" target="_blank" rel="noopener">Section for Mathematics and Astronomy</a><span class="res-desc">Goetheanum section with an observatory, research papers and a documents archive.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://srmk.goetheanum.org/en/" target="_blank" rel="noopener">Section for the Performing Arts</a><span class="res-desc">Goetheanum section on eurythmy, speech formation, music and puppetry, with study information.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.sab.org.br/" target="_blank" rel="noopener">Sociedade Antroposofica no Brasil</a><span class="res-desc">Brazilian Society site with an archive of articles, texts, videos and a list of Steiner's works. In Portuguese.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/1687985" target="_blank" rel="noopener">Sophia Lineage</a><span class="res-desc">Seven-part self-guided course with Lila Tresemer. From The StarHouse.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://southerncrossreview.org/" target="_blank" rel="noopener">Southern Cross Review</a><span class="res-desc">Online magazine with essays and translations on anthroposophy and culture.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/" target="_blank" rel="noopener">StarHouse</a><span class="res-desc">Stone temple and school for souls on 140 acres in the foothills of Boulder, Colorado, with ceremonies, courses and Star Wisdom webinars.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/1572838" target="_blank" rel="noopener">StarWisdom at the StarHouse</a><span class="res-desc">Two-hour recorded webinar with Brian Gray, Robert Schiappacasse and David Tresemer.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://steiner-studies.org/" target="_blank" rel="noopener">Steiner Studies</a><span class="res-desc">Peer-reviewed journal for critical research on Rudolf Steiner, in English and German.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://steiner.wiki/Hauptseite" target="_blank" rel="noopener">SteinerWiki</a><span class="res-desc">Free wiki of Steiner's works: older Gesamtausgabe editions as PDF and ebook, plus lecture transcripts. In German.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://spikenardfarm.org/" target="_blank" rel="noopener">Stella Natura (Spikenard Farm)</a><span class="res-desc">Biodynamic bee sanctuary that now sells the Stella Natura planting calendar; 2027 edition out.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://ssw.goetheanum.org/en/publikationen/stil/stil" target="_blank" rel="noopener">STIL</a><span class="res-desc">Goetheanum magazine on Goetheanism in art and science, from two of its arts sections. In German. Subscription.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/1689505" target="_blank" rel="noopener">The 12 Senses</a><span class="res-desc">Six-part video series with Lila and David Tresemer. From The StarHouse.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/1738945" target="_blank" rel="noopener">The Grand Conjunction of Jupiter and Saturn</a><span class="res-desc">Three-part series. From The StarHouse.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.natureinstitute.org/" target="_blank" rel="noopener">The Nature Institute</a><span class="res-desc">Goethean science institute with writings, the In Context newsletter, a podcast and online courses.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/2147916964" target="_blank" rel="noopener">The Rise of Science and Technology in the Light of Star Wisdom</a><span class="res-desc">Five recorded presentations. From The StarHouse.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/2149528836" target="_blank" rel="noopener">Three Powerful Young Women</a><span class="res-desc">Michaelic contemporaries, seen through Star Wisdom. Recorded course from The StarHouse.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://sbk.goetheanum.org/en/" target="_blank" rel="noopener">Visual Arts Section</a><span class="res-desc">Goetheanum section with research, videos and literature on anthroposophical art.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.wcurriculum.com/" target="_blank" rel="noopener">W Curriculum</a><span class="res-desc">Waldorf curriculum notes and free resources, from early childhood through high school.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.waldorf-resources.org/en/" target="_blank" rel="noopener">Waldorf Resources</a><span class="res-desc">Portal for Steiner Waldorf educators with essays, publications and a vertical curriculum.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.wynstonespress.com/" target="_blank" rel="noopener">Wynstones Press</a><span class="res-desc">UK bookshop for Wynstones Press and Mercury Press titles, with a yearly calendar. Ships to most of Europe and some other countries.</span></div>
       </div>
-      <button type="button" class="ev-more more-toggle" aria-controls="res-more" aria-expanded="false" data-more="Show all 63 resources" data-less="Show fewer" onclick="_moreToggle(this)">Show all 63 resources</button>
+      <button type="button" class="ev-more more-toggle" aria-controls="res-more" aria-expanded="false" data-more="Show all 76 resources" data-less="Show fewer" onclick="_moreToggle(this)">Show all 76 resources</button>
     </div>
   </div>
   <div id="top50-books"></div>
@@ -2130,11 +1968,6 @@
   <div id="days-widget" class="dx"></div>
   </section>
 
-  <section class="rb-sec rb-cal">
-  <h5 aria-level="2" data-i18n="rightbar.upcoming_events">upcoming events</h5>
-  <div id="sidebar-upcoming" class="sb-upcoming"></div>
-  </section>
-
   <section class="rb-sec rb-moon">
   <h5 aria-level="2">cycle of the moon</h5>
   <div id="moon-widget-sidebar" style="text-align:center;margin-bottom:12px;">
@@ -2207,20 +2040,20 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.116.4</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.117.0</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.116.4"></script>
-<script defer src="/i18n.js?v=1.116.4"></script>
-<script defer src="/sophia_commons_v9.js?v=1.116.4"></script>
-<script defer src="/blog.js?v=1.116.4"></script>
-<script defer src="/claims.js?v=1.116.4"></script>
-<script defer src="/events_organizer.js?v=1.116.4"></script>
-<script defer src="/account.js?v=1.116.4"></script>
+<script defer src="/sb-init.js?v=1.117.0"></script>
+<script defer src="/i18n.js?v=1.117.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.117.0"></script>
+<script defer src="/blog.js?v=1.117.0"></script>
+<script defer src="/claims.js?v=1.117.0"></script>
+<script defer src="/events_organizer.js?v=1.117.0"></script>
+<script defer src="/account.js?v=1.117.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
