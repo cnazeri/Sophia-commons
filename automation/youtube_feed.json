@@ -1,10 +1,19 @@
 {
- "generated_at": "2026-11-11T20:12:51.062184+00:00",
+ "generated_at": "2026-11-12T20:49:30.784454+00:00",
  "channels": [
   {
    "slug": "goetheanum",
    "name": "Goetheanum",
    "latest": [
+    {
+     "video_id": "JLXsx4yWXQM",
+     "title": "Podiumsdiskussion · Drei Generationen ArchivleiterInnen",
+     "url": "https://www.youtube.com/watch?v=JLXsx4yWXQM",
+     "thumbnail_url": "https://i3.ytimg.com/vi/JLXsx4yWXQM/hqdefault.jpg",
+     "published_at": "2026-11-12T12:02:39+00:00",
+     "description": "🔗 Jetzt auf Goetheanum TV: https://goetheanum.tv/programs/podiumsdiskussion-drei-generationen-archivleiterinnen\n\nWas für eine Transformation: Von ehemals 17 Mitarbeitenden schrumpfte das Team des Rudolf-Steiner-Archivs zuletzt auf 9 – und das mitten in der Phase, in der die monumentale, 450-bändige Gesamtausgabe (GA) gedruckt abgeschlossen wurde. In einer feierlichen und zugleich nahbaren Gesprächsrunde blicken die aktuelle Archivleitung sowie ihre zwei Vorgängergenerationen zurück auf Krisen, Meilensteine und skurrile Funde im Keller des Archivs.\n\nEin Beitrag mit Walter Kugler, David Mark Hoffmann, Angelika Schmitt und Philip Kovce zum Festakt zur Vollendung der Rudolf-Steiner-Gesamtausgabe.",
+     "channel_slug": "goetheanum"
+    },
     {
      "video_id": "UKGfXO1_p8o",
      "title": "🎶 Schubert bewegt – zum Zuhören, Entdecken und Mittanzen.",
@@ -21,15 +30,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/cu4tpS2fnbU/hqdefault.jpg",
      "published_at": "2026-11-04T12:02:51+00:00",
      "description": "🔗 jetzt auf Goetheanum.TV: https://goetheanum.tv/programs/im-klappern-der-schreibmaschine-selg\n\nPeter Selg würdigt Helene Finckh (1883–1960), die brillante Stenografin Rudolf Steiners. Sie hielt rund ein Drittel seines Vortragswerks – etwa 1700 Vorträge – wortgetreu fest, übertrug sie in Reinschrift und bewahrte so spirituell zentrale Inhalte. Der Vortrag schildert ihren Weg von Stuttgart ans Goetheanum, geprägt von Verlusten und stiller Hingabe, und zeigt, wie ihre Arbeit das gesprochene Wort Steiners dauerhaft macht.\n\nEin Beitrag von Peter Selg zum Festakt zur Vollendung der Rudolf-Steiner-Gesamtausgabe.",
-     "channel_slug": "goetheanum"
-    },
-    {
-     "video_id": "sHSFsCFmrMo",
-     "title": "Sprich auch du",
-     "url": "https://www.youtube.com/watch?v=sHSFsCFmrMo",
-     "thumbnail_url": "https://i4.ytimg.com/vi/sHSFsCFmrMo/hqdefault.jpg",
-     "published_at": "2026-11-02T12:31:13+00:00",
-     "description": "Wie können Sprache, Dichtung und Bewegung einander begegnen?\n\nEurythmieBerlin bringt beim Eurythmie-Festival 2025 mit «Sprich auch du» Sprache in Bewegung. Eine Arbeit, in der Wort, Rhythmus und Geste zu einem gemeinsamen Ausdruck werden.\n\n🎥 Jetzt auf Goetheanum TV anschauen: https://goetheanum.tv/programs/eurythmieberlin-sprich-auch-du-eurythmie-festival-2025",
      "channel_slug": "goetheanum"
     }
    ]
@@ -237,30 +237,30 @@
    "name": "AnthroWorld",
    "latest": [
     {
+     "video_id": "Q9_GJ5HMS9g",
+     "title": "34. Folge | Lesekreis | Das Hereinwirken geistiger Wesenheiten in den Menschen | Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=Q9_GJ5HMS9g",
+     "thumbnail_url": "https://i2.ytimg.com/vi/Q9_GJ5HMS9g/hqdefault.jpg",
+     "published_at": "2026-11-12T10:57:44+00:00",
+     "description": "Lesekreis \"Das Hereinwirken geistiger Wesenheiten in den Menschen\" vom 11. November 2026, GA 102\n(13 Vorträge von Rudolf Steiner, gehalten in Berlin 1908)\n\nDokumentation des Lesekreises:\nhttps://anthro.world/Das_Hereinwirken_geistiger_Wesenheiten_in_den_Menschen_(GA_102)_als_online_Lesekreis#Inhalte_der_Vortr%C3%A4ge\n\nTipp: Im Vortrag fallen immer wieder Fachbegriffe aus der Anthroposophie. Wer gerne Näheres zu bestimmten Themen oder Begriffen der Anthroposophie recherchieren möchte, dem empfehlen wir das „Gesamtglossar“ auf anthro.world (Link https://anthro.world/Gesamtglossar_A#A). Beim Öffnen findet ihr oben eine Alphabet-Leiste, über die gesuchte Begriffe gefunden werden können. Die Inhalte sind verlinkt mit Anthrowiki und den Glossareinträgen, d.h. Aussagen diverser Vortragender zum gesuchten Begriff.\nDanke für euer Interesse und euer Mitdenken!\n\nDie hier angeführten Seitenzahlen beziehen sich auf https://steiner.wiki/GA_102\n\n\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://steiner.wiki\nhttps://biodyn.wiki",
+     "channel_slug": "anthroworld"
+    },
+    {
+     "video_id": "yJLc7B4AXK0",
+     "title": "6. Folge | Lesekreis | Aus der Akasha-Forschung. Das Fünfte Evangelium | Rudolf Steiner | 2026",
+     "url": "https://www.youtube.com/watch?v=yJLc7B4AXK0",
+     "thumbnail_url": "https://i2.ytimg.com/vi/yJLc7B4AXK0/hqdefault.jpg",
+     "published_at": "2026-11-12T00:24:42+00:00",
+     "description": "Lesekreis \"Aus der Akasha-Forschung/Das Fünfte Evangelium\" vom 3. November 2026, GA 148, (18 Vorträge von Rudolf Steiner, 1913 und 1914 gehalten in verschiedenen Städten)\n\nhttps://anthro.world/Online-Lesekreis\nhttps://anthrowiki.at\nhttps://steiner.wiki\nhttps://biodyn.wiki",
+     "channel_slug": "anthroworld"
+    },
+    {
      "video_id": "blQY8x3r8ws",
      "title": "11. Folge/11. Staffel | Die Nebenübungen in Gruppenarbeit | Rudolf Steiner",
      "url": "https://www.youtube.com/watch?v=blQY8x3r8ws",
      "thumbnail_url": "https://i3.ytimg.com/vi/blQY8x3r8ws/hqdefault.jpg",
      "published_at": "2026-11-11T15:35:45+00:00",
      "description": "Treffen vom 4. November 2026\n\nDiese Gruppe trifft sich wöchentlich zum Austausch über die eigenen Erfahrungen und Anliegen mit den Nebenübungen von Rudolf Steiner. Immer mittwochs 10:00h. Die Ausstrahlung findet i.d.R. am Folgetag statt.\n\nHast du Interesse mitzumachen? Dann informiere dich hier https://anthro.world/Die_Neben%C3%BCbungen_von_Rudolf_Steiner_in_Gruppenarbeit \n\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://steiner.wiki\nhttps://biodyn.wiki",
-     "channel_slug": "anthroworld"
-    },
-    {
-     "video_id": "P3XVoznlVBk",
-     "title": "340. Folge | Die Apokalypse des Johannes | Dr. Wolfgang Peter | Anthroposophie | Rudolf Steiner",
-     "url": "https://www.youtube.com/watch?v=P3XVoznlVBk",
-     "thumbnail_url": "https://i1.ytimg.com/vi/P3XVoznlVBk/hqdefault.jpg",
-     "published_at": "2026-11-11T05:20:57+00:00",
-     "description": "https://anthro.world/Die_Apokalypse_des_Johannes_-_340._Vortrag_von_Wolfgang_Peter,_2026\nVortrag vom 10. November 2026",
-     "channel_slug": "anthroworld"
-    },
-    {
-     "video_id": "kkeoOYZ8E8M",
-     "title": "Michael Rheinheimer | Faust als Goetheanist | Essen, 2026",
-     "url": "https://www.youtube.com/watch?v=kkeoOYZ8E8M",
-     "thumbnail_url": "https://i4.ytimg.com/vi/kkeoOYZ8E8M/hqdefault.jpg",
-     "published_at": "2026-11-07T14:40:15+00:00",
-     "description": "Transkript lesen:\nhttps://anthro.world/Faust_als_Goetheanist_-_ein_Vortrag_von_Michael_Rheinheimer,_2026\n\nHier sehen wir Michael Rheinheimer, Priester der Christengemeinschaft Bonn-Bad Godesberg am 5. November 2026 zu Gast bei der goetheanistisch-Anthroposophischen Vortragsinitiative von Maria Marg und Ulrich Roehm in der Kapelle des ChorForums Essen. \nThema des Vortrags: „Faust als Goetheanist“. Film und Schnitt: François Hagdorn.\n\nZitat1:\n„Faust 1 und 2, diese beiden Teile von Johann Wolfgang von Goethe, ist das Mysteriendrama des Goetheanismus. \nWas ist Goetheanismus? […] Goetheanismus könnte man sagen, ist eine Wissenschaftsmethode, die versucht, um es mit dem Faust zu sagen, das, was die Welt im Innersten zusammenhält. Nicht durch Spekulation, durch Hypothese, durch Vorstellungsmodelle zu erfassen und damit nur zum Augenblicke zu sagen …  „verweile doch, du bist so schön“ […] durch reine Wahrnehmung, durch vorurteilsloses Anschauen so beobachten zu können, dass ein Raum entsteht, in dem sich das Wesen der Dinge aus sich selbst heraus offenbaren kann. Oder vielleicht, um das mit den drei Erzengeln zu sagen, dass die Schöpfung, die herrlich ist wie am ersten Tag, dem Anblick der Menschen, die so ein goetheanistisches Wahrnehmungsorgan aus sich erbildet haben, Stärke geben kann.“\n\nZitat2:\n„Vielleicht müsste man heute sagen … und leider auch die ganze GA, durchaus studiert, in heißem Bemühen. Da stehe ich nun, ich armer Tor und bin so schlau als wie zuvor. Der Faust würde das merken. Wagner, sein Assistent, der wird es wahrscheinlich nicht merken. Der sagt … zwar weiß ich viel, doch möchte ich alles wissen … [Faust 1, Nacht-Szene] Anthroposophie als Wissen in sich reinschaufeln!“\n\nhttps://anthro.world/Michael_Rheinheimer\nhttps://christengemeinschaft.de/bonn",
      "channel_slug": "anthroworld"
     }
    ]
@@ -369,30 +369,30 @@
    "name": "Word of Rudolf Steiner",
    "latest": [
     {
-     "video_id": "cI2OLwnEsOY",
-     "title": "Sintomas de la perimenopausia",
-     "url": "https://www.youtube.com/watch?v=cI2OLwnEsOY",
-     "thumbnail_url": "https://i4.ytimg.com/vi/cI2OLwnEsOY/hqdefault.jpg",
-     "published_at": "2026-11-09T13:00:36+00:00",
-     "description": "¿Te ha pasado alguna vez que vas a guardar un objeto común en un lugar totalmente absurdo? 🧺🧊 No estás perdiendo la cabeza, se llama niebla mental.\nA partir de los 35 años, el cuerpo de la mujer inicia una profunda transición que afecta a nivel físico, mental y emocional. En este fragmento te comparto mi propia experiencia frente a estos cambios: desde el insomnio repentino y los dolores articulares, hasta intentar meter la plancha en la nevera.\n\nLa perimenopausia es una metamorfosis biológica que requiere aprender a escuchar nuestro cuerpo en lugar de resignarnos.\n💬 Cuéntame en los comentarios: ¿Cuál ha sido tu despiste más extraño o divertido últimamente? Te leo.\n\n👉 MIRA LA ENTREVISTA COMPLETA AQUÍ:\n🔗 https://youtu.be/TyCyaq3ICkE?si=f0yRTyFb8tUfawZ9\n\n🌸 PROGRAMA ACADÉMICO INTEGRAL:\nAprende a proteger tu energía cerebral y a regular tus hormonas en el curso online \"Sabiduría para la Madurez Radiante\" impartido por la nutricionista Dangella Romero. Iniciamos este martes 24 de noviembre de 2026. ¡Inscripciones abiertas: https://forms.gle/jHhJuVQMUxi2Z1Ez7\n\n\n#Perimenopausia #NieblaMental #Insomnio #SaludFemenina #LaGrandezaDeLoHumano #CrisisDeLos35",
+     "video_id": "j1UXTYcYML8",
+     "title": "El secreto de la voluntad: educar al niño para despertar al adulto | Pedagogía Waldorf",
+     "url": "https://www.youtube.com/watch?v=j1UXTYcYML8",
+     "thumbnail_url": "https://i3.ytimg.com/vi/j1UXTYcYML8/hqdefault.jpg",
+     "published_at": "2026-11-12T18:00:09+00:00",
+     "description": "¿Por qué nos cuesta tanto tener voluntad y mantener la constancia para alcanzar nuestros objetivos?\n\nEn esta conversación con **Conchi González**, directora y maestra de Casa Steiner Tenerife y docente de formación Waldorf, exploramos cómo se desarrolla la voluntad desde la infancia y cómo podemos fortalecerla en la vida adulta.\n\nHablamos sobre la importancia del movimiento, el juego, la imitación, los ritmos infantiles y los ejercicios de Rudolf Steiner para trabajar conscientemente nuestra voluntad.\n\nAdemás, Conchi nos comparte ejercicios prácticos de movimiento, dibujo de formas y pequeñas acciones cotidianas que nos ayudan a desarrollar la atención, la constancia y la capacidad de llevar nuestros propósitos a la acción.\n\nUna invitación a conocernos mejor y descubrir nuestras capacidades de transformación.\n\n🌿 **La grandeza de lo Humano**\nUn espacio para el desarrollo interior y el despertar de las capacidades humanas.\n\nSuscríbete y acompáñanos en este camino.\n\n\n00:00 Presentación de Conchi González y el tema de la voluntad\n01:25 La voluntad y las tres facultades del alma\n03:15 Los niños, la imitación y el desarrollo de la personalidad\n07:05 El niño como espejo del adulto\n14:00 El movimiento: una necesidad fundamental en la infancia\n19:25 ¿Hasta qué edad necesitan moverse los niños?\n20:40 El desarrollo infantil y las diferentes etapas\n36:05 ¿Cómo podemos fortalecer nuestra voluntad en la edad adulta?\n36:25 Los ejercicios preliminares de Rudolf Steiner\n41:15 La voz, la palabra y el trabajo consciente de la voluntad\n43:50 Ejercicio postural: yo pienso la palabra, yo hablo\n44:20 Dibujo de formas: yo soy luz en la luz\n46:00 El ejercicio de la lemniscata y el movimiento\n48:50 Llevar el cuidado de la palabra a nuestras conversaciones\n53:00 El ejercicio de la acción consciente y la voluntad\n55:15 La repetición consciente y el trabajo durante 21 días\n58:15 Cómo superar la resistencia y despertar nuestra voluntad\n61:45 Formaciones de maestros en Casa Steiner Tenerife\n63:50",
      "channel_slug": "word-of-rudolf-steiner"
     },
     {
-     "video_id": "56vUxfZPj1Y",
-     "title": "Síntomas ocultos de la perimenopausia",
-     "url": "https://www.youtube.com/watch?v=56vUxfZPj1Y",
-     "thumbnail_url": "https://i2.ytimg.com/vi/56vUxfZPj1Y/hqdefault.jpg",
-     "published_at": "2026-11-07T14:00:21+00:00",
-     "description": "¿Te han empezado a doler las articulaciones, sufres de insomnio repentino o experimentas despistes extraños y crees que te estás volviendo loca? A partir de los 35 años, el cuerpo de la mujer inicia una profunda transición biológica y una metamorfosis en todos los aspectos de la vida.\nEn este clip de 20 minutos extraído de nuestra charla completa, compartimos vuestras experiencias reales frente a estos cambios: desde despertarse a mitad de la noche sin poder volver a conciliar el sueño, hasta sufrir dolores articulares inexplicables o experimentar la molesta \"niebla mental\" (como intentar meter la plancha en la nevera).\nAnalizamos junto a la nutricionista funcional y antroposófica Dangella Romero cómo la caída de hormonas como la progesterona y los estrógenos afecta de forma directa al sistema nervioso, al hipotálamo, a la gestión de la glucosa cerebral y a la inflamación de nuestros tejidos. ¡Tu cuerpo no se está rompiendo, está cambiando y necesita una nueva forma de nutrición y ritmos!\n\n🌸 PROGRAMA ACADÉMICO: NUTRICIÓN EN PERIMENOPAUSIA\n\nSi deseas profundizar en esta etapa y aprender a acompañar tu biología paso a paso, te invitamos a formar parte de nuestro programa integral de 8 encuentros semanales.\n👉 INSCRÍBETE AQUÍ AL PROGRAMA INTEGRAL \"SABIDURÍA PARA LA MADUREZ RADIANTE\":\n🔗  https://forms.gle/PLUbL22dz8xBSaLj7",
+     "video_id": "sS0vW07wmqE",
+     "title": "¿Cocinas con sartenes de teflón? 🍳⚠️ Así inflaman tus hormonas",
+     "url": "https://www.youtube.com/watch?v=sS0vW07wmqE",
+     "thumbnail_url": "https://i4.ytimg.com/vi/sS0vW07wmqE/hqdefault.jpg",
+     "published_at": "2026-11-12T17:00:35+00:00",
+     "description": "¿Sabías que el pegamento que adhiere el teflón a tus sartenes actúa como una falsa hormona dentro de tu cuerpo? 🍳🧪\nEn este fragmento revelador, la nutricionista funcional y antroposófica Dangella Romero nos explica qué son exactamente los disruptores endocrinos. Estas sustancias químicas tienen una estructura tan parecida a nuestras hormonas naturales que se quedan ancladas en el organismo generando inflamación crónica y sobrecargando las rutas metabólicas de nuestro hígado.\nLimpiar nuestra despensa y los utensilios con los que cocinamos es fundamental para transicionar la perimenopausia y cuidar nuestra salud hormonal de raíz. 🌿\n\n💬 ¿Qué tipo de sartenes utilizas tú en casa para evitar tóxicos? Te leo en los comentarios.\n\n👉 MIRA LA ENTREVISTA COMPLETA AQUÍ:\n🔗 https://youtu.be/TyCyaq3ICkE\n\n🌸 PROGRAMA ACADÉMICO INTEGRAL:\nEn el Módulo 8 (La Farmacia de la Tierra) de nuestro curso online \"Sabiduría para la Madurez Radiante\", aprenderemos a crear una despensa limpia y libre de disruptores endocrinos. Iniciamos este martes 24 de noviembre de 2026 vía Zoom. ¡Inscripciones abiertas en el canal!\n\nConviértete en miembro de este canal para disfrutar de ventajas:\nhttps://www.youtube.com/channel/UCOwvwoBewlGL69WmM2LxUFQ/join\n\n#DisruptoresEndocrinos #Perimenopausia #SaludHormonal #CocinaSinToxicos #NutricionAntroposofica #LaGrandezaDeLoHumano",
      "channel_slug": "word-of-rudolf-steiner"
     },
     {
-     "video_id": "F_yMQCbysBU",
-     "title": "\"Como PASTA y me empiezo a INCENDIAR\"",
-     "url": "https://www.youtube.com/watch?v=F_yMQCbysBU",
-     "thumbnail_url": "https://i3.ytimg.com/vi/F_yMQCbysBU/hqdefault.jpg",
-     "published_at": "2026-11-06T17:00:22+00:00",
-     "description": "¿Te comes un plato de pasta y a la media hora sientes que te estás incendiando? 🍝🔥\n\nEn este fragmento, comparto mi propia experiencia con los sofocos inmediatos tras comer espaguetis, y la nutricionista Dangella Romero nos desvela la sorprendente explicación científica de raíz: nuestro hipotálamo y la falta de estrógenos alterando la glucosa cerebral.\nLa perimenopausia nos pide aprender a escuchar al cuerpo con presencia y ajustar nuestra alimentación celular. \n\n¡No tienes que resignarte, tienes que comprender tu nueva biología!\n\n👉 MIRA LA ENTREVISTA COMPLETA AQUÍ:\n🔗 https://youtu.be/TyCyaq3ICkE\n\n🌸 PROGRAMA ACADÉMICO INTEGRAL:\nAprende a dominar los \"interruptores del sofoco\" y la crononutrición en el curso online \"Sabiduría para la Madurez Radiante\". 8 encuentros vía Zoom a partir del martes 24 de noviembre de 2026. ¡Inscripciones abiertas en el canal!\n\n\n#Perimenopausia #NutricionAntroposofica #Sofocos #AlimentacionSaludable #GlucosaCerebral #LaGrandezaDeLoHumano",
+     "video_id": "8STMfd-osQU",
+     "title": "Oración de la devoción",
+     "url": "https://www.youtube.com/watch?v=8STMfd-osQU",
+     "thumbnail_url": "https://i1.ytimg.com/vi/8STMfd-osQU/hqdefault.jpg",
+     "published_at": "2026-11-12T14:31:38+00:00",
+     "description": "Conviértete en miembro de este canal para disfrutar de ventajas:\nhttps://www.youtube.com/channel/UCOwvwoBewlGL69WmM2LxUFQ/join",
      "channel_slug": "word-of-rudolf-steiner"
     }
    ]
@@ -473,7 +473,7 @@
      "url": "https://www.youtube.com/watch?v=U3dkh47KpRE",
      "thumbnail_url": "https://i2.ytimg.com/vi/U3dkh47KpRE/hqdefault.jpg",
      "published_at": "2026-11-10T17:20:36+00:00",
-     "description": "*Felix van Frieden*\nhttps://www.youtube.com/@VanFrieden\n*Strömungs-Konvent*\nBegegnung der spirituellen Strömungen\nhttps://www.schloss-hohenfels.de/veranstaltung/stroemungs-konvent/\n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln!\nWir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende: https://www.paypal.com/donate/?hosted_button_id=CFKZFG2WEELQY\nSpende per Banküberweisung: \nWeltenwandler e.V.\nGLS Bank\nIBAN: DE76430609677918369701\nBIC: GENODEM1GLS\nHerzlichen Dank!\n\nIn unserem neuen Weltenwandler ONLINE-SHOP finden Sie Kunst zum Träumen & Bücher zum Aufwachen. Besuchen Sie uns gerne unter: https://weltenwandler.shop/",
+     "description": "*Felix van Frieden*\nhttps://www.youtube.com/@VanFrieden\n*Strömungs-Konvent*\nBegegnung der spirituellen Strömungen\nhttps://www.schloss-hohenfels.de/veranstaltung/stroemungs-konvent/\n\n⭐️ Bücher von Omraam Mikhaël Aïvanhov:\n👉 https://lichtvoll.shop/\n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln!\nWir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende: https://www.paypal.com/donate/?hosted_button_id=CFKZFG2WEELQY\nSpende per Banküberweisung: \nWeltenwandler e.V.\nGLS Bank\nIBAN: DE76430609677918369701\nBIC: GENODEM1GLS\nHerzlichen Dank!\n\nIn unserem neuen Weltenwandler ONLINE-SHOP finden Sie Kunst zum Träumen & Bücher zum Aufwachen. Besuchen Sie uns gerne unter: https://weltenwandler.shop/",
      "channel_slug": "rs-anthroposophie-de"
     },
     {
@@ -633,6 +633,15 @@
    "name": "Editorial Antroposófica",
    "latest": [
     {
+     "video_id": "SmqQKwPAx1c",
+     "title": "¿Hacia dónde va mi alma? Taller vivencial de Biografía, Nodos Lunares y Karma",
+     "url": "https://www.youtube.com/watch?v=SmqQKwPAx1c",
+     "thumbnail_url": "https://i4.ytimg.com/vi/SmqQKwPAx1c/hqdefault.jpg",
+     "published_at": "2026-11-12T18:28:18+00:00",
+     "description": "¿Hacia dónde va mi alma? Taller vivencial de Biografía, Nodos Lunares y Karma\n\nUna invitación al autoconocimiento para descubrir el sentido de nuestra historia y reconocer hacia dónde nos conduce nuestro camino de vida.  Exploración de nodos lunares y su relación con nuestro destino. Un espacio para mirar nuestra vida con nuevos ojos y conectar con la dirección de nuestra alma.\n\n📅 20 de noviembre | 🕖10 a 18 hs. | Presencial en el Showroom de la editorial | Actividad arancelada\n\nUna oportunidad para conocer esta propuesta y acercarte al taller vivencia que se realizará el 20 de noviembre, donde profundizaremos estos temas a través de un trabajo biográfico. \n\n\nInscribite \nhttps://forms.gle/6Gks8BCBEA2iALQh6\n\nTe esperamos para compartir.\nEditorial Antroposofica",
+     "channel_slug": "editorial-antroposofica"
+    },
+    {
      "video_id": "q3yn6hluuCE",
      "title": "🌎 ¿Cómo cultivar nuestras capacidades humanas para actuar en fraternidad?",
      "url": "https://www.youtube.com/watch?v=q3yn6hluuCE",
@@ -647,16 +656,7 @@
      "url": "https://www.youtube.com/watch?v=-YAnBqQ7BdI",
      "thumbnail_url": "https://i2.ytimg.com/vi/-YAnBqQ7BdI/hqdefault.jpg",
      "published_at": "2026-11-10T12:25:51+00:00",
-     "description": "🌌 Una invitación a mirar el mundo desde otra perspectiva.\n¿Por qué pensamos tan diferente? ¿Qué podemos descubrir cuando intentamos comprender la mirada del otro?\n\n✨ Facundo Flores nos invita personalmente a participar de un nuevo Encuentro desde el Alma:\nEL COSMOS Y NUESTRA MANERA DE CONCEBIR EL MUNDO\nUna charla teórico-práctica para explorar la relación entre el cosmos, nuestras formas de pensar y sentir, y la manera en que nos vinculamos con los demás.\n\n\n🤍 ¡SUMATE A ESTE ENCUENTRO GRATUITO!\n📅 Viernes 13 de noviembre\n🕖 19 hs. (Argentina)\n📍 Presencial en Editorial Antroposófica – Munro\n💻 Online en vivo por Zoom\n\n📝 Completá tu inscripción aquí: https://forms.gle/MM75mqyVSyDHNJsd6\n¡Te esperamos para compartir este encuentro!",
-     "channel_slug": "editorial-antroposofica"
-    },
-    {
-     "video_id": "XptpXWhQurM",
-     "title": "No nacemos solo para morir | Adriana Edelberg",
-     "url": "https://www.youtube.com/watch?v=XptpXWhQurM",
-     "thumbnail_url": "https://i1.ytimg.com/vi/XptpXWhQurM/hqdefault.jpg",
-     "published_at": "2026-11-07T20:25:35+00:00",
-     "description": null,
+     "description": "🌌 Una invitación a mirar el mundo desde otra perspectiva.\n¿Por qué pensamos tan diferente? ¿Qué podemos descubrir cuando intentamos comprender la mirada del otro?\n\n✨ Facundo Flores nos invita personalmente a participar de un nuevo Encuentro desde el Alma:\nEL COSMOS Y NUESTRA MANERA DE CONCEBIR EL MUNDO\nUna charla teórico-práctica para explorar la relación entre el cosmos, nuestras formas de pensar y sentir, y la manera en que nos vinculamos con los demás.\n\n\n🤍 ¡SUMATE A ESTE ENCUENTRO GRATUITO!\n📅 Viernes 13 de noviembre\n🕖 19 hs. (Argentina)\n💻 Online en vivo por Zoom\n\n📝 Completá tu inscripción aquí: https://forms.gle/MM75mqyVSyDHNJsd6\n¡Te esperamos para compartir este encuentro!",
      "channel_slug": "editorial-antroposofica"
     }
    ]
@@ -1854,6 +1854,15 @@
    "name": "Weltenwandler: Komm in dein Licht",
    "latest": [
     {
+     "video_id": "lidrZww0tqY",
+     "title": "Die Wahrheit kann manchmal sehr schmerzlich sein, doch das Böse zu wollen ist Schwarze Magie",
+     "url": "https://www.youtube.com/watch?v=lidrZww0tqY",
+     "thumbnail_url": "https://i1.ytimg.com/vi/lidrZww0tqY/hqdefault.jpg",
+     "published_at": "2026-11-12T17:00:12+00:00",
+     "description": "*Die neue Webseite der Agenda 2033 ist online:*  https://agenda2033.vision\n*Sei dabei und gib unserer Vision deine Stimme:*  https://agenda2033.vision/mitmachen#die-million\n\nDieser Kanal will mithelfen, den notwendigen großen Wandel der Welt voranzubringen. Unser Schwerpunkt liegt dabei auf dem eigenen, inneren Wandel. Unser Herzensanliegen ist dabei der von Rudolf Steiner entwickelte Weg der Persönlichkeitsbildung. Werke wie „Wie erlangt man Erkenntnisse der höheren Welten“ bis hin zu „Spirituelle Gemeinschaftsbildung“ mit dem Umgekehrten Kultus wollen wir aufbereiten. Die Videos sollen gerade auch für Menschen sein, die noch wenige Kenntnisse und Erfahrungen in der Anthroposophie mitbringen.\nDieser Kanal wird aus Idealismus, unabhängig und ehrenamtlich aufgebaut. Wir sind deshalb dankbar für deine Unterstützung. Da wir cokreativ  arbeiten, möchten wir dich herzlich einladen, beim Aufbau dieses Kanals mitzuwirken. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln! Wir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende!\nSpende per Banküberweisung: \nWeltenwandler e.V. GLS Bank \nIBAN: DE76430609677918369701 \nBIC: GENODEM1GLS \nHerzlichen Dank!",
+     "channel_slug": "weltenwandler"
+    },
+    {
      "video_id": "HjMPfaHPeho",
      "title": "Warum wir dem Bösen nicht ausweichen dürfen!",
      "url": "https://www.youtube.com/watch?v=HjMPfaHPeho",
@@ -1869,15 +1878,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/mwAqT6wPW-k/hqdefault.jpg",
      "published_at": "2026-10-29T17:00:38+00:00",
      "description": "*Die neue Webseite der Agenda 2033 ist online:*  https://agenda2033.vision\n*Sei dabei und gib unserer Vision deine Stimme:*  https://agenda2033.vision/mitmachen#die-million\n\nAndreas Schmitt beschreibt Karma als Ursache und Wirkung.\nDer Mensch bereitet seine Zukunft selbst vor, er ist von vielen Strömen geprägt. Genetik, Sozialisation, Karma-doch was ist für Schicksal die Ursache?\nUngeachtet dessen, kann jeder Mensch selbstbestimmt sein Leben ergreifen.\nJeder kann selbst in Transformationsprozesse gehen und sich für einen Entwicklungsweg entscheiden und Verantwortung für sein Handeln tragen.\nErkrankungen sind fast alle durch Lebensstile bedingt, so können wir innerhalb unseres Lebenslaufes Ursache und Wirkung überblicken.\nKarma sagt: Ich bin selbst Ursache für meine Zukunft! Das ist die Freiheit des Menschen! Denn ich kann mit meinem Geist Wirkung denkerisch vorwegnehmen, ich kann Zukunft jetzt schon denken und mich dahin entwickeln-das ist das Geschenk des Menschseins!\n\nDieser Kanal will mithelfen, den notwendigen großen Wandel der Welt voranzubringen. Unser Schwerpunkt liegt dabei auf dem eigenen, inneren Wandel. Unser Herzensanliegen ist dabei der von Rudolf Steiner entwickelte Weg der Persönlichkeitsbildung. Werke wie „Wie erlangt man Erkenntnisse der höheren Welten“ bis hin zu „Spirituelle Gemeinschaftsbildung“ mit dem Umgekehrten Kultus wollen wir aufbereiten. Die Videos sollen gerade auch für Menschen sein, die noch wenige Kenntnisse und Erfahrungen in der Anthroposophie mitbringen.\nDieser Kanal wird aus Idealismus, unabhängig und ehrenamtlich aufgebaut. Wir sind deshalb dankbar für deine Unterstützung. Da wir cokreativ  arbeiten, möchten wir dich herzlich einladen, beim Aufbau dieses Kanals mitzuwirken. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln! Wir freuen uns übe",
-     "channel_slug": "weltenwandler"
-    },
-    {
-     "video_id": "xT4dPEaas_I",
-     "title": "Konkrete Karmagesetze erklärt!",
-     "url": "https://www.youtube.com/watch?v=xT4dPEaas_I",
-     "thumbnail_url": "https://i1.ytimg.com/vi/xT4dPEaas_I/hqdefault.jpg",
-     "published_at": "2026-10-22T16:00:14+00:00",
-     "description": "Quellen:\n(1) GA 99, S. 68f\n(2) GA 100, S. 84f\n(3) GA 100, S. 85f\n\nKulturoasen-Tagung 10.12. - 13.12.26 auf Schloss Hohenfels\nhttps://www.schloss-hohenfels.de/veranstaltung/kulturoasen-1226/\n\n*Die neue Webseite der Agenda 2033 ist online:*  https://agenda2033.vision\n*Sei dabei und gib unserer Vision deine Stimme:*  https://agenda2033.vision/mitmachen#die-million\n\nDieser Kanal will mithelfen, den notwendigen großen Wandel der Welt voranzubringen. Unser Schwerpunkt liegt dabei auf dem eigenen, inneren Wandel. Unser Herzensanliegen ist dabei der von Rudolf Steiner entwickelte Weg der Persönlichkeitsbildung. Werke wie „Wie erlangt man Erkenntnisse der höheren Welten“ bis hin zu „Spirituelle Gemeinschaftsbildung“ mit dem Umgekehrten Kultus wollen wir aufbereiten. Die Videos sollen gerade auch für Menschen sein, die noch wenige Kenntnisse und Erfahrungen in der Anthroposophie mitbringen.\nDieser Kanal wird aus Idealismus, unabhängig und ehrenamtlich aufgebaut. Wir sind deshalb dankbar für deine Unterstützung. Da wir cokreativ  arbeiten, möchten wir dich herzlich einladen, beim Aufbau dieses Kanals mitzuwirken. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln! Wir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende!\nSpende per Banküberweisung: \nWeltenwandler e.V. GLS Bank \nIBAN: DE76430609677918369701 \nBIC: GENODEM1GLS \nHerzlichen Dank!",
      "channel_slug": "weltenwandler"
     }
    ]
@@ -2151,6 +2151,15 @@
    "name": "Anthroposophie fürs Ohr",
    "latest": [
     {
+     "video_id": "czF5CpjxDac",
+     "title": "Podcast: Vortrag Rudolf Steiner, 19.11.1922 London GA 218 (9) »Nachtodliches Erleben der Karmafolge«",
+     "url": "https://www.youtube.com/watch?v=czF5CpjxDac",
+     "thumbnail_url": "https://i4.ytimg.com/vi/czF5CpjxDac/hqdefault.jpg",
+     "published_at": "2026-11-12T17:00:23+00:00",
+     "description": "Der neunte Vortrag mit dem Titel „Erleben zwischen Tod und neuer Geburt als Karmafolge und Aufbau der Bedingungen für die Rückkehr in ein neues Erdenleben“ aus dem Band Nr. 218 der Gesamtausgabe mit dem Buchtitel „Geistige Zusammenhänge in der Gestaltung des menschlichen Organismus“ wurde gelesen von Ansgar Wüst.\n\nInhalt: \n• Wie sich der Ätherleib nach dem Tode auflöst\n• Wie die Kräfte des Mondes bei Geburt und Tod wirken\n• Was der Karmaträger ist\n• Wie das nachtodliche Urteil sich vom irdischen Urteil unterscheidet\n• Wie Erinnerungen an Erdenleben den Durchgang durch die Planetensphären hemmen\n• Wie der Drang zur Wiederverkörperung in der Weltenmitternacht entsteht\n• Wie Christus und Michael wirken\n• Wie zukünftig der Mensch mit dem anderen Menschen seinen Erdenleib tauschen wird\n\n*Die neue Webseite der Agenda 2033 ist online:* https://agenda2033.vision\n*Sei dabei und gib unserer Vision deine Stimme:* https://agenda2033.vision/mitmachen#die-million\n\nDer Kanal Anthroposophie fürs Ohr hat die Intention, das Werk Rudolf Steiners und die von ihm begründete Anthroposophie zu verbreiten und vor dem Vergessen zu bewahren.\n\nInsbesondere dient der Kanal der Unterstützung des Mutter-, der Brüder- und Schwesterkanäle, um dort von Rudolf Steiner Zitiertes hier in einem größeren Zusammenhang – dem eines Vortrages – zu vertiefen.\n\nDieser Kanal wird von idealistisch gesinnten, unabhängigen Menschen ehrenamtlich betrieben. Wir sind deshalb dankbar für Deine / Ihre Unterstützung. Da wir cokreativ arbeiten, möchten wir dich herzlich einladen, beim Aufbau dieses Kanals mitzuwirken.\n\nAngaben laut §5 TMG Weltenwandler e.V. Schloss Hohenfels 1 78355 Hohenfels Vereinsregister VR 700704 Registergericht: Amtsgericht Freiburg vertreten durch: Benjamin Hamm, Manuel Simon Kontakt Telefon: 07557 92 91 90 E-Mail: info@schloss-hohenfels.de Weltenwandler e.V. GLS Bank IBAN: DE76430609677918369701 BIC: GENODEM1GLS",
+     "channel_slug": "anthroposophie-fuers-ohr"
+    },
+    {
      "video_id": "HBo0UkWeLk0",
      "title": "Podcast: Ansprache Rudolf Steiner 17.06.1924 Koberwitz GA 217a(16) »Wege zu verlorenen Naturkräften«",
      "url": "https://www.youtube.com/watch?v=HBo0UkWeLk0",
@@ -2166,15 +2175,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/_pKiEJsqeiU/hqdefault.jpg",
      "published_at": "2026-11-08T17:00:18+00:00",
      "description": "Der elfte Vortrag aus dem Band Nr. 93a der Gesamtausgabe mit dem Buchtitel „Grundelemente der Esoterik“ wurde gelesen von Ansgar Wüst.\n\nInhalt: \n• Welche Anteile hat der Mensch an der physischen, astralen und mentalen Welt?\n• Wie entwickelte sich das Selbstbewußtsein beim Herabstieg auf den physischen Plan?\n• Wie erfolgt der Wiederaufstieg durch Selbstlosigkeit in Wünschen und Gedanken?\n• Wie ermöglicht der physische Plan das Entstehen der Freiheit?\n• Der „Mechanismus“ von Karma: Actio et reactio – Wirkung und Gegenwirkung\n\n*Die neue Webseite der Agenda 2033 ist online:* https://agenda2033.vision\n*Sei dabei und gib unserer Vision deine Stimme:* https://agenda2033.vision/mitmachen#die-million\n\nDer Kanal Anthroposophie fürs Ohr hat die Intention, das Werk Rudolf Steiners und die von ihm begründete Anthroposophie zu verbreiten und vor dem Vergessen zu bewahren.\n\nInsbesondere dient der Kanal der Unterstützung des Mutter-, der Brüder- und Schwesterkanäle, um dort von Rudolf Steiner Zitiertes hier in einem größeren Zusammenhang – dem eines Vortrages – zu vertiefen.\n\nDieser Kanal wird von idealistisch gesinnten, unabhängigen Menschen ehrenamtlich betrieben. Wir sind deshalb dankbar für Deine / Ihre Unterstützung. Da wir cokreativ arbeiten, möchten wir dich herzlich einladen, beim Aufbau dieses Kanals mitzuwirken.\n\nAngaben laut §5 TMG Weltenwandler e.V. Schloss Hohenfels 1 78355 Hohenfels Vereinsregister VR 700704 Registergericht: Amtsgericht Freiburg vertreten durch: Benjamin Hamm, Manuel Simon Kontakt Telefon: 07557 92 91 90 E-Mail: info@schloss-hohenfels.de Weltenwandler e.V. GLS Bank IBAN: DE76430609677918369701 BIC: GENODEM1GLS",
-     "channel_slug": "anthroposophie-fuers-ohr"
-    },
-    {
-     "video_id": "9ZqZGsLMWZc",
-     "title": "Podcast: Vortrag Rudolf Steiner, 16.11.1922 London, GA 218 (8) »Der Kampf um die Natur des Menschen«",
-     "url": "https://www.youtube.com/watch?v=9ZqZGsLMWZc",
-     "thumbnail_url": "https://i2.ytimg.com/vi/9ZqZGsLMWZc/hqdefault.jpg",
-     "published_at": "2026-11-05T17:00:10+00:00",
-     "description": "Der achte Vortrag mit dem Titel „Der Kampf luziferischer und ahrimanischer Wesenheiten um die Natur des Menschen“ aus dem Band Nr. 218 der Gesamtausgabe mit dem Buchtitel „Geistige Zusammenhänge in der Gestaltung des menschlichen Organismus“ wurde gelesen von Ansgar Wüst.\n\nInhalt: \n• Die übersinnliche und untersinnliche Naturumgebung des Menschen\n• Luziferische Wesen in Luft und Wärme wollen den Menschen als moralischen Automaten\n• Ahrimanische Wesen in Wasser und Erde wollen den Menschen ewig an die Erde ketten\n• Jahve als Mondwesen regelt zusammen mit Merkur- und Venuswesen die Instinkte\n• Ahriman kämpft gegen Mond-, Merkur-, Venuswesen und gegen Luzifer\n• Luzifer kämpft gegen Mars-, Jupiter-, Saturnwesen und gegen Ahriman\n• Krankheit als Rettung vor dem Verfallen des Menschen an Luzifer oder Ahriman\n• Heilung durch die rettende und versöhnende Christus-Kraft\n\n*Die neue Webseite der Agenda 2033 ist online:* https://agenda2033.vision\n*Sei dabei und gib unserer Vision deine Stimme:* https://agenda2033.vision/mitmachen#die-million\n\nDer Kanal Anthroposophie fürs Ohr hat die Intention, das Werk Rudolf Steiners und die von ihm begründete Anthroposophie zu verbreiten und vor dem Vergessen zu bewahren.\n\nInsbesondere dient der Kanal der Unterstützung des Mutter-, der Brüder- und Schwesterkanäle, um dort von Rudolf Steiner Zitiertes hier in einem größeren Zusammenhang – dem eines Vortrages – zu vertiefen.\n\nDieser Kanal wird von idealistisch gesinnten, unabhängigen Menschen ehrenamtlich betrieben. Wir sind deshalb dankbar für Deine / Ihre Unterstützung. Da wir cokreativ arbeiten, möchten wir dich herzlich einladen, beim Aufbau dieses Kanals mitzuwirken.\n\nAngaben laut §5 TMG Weltenwandler e.V. Schloss Hohenfels 1 78355 Hohenfels Vereinsregister VR 700704 Registergericht: Amtsgericht Freiburg vertreten durch: Benjamin Hamm, Manuel Simon Kontakt Telefon: 07557 92 91 90 E-Mail: info@schloss-hohenfels.de Weltenwandler e.V. GLS Bank IBAN: DE76430609677918369701 BIC: GENODEM1GLS",
      "channel_slug": "anthroposophie-fuers-ohr"
     }
    ]
@@ -5214,6 +5214,15 @@
    "name": "Mouvement de l'Agriculture Biodynamique",
    "latest": [
     {
+     "video_id": "V1R8NNg8n0I",
+     "title": "🌱 ÉPISODE 1 — DU JARDIN AU COMPOST ! #biodynamie #jardin #compost",
+     "url": "https://www.youtube.com/watch?v=V1R8NNg8n0I",
+     "thumbnail_url": "https://i3.ytimg.com/vi/V1R8NNg8n0I/hqdefault.jpg",
+     "published_at": "2026-11-12T16:00:44+00:00",
+     "description": "Comment transformer les végétaux de son jardin en une ressource précieuse pour nourrir les sols ?\n\nDans ce premier épisode, Gauthier nous montre les premières étapes pour réaliser un bon compost : choisir les bonnes matières, les préparer et trouver le juste équilibre entre carbone et azote. 🍂\n\n🎬 Prochain épisode : place à la construction de l'andain !\n\n#compost #biodynamie #solvivant",
+     "channel_slug": "mouvement-de-l-agriculture-biodynamique"
+    },
+    {
      "video_id": "2qbEdXOQkbQ",
      "title": "La bouse de corne : une préparation emblématique de la biodynamie. #biodynamie #jardin #agriculture",
      "url": "https://www.youtube.com/watch?v=2qbEdXOQkbQ",
@@ -5229,15 +5238,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/Kwt90KBAAek/hqdefault.jpg",
      "published_at": "2026-11-05T17:25:54+00:00",
      "description": "La bouse de corne est l’une des préparations emblématiques de la biodynamie. Elle consiste à faire maturer de la bouse de vache dans une corne enterrée durant la période hivernale.\n\nUtilisée au printemps et à l’automne, cette préparation est destinée, selon les principes de la biodynamie, à soutenir l’activité biologique du sol et sa structuration.\n\nMais comment la prépare-t-on concrètement ?\n\nDécouvrez les différentes étapes de son élaboration dans cette vidéo.",
-     "channel_slug": "mouvement-de-l-agriculture-biodynamique"
-    },
-    {
-     "video_id": "-4c5HnXzTjI",
-     "title": "Semer des engrais verts au potager en automne 🌱 | Biodynamie#biodynamie #engraisverts #solsfertiles",
-     "url": "https://www.youtube.com/watch?v=-4c5HnXzTjI",
-     "thumbnail_url": "https://i2.ytimg.com/vi/-4c5HnXzTjI/hqdefault.jpg",
-     "published_at": "2026-10-28T16:30:07+00:00",
-     "description": "Comment semer des engrais verts au potager et pourquoi cette pratique est-elle intéressante pour le sol ?\n\nDans cette vidéo, découvrez les principales étapes du semis : préparation du sol, dosage des graines, semis à la volée et tassement.\n\n🌿 Par la photosynthèse, les plantes captent le CO₂ atmosphérique et incorporent le carbone dans leur biomasse. Une partie peut ensuite rejoindre le sol par les racines et la décomposition des résidus végétaux. Le devenir de ce carbone dépend notamment des conditions du sol et de la gestion du couvert.\n\nLes engrais verts contribuent également à maintenir une couverture végétale, à limiter l'érosion et à soutenir la vie biologique du sol.\n\nNotre association partage ses pratiques et ses observations autour de la biodynamie, du jardin et de la fertilité des sols.\n\n#EngraisVerts #Biodynamie #Potager",
      "channel_slug": "mouvement-de-l-agriculture-biodynamique"
     }
    ]
