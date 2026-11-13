@@ -64,6 +64,12 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Weekly digests older than this are never emailed (see the check where the digest is loaded)
+const MAX_ISSUE_AGE_DAYS = 3;
+function oldestAllowed(): string {
+  return new Date(Date.now() - MAX_ISSUE_AGE_DAYS * 864e5).toISOString();
+}
+
 serve(async (req: Request) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -133,13 +139,13 @@ serve(async (req: Request) => {
     let pick: string | null = null;
     if (new Date().getUTCHours() >= CONTINUE_FROM_UTC) {
       const { data: going } = await supabaseClient.from("news").select("id").contains("tags", ["weekly-digest"])
-        .not("emailed_at", "is", null).is("email_done_at", null).order("emailed_at").limit(1);
+        .not("emailed_at", "is", null).is("email_done_at", null).gte("created_at", oldestAllowed()).order("emailed_at").limit(1);
       pick = going?.[0]?.id ?? null;
     }
     if (!pick) {
       const { data: ready, error: dueError } = await supabaseClient.from("news").select("id")
         .eq("status", "pending").contains("tags", ["weekly-digest"]).is("emailed_at", null)
-        .lte("send_at", new Date().toISOString()).order("send_at").limit(1);
+        .lte("send_at", new Date().toISOString()).gte("created_at", oldestAllowed()).order("send_at").limit(1);
       if (dueError) return jsonResponse({ error: "Could not check the schedule: " + dueError.message }, 500);
       pick = ready?.[0]?.id ?? null;
     }
@@ -151,11 +157,18 @@ serve(async (req: Request) => {
   let row: Record<string, any> | null = null;
   if (newsId) {
     const { data: found, error: loadError } = await supabaseClient.from("news")
-      .select("id, title, body, email_subject, excerpt, status, emailed_at, emailed_count, email_done_at")
+      .select("id, title, body, email_subject, excerpt, status, emailed_at, emailed_count, email_done_at, created_at")
       .eq("id", newsId).contains("tags", ["weekly-digest"]).maybeSingle();
     if (loadError) return jsonResponse({ error: "Could not load digest: " + loadError.message }, 500);
     row = found;
     if (!row || row.email_done_at) return jsonResponse({ error: "This digest was already emailed (or is not a weekly digest)." }, 409);
+    // An issue older than MAX_ISSUE_AGE_DAYS never goes out, not even the rest of one that stalled: its events are
+    // stale and readers may already have a newer issue (owner, 2026-11-13, after the Nov 5 issue finished a week late).
+    // A stalled one is closed so it is never picked again.
+    if (new Date(row.created_at).getTime() < new Date(oldestAllowed()).getTime()) {
+      if (row.emailed_at) await supabaseClient.from("news").update({ email_done_at: new Date().toISOString() }).eq("id", newsId);
+      return jsonResponse({ error: `This digest is more than ${MAX_ISSUE_AGE_DAYS} days old, so it will not be emailed. Make a fresh one instead.` }, 409);
+    }
     if (row.emailed_at && !due) return jsonResponse({ error: "This digest is already going out; the rest follows automatically each day." }, 409);
     if (!row.emailed_at) {
       // Claim it first (emailed_at is set only if still empty), so a double click can never start it twice.
