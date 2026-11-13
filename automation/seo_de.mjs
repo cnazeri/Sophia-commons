@@ -47,12 +47,17 @@ export function placeFaqDe(list, where, moreLink) {
   };
 }
 
+// Search results cut titles after about 60 characters and descriptions after about 160 (owner, 2026-11-13)
+const fit = (max, ...options) => { const o = options.filter(Boolean); return o.find(s => s.length <= max) || o[o.length - 1]; };
+
 // Title, description and body for /de/country/<slug>
 export function countryPageDe(country, list, cities, enRoute, comboRoutes = {}) {
   const [name, inName] = DE_COUNTRIES[country];
   const parts = partsOf(list), other = list.filter(e => !placeCatOf(e.category));
-  const title = `Anthroposophie ${inName}: ${parts.slice(0, 2).map(x => de(x.pc)[1]).join(', ')} und mehr | Sophia Commons`;
-  const desc = `${fmtDe(list.length)} anthroposophische Einträge ${inName}: ` + parts.slice(0, 3).map(x => countDe(x.sub.length, x.pc)).join(', ') + '. Adressen, Websites und Karte.';
+  const title = fit(60, `Anthroposophie ${inName}: ${parts.slice(0, 2).map(x => de(x.pc)[1]).join(', ')} und mehr | Sophia Commons`,
+    parts.length ? `Anthroposophie ${inName}: ${de(parts[0].pc)[1]} und mehr | Sophia Commons` : '', `Anthroposophie ${inName}: ${fmtDe(list.length)} Einträge | Sophia Commons`, `Anthroposophie ${inName} | Sophia Commons`);
+  const dlead = `${fmtDe(list.length)} anthroposophische Einträge ${inName}: `, dk = n => parts.slice(0, n).map(x => countDe(x.sub.length, x.pc)).join(', ');
+  const desc = fit(160, dlead + dk(3) + '. Adressen, Websites und Karte.', dlead + dk(3) + '.', dlead + dk(2) + '.', dlead + dk(1) + '.');
   const faq = placeFaqDe(list, inName, 'die Länderseite');
   const body = (cities.length ? '<h2>Städte</h2><p>' + cities.map(c => `<a href="${c.deRoute}">${esc(c.city)}</a> (${c.list.length})`).join(', ') + '</p>' : '')
     + parts.map(x => `<h2>${esc(de(x.pc)[0])} ${esc(inName)} (${fmtDe(x.sub.length)})</h2>` + entryListDe(x.sub.slice(0, 40))
@@ -67,8 +72,10 @@ export function countryPageDe(country, list, cities, enRoute, comboRoutes = {}) 
 export function cityPageDe(country, city, list, siblings, deCountryRoute, enRoute) {
   const [name, inName] = DE_COUNTRIES[country];
   const parts = partsOf(list), other = list.filter(e => !placeCatOf(e.category));
-  const title = `${parts.slice(0, 2).map(x => de(x.pc)[1]).join(', ') || 'Anthroposophie'} & mehr in ${city} | Sophia Commons`;
-  const desc = `${fmtDe(list.length)} anthroposophische Einträge in ${city}, ${name}: ` + parts.slice(0, 3).map(x => countDe(x.sub.length, x.pc)).join(', ') + '. Adressen, Websites und Karte.';
+  const title = fit(60, `${parts.slice(0, 2).map(x => de(x.pc)[1]).join(', ') || 'Anthroposophie'} & mehr in ${city} | Sophia Commons`,
+    parts.length ? `${de(parts[0].pc)[1]} & mehr in ${city} | Sophia Commons` : '', `Anthroposophie in ${city} | Sophia Commons`, `Anthroposophie in ${city}`);
+  const clead = `${fmtDe(list.length)} anthroposophische Einträge in ${city}, ${name}: `, ck = n => parts.slice(0, n).map(x => countDe(x.sub.length, x.pc)).join(', ');
+  const desc = fit(160, clead + ck(3) + '. Adressen, Websites und Karte.', clead + ck(3) + '.', clead + ck(2) + '.', clead + ck(1) + '.');
   const faq = placeFaqDe(list, 'in ' + city, `die Seite für ${name}`);
   const body = parts.map(x => `<h2>${esc(de(x.pc)[0])} in ${esc(city)}</h2>` + entryListDe(x.sub)).join('')
     + (other.length ? `<h2>Weitere Einträge in ${esc(city)}</h2>` + entryListDe(other) : '')
@@ -84,9 +91,11 @@ export const hreflang = (enRoute, deRoute) => [['en', SITE + enRoute], ['de', SI
 export function comboPageDe(pc, country, list, cities, siblingCats, enRoute, deCountryRoute) {
   const [name, inName] = DE_COUNTRIES[country];
   const L = de(pc);
-  const title = `${L[0]} ${inName} (${fmtDe(list.length)}) | Sophia Commons`;
+  const title = fit(60, `${L[0]} ${inName} (${fmtDe(list.length)}) | Sophia Commons`, `${L[0]} ${inName} | Sophia Commons`, `${L[0]} ${inName} (${fmtDe(list.length)})`, `${L[0]} ${inName}`);
   const top = cities.slice(0, 3).map(([c]) => c);
-  const desc = `${countDe(list.length, pc)} ${inName}${top.length ? ', unter anderem in ' + top.join(', ') : ''}. Adressen, Websites und Karte im kostenlosen Verzeichnis Sophia Commons.`;
+  const um = n => top.length ? ', unter anderem in ' + top.slice(0, n).join(', ') : '';
+  const desc = fit(160, `${countDe(list.length, pc)} ${inName}${um(3)}. Adressen, Websites und Karte im kostenlosen Verzeichnis Sophia Commons.`,
+    `${countDe(list.length, pc)} ${inName}${um(3)}. Adressen, Websites und Karte.`, `${countDe(list.length, pc)} ${inName}${um(2)}. Mit Karte.`, `${countDe(list.length, pc)} ${inName}${um(1)}.`);
   const body = (cities.length ? '<h2>Städte und Orte</h2><p>' + cities.slice(0, 20).map(([c, n]) => `${esc(c)} (${n})`).join(', ') + '</p>' : '')
     + `<h2>Alle ${fmtDe(list.length)} Einträge</h2>` + entryListDe(list)
     + (siblingCats.length ? `<h2>Mehr ${esc(inName)}</h2><ul>` + siblingCats.map(([p, r, n]) => `<li><a href="${r}">${esc(de(p)[0])}</a> (${fmtDe(n)})</li>`).join('') + '</ul>' : '')

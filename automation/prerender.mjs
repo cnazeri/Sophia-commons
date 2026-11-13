@@ -47,8 +47,8 @@ const REGIONS = [
   ['international', 'International & Online', ['International', 'Online']],
 ];
 const SECTIONS = [
-  ['directory', 'Global Directory', 'The free global directory of anthroposophical organizations: Waldorf schools, biodynamic farms, Camphill, The Christian Community, eurythmy, medicine and more, with a map.'],
-  ['events', 'Events & Calendar', 'Upcoming anthroposophical events, conferences, webinars and study groups, plus the festival year: Holy Nights, Easter, Parzival Moon, St. John\'s, Michaelmas and more.'],
+  ['directory', 'Global Directory', 'Free global directory of anthroposophy: Waldorf schools, biodynamic farms, Camphill, The Christian Community, eurythmy, medicine and more, with a map.'],
+  ['events', 'Events & Calendar', 'Upcoming anthroposophical events, conferences, webinars and study groups, plus the festival year: Holy Nights, Easter, St. John\'s, Michaelmas and more.'],
   ['browse', 'Browse Categories', 'Browse the Sophia Commons directory by category and region.'],
   ['news', 'News', 'News from the anthroposophical movement worldwide.'],
   ['blog', 'Blog', 'Articles and reflections from the anthroposophical community.'],
@@ -136,14 +136,25 @@ for (const [slug, label, regionCountries] of REGIONS) {
   written.push(render(`/region/${slug}`, `${label} | Sophia Commons Directory`, desc, byC + entryList(list), itemListLd(label, `${SITE}/region/${slug}`, list)));
 }
 
+// Search results cut titles after about 60 characters and descriptions after about 160 (OpenSEO audit,
+// owner 2026-11-13): use the fullest wording that fits, else the last (shortest) one.
+const TITLE_MAX = 60, DESC_MAX = 160;
+const fit = (max, ...options) => { const o = options.filter(Boolean); return o.find(s => s.length <= max) || o[o.length - 1]; };
+
 // /country/<slug>: everything in one country, by category, with links to the category-in-country pages
 for (const [country, list] of countries) {
   const L = countryLabel(country), Lin = countryIn(country), route = `/country/${countrySlug(country)}`;
   const parts = PLACE_CATS.map(pc => ({ pc, sub: list.filter(e => pc[2].includes(e.category)) })).filter(x => x.sub.length).sort((a, b) => b.sub.length - a.sub.length);
   const other = list.filter(e => !placeCatOf(e.category));
   const short = parts.slice(0, 2).map(x => x.pc[3]);
-  const title = `Anthroposophy in ${Lin}${short.length ? ': ' + short.join(', ') + ' and More' : ''} | Sophia Commons`;
-  const desc = `${fmtN(list.length)} anthroposophical listings in ${Lin}: ` + parts.slice(0, 3).map(x => countOf(x.sub.length, x.pc)).join(', ') + '. Addresses, websites and a map.';
+  const title = fit(TITLE_MAX,
+    `Anthroposophy in ${Lin}${short.length ? ': ' + short.join(', ') + ' and More' : ''} | Sophia Commons`,
+    short.length ? `Anthroposophy in ${Lin}: ${short[0]} and More | Sophia Commons` : '',
+    `Anthroposophy in ${Lin}: ${fmtN(list.length)} Places | Sophia Commons`,
+    `Anthroposophy in ${Lin} | Sophia Commons`);
+  const lead = `${fmtN(list.length)} anthroposophical listings in ${Lin}: `;
+  const kinds = n => parts.slice(0, n).map(x => countOf(x.sub.length, x.pc)).join(', ');
+  const desc = fit(DESC_MAX, lead + kinds(3) + '. Addresses, websites and a map.', lead + kinds(3) + '.', lead + kinds(2) + '. With a map.', lead + kinds(2) + '.', lead + kinds(1) + '.');
   let body = placeEvents(countryNamesOf(country), '', Lin) + '<h2>By category</h2><ul>' + parts.map(x => `<li>${hasCombo(x.pc, country) ? `<a href="${comboRoute(x.pc, country)}">${esc(x.pc[1])} in ${esc(Lin)}</a>` : `<a href="/category/${x.pc[0]}">${esc(x.pc[1])}</a>`}: ${fmtN(x.sub.length)}</li>`).join('') + '</ul>'
     + citiesHtml(list);
   for (const x of parts) {
@@ -162,8 +173,10 @@ for (const [country, list] of countries) {
 for (const { pc, country, list } of combos) {
   const L = countryLabel(country), Lin = countryIn(country), route = comboRoute(pc, country);
   const cities = topCities(list, 3).map(([n]) => n);
-  const title = `${pc[1]} in ${Lin} (${fmtN(list.length)}) | Sophia Commons`;
-  const desc = `${fmtN(list.length)} ${pc[4]} in ${Lin}${cities.length ? ', including ' + cities.join(', ') : ''}. Addresses, websites and a map in the free Sophia Commons directory.`;
+  const title = fit(TITLE_MAX, `${pc[1]} in ${Lin} (${fmtN(list.length)}) | Sophia Commons`, `${pc[1]} in ${Lin} | Sophia Commons`, `${pc[1]} in ${Lin} (${fmtN(list.length)})`, `${pc[1]} in ${Lin}`);
+  const incl = n => cities.length ? ', including ' + cities.slice(0, n).join(', ') : '';
+  const desc = fit(DESC_MAX, `${fmtN(list.length)} ${pc[4]} in ${Lin}${incl(3)}. Addresses, websites and a map in the free Sophia Commons directory.`,
+    `${fmtN(list.length)} ${pc[4]} in ${Lin}${incl(3)}. Addresses, websites and a map.`, `${fmtN(list.length)} ${pc[4]} in ${Lin}${incl(2)}. With a map.`, `${fmtN(list.length)} ${pc[4]} in ${Lin}${incl(1)}.`);
   const siblings = combos.filter(c => c.pc === pc && c.country !== country).sort((a, b) => b.list.length - a.list.length);
   const body = citiesHtml(list) + `<h2>All ${fmtN(list.length)} listings</h2>` + entryList(list)
     + (siblings.length ? `<h2>${esc(pc[1])} in other countries</h2><ul>` + siblings.map(c => `<li><a href="${comboRoute(pc, c.country)}">${esc(countryLabel(c.country))}</a> (${fmtN(c.list.length)})</li>`).join('') + '</ul>' : '')
@@ -176,8 +189,11 @@ for (const { country, city, list, route } of cityPages) {
   const L = countryLabel(country), Lin = countryIn(country), where = cityLabel(city, list);
   const parts = PLACE_CATS.map(pc => ({ pc, sub: list.filter(e => pc[2].includes(e.category)) })).filter(x => x.sub.length).sort((a, b) => b.sub.length - a.sub.length);
   const other = list.filter(e => !placeCatOf(e.category));
-  const title = `${parts.slice(0, 2).map(x => x.pc[3]).join(', ') || 'Anthroposophy'} & More in ${where} | Sophia Commons`;
-  const desc = `${fmtN(list.length)} anthroposophical places in ${where}, ${L}: ` + parts.slice(0, 3).map(x => countOf(x.sub.length, x.pc)).join(', ') + '. Addresses, websites and a map.';
+  const title = fit(TITLE_MAX, `${parts.slice(0, 2).map(x => x.pc[3]).join(', ') || 'Anthroposophy'} & More in ${where} | Sophia Commons`,
+    parts.length ? `${parts[0].pc[3]} & More in ${where} | Sophia Commons` : '', `Anthroposophy in ${where} | Sophia Commons`, `Anthroposophy in ${cityShort(city)} | Sophia Commons`, `Anthroposophy in ${cityShort(city)}`);
+  const clead = `${fmtN(list.length)} anthroposophical places in ${where}, ${L}: `;
+  const ckinds = n => parts.slice(0, n).map(x => countOf(x.sub.length, x.pc)).join(', ');
+  const desc = fit(DESC_MAX, clead + ckinds(3) + '. Addresses, websites and a map.', clead + ckinds(3) + '.', clead + ckinds(2) + '.', clead + ckinds(1) + '.');
   const near = cityPages.filter(c => c.country === country && c.route !== route).sort((a, b) => b.list.length - a.list.length).slice(0, 12);
   const faq = placeFaq(list, cityShort(city) === city ? where : `${cityShort(city)}`, 'the ' + esc(L) + ' page');
   let body = placeEvents(countryNamesOf(country), citySlug(city), cityShort(city))
