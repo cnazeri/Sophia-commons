@@ -11,6 +11,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { emailShell } from "./email_shell.ts";
+import { forReader, regionOfCode } from "../_shared/regions.ts";
 
 // Server key: the new secret key Supabase injects (SUPABASE_SECRET_KEYS, JSON by key name),
 // falling back to the legacy service_role key until legacy keys are disabled.
@@ -235,7 +236,8 @@ serve(async (req: Request) => {
       to: [subscriber.email],
       subject: subject,
       // Every newsletter carries a one-click unsubscribe link (required by CAN-SPAM / GDPR)
-      html: emailShell({ subject, preheader, kicker, body: html_content,
+      // "Near you": only the block for the reader's region (from the country they gave us)
+      html: emailShell({ subject, preheader, kicker, body: forReader(html_content, regionOfCode(subscriber.preferences?.country)),
         unsubscribeUrl: `${SITE}/newsletter/unsubscribe?t=${subscriber.unsubscribe_token}` }),
       headers: {
         "List-Unsubscribe": `<${SITE}/newsletter/unsubscribe?t=${subscriber.unsubscribe_token}>, <mailto:hello@sophiacommons.org?subject=unsubscribe>`,

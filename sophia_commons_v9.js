@@ -95,6 +95,7 @@ async function showDetail(type, id, skipPush) {
       updateSEOMeta(data.title + ' | Sophia Commons Events', (data.description || '').substring(0, 160), '/event/' + id);
       _injectEventSEO(data);
       loadRelatedEvents(data.category_id, data.id);
+      _loadNextFromOrganizer(data);
       loadComments('event', id);
       _trackView('event', id);
     } else if (type === 'news') {
@@ -384,6 +385,7 @@ function renderEventDetail(ev) {
     + '<h1>' + esc(ev.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
     + '</div>'
+    + '<div id="ev-next"></div>'
     + '<div class="ev-reg' + (reg ? '' : ' ev-reg-solo') + '">' + reg
     + '<div class="detail-sidebar ev-facts"><h4>' + t('event_detail.title') + '</h4>'
     + '<p><strong>' + t('event_detail.date') + ':</strong> ' + esc(dateStr) + '</p>'
@@ -394,6 +396,7 @@ function renderEventDetail(ev) {
     + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
     + price
     + _calButtonsHtml(ev)
+    + '<p class="ev-nl-link"><a href="#nl-card" onclick="var c=document.getElementById(\'nl-card\');if(c){c.scrollIntoView({behavior:\'smooth\',block:\'center\'});var i=document.getElementById(\'dt-nl-email\');if(i)i.focus({preventScroll:true});}return false;">&#9993; ' + esc(t('newsletter.event_link', 'Get events like this by email')) + '</a></p>'
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'event\',\'' + ev.id + '\')">' + t('report.flag_btn') + '</button>' : '')
     + '</div></div>'
     + '<div id="ev-signups-list"></div>'
@@ -406,6 +409,34 @@ function renderEventDetail(ev) {
     + _nlCardHtml('event')
     + renderCommentsSection('event', ev.id)
     + '<div id="related-listings"></div>';
+}
+
+// A past event's page still gets visits from search: point people to what the same organizer has
+// coming up next (owner, 2026-11-13). Same listing first, else the same organizer name.
+async function _loadNextFromOrganizer(ev) {
+  var box = document.getElementById('ev-next');
+  if (!box || !sbReady() || !ev) return;
+  if (new Date(ev.end_date || ev.start_date).getTime() > Date.now()) return;
+  if (!ev.directory_entry_id && !ev.organizer_name) return;
+  try {
+    var q = _sb.from('events').select('id, title, start_date, city, country, is_online')
+      .in('status', ['upcoming', 'ongoing']).gte('start_date', new Date().toISOString()).neq('id', ev.id)
+      .order('start_date', { ascending: true }).limit(3);
+    q = ev.directory_entry_id ? q.eq('directory_entry_id', ev.directory_entry_id) : q.eq('organizer_name', ev.organizer_name);
+    var r = await q;
+    var rows = (r && r.data) || [];
+    var who = ev.organizer_name || t('event_detail.this_organizer', 'this organizer');
+    box.innerHTML = '<div class="ev-next" role="note"><p class="ev-next-h">' + esc(t('event_detail.past_note', 'This event has already taken place.')) + '</p>'
+      + (rows.length
+        ? '<p>' + esc(t('event_detail.next_from', 'Coming up next from {org}:').replace('{org}', who)) + '</p><ul>'
+          + rows.map(function(x) {
+              var where = x.is_online ? t('event_detail.online', 'Online') : [x.city, x.country].filter(Boolean).join(', ');
+              return '<li><a href="/event/' + esc(x.id) + '" onclick="showDetail(\'event\',\'' + escJs(x.id) + '\');return false;">' + esc(x.title) + '</a> <span class="ev-next-when">'
+                + esc(localDate(x.start_date, { month: 'short', day: 'numeric', year: 'numeric' })) + (where ? ' &middot; ' + esc(where) : '') + '</span></li>';
+            }).join('') + '</ul>'
+        : '<p><a href="/events" onclick="showSec(\'events\');return false;">' + esc(t('event_detail.see_upcoming', 'See upcoming events on the calendar')) + ' &rarr;</a></p>')
+      + '</div>';
+  } catch (e) { /* the note is extra; the page works without it */ }
 }
 
 // ── EVENT SIGN-UPS (owner, 2026-10-31) ──
@@ -655,6 +686,8 @@ function _paragraphs(text) {
   return String(text).split(/\n\s*\n/).map(function(p) { return '<p>' + esc(p.trim()) + '</p>'; }).join('');
 }
 
+// Regional "Near you" blocks are for the email only; each reader gets their own (owner, 2026-11-13)
+function _dropNearBlocks(html) { return String(html || '').replace(/<!--near:([a-z]{2})-->[\s\S]*?<!--\/near:\1-->/g, ''); }
 function renderNewsDetail(n) {
   var pubDate = n.published_at ? localDate(n.published_at, {month:'long', day:'numeric', year:'numeric'}) : '';
 
@@ -676,7 +709,7 @@ function renderNewsDetail(n) {
     + badges
     + '<h1>' + esc(n.title) + '</h1>'
     + '<div class="detail-meta">' + meta + '</div>'
-    + '<div class="detail-body">' + ((n.tags || []).indexOf('weekly-digest') >= 0 && n.body ? _sanitizeHtml(n.body) : _paragraphs(n.body || n.excerpt || '')) + '</div>'
+    + '<div class="detail-body">' + ((n.tags || []).indexOf('weekly-digest') >= 0 && n.body ? _sanitizeHtml(_dropNearBlocks(n.body)) : _paragraphs(n.body || n.excerpt || '')) + '</div>'
     + (_notDigest(n) ? '' : _digestLinkHtml())
     + '<div class="detail-actions">' + actions + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'news\',\'' + n.id + '\')">' + t('report.flag_btn') + '</button>' : '') + '</div>'
     + '</div>'
@@ -3038,6 +3071,11 @@ function _isValidEmail(email) {
 }
 
 // source says which form was used (sidebar, footer, home, listing, event); Admin > Members counts them.
+// home-nl-email -> home-nl-country, dt-nl-email -> dt-nl-country (forms without a menu send none)
+function _nlCountryFor(emailId) {
+  var s = document.getElementById(String(emailId).replace(/-email$/, '-country'));
+  return s && /^[A-Z]{2}$/.test(s.value) ? s.value : undefined;
+}
 async function handleNewsletterSignup(emailId, btnSelector, confirmId, source) {
   var inp = document.getElementById(emailId);
   var v = inp.value.trim();
@@ -3074,7 +3112,7 @@ async function handleNewsletterSignup(emailId, btnSelector, confirmId, source) {
     var fnRes = await fetch(SUPABASE_URL + '/functions/v1/newsletter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-      body: JSON.stringify({ action: 'subscribe', email: v, source: source || 'other' })
+      body: JSON.stringify({ action: 'subscribe', email: v, source: source || 'other', country: _nlCountryFor(emailId) })
     }).catch(function() { return null; });
     if (!fnRes) {
       // Network failure. Browsers cannot write subscribers directly (double opt-in goes through the function).
@@ -3137,12 +3175,50 @@ function doRbSignup() { handleNewsletterSignup('rb-email', '.rb-nl button', 'rb-
 
 // Newsletter card at the end of listing and event pages. The sidebar signup is hidden on phones,
 // where most visitors arrive from search; this gives them the same double opt-in form.
+// ── Newsletter: the reader's country, for regional issues (owner, 2026-11-13). Optional. ──
+var NL_COUNTRIES = ('AD AE AF AG AL AM AO AR AT AU AZ BA BB BD BE BF BG BH BI BJ BN BO BR BS BT BW BY BZ CA CD CF CG CH CI CL CM CN CO CR CU CV CY CZ '
+  + 'DE DJ DK DM DO DZ EC EE EG ER ES ET FI FJ FM FR GA GB GD GE GH GM GN GQ GR GT GW GY HK HN HR HT HU ID IE IL IN IQ IR IS IT JM JO JP '
+  + 'KE KG KH KI KM KN KP KR KW KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MG MH MK ML MM MN MO MR MT MU MV MW MX MY MZ NA NE NG NI NL '
+  + 'NO NP NR NZ OM PA PE PG PH PK PL PR PS PT PW PY QA RO RS RU RW SA SB SC SD SE SG SI SK SL SM SN SO SR SS ST SV SY SZ TD TG TH TJ TL TM '
+  + 'TN TO TR TT TV TW TZ UA UG US UY UZ VA VC VE VN VU WS YE ZA ZM ZW').split(' ');
+var NL_COUNTRIES_TOP = ['US', 'GB', 'CA', 'AU', 'NZ', 'IE', 'ZA', 'DE', 'CH', 'AT', 'NL'];
+function _nlGuessCountry() {
+  var m = /-([A-Z]{2})\b/.exec((navigator.languages && navigator.languages[0]) || navigator.language || '');
+  return m && NL_COUNTRIES.indexOf(m[1]) !== -1 ? m[1] : '';
+}
+function _nlCountryOptions() {
+  var names;
+  try { names = new Intl.DisplayNames([document.documentElement.lang || 'en'], { type: 'region' }); } catch (e) { names = null; }
+  var label = function(c) { try { return names ? names.of(c) : c; } catch (e) { return c; } };
+  var guess = _nlGuessCountry();
+  var opt = function(c) { return '<option value="' + c + '"' + (c === guess ? ' selected' : '') + '>' + esc(label(c)) + '</option>'; };
+  var rest = NL_COUNTRIES.filter(function(c) { return NL_COUNTRIES_TOP.indexOf(c) === -1; })
+    .sort(function(a, b) { return label(a).localeCompare(label(b)); });
+  return '<option value="">' + esc(t('newsletter.country_any', 'Your country (optional)')) + '</option>'
+    + NL_COUNTRIES_TOP.map(opt).join('') + '<option disabled>----------</option>' + rest.map(opt).join('');
+}
+function _nlCountrySelectHtml(id) {
+  return '<label for="' + id + '" class="sr-only">' + esc(t('newsletter.country_label', 'Your country, so we can send events near you')) + '</label>'
+    + '<select id="' + id + '" class="nl-country">' + _nlCountryOptions() + '</select>';
+}
+// The home card is in index.html: fill its menu once the page language is known
+function _nlFillCountrySelects() {
+  document.querySelectorAll('select.nl-country').forEach(function(s) {
+    var v = s.value; s.innerHTML = _nlCountryOptions(); if (v) s.value = v;
+  });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _nlFillCountrySelects); else _nlFillCountrySelects();
+
 function _nlCardHtml(source) {
-  return '<section class="nl-card" aria-labelledby="nl-card-h">'
-    + '<h3 id="nl-card-h">' + esc(t('newsletter.card_heading', 'Get the weekly digest')) + '</h3>'
-    + '<p>' + esc(t('newsletter.card_desc', 'New events, videos and places from the anthroposophical world, once a week in English. Free, and you can unsubscribe anytime.')) + '</p>'
+  // On event pages the reader came for an event, so the pitch is about events (owner, 2026-11-13)
+  var ev = source === 'event';
+  return '<section class="nl-card" id="nl-card" aria-labelledby="nl-card-h">'
+    + '<h3 id="nl-card-h">' + esc(ev ? t('newsletter.event_heading', 'Get events like this every week') : t('newsletter.card_heading', 'Get the weekly digest')) + '</h3>'
+    + '<p>' + esc(ev ? t('newsletter.event_desc', 'Each week we send the new events, talks and gatherings from the anthroposophical world, with the news and new videos. Free, in English, and you can unsubscribe anytime.')
+      : t('newsletter.card_desc', 'New events, videos and places from the anthroposophical world, once a week in English. Free, and you can unsubscribe anytime.')) + '</p>'
     + '<div class="nl-card-row"><label for="dt-nl-email" class="sr-only">' + esc(t('footer.newsletter_label', 'Your email address')) + '</label>'
     + '<input type="email" id="dt-nl-email" autocomplete="email" aria-describedby="dt-nl-email-err" placeholder="' + esc(t('newsletter.placeholder', 'your@email.com')) + '">'
+    + _nlCountrySelectHtml('dt-nl-country')
     + '<button type="button" id="dt-nl-btn" onclick="handleNewsletterSignup(\'dt-nl-email\', \'#dt-nl-btn\', \'dt-nl-ok\', \'' + source + '\')">' + esc(t('newsletter.subscribe_btn', 'subscribe')) + '</button></div>'
     + '<div id="dt-nl-email-err" class="rb-nl-err" role="alert" style="display:none;"></div>'
     + '<div id="dt-nl-ok" class="rb-nl-ok" role="status">' + esc(t('newsletter.check_inbox', 'Almost done: check your inbox and click the link to confirm.')) + '</div>'
@@ -3749,10 +3825,10 @@ var _sbMergedEventTitles = {};
 
 // Upcoming events: merged into calEvents (one sorted list, one count). A copy is kept in localStorage
 // so the home page can show events immediately on the next visit, before the network answers.
-var _EV_CACHE_KEY = 'sc_upcoming_events_v4';   // raise the number to drop visitors' saved copies after an event is fixed
+var _EV_CACHE_KEY = 'sc_upcoming_events_v5';   // raise the number to drop visitors' saved copies after an event is fixed
 var _cachedEventIds = [];
 var _EV_CACHE_FIELDS = ['id', 'title', 'description', 'event_type', 'start_date', 'end_date', 'is_all_day', 'location_name',
-  'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name', 'title_en', 'description_en'];
+  'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name', 'title_en', 'description_en', 'lat', 'lng'];
 
 var _dbEventsShown = false;   // true once saved or live database events are in calEvents
 function _loadCachedEvents() {
@@ -3796,7 +3872,7 @@ async function loadEventsFromSupabase() {
 // Lists below the calendar and the home sliders filter to today onward, so only the calendar shows these.
 async function loadPastEventsFromSupabase() {
   try {
-    var r = await _sb.from('events').select(_EV_CACHE_FIELDS.filter(function(k) { return ['category_name', 'title_en', 'description_en'].indexOf(k) === -1; }).join(', '))
+    var r = await _sb.from('events').select(_EV_CACHE_FIELDS.filter(function(k) { return ['category_name', 'title_en', 'description_en', 'lat', 'lng'].indexOf(k) === -1; }).join(', '))
       .in('status', ['past', 'upcoming', 'ongoing']).lt('start_date', new Date().toISOString())
       .order('start_date', { ascending: false }).limit(1000);
     if (r.error || !r.data) { console.warn('Past events load failed:', r.error); return; }
@@ -3873,6 +3949,8 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       featured: !!ev.featured,
       country: ev.country || '',
       online: !!ev.is_online,
+      lat: typeof ev.lat === 'number' ? ev.lat : null,
+      lng: typeof ev.lng === 'number' ? ev.lng : null,
       end: _localDay(ev.end_date) || dateStr,
       img: ev.image_url ? { src: ev.image_url, alt: ev.title || '', page: ev.ticket_url || ev.image_url, credit: ev.organizer_name || 'Event image' } : _eventFallbackImg(ev)
     });
@@ -4753,10 +4831,51 @@ function _evRowHtml(ev, seriesInfo) {
   html += '<h5>' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(title) + '</a>' : esc(title)) + '</h5>';
   if (seriesInfo) html += '<div class="emeta">' + esc(t('events.series_next', 'Next session')) + ': ' + esc(ev.title.replace(/^[^:]+:\s*/, '')) + '</div>';
   if (meta) html += '<div class="emeta">' + meta + '</div>';
+  if (window._evNear && !ev.online && ev._km != null) html += '<div class="emeta ev-dist">' + esc(_fmtDist(ev._km)) + '</div>';
   if (seriesInfo && seriesInfo.later.length) {
     html += '<div class="emeta">' + esc(t('events.series_later', 'Later sessions')) + ': ' + seriesInfo.later.map(function(x) { return esc(localDate(x.date, { month: 'short', day: 'numeric' })); }).join(', ') + '</div>';
   }
   return html + '</div></div>';
+}
+
+// ── Events near me: same lookups as the directory's find-near-me ──
+var EV_NEAR_KM = 300;
+function _evNearSet(lat, lng, label) {
+  window._evNear = { lat: lat, lng: lng, label: label };
+  _evListOpen = true;
+  renderEventList();
+}
+function _evNearClear() {
+  window._evNear = null;
+  var st = document.getElementById('ev-near-status'); if (st) st.textContent = '';
+  var n = document.getElementById('ev-near'); if (n) n.value = '';
+  renderEventList();
+}
+async function _evNearSearch(place) {
+  place = String(place || '').trim();
+  var st = document.getElementById('ev-near-status');
+  if (!place) { if (st) st.textContent = t('dir.near_need', 'Type a town or postcode first.'); return; }
+  if (Date.now() - _nearLastCall < 1100) return;   // OpenStreetMap asks for at most 1 lookup per second
+  _nearLastCall = Date.now();
+  if (st) st.textContent = t('dir.near_looking', 'Looking up {place}...').replace('{place}', place);
+  try {
+    var r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(place), { headers: { 'Accept-Language': (document.documentElement.lang || 'en') } });
+    var j = await r.json();
+    if (!j || !j.length) { if (st) st.textContent = t('dir.near_notfound', 'Could not find "{place}". Try a town name or a postcode with the country.').replace('{place}', place); return; }
+    _evNearSet(parseFloat(j[0].lat), parseFloat(j[0].lon), j[0].display_name.split(',').slice(0, 2).join(','));
+  } catch (e) {
+    if (st) st.textContent = t('dir.near_error', 'The place lookup is not available right now. Please try again.');
+  }
+}
+function _evNearGeo() {
+  var st = document.getElementById('ev-near-status');
+  if (!navigator.geolocation) { if (st) st.textContent = t('dir.geo_unsupported', 'Your browser cannot share its location. Type a town instead.'); return; }
+  if (st) st.textContent = t('dir.geo_asking', 'Asking your browser for your location...');
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    _evNearSet(pos.coords.latitude, pos.coords.longitude, t('dir.your_location', 'your location'));
+  }, function() {
+    if (st) st.textContent = t('dir.geo_denied', 'Location was not shared. Type a town or postcode instead.');
+  }, { timeout: 10000, maximumAge: 600000 });
 }
 
 function renderEventList() {
@@ -4765,10 +4884,25 @@ function renderEventList() {
   var today = new Date(); today.setHours(0, 0, 0, 0);
   var horizon = new Date(today.getTime() + _evListDays * 864e5);
 
+  var near = window._evNear;
   var upcoming = calEvents.filter(function(e) {
     return new Date(e.date + 'T23:59:59') >= today && e.cat !== 'memorial';
   }).sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
-  var shown = upcoming.filter(function(e) { return new Date(e.date + 'T12:00:00') <= horizon; });
+  // Near me: in-person events within EV_NEAR_KM, plus online ones, over the next year (owner, 2026-11-13)
+  if (near) {
+    upcoming = upcoming.filter(function(e) {
+      if (e.online) return true;
+      if (e.lat == null || e.lng == null) return false;
+      e._km = _distKm(near.lat, near.lng, e.lat, e.lng);
+      return e._km <= EV_NEAR_KM;
+    });
+    var nIn = upcoming.filter(function(e) { return !e.online; }).length;
+    var st = document.getElementById('ev-near-status');
+    if (st) st.innerHTML = esc(t('events.near_found', '{n} events within {dist} of {place}, plus online events.')
+        .replace('{n}', nIn).replace('{dist}', _fmtDist(EV_NEAR_KM)).replace('{place}', near.label))
+      + ' <button type="button" class="dir-near-clear" onclick="_evNearClear()">' + esc(t('dir.near_clear', 'Clear')) + '</button>';
+  }
+  var shown = near ? upcoming : upcoming.filter(function(e) { return new Date(e.date + 'T12:00:00') <= horizon; });
 
   // Collapse series: keep the first upcoming session, list the later dates under it
   var series = {};
@@ -4786,7 +4920,7 @@ function renderEventList() {
     html += _evRowHtml(ev, group ? { name: sName, count: group.length, later: group.slice(1) } : null);
     rows.push(html);
   });
-  var later = upcoming.length > shown.length
+  var later = !near && upcoming.length > shown.length
     ? '<button type="button" class="ev-more ev-later" onclick="_evListDays += 180; _evListOpen = true; renderEventList();">' + esc(t('events.show_later', 'Show events further ahead')) + '</button>'
     : '';
   var html = rows.length

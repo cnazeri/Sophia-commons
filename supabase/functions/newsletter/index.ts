@@ -1,7 +1,8 @@
 // ══════════════════════════════════════════
 //  Sophia Commons - Newsletter opt-in Edge Function
 //  POST /functions/v1/newsletter
-//  Body: { action: "subscribe", email, source? }   -> sends a confirmation email (source = which form)
+//  Body: { action: "subscribe", email, source?, country? }   -> sends a confirmation email (source = which form,
+//        country = ISO 3166 two-letter code the reader picked, for regional issues; owner, 2026-11-13)
 //        { action: "confirm", token }              -> confirms the subscription
 //        { action: "unsubscribe", token }          -> unsubscribes (token from any newsletter)
 //        { action: "admin_add", entries: [{email, name}] } -> admins only: adds people as confirmed
@@ -67,12 +68,18 @@ function signupSource(s: unknown): string {
   return SOURCES.includes(String(s)) ? String(s) : "other";
 }
 
+// The reader's country, as an ISO 3166 two-letter code; anything else is dropped
+function signupCountry(c: unknown): string | null {
+  const s = String(c ?? "").trim().toUpperCase();
+  return /^[A-Z]{2}$/.test(s) ? s : null;
+}
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors(req) });
   if (req.method !== "POST") return json(req, { error: "Method not allowed" }, 405);
 
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, serviceKey());
-  let body: { action?: string; email?: string; token?: string; source?: string };
+  let body: { action?: string; email?: string; token?: string; source?: string; country?: string };
   try { body = await req.json(); } catch { return json(req, { error: "Invalid JSON" }, 400); }
 
   // ── Subscribe: create or refresh a pending row, email a confirmation link ──
@@ -81,7 +88,8 @@ serve(async (req: Request) => {
     if (!EMAIL_RE.test(email) || email.length > 254) return json(req, { error: "invalid_email" }, 400);
 
     const { data: existing } = await supabase.from("newsletter_subscribers")
-      .select("id, confirmed, confirm_token, confirm_sent_at, unsubscribed_at").eq("email", email).maybeSingle();
+      .select("id, confirmed, confirm_token, confirm_sent_at, unsubscribed_at, preferences").eq("email", email).maybeSingle();
+    const country = signupCountry(body.country);
 
     // Same response whether or not the address is already subscribed (no account enumeration)
     if (existing?.confirmed && !existing.unsubscribed_at) return json(req, { ok: true, status: "pending_confirmation" });
@@ -97,9 +105,12 @@ serve(async (req: Request) => {
 
     const token = crypto.randomUUID();
     const row = { email, confirmed: false, confirm_token: token, confirm_sent_at: new Date().toISOString(), unsubscribed_at: null };
+    const prefs = existing
+      ? { ...((existing.preferences as Record<string, unknown>) ?? {}), ...(country ? { country } : {}) }
+      : { source: signupSource(body.source), ...(country ? { country } : {}) };
     const { error: upErr } = existing
-      ? await supabase.from("newsletter_subscribers").update(row).eq("id", existing.id)
-      : await supabase.from("newsletter_subscribers").insert({ ...row, preferences: { source: signupSource(body.source) } });
+      ? await supabase.from("newsletter_subscribers").update({ ...row, preferences: prefs }).eq("id", existing.id)
+      : await supabase.from("newsletter_subscribers").insert({ ...row, preferences: prefs });
     if (upErr) return json(req, { error: "save_failed" }, 500);
 
     const resendKey = Deno.env.get("RESEND_API_KEY");

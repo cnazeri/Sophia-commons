@@ -18,6 +18,8 @@ Local test without changing anything: python3 automation/news_review.py --dry-ru
 import argparse, html, json, os, re, sys, time
 from datetime import datetime, timedelta, timezone
 import requests
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from news_checks import same_story, fix_missing_times
 
 MODEL = os.environ.get('NEWS_REVIEW_MODEL', 'claude-haiku-5-5')
 MAX_AGE_DAYS = 30            # same window as the home page News slider
@@ -50,7 +52,8 @@ ARTICLE TEXT (from the page, may be cut short or missing):
 
 Also write a summary in your own words, using only facts in the article text or headline: 2 or 3 short paragraphs,
 90 to 170 words in all, separated by a blank line, with the who, what, where and when and any names, numbers and
-dates. Fewer words if the article says less; never pad. Do not copy sentences. No hype, no em or en dashes,
+dates. If a time or number looks missing from the text ("from a. m. to p. m."), leave that detail out
+rather than writing it incomplete. Fewer words if the article says less; never pad. Do not copy sentences. No hype, no em or en dashes,
 straight quotes only."""
 
 SCHEMA = {
@@ -192,8 +195,11 @@ def main():
         when = art['date'] or feed_date
         tags = [t for t in (n.get('tags') or []) if not t.startswith('review:')]
         patch = {}
+        twin = next((p for p in published if p != n['title'] and same_story(n['title'], p)), None)
         if when and when < cutoff:
             verdict = {'publish': False, 'reason': 'too-old', 'note': 'The article page is dated %s.' % when.date(), 'summary': ''}
+        elif twin:
+            verdict = {'publish': False, 'reason': 'duplicate', 'note': 'Same story as: %s' % twin, 'summary': ''}
         else:
             verdict = ask_claude(akey, PROMPT.format(
                 published='\n'.join('- ' + t for t in published[-60:] if t != n['title']) or '(none)', title=n['title'],
@@ -208,7 +214,7 @@ def main():
             if art['ok'] and art['url'].startswith('http') and 'news.google.com' not in art['url']:
                 patch['source_url'] = art['url']   # the publisher's page, not Google's redirect
             if verdict.get('summary'):
-                paras = [tidy(p, 900) for p in re.split(r'\n\s*\n', verdict['summary']) if p.strip()]
+                paras = [tidy(fix_missing_times(p), 900) for p in re.split(r'\n\s*\n', verdict['summary']) if p.strip()]
                 patch['excerpt'] = tidy(paras[0], 280)
                 patch['body'] = '\n\n'.join(paras)
         counts[status] = counts.get(status, 0) + 1

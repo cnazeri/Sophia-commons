@@ -15,6 +15,8 @@ import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-
 import { englishOnly } from "./translate.ts";
 import { soulVerseHtml } from "./soul_calendar.ts";
 import { writeLetter } from "./letter.ts";
+import { localDay } from "./local_day.ts";
+import { REGION_LABEL, regionOfCountry } from "../_shared/regions.ts";
 
 const ADMIN_EMAILS = ["cameron.nazeri@gmail.com", "cameron@sophiacommons.org", "admin@sophiacommons.org"];  // keep in sync with sophia_commons_v9.js
 const SITE = "https://sophiacommons.org";
@@ -105,7 +107,7 @@ async function gather(sb: SupabaseClient) {
     sb.from("youtube_videos").select("video_id, channel_slug, title, url, thumbnail_url, published_at, description")
       .gte("published_at", weekAgo).order("published_at", { ascending: false }).limit(40),
     sb.from("youtube_channels").select("slug, name").eq("active", true),
-    sb.from("events").select("id, title, start_date, location_name, city, country, is_online, featured, created_at")
+    sb.from("events").select("id, title, start_date, timezone, location_name, city, country, is_online, featured, created_at")
       .in("status", ["upcoming", "ongoing"]).gte("start_date", now.toISOString().slice(0, 10)).lte("start_date", threeWeeks)
       .order("start_date", { ascending: true }).limit(40),
     sb.from("directory_entries").select("id, organization_name, category, city, country")
@@ -114,7 +116,7 @@ async function gather(sb: SupabaseClient) {
       .eq("status", "published").gte("published_at", weekAgo).order("published_at", { ascending: false }).limit(10),
     approvedCountries(sb),
     // events added or approved this week, even when they are months away (owner plan, Phase C, 2026-11-02)
-    sb.from("events").select("id, title, start_date, location_name, city, country, is_online, featured, created_at")
+    sb.from("events").select("id, title, start_date, timezone, location_name, city, country, is_online, featured, created_at")
       .in("status", ["upcoming", "ongoing"]).gte("created_at", weekAgo).gte("start_date", now.toISOString().slice(0, 10))
       .lte("start_date", sixMonths).order("start_date", { ascending: true }).limit(20),
   ]);
@@ -182,12 +184,12 @@ function videoHtml(v: Digest["videos"][number]): string {
 }
 
 function eventHtml(e: Digest["events"][number]): string {
-  const d = new Date(e.start_date);
+  const { month, day } = localDay(e.start_date, e.timezone);
   const where = e.is_online ? "Online" : (e.location_name || [e.city, e.country].filter(Boolean).join(", "));
   return `<div ${ITEM}>`
     + `<span style="display:inline-block;vertical-align:top;width:50px;margin-right:14px;padding:5px 0;text-align:center;border:1px solid ${RULE};border-radius:8px;background:#FBF8F2">`
-    + `<span style="display:block;font-size:11px;letter-spacing:.06em;color:${GOLD};font-weight:bold">${MONTHS[d.getUTCMonth()].slice(0, 3).toUpperCase()}</span>`
-    + `<span style="display:block;font-family:Georgia,serif;font-size:20px;line-height:1.1;color:${INK}">${d.getUTCDate()}</span></span>`
+    + `<span style="display:block;font-size:11px;letter-spacing:.06em;color:${GOLD};font-weight:bold">${month}</span>`
+    + `<span style="display:block;font-family:Georgia,serif;font-size:20px;line-height:1.1;color:${INK}">${day}</span></span>`
     + `<span style="display:inline-block;vertical-align:top;max-width:420px">`
     + `<a href="${SITE}/event/${esc(e.id)}" ${LINK}>${esc(e.title)}</a>`
     + (where ? `<br><span ${MUTED}>${esc(where)}</span>` : "")
@@ -214,6 +216,19 @@ function shareHtml(d: Digest): string {
     + `</div>`;
 }
 
+// One "Near you" block per region; send-newsletter keeps only the reader's (owner, 2026-11-13)
+const NEAR_EVENTS = 5;
+function nearHtml(d: Digest): string {
+  const by: Record<string, Digest["events"]> = {};
+  for (const e of d.events) {
+    const r = e.is_online ? null : regionOfCountry(e.country);
+    if (r) (by[r] = by[r] || []).push(e);
+  }
+  return Object.keys(by).map((r) => `<!--near:${r}-->`
+    + `<h3 ${H3}>Near you: ${esc(REGION_LABEL[r])}</h3>` + by[r].slice(0, NEAR_EVENTS).map(eventHtml).join("")
+    + `<!--/near:${r}-->`).join("");
+}
+
 export function buildHtml(d: Digest, note = ""): string {
   const parts = [
     d.videos.length ? plural(d.videos.length, "new video", "new videos") : "",
@@ -225,6 +240,7 @@ export function buildHtml(d: Digest, note = ""): string {
   h += `<p style="margin:0;color:#3A332A">${parts.length ? `Here's what's new: ${parts.join(", ").replace(/, ([^,]*)$/, " and $1")}. Videos in other languages are marked; their titles and summaries are translated.` : "A quiet week."}</p>`;
 
   h += soulVerseHtml(new Date());
+  h += nearHtml(d);
   if (d.events.length) {
     h += `<h3 ${H3}>Coming up</h3>` + d.events.slice(0, EMAIL_EVENTS).map(eventHtml).join("");
     h += `<p style="margin:4px 0 0;font-size:14px"><a href="${SITE}/events" ${LINK}>See the full calendar &rarr;</a></p>`;

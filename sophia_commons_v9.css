@@ -4196,3 +4196,31 @@ body.ev-focus #center { width: 100%; max-width: 1040px; margin: 0 auto; padding-
 .day-popup .dp-more summary { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; color: var(--gold-text); font-weight: 600; }
 .day-popup .dp-more summary:focus-visible { outline: 2px solid var(--gold-text); outline-offset: 2px; }
 .day-popup .dp-more[open] summary { margin-bottom: 4px; }
+
+/* Event page: link from the facts box down to the sign-up card (owner, 2026-11-13) */
+.ev-nl-link { margin: 10px 0 0; }
+.ev-nl-link a { display: inline-flex; align-items: center; min-height: 44px; color: var(--gold-text); font-weight: 700; font-size: 14px; text-decoration: none; }
+.ev-nl-link a:hover, .ev-nl-link a:focus-visible { text-decoration: underline; }
+
+/* Event form: start from a flyer (owner, 2026-11-13) */
+.evf-flyer { margin: 0 0 20px; padding: 16px 18px; border: 1px dashed var(--border); border-radius: 12px; background: var(--surface); }
+.evf-flyer-h { display: block; font-family: 'Lora', Georgia, serif; font-size: 17px; color: var(--text-primary); margin: 0 0 4px; }
+.evf-flyer input[type=file] { min-height: 44px; font: inherit; font-size: 14px; }
+.evf-flyer-status { margin: 8px 0 0; font-size: 14px; color: var(--text-secondary); }
+.evf-flyer-status.evf-flyer-bad { color: var(--rose, #9b3b3b); }
+
+/* Events near me (owner, 2026-11-13) */
+.ev-near-bar { padding: 8px 10px 0; }
+.ev-dist { color: var(--gold-text); font-weight: 600; }
+
+/* Past event: what the organizer has next (owner, 2026-11-13) */
+.ev-next { margin: 16px 0; padding: 14px 18px; border-left: 3px solid var(--gold); background: var(--surface); border-radius: 0 10px 10px 0; }
+.ev-next p { margin: 0 0 6px; }
+.ev-next-h { font-weight: 700; color: var(--text-primary); }
+.ev-next ul { margin: 4px 0 0; padding-left: 18px; }
+.ev-next li { margin: 0 0 6px; }
+.ev-next a { color: var(--gold-text); font-weight: 600; }
+.ev-next-when { color: var(--text-secondary); font-size: 14px; }
+
+/* Newsletter: country menu next to the email field (owner, 2026-11-13) */
+.nl-card-row select.nl-country { flex: 0 1 200px; min-height: 44px; padding: 0 12px; border: 1px solid var(--border); border-radius: 999px; font: inherit; font-size: 14px; background: var(--bg); color: var(--text-primary); max-width: 100%; }

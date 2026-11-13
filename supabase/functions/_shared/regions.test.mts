@@ -1,0 +1,10 @@
+import { forReader, regionOfCode, regionOfCountry } from './regions.ts';
+let bad = 0; const eq = (a: unknown, b: unknown, n: string) => { const ok = JSON.stringify(a) === JSON.stringify(b); console.log(ok ? 'PASS' : 'FAIL', n); if (!ok) { bad++; console.log('  got', a); } };
+const html = 'A<!--near:na--><h3>NA</h3><!--/near:na--><!--near:oc--><h3>OC</h3><!--/near:oc-->B';
+eq(forReader(html, 'na'), 'A<h3>NA</h3>B', 'US reader keeps only North America');
+eq(forReader(html, 'oc'), 'A<h3>OC</h3>B', 'AU reader keeps only Oceania');
+eq(forReader(html, null), 'AB', 'no country: no regional block');
+eq(forReader(html, 'eu'), 'AB', 'region with no events: nothing');
+eq([regionOfCode('US'), regionOfCode('gb'), regionOfCode('AU'), regionOfCode('DE'), regionOfCode('ZA'), regionOfCode('XX'), regionOfCode(undefined)], ['na', 'uk', 'oc', 'eu', 'af', null, null], 'codes');
+eq([regionOfCountry('USA'), regionOfCountry('UK'), regionOfCountry('Switzerland'), regionOfCountry('Australia'), regionOfCountry('India'), regionOfCountry('Narnia')], ['na', 'uk', 'eu', 'oc', 'as', null], 'event country names');
+process.exit(bad ? 1 : 0);

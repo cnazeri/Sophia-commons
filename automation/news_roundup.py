@@ -14,6 +14,8 @@ from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from xml.etree import ElementTree as ET
 import requests
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from news_checks import same_story
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 UA = {'User-Agent': 'Mozilla/5.0 (compatible; SophiaCommonsBot/1.0; +https://sophiacommons.org)'}
@@ -132,6 +134,7 @@ def main():
     since = (datetime.now(timezone.utc) - timedelta(days=90)).isoformat()
     known = requests.get(rest + 'news', headers=H, params={'select': 'title', 'created_at': 'gte.' + since}, timeout=20).json()
     taken = {re.sub(r'\W+', ' ', (r.get('title') or '').lower()).strip() for r in known}
+    titles = [r.get('title') or '' for r in known]
     for src in cfg['sources']:
         try:
             items = read_feed(src)
@@ -144,8 +147,11 @@ def main():
             seen |= {r['website_url'] for r in requests.get(rest + 'listings', headers=H, params={'select': 'website_url', 'website_url': 'in.(%s)' % links}, timeout=20).json()}
             fresh = [i for i in fresh if i['link'] not in seen]
         fresh = [i for i in fresh if re.sub(r'\W+', ' ', i['title'].lower()).strip() not in taken]
+        # the same story under another publisher's headline (news_checks.same_story)
+        fresh = [i for i in fresh if not any(same_story(i['title'], k) for k in titles)]
         for i in fresh:
             taken.add(re.sub(r'\W+', ' ', i['title'].lower()).strip())
+            titles.append(i['title'])
             if JOB_TITLE.search(i['title']):
                 jobs.append(job_listing(clean(i['title'], 200), clean(i['summary'], 600), src['name'], i['link'], [src['topic'], src['lang'].lower()], owner))
                 continue

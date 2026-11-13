@@ -172,6 +172,10 @@ function _evfHtml(listings, isEdit) {
     + '<h2 class="evf-title">' + esc(isEdit ? t('org.edit_heading', 'Edit your event') : t('org.new_heading', 'Create your event page')) + '</h2>'
     + (isEdit ? '' : '<p class="evf-lead">' + esc(t('org.lead_live', 'Share it with your people right away. A public event is listed on the Sophia Commons calendar as soon as you create it.')) + '</p>')
     + '<p class="evf-mine"><a href="/my-events" onclick="orgGo(\'/my-events\');return false;">' + esc(t('org.my_events_link_long', 'See all my events')) + ' &rarr;</a></p>'
+    + (isEdit ? '' : '<div class="evf-flyer"><label for="evf-flyer" class="evf-flyer-h">' + esc(t('org.flyer_heading', 'Have a flyer? Start from it')) + '</label>'
+      + '<p class="evf-hint">' + esc(t('org.flyer_hint', 'Choose a picture or photo of your flyer and we will fill in the form from it. Check every field before you create the event.')) + '</p>'
+      + '<input id="evf-flyer" type="file" accept="image/jpeg,image/png,image/webp" onchange="_evfFlyerPicked(this)">'
+      + '<p class="evf-flyer-status" id="evf-flyer-status" role="status" aria-live="polite"></p></div>')
     + '<fieldset><legend>' + esc(t('org.s_what', 'What')) + '</legend>'
     + _evfField('title', t('org.f_title', 'Event title') + ' *', _evfInput('title', 'text', ' maxlength="200" required'))
     + _evfField('type', t('org.f_type', 'Kind of event'), '<select id="evf-type" name="type">' + _evfTypeOptions() + '</select>')
@@ -332,6 +336,76 @@ function _evfRepeatLabels() {
 function _evfRepeatChanged() {
   var sel = document.getElementById('evf-repeat'), f = document.querySelector('.evf-field[data-f="repeat_count"]');
   if (sel && f) f.hidden = sel.value === 'none';
+}
+
+// ── Flyer: read by the event-flyer function (Claude), fills only the fields still empty (owner, 2026-11-13) ──
+function _orgShrinkImage(file) {
+  return new Promise(function (resolve, reject) {
+    var url = URL.createObjectURL(file), img = new Image();
+    img.onload = function () {
+      var scale = Math.min(1, ORG_IMAGE_MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+      var c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+      var ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('read')); };
+    img.src = url;
+  });
+}
+
+async function _evfFlyerPicked(input) {
+  var st = document.getElementById('evf-flyer-status'), file = input.files && input.files[0];
+  if (!file || _evfState.busy) return;
+  var say = function (msg, bad) { st.textContent = msg; st.classList.toggle('evf-flyer-bad', !!bad); };
+  if (['image/jpeg', 'image/png', 'image/webp'].indexOf(file.type) === -1) { input.value = ''; say(t('org.err_image_type', 'Please choose a JPG, PNG or WebP picture.'), true); return; }
+  if (file.size > 20 * 1024 * 1024) { input.value = ''; say(t('org.err_flyer_size', 'The picture is larger than 20 MB.'), true); return; }
+  var sess = sbReady() ? (await _sb.auth.getSession()).data.session : null;
+  if (!sess) { _orgSignIn(); return; }
+  var data;
+  try { data = await _orgShrinkImage(file); } catch (e) { input.value = ''; say(t('org.err_image_read', 'This picture could not be read. Please try another one.'), true); return; }
+  _evfState.busy = true; input.disabled = true;
+  say(t('org.flyer_reading', 'Reading your flyer, this takes a few seconds...'));
+  try {
+    var r = await fetch(SUPABASE_URL + '/functions/v1/event-flyer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + sess.access_token },
+      body: JSON.stringify({ image: data, timezone: _orgZone() })
+    });
+    var out = await r.json().catch(function () { return {}; });
+    if (!r.ok || !out.fields) throw new Error(out.error || '');
+    var n = _evfApplyFlyer(out.fields);
+    // The flyer is also the event's picture, unless one was already chosen
+    if (!_evfState.image && !_evfState.copyImageUrl && data.length * 0.75 <= ORG_MAX_IMAGE_BYTES) { _evfState.image = data; _evfShowPreview(data); }
+    say(t('org.flyer_done', 'Filled in {n} fields from your flyer. Please check each one, then create the event.').replace('{n}', n));
+  } catch (err) {
+    say((err && err.message) || t('org.flyer_failed', 'The flyer could not be read. Please fill in the form by hand.'), true);
+  } finally {
+    _evfState.busy = false; input.disabled = false;
+  }
+}
+
+// Put the flyer's fields into the form; never overwrite what the organizer already typed
+function _evfApplyFlyer(f) {
+  var n = 0;
+  var put = function (name, v) { if (v && !_evfVal(name)) { _evfSet(name, v); n++; } };
+  ['title', 'description', 'price', 'start_date', 'start_time', 'end_date', 'end_time', 'venue', 'address', 'city', 'region', 'country', 'organizer', 'organizer_url'].forEach(function (k) { put(k, f[k]); });
+  var type = document.getElementById('evf-type');
+  if (f.type && type && type.selectedIndex <= 0 && type.querySelector('option[value="' + f.type + '"]')) { type.value = f.type; n++; }
+  var tz = document.getElementById('evf-timezone');
+  if (f.timezone && tz && _orgZoneOk(f.timezone)) {
+    if (!tz.querySelector('option[value="' + f.timezone + '"]')) tz.innerHTML = _evfZoneOptions(f.timezone);
+    tz.value = f.timezone; n++;
+  }
+  if (f.is_online) {
+    document.querySelector('input[name="evf-mode"][value="online"]').checked = true;
+    put('online_url', f.online_url); _evfMode();
+  }
+  _evfRepeatLabels(); _evfZoneCheck();
+  return n;
 }
 
 // ── Picture: checked and shrunk in the browser (longest side 1600 px, JPEG), checked again by event-save ──
