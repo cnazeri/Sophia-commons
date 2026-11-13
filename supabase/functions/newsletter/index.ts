@@ -57,6 +57,16 @@ function confirmEmailHtml(confirmUrl: string) {
 </div>`;
 }
 
+function alreadySubscribedHtml() {
+  return `<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;color:#1E1810;line-height:1.6">
+  <div style="text-align:center;padding:8px 0 4px"><img src="https://sophiacommons.org/img/email-logo.png" width="300" height="73" alt="Sophia Commons" style="display:block;width:300px;max-width:100%;height:auto;border:0;margin:0 auto"></div>
+  <h2 style="font-weight:600">You're already subscribed</h2>
+  <p>Someone (hopefully you) just signed up for the Sophia Commons newsletter with this address. Good news: you're already on the list, so there's nothing to confirm. The weekly digest will keep arriving here.</p>
+  <p>Not seeing it? Check your spam or promotions folder, and add newsletter@sophiacommons.org to your contacts.</p>
+  <p style="color:#6F665B;font-size:13px">If you didn't ask for this, you can ignore it. Every newsletter has a one-click unsubscribe link at the bottom.</p>
+</div>`;
+}
+
 // Site-wide brake on confirmation emails: at most this many per window, counted in the database
 // (function instances are short-lived, so an in-memory counter would not hold).
 const CONFIRM_EMAILS_PER_WINDOW = 30;
@@ -91,8 +101,28 @@ serve(async (req: Request) => {
       .select("id, confirmed, confirm_token, confirm_sent_at, unsubscribed_at, preferences").eq("email", email).maybeSingle();
     const country = signupCountry(body.country);
 
-    // Same response whether or not the address is already subscribed (no account enumeration)
-    if (existing?.confirmed && !existing.unsubscribed_at) return json(req, { ok: true, status: "pending_confirmation" });
+    // Same response whether or not the address is already subscribed (no account enumeration). The inbox owner
+    // gets a short "you're already subscribed" note instead of silence, so nobody waits for a confirmation link
+    // that never comes (reported by a subscriber, 2026-11-13). Same hourly cooldown and site-wide brake as confirmations.
+    if (existing?.confirmed && !existing.unsubscribed_at) {
+      const coolingDown = existing.confirm_sent_at && Date.now() - new Date(existing.confirm_sent_at).getTime() < RESEND_COOLDOWN_MIN * 60000;
+      const key = Deno.env.get("RESEND_API_KEY");
+      if (!coolingDown && key) {
+        const since = new Date(Date.now() - CONFIRM_WINDOW_MS).toISOString();
+        const { count: recent } = await supabase.from("newsletter_subscribers")
+          .select("id", { count: "exact", head: true }).gte("confirm_sent_at", since);
+        if ((recent ?? 0) < CONFIRM_EMAILS_PER_WINDOW) {
+          await supabase.from("newsletter_subscribers").update({ confirm_sent_at: new Date().toISOString() }).eq("id", existing.id);
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ from: FROM_ADDRESS, reply_to: REPLY_TO, to: [email], subject: "You're already subscribed to Sophia Commons", html: alreadySubscribedHtml() }),
+          }).catch(() => null);
+          if (res?.ok) await supabase.rpc("email_quota_note", { p_n: 1 });
+        }
+      }
+      return json(req, { ok: true, status: "pending_confirmation" });
+    }
 
     if (existing?.confirm_sent_at && Date.now() - new Date(existing.confirm_sent_at).getTime() < RESEND_COOLDOWN_MIN * 60000) {
       return json(req, { ok: true, status: "pending_confirmation" });
