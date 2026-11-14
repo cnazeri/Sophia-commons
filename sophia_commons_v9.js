@@ -1768,7 +1768,7 @@ const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
   directory: '/directory', books: '/books', podcasts: '/podcasts',
   memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', chat: '/chat', privacy: '/privacy', terms: '/terms', about: '/about', digest: '/digest',
-  'event-new': '/events/new', 'my-events': '/my-events', account: '/account'
+  'event-new': '/events/new', 'my-events': '/my-events', account: '/account', advent: '/advent'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
@@ -1776,6 +1776,7 @@ Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
 function _getSecMeta() {
   return {
     home:      { title: t('meta.title', "Sophia Commons | Anthroposophical Community Directory"), desc: t('meta.og_description', 'The free global directory for the anthroposophical community. Find Waldorf schools, biodynamic farms, Camphill communities, eurythmy, anthroposophic medicine, events, and more.') },
+    advent:    { title: 'Advent and the Holy Nights | Sophia Commons', desc: 'Advent gatherings near you, a daily Advent calendar, the festival dates, the Holy Nights and Rudolf Steiner\'s Christmas lectures.' },
     blog:      { title: t('meta.blog_title', 'Blog | Sophia Commons'), desc: t('meta.blog_desc', 'Articles and reflections from the anthroposophical community.') },
     news:      { title: t('meta.news_title', "News | Sophia Commons"), desc: t('meta.news_desc', 'Latest news from the anthroposophical world - Waldorf education, biodynamic agriculture, eurythmy, Camphill communities, and spiritual science.') },
     events:    { title: t('meta.events_title', "Events & Calendar | Sophia Commons"), desc: t('meta.events_desc', 'Upcoming anthroposophical events, conferences, workshops, study groups, and retreats worldwide.') },
@@ -1857,6 +1858,7 @@ function showSec(id, skipPush) {
   if (id === 'event-new' && typeof renderEventForm === 'function') renderEventForm();
   if (id === 'my-events' && typeof renderMyEvents === 'function') renderMyEvents();
   if (id === 'blog' && typeof loadBlogList === 'function') loadBlogList();
+  if (id === 'advent' && typeof renderAdvent === 'function') renderAdvent();
   if (id === 'admin') { if (!isAdmin()) { showSec('home'); return; } initAdminPanel(); }
   if (_toNews) setTimeout(function() { var n = document.getElementById('sec-news'); if (n) n.scrollIntoView({ block: 'start' }); }, 50);
   closeMobileMenu();
@@ -5317,22 +5319,26 @@ function _featTag(ev) {
   return ev.date === _localDay(new Date()) ? t('home.today', 'Today') : t('home.coming_up', 'Coming up');
 }
 
-// No "Join on Zoom" button on the home page; a longer description and Read more instead (owner, 2026-11-05).
-// The join link stays on the event page.
-var FEAT_DESC_CHARS = 320;
+// No "Join on Zoom" button on the home page; Read more opens the event page with the join link (owner, 2026-11-05).
 // Home slider and Near you: an English reader sees an English version of an event written in another
 // language (owner, 2026-11-09). The event's own page keeps the original.
 function _homeEnglish() { return typeof SC_I18N === 'undefined' || SC_I18N.getLang() === 'en'; }
 function _homeTitle(ev) { return ev.titleEn && _homeEnglish() ? ev.titleEn : ev.title; }
 function _homeDesc(ev) { return ev.descEn && _homeEnglish() ? ev.descEn : ev.desc; }
 
+// Home slider: name, date and time, and whether it is in person (with the place) or online. No description,
+// so every slide is the same short height and the slider has no empty space under the shorter ones (owner, 2026-11-13).
+function _featWhere(ev) {
+  if (ev.online) return '<span class="feat-ev-mode online">' + esc(t('event_detail.online', 'Online')) + '</span>';
+  return '<span class="feat-ev-mode">' + esc(t('org.in_person', 'In person')) + '</span>' + (ev.loc ? ' &middot; ' + esc(ev.loc) : '');
+}
 function _featBannerHtml(feat) {
   return '<div class="feat-ev" data-id="' + esc(feat.id) + '">'
     + (feat.img && feat.img.src ? '<img class="feat-ev-img" src="' + escUrl(_imgSized(feat.img.src, 200)) + '" alt="" width="96" height="116">' : '')
     + '<div class="feat-ev-body"><div class="etag">' + esc(_featTag(feat)) + '</div>'
     + '<h5 aria-level="3"><a href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(_homeTitle(feat)) + '</a></h5>'
     + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
-    + (feat.desc ? '<p class="feat-ev-desc">' + esc(_shortText(_homeDesc(feat), FEAT_DESC_CHARS)) + '</p>' : '')
+    + '<div class="feat-ev-where">' + _featWhere(feat) + '</div>'
     + '<a class="feat-ev-more" href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(t('home.read_more', 'Read more')) + ' &rarr;</a>'
     + '</div></div>';
 }

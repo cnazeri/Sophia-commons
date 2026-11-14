@@ -1,4 +1,4 @@
-var CACHE_NAME = 'sophia-commons-v1.119.1';
+var CACHE_NAME = 'sophia-commons-v1.120.2';
 var STATIC_ASSETS = [
   '/',
   '/sophia_commons_v9.css',
@@ -6,6 +6,7 @@ var STATIC_ASSETS = [
   '/blog.js',
   '/claims.js',
   '/events_organizer.js',
+  '/advent.js',
   '/account.js',
   '/i18n.js',
   '/lang/en.json',

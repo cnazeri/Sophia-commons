@@ -49,9 +49,9 @@ export function eventIcs(ev, now = new Date().toISOString()) {
   return lines;
 }
 
-export function calendarIcs(events, now = new Date().toISOString()) {
+export function calendarIcs(events, now = new Date().toISOString(), opts = {}) {
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Sophia Commons//Events//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
-    'X-WR-CALNAME:Sophia Commons events', 'X-WR-CALDESC:Anthroposophical events worldwide from sophiacommons.org',
+    `X-WR-CALNAME:${icsText(opts.name || 'Sophia Commons events')}`, `X-WR-CALDESC:${icsText(opts.desc || 'Anthroposophical events worldwide from sophiacommons.org')}`,
     'REFRESH-INTERVAL;VALUE=DURATION:PT6H', 'X-PUBLISHED-TTL:PT6H'];
   for (const ev of events) lines.push(...eventIcs(ev, now));
   lines.push('END:VCALENDAR');
@@ -75,4 +75,23 @@ export function newsRss(news, posts = [], now = new Date().toISOString()) {
     + `    <lastBuildDate>${rfc822(items[0] ? items[0].date : now)}</lastBuildDate>\n`
     + `    <atom:link href="${SITE}/feed.xml" rel="self" type="application/rss+xml"/>\n`
     + items.map(item).join('\n') + (items.length ? '\n' : '') + '  </channel>\n</rss>\n';
+}
+
+// ── /advent.ics: the season's festival dates plus Advent and Christmas gatherings (owner, 2026-11-13) ──
+export const ADVENT_EVENT_RE = /advent|nicholas|nikolaus|sinterklaas|christmas|xmas|weihnacht|holy night|heilige n|twelve nights|thirteen|epiphany|three kings|dreik[oö]nig|solstice|yule|winter (tree|festival|garden|spiral)|spiral|nativity|shepherd|oberufer|carol|lucia|krippe|crib/i;
+export function adventFestivals(year) {
+  const d = (y, m, day) => new Date(Date.UTC(y, m, day, 12)).toISOString();
+  // First Advent: the fourth Sunday before Christmas
+  const xmas = new Date(Date.UTC(year, 11, 25, 12));
+  const firstAdvent = new Date(xmas.getTime() - ((xmas.getUTCDay() || 7) + 21) * 864e5).toISOString();
+  const f = (key, title, start, end, about) => ({ id: `advent-${key}-${year}`, title, start_date: start, end_date: end || start, is_all_day: true,
+    description: about + ' More on the Sophia Commons Advent page: https://sophiacommons.org/advent' });
+  return [
+    f('advent', 'First Sunday of Advent', firstAdvent, null, 'The first candle of the Advent wreath.'),
+    f('nicholas', 'St. Nicholas', d(year, 11, 6), null, 'The feast of St. Nicholas.'),
+    f('solstice', 'Winter solstice', d(year, 11, 21), null, 'The longest night in the north, the longest day in the south.'),
+    f('holynights', 'The Holy Nights', d(year, 11, 24), d(year + 1, 0, 6), 'The thirteen Holy Nights, from Christmas Eve to Epiphany.'),
+    f('christmas', 'Christmas', d(year, 11, 25), null, 'Christmas Day.'),
+    f('epiphany', 'Epiphany', d(year + 1, 0, 6), null, 'The Feast of the Three Kings.'),
+  ];
 }

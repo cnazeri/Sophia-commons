@@ -64,6 +64,16 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Every weekly issue's subject starts "Sophia Commons weekly: <date>", then the issue's own title if it has one:
+// "Sophia Commons weekly: November 13, 2026 | Keeping the heart alive" (owner, 2026-11-13)
+const WEEKLY_PREFIX = "Sophia Commons weekly:";
+export function weeklySubject(subject: string, createdAt: string): string {
+  if (subject.startsWith(WEEKLY_PREFIX)) return subject;
+  const date = new Date(createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "America/Los_Angeles" });
+  const theme = subject.split(/:\s/)[0].trim();   // "Keeping the heart alive: news and gatherings..." -> "Keeping the heart alive"
+  return `${WEEKLY_PREFIX} ${date}` + (theme ? ` | ${theme}` : "");
+}
+
 // Weekly digests older than this are never emailed (see the check where the digest is loaded)
 const MAX_ISSUE_AGE_DAYS = 3;
 function oldestAllowed(): string {
@@ -177,7 +187,7 @@ serve(async (req: Request) => {
       if (!claimed) return jsonResponse({ error: "This digest was already emailed (or is not a weekly digest)." }, 409);
       started = true;
     }
-    subject = (row.email_subject || row.title || "").trim();
+    subject = weeklySubject((row.email_subject || row.title || "").trim(), row.created_at);
     html_content = (row.body || "").trim();
     preheader = (row.excerpt || "").trim();
     kicker = "Weekly digest \u00b7 " + subject.replace(/^.*?:\s*/, "");
