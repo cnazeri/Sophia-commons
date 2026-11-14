@@ -1,0 +1,8 @@
+{
+  "_note": "Events the daily picture scan leaves alone (owner, 2026-11-14). Add an event id here when its found picture is wrong.",
+  "skip": {
+    "024eaacb": "Atman Breathwork: flyer shows Sept 3 in large type, the event is Nov 25",
+    "24d12d99": "Embodied Communion: Luma ad card with an RSVP button",
+    "d9b4546a": "PAAM Summer Intensive: the site served a 'down for maintenance' picture"
+  }
+}

@@ -4953,8 +4953,16 @@ function renderSeminars() {
   }
   var html = '';
   items.forEach(function(ev) {
-    html += '<div class="seminar-card">';
-    html += '<h5>' + esc(ev.title) + '</h5>';
+    // Owner 2026-11-14: every seminar card has a picture (the event's own, else the seasonal fallback)
+    var img = ev.img || _eventFallbackImg({ title: ev.title, event_type: ev.cat });
+    var src = img && img.src ? String(img.src) : '';
+    var href = ev.id ? '/event/' + ev.id : '';
+    html += '<div class="seminar-card' + (src ? ' has-img' : '') + '">';
+    if (src) {
+      html += '<' + (href ? 'a href="' + escUrl(href) + '" tabindex="-1" aria-hidden="true"' : 'div') + ' class="sem-img' + (/#contain$/.test(src) ? ' contain' : '') + '">'
+        + '<img src="' + escUrl(src.replace(/#contain$/, '')) + '" alt="" loading="lazy" width="320" height="180"></' + (href ? 'a' : 'div') + '>';
+    }
+    html += '<h5>' + (href ? '<a href="' + escUrl(href) + '">' + esc(ev.title) + '</a>' : esc(ev.title)) + '</h5>';
     html += '<div class="sem-meta">' + esc(ev.time || localDate(ev.date, { month: 'short', day: 'numeric', year: 'numeric' })) + (ev.loc ? '<br>' + esc(ev.loc) : '') + '</div>';
     html += '<span class="sem-tag ' + esc(ev.cat) + '">' + esc(String(ev.cat).replace('_', ' ')) + '</span>';
     html += '</div>';
@@ -6177,7 +6185,11 @@ async function loadAdminEvents() {
   var el = document.getElementById('admin-events-list');
   if (!sbReady()) { el.innerHTML = '<div class="admin-empty">' + t('error.supabase_not_connected') + '</div>'; return; }
   try {
-    // New member events, already live (or private by the organizer's choice), not looked at yet (needs_review, 2026-11-04)
+    // New member events, already live (or private by the organizer's choice), not looked at yet (needs_review, 2026-11-04).
+    // Owner 2026-11-14: events that have ended clear themselves from this list (nothing left to review).
+    var nowIso = new Date().toISOString();
+    await _sb.from('events').update({ needs_review: false }).eq('needs_review', true)
+      .or('end_date.lt.' + nowIso + ',and(end_date.is.null,start_date.lt.' + nowIso + ')');
     var { data, error } = await _sb.from('events').select('*').eq('needs_review', true).neq('status', 'cancelled').order('created_at', { ascending: false });
     if (error) { el.innerHTML = '<div class="admin-empty">' + t('error.loading_events') + '</div>'; return; }
     if (!data || data.length === 0) { el.innerHTML = '<div class="admin-empty">' + t('admin.no_pending_events') + '</div>'; return; }
@@ -6194,10 +6206,12 @@ async function loadAdminEvents() {
         + (d.location_name ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(d.location_name) + '</span>' : '')
         + (d.organizer_name ? '<span><strong>' + t('admin.organizer_label') + '</strong> ' + adminEsc(d.organizer_name) + '</span>' : '')
         + '</div>'
+        + (d.image_url ? '<div style="margin:8px 0;"><img src="' + escUrl(d.image_url.split('#')[0]) + '" alt="" loading="lazy" style="max-width:240px;max-height:160px;border-radius:8px;border:1px solid var(--border);object-fit:cover;"></div>'
+           : '<div class="admin-meta" style="margin:6px 0;">' + esc(t('admin.event_no_picture', 'No picture yet')) + '</div>')
         + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">' + adminEsc(d.description) + '</p>' : '')
         + '<div class="admin-actions">'
         + '<a href="/event/' + d.id + '" target="_blank" rel="noopener">' + esc(d.status === 'pending' ? t('admin.event_private', 'Private (link only): open the page') : t('admin.event_live', 'Live now: open the page')) + ' &#8599;</a> '
-        + '<button class="admin-btn-approve" onclick="adminApproveEvent(\'' + d.id + '\')">' + esc(t('admin.event_seen', 'Looks good')) + '</button>'
+        + '<button class="admin-btn-approve" onclick="adminApproveEvent(\'' + d.id + '\')">' + esc(t('admin.event_seen', 'Accept')) + '</button>'
         + '<button class="admin-btn-reject" onclick="adminRejectEvent(\'' + d.id + '\')">' + esc(t('admin.event_take_down', 'Take down')) + '</button>'
         + '</div></div>';
     }).join('');
@@ -8653,11 +8667,50 @@ async function renderVideoSpotlight() {
   boxes.forEach(function (b) { b.innerHTML = html; });
 }
 
+// Featured Talk (bottom of Podcasts & Media), owner 2026-11-14: a new talk every week (ISO week, from Monday).
+// The pool is talks and lectures from the curated channels, published in the last two years and before this
+// week began, so the pick stays the same all week for every visitor. The static talk in index.html is the fallback.
+var TALK_CATEGORIES = ['lecturer'];   // whole channels; all others only when the title says it is a talk (owner review 2026-11-14)
+var TALK_WORDS = ['lecture', 'talk', 'vortrag', 'keynote', 'conversation', 'gespräch', 'conferencia', 'лекция'];
+var TALK_NOT = /trailer|teaser|recruit|testimonial|promo|sleep|#shorts/i;
+var _talkDone = false;
+function _weekStartIso() {
+  var d = new Date(), day = d.getUTCDay() || 7;
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - day + 1)).toISOString();
+}
+async function renderFeaturedTalk(channels) {
+  var box = document.querySelector('#featured-talk .listblock-body');
+  if (!box || _talkDone || !sbReady()) return;
+  try {
+    var slugs = channels.filter(function (c) { return TALK_CATEGORIES.indexOf(c.category) !== -1; }).map(function (c) { return c.slug; });
+    var ors = TALK_WORDS.map(function (w) { return 'title.ilike.*' + w + '*'; });
+    if (slugs.length) ors.push('channel_slug.in.(' + slugs.join(',') + ')');
+    var r = await _sb.from('youtube_videos').select('video_id, channel_slug, title, url, thumbnail_url, published_at')
+      .or(ors.join(',')).gte('published_at', new Date(Date.now() - 730 * 864e5).toISOString()).lt('published_at', _weekStartIso())
+      .not('title', 'ilike', '*#shorts*').order('video_id').limit(1000);
+    var pool = (r.data || []).filter(function (v) { return v.video_id && v.title && !TALK_NOT.test(v.title); });
+    if (r.error || !pool.length) return;
+    var v = pool[isoWeekKey() % pool.length];
+    var ch = channels.filter(function (c) { return c.slug === v.channel_slug; })[0] || {};
+    var url = v.url || ('https://www.youtube.com/watch?v=' + v.video_id);
+    var thumb = v.thumbnail_url || ('https://i.ytimg.com/vi/' + v.video_id + '/hqdefault.jpg');
+    box.innerHTML = '<div class="video-card" style="max-width:420px;">'
+      + '<a class="video-thumb" href="' + escUrl(url) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(thumb) + '" alt="" loading="lazy" width="480" height="360"></a>'
+      + '<div class="video-body"><div class="video-kicker">' + esc(t('podcasts.talk_of_week', 'Talk of the week')) + (ch.language ? ' &middot; ' + esc(ch.language) : '') + '</div>'
+      + '<a class="video-title" href="' + escUrl(url) + '" target="_blank" rel="noopener">' + esc(v.title) + '</a>'
+      + (ch.name ? '<div class="video-channel"><b>' + esc(ch.name) + '</b></div>' : '')
+      + (v.published_at ? '<div class="video-meta">' + esc(ytAgo(v.published_at)) + '</div>' : '')
+      + '</div></div>';
+    _talkDone = true;
+  } catch (e) { /* keep the static talk */ }
+}
+
 async function renderYouTubeChannels() {
   var el = document.getElementById('yt-channels-block');
   if (!el) return;
   var both = await Promise.all([_ytFetchLatest(), _loadChannelRatings()]);
   var rows = both[0], ratings = both[1];
+  renderFeaturedTalk(rows);
   var week = weeklyChannel(rows, 0);
   var groups = {};
   rows.forEach(function (r) { (groups[r.category] = groups[r.category] || []).push(r); });

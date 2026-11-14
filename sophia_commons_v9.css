@@ -2072,6 +2072,11 @@ footer {
   margin-bottom: 4px;
   line-height: 1.35;
 }
+.seminar-card .sem-img { display: block; margin: -14px -14px 10px; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 10px 10px 0 0; background: var(--bg-warm, #f3ede2); }
+.seminar-card .sem-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.seminar-card .sem-img.contain img { object-fit: contain; padding: 10px; box-sizing: border-box; }
+.seminar-card h5 a { color: inherit; text-decoration: none; }
+.seminar-card h5 a:hover, .seminar-card h5 a:focus-visible { text-decoration: underline; }
 .seminar-card .sem-meta {
   font-size: 11px;
   color: var(--text-muted);

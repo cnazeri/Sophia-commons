@@ -253,6 +253,53 @@ async function emailOwner(rows: Row[], organizer: string) {
   } catch (_) { /* the event is saved; the note is best effort */ }
 }
 
+// One date as the organizer entered it, in the event's own time zone ("Sat, Dec 5, 2026, 7:30 PM MST")
+function whenText(startIso: string, endIso: unknown, tz: string, allDay: boolean): string {
+  const opts: Intl.DateTimeFormatOptions = allDay
+    ? { timeZone: "UTC", weekday: "short", month: "short", day: "numeric", year: "numeric" }
+    : { timeZone: tz, weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" };
+  const start = new Intl.DateTimeFormat("en-US", opts).format(new Date(startIso));
+  if (!endIso) return start;
+  const end = new Intl.DateTimeFormat("en-US", allDay ? opts : { ...opts, weekday: undefined, year: undefined }).format(new Date(String(endIso)));
+  return `${start} to ${end}`;
+}
+
+// Owner, 2026-11-14: the person who posted the event gets a note that it is up, with its link and details
+async function emailPoster(rows: Row[], c: Row, to: string, isPrivate: boolean) {
+  const key = Deno.env.get("RESEND_API_KEY");
+  if (!key || !rows.length || !to) return;
+  const first = rows[0];
+  const tz = String(c.timezone || "UTC"), allDay = c.is_all_day === true;
+  const place = c.is_online ? "Online" : [c.location_name, c.address, c.city, c.region, c.country].filter(Boolean).map(String)
+    .filter((v, i, a) => a.indexOf(v) === i).join(", ");
+  const dates = rows.map((r) => `<li><a href="${SITE}/event/${r.id}">${esc(whenText(String(r.start_date), r.end_date, tz, allDay))}</a></li>`).join("");
+  const row = (label: string, value: unknown) => value ? `<tr><td style="padding:4px 12px 4px 0;color:#6b6358;vertical-align:top">${label}</td><td style="padding:4px 0">${value}</td></tr>` : "";
+  const html = `<div style="font-family:Georgia,serif;font-size:16px;line-height:1.55;color:#2b2620;max-width:560px">
+<p>Thank you for posting your event on Sophia Commons. ${isPrivate
+    ? "It is saved as a private event: it is not on the public calendar, and anyone with the link can open it."
+    : "It is now on the events calendar."}</p>
+<p style="font-size:20px;margin:18px 0 6px"><a href="${SITE}/event/${first.id}" style="color:#8a6a1f">${esc(first.title)}</a></p>
+<table style="border-collapse:collapse;font-size:15px">
+${row(rows.length > 1 ? "Dates" : "When", rows.length > 1 ? `<ul style="margin:0;padding-left:18px">${dates}</ul>` : esc(whenText(String(first.start_date), first.end_date, tz, allDay)))}
+${row("Where", esc(place))}
+${row("Organizer", esc(c.organizer_name))}
+${row("Price", esc(c.price_text || (c.is_free ? "Free" : "")))}
+${row("Event page", `<a href="${SITE}/event/${first.id}">${SITE}/event/${first.id}</a>`)}
+${first.signup_enabled ? row("Sign-up form", `<a href="${SITE}/signup/${first.id}">${SITE}/signup/${first.id}</a>`) : ""}
+</table>
+<p>To change or cancel it, sign in and open <a href="${SITE}/my-events">My events</a>.</p>
+<p>Sophia Commons<br><a href="${SITE}">sophiacommons.org</a></p></div>`;
+  try {
+    const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: FROM_ADDRESS, to: [to], reply_to: OWNER_EMAIL, subject: `Your event is posted: ${line(first.title, 120)}`, html }),
+    });
+    if (res.ok) await db.rpc("email_quota_note", { p_n: 1 });
+    else console.error("event-save poster email", res.status);
+  } catch (_) { /* the event is saved; the note is best effort */ }
+}
+
 // "Copy as new" keeps the picture only when it already lives in our event-images bucket (never an outside URL)
 function ownImageUrl(v: unknown): string | null {
   const s = line(v, 500);
@@ -322,10 +369,11 @@ serve(async (req) => {
     const series = dates.length > 1 ? crypto.randomUUID() : null;
     const rows = dates.map((d) => ({ ...columns, start_date: d.start, end_date: d.end, image_url: imageUrl,
       series_id: series, status, needs_review: review, featured: false, user_id: uid }));
-    const { data, error } = await db.from("events").insert(rows).select("id, title, status, start_date, organizer_name, signup_enabled");
+    const { data, error } = await db.from("events").insert(rows).select("id, title, status, start_date, end_date, organizer_name, signup_enabled");
     if (error) throw new Error("insert: " + error.message);
     const saved = (data || []).sort((a: Row, b: Row) => String(a.start_date).localeCompare(String(b.start_date)));
     if (review) await emailOwner(saved, user.email || uid);
+    await emailPoster(saved, columns, user.email || "", status === "pending");
     return out({ ok: true, status, events: saved.map(links) });
   } catch (err) {
     if (err instanceof Invalid) return out({ error: err.message }, 400);

@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.120.2",
+  "footer.version": "v1.121.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1324,7 +1324,7 @@
   "signup.donation": "Приветствуется пожертвование.",
   "signup.donate_here": "Пожертвовать здесь",
   "admin.event_live": "Уже опубликовано: открыть страницу",
-  "admin.event_seen": "Всё в порядке",
+  "admin.event_seen": "Принять",
   "admin.event_take_down": "Снять",
   "org.s_visibility": "Кто может найти",
   "org.f_public": "Сделать публичным: показать в календаре Sophia Commons, чтобы его нашёл любой посетитель сайта",
@@ -1358,5 +1358,7 @@
   "home.happening_now_in": "Сейчас идёт: {region}",
   "detail.trail": "Где это",
   "detail.trail_directory": "Каталог",
-  "home.read_more": "Подробнее"
+  "home.read_more": "Подробнее",
+  "podcasts.talk_of_week": "Доклад недели",
+  "admin.event_no_picture": "Пока нет изображения"
 }

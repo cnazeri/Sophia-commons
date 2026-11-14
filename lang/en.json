@@ -594,7 +594,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.120.2",
+  "footer.version": "v1.121.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -1263,7 +1263,7 @@
   "signup.donation": "A donation is suggested.",
   "signup.donate_here": "Donate here",
   "admin.event_live": "Live now: open the page",
-  "admin.event_seen": "Looks good",
+  "admin.event_seen": "Accept",
   "admin.event_take_down": "Take down",
   "org.s_visibility": "Who can find it",
   "org.f_public": "Make it public: list it on the Sophia Commons calendar, so anyone browsing the site can find it",
@@ -1297,5 +1297,7 @@
   "home.happening_now_in": "Happening now in {region}",
   "detail.trail": "Where this is",
   "detail.trail_directory": "Directory",
-  "home.read_more": "Read more"
+  "home.read_more": "Read more",
+  "podcasts.talk_of_week": "Talk of the week",
+  "admin.event_no_picture": "No picture yet"
 }
