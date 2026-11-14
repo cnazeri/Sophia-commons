@@ -1836,6 +1836,182 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "forest-house-waldorf-school",
+      "name": "Forest House Waldorf School",
+      "url": "https://www.youtube.com/channel/UCF-9CIFbJakTVN2S9fb_JSg",
+      "channel_id": "UCF-9CIFbJakTVN2S9fb_JSg",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "swadhaa-waldorf-learning-centre",
+      "name": "Swadhaa Waldorf Learning Centre",
+      "url": "https://www.youtube.com/channel/UCzJAZ-QhvCqSSSc5GxigtaA",
+      "channel_id": "UCzJAZ-QhvCqSSSc5GxigtaA",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "charlottesville-waldorf-school",
+      "name": "Charlottesville Waldorf School",
+      "url": "https://www.youtube.com/channel/UCNb-LPumxf5Cs6r_q8Gr4FA",
+      "channel_id": "UCNb-LPumxf5Cs6r_q8Gr4FA",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "spring-garden-waldorf-school",
+      "name": "Spring Garden Waldorf School",
+      "url": "https://www.youtube.com/channel/UCFdFCMxFsnZlhzwTljlOJzA",
+      "channel_id": "UCFdFCMxFsnZlhzwTljlOJzA",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "garden-house-waldorf-school",
+      "name": "Garden House Waldorf School",
+      "url": "https://www.youtube.com/channel/UCeLafeYb4TPgVcDlEwJv7SQ",
+      "channel_id": "UCeLafeYb4TPgVcDlEwJv7SQ",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "voices-of-waldorf-elders",
+      "name": "Voices of Waldorf Elders",
+      "url": "https://www.youtube.com/channel/UCwYFNbIYz3fdu2tAL4qENYg",
+      "channel_id": "UCwYFNbIYz3fdu2tAL4qENYg",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "lala-eurythmy",
+      "name": "Lala Eurythmy",
+      "url": "https://www.youtube.com/channel/UCWOMFyJdJKem0xKUFvtBe1g",
+      "channel_id": "UCWOMFyJdJKem0xKUFvtBe1g",
+      "language": null,
+      "category": "eurythmy",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "dr-kelly-sutton-md",
+      "name": "Dr. Kelly Sutton, MD",
+      "url": "https://www.youtube.com/channel/UCOhbW2xb7TS62hvrrUO0rmA",
+      "channel_id": "UCOhbW2xb7TS62hvrrUO0rmA",
+      "language": null,
+      "category": "medicine",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "metamorphosis-eurythmy",
+      "name": "Metamorphosis Eurythmy",
+      "url": "https://www.youtube.com/channel/UCwnJpn0U5kaH8QE9BGynWKA",
+      "channel_id": "UCwnJpn0U5kaH8QE9BGynWKA",
+      "language": null,
+      "category": "eurythmy",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "early-bird-tasonle-eurythmy-thailand",
+      "name": "Early Bird Tasonle - Eurythmy Thailand",
+      "url": "https://www.youtube.com/channel/UCzE20T-rIoBlQrugO9Z4zIw",
+      "channel_id": "UCzE20T-rIoBlQrugO9Z4zIw",
+      "language": null,
+      "category": "eurythmy",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "youwithme-eurythmy",
+      "name": "Youwithme Eurythmy",
+      "url": "https://www.youtube.com/channel/UCRiL1I6MlQo8RCQ3nObWkTg",
+      "channel_id": "UCRiL1I6MlQo8RCQ3nObWkTg",
+      "language": null,
+      "category": "eurythmy",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "southeast-biodynamic-association",
+      "name": "Southeast Biodynamic Association",
+      "url": "https://www.youtube.com/channel/UC3lXlElG4gyaPutw3PIdgnQ",
+      "channel_id": "UC3lXlElG4gyaPutw3PIdgnQ",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "lakotawaldorfschool1",
+      "name": "LakotaWaldorfSchool1",
+      "url": "https://www.youtube.com/channel/UCw3PgGjVPGkEYTGPf8YCh9Q",
+      "channel_id": "UCw3PgGjVPGkEYTGPf8YCh9Q",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "rogue-regenerative-agriculture",
+      "name": "Rogue Regenerative Agriculture",
+      "url": "https://www.youtube.com/channel/UC9Q57Bekkl3XadPgmsSGohQ",
+      "channel_id": "UC9Q57Bekkl3XadPgmsSGohQ",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "heart-and-soil-tv",
+      "name": "Heart and Soil TV",
+      "url": "https://www.youtube.com/channel/UCwVg9iooT3osK8EoQFsjOYQ",
+      "channel_id": "UCwVg9iooT3osK8EoQFsjOYQ",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "casa-rudolf-steiner-fundaci-n-para-la-di",
+      "name": "Casa Rudolf Steiner - Fundación para la difusión de la Antroposofia en Sudamérica",
+      "url": "https://www.youtube.com/channel/UC-N9igTXOJpr-oQVMcP3ZMQ",
+      "channel_id": "UC-N9igTXOJpr-oQVMcP3ZMQ",
+      "language": null,
+      "category": "other",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }
