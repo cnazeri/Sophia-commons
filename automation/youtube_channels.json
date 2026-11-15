@@ -2012,6 +2012,17 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "vladimir-komarov-anthroposophy-astrology",
+      "name": "Vladimir Komarov: Anthroposophy & Astrology",
+      "url": "https://www.youtube.com/channel/UCQCfw_5_9eAcJrnWjs0gnUA",
+      "channel_id": "UCQCfw_5_9eAcJrnWjs0gnUA",
+      "language": null,
+      "category": "other",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }
