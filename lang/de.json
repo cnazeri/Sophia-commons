@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.121.0",
+  "footer.version": "v1.122.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1360,5 +1360,14 @@
   "detail.trail_directory": "Verzeichnis",
   "home.read_more": "Weiterlesen",
   "podcasts.talk_of_week": "Vortrag der Woche",
-  "admin.event_no_picture": "Noch kein Bild"
+  "admin.event_no_picture": "Noch kein Bild",
+  "claim.edit_hint2": "Name und Kategorie ändert die Redaktion: hello@sophiacommons.org.",
+  "claim.pic_title": "Bild",
+  "claim.pic_choose": "Logo oder Foto wählen (JPEG, PNG oder WEBP, bis 8 MB)",
+  "claim.pic_logo": "Das ist ein Logo: ganz zeigen, nicht zuschneiden",
+  "claim.pic_save": "Bild ändern",
+  "claim.pic_err_type": "Bitte ein JPEG-, PNG- oder WEBP-Bild wählen.",
+  "claim.pic_err_size": "Das Bild ist größer als 8 MB. Bitte ein kleineres wählen.",
+  "claim.pic_uploading": "Wird hochgeladen...",
+  "claim.pic_saved": "Bild geändert."
 }

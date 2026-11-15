@@ -3529,6 +3529,13 @@ footer li a { display: inline-block; padding: 10px 0; }
 .claim-card .claim-btn { margin-top: 14px; }
 .claim-x { position: absolute; top: 10px; right: 12px; background: none; border: 0; font-size: 24px; cursor: pointer; color: var(--text-muted); }
 .claim-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+.le-pic { margin-top: var(--sp-3, 24px); padding-top: var(--sp-2, 16px); border-top: 1px solid var(--border, #e6dfd2); }
+.le-pic h4 { margin: 0 0 8px; }
+.le-pic-now { display: block; width: 100%; max-width: 280px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; margin-bottom: 8px; background: var(--bg, #faf7f0); }
+.le-pic-now.is-logo { object-fit: contain; }
+.le-pic .le-pic-logo { display: flex; flex-direction: row; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; font-weight: 400; }
+.le-pic .le-pic-logo input { width: 20px; height: 20px; min-height: 0; margin: 0; padding: 0; flex: none; }
+.le-pic input[type=file] { min-height: 44px; max-width: 100%; }
 
 /* v1.56: highlight the target of a shared #anchor link */
 .anchor-flash { animation: anchorFlash 2.6s ease-out; }

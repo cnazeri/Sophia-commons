@@ -594,7 +594,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.121.0",
+  "footer.version": "v1.122.0",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -1299,5 +1299,14 @@
   "detail.trail_directory": "Directory",
   "home.read_more": "Read more",
   "podcasts.talk_of_week": "Talk of the week",
-  "admin.event_no_picture": "No picture yet"
+  "admin.event_no_picture": "No picture yet",
+  "claim.edit_hint2": "Name and category are changed by the editor: email hello@sophiacommons.org.",
+  "claim.pic_title": "Picture",
+  "claim.pic_choose": "Choose a logo or photo (JPEG, PNG or WEBP, up to 8 MB)",
+  "claim.pic_logo": "This is a logo: show it whole, not cropped",
+  "claim.pic_save": "Change picture",
+  "claim.pic_err_type": "Please choose a JPEG, PNG or WEBP picture.",
+  "claim.pic_err_size": "That picture is over 8 MB. Please choose a smaller one.",
+  "claim.pic_uploading": "Uploading...",
+  "claim.pic_saved": "Picture changed."
 }

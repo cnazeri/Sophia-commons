@@ -120,9 +120,77 @@ function openListingEditor() {
     + f('le-addr', t('claim.f_addr', 'Street address'), d.address)
     + f('le-city', t('claim.f_city', 'City'), d.city || d.location)
     + f('le-tags', t('claim.f_tags', 'Topics, separated by commas'), (d.tags || []).join(', '))
-    + '<div class="claim-hint">' + esc(t('claim.edit_hint', 'Name, category and pictures are changed by the editor: email hello@sophiacommons.org.')) + '</div>'
+    + '<div class="claim-hint">' + esc(t('claim.edit_hint2', 'Name and category are changed by the editor: email hello@sophiacommons.org.')) + '</div>'
     + '<button type="submit" class="claim-btn">' + esc(t('claim.save', 'Save changes')) + '</button>'
-    + '<div id="le-status" class="claim-hint" role="status"></div></form>');
+    + '<div id="le-status" class="claim-hint" role="status"></div></form>'
+    + _pictureFormHtml(d));
+}
+
+// ── Listing picture: the manager uploads a logo or photo (owner, 2026-11-15) ──
+var PIC_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+var PIC_MAX_BYTES = 8 * 1024 * 1024;
+var PIC_MAX_SIDE = 1600;
+
+function _pictureFormHtml(d) {
+  var cur = d.photo_url || '';
+  var isLogo = !cur || cur.indexOf('#contain') !== -1;
+  return '<form class="le-pic" onsubmit="saveListingPicture(event)">'
+    + '<h4>' + esc(t('claim.pic_title', 'Picture')) + '</h4>'
+    + (cur ? '<img class="le-pic-now' + (isLogo ? ' is-logo' : '') + '" src="' + escUrl(cur.split('#')[0]) + '" alt="" loading="lazy">' : '')
+    + '<label for="le-pic-file">' + esc(t('claim.pic_choose', 'Choose a logo or photo (JPEG, PNG or WEBP, up to 8 MB)')) + '</label>'
+    + '<input id="le-pic-file" type="file" accept="image/jpeg,image/png,image/webp" required>'
+    + '<label class="le-pic-logo"><input type="checkbox" id="le-pic-logo"' + (isLogo ? ' checked' : '') + '> '
+    + esc(t('claim.pic_logo', 'This is a logo: show it whole, not cropped')) + '</label>'
+    + '<button type="submit" class="claim-btn">' + esc(t('claim.pic_save', 'Change picture')) + '</button>'
+    + '<div id="le-pic-status" class="claim-hint" role="status"></div></form>';
+}
+
+// Large pictures are scaled down in the browser so listing pages stay quick. Falls back to the original file.
+function _shrinkPicture(file) {
+  return new Promise(function (resolve) {
+    if (!window.createImageBitmap || !document.createElement('canvas').toBlob) { resolve(file); return; }
+    createImageBitmap(file).then(function (bmp) {
+      var scale = Math.min(1, PIC_MAX_SIDE / Math.max(bmp.width, bmp.height));
+      if (scale === 1 && file.size < 1024 * 1024) { resolve(file); return; }
+      var c = document.createElement('canvas');
+      c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
+      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      c.toBlob(function (blob) { resolve(blob && blob.size < file.size ? blob : file); }, file.type, 0.86);
+    }, function () { resolve(file); });
+  });
+}
+
+function _picName() {
+  var a = new Uint8Array(12);
+  (window.crypto || window.msCrypto).getRandomValues(a);
+  return Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+}
+
+async function saveListingPicture(ev) {
+  ev.preventDefault();
+  var d = _claimEntry, st = document.getElementById('le-pic-status');
+  var file = (document.getElementById('le-pic-file').files || [])[0];
+  var logo = document.getElementById('le-pic-logo').checked;
+  if (!file) return;
+  var ext = PIC_TYPES[file.type];
+  if (!ext) { st.textContent = t('claim.pic_err_type', 'Please choose a JPEG, PNG or WEBP picture.'); return; }
+  if (file.size > PIC_MAX_BYTES) { st.textContent = t('claim.pic_err_size', 'That picture is over 8 MB. Please choose a smaller one.'); return; }
+  var btn = ev.target.querySelector('button[type=submit]');
+  btn.disabled = true;
+  st.textContent = t('claim.pic_uploading', 'Uploading...');
+  try {
+    var blob = await _shrinkPicture(file);
+    var path = 'owner/' + d.id + '/' + _picName() + '.' + ext;
+    var up = await _sb.storage.from('listing-photos').upload(path, blob, { contentType: file.type, upsert: false });
+    if (up.error) throw up.error;
+    var r = await _sb.rpc('owner_set_listing_photo', { entry: d.id, path: path, logo: logo });
+    if (r.error) throw r.error;
+    st.textContent = t('claim.pic_saved', 'Picture changed.');
+    setTimeout(function () { closeClaimModal(); showDetail('directory', d.id, true); }, 900);
+  } catch (e) {
+    btn.disabled = false;
+    st.textContent = t('claim.err_save', 'Could not save: ') + (e && e.message ? e.message : e);
+  }
 }
 
 async function saveListingEdits(ev) {

@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.121.0",
+  "footer.version": "v1.122.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1360,5 +1360,14 @@
   "detail.trail_directory": "Каталог",
   "home.read_more": "Подробнее",
   "podcasts.talk_of_week": "Доклад недели",
-  "admin.event_no_picture": "Пока нет изображения"
+  "admin.event_no_picture": "Пока нет изображения",
+  "claim.edit_hint2": "Название и категорию меняет редакция: hello@sophiacommons.org.",
+  "claim.pic_title": "Изображение",
+  "claim.pic_choose": "Выберите логотип или фото (JPEG, PNG или WEBP, до 8 МБ)",
+  "claim.pic_logo": "Это логотип: показывать целиком, без обрезки",
+  "claim.pic_save": "Сменить изображение",
+  "claim.pic_err_type": "Выберите изображение JPEG, PNG или WEBP.",
+  "claim.pic_err_size": "Изображение больше 8 МБ. Выберите поменьше.",
+  "claim.pic_uploading": "Загрузка...",
+  "claim.pic_saved": "Изображение изменено."
 }
