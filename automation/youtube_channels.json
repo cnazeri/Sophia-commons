@@ -2023,6 +2023,17 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "waldorf-school-of-palm-beach",
+      "name": "Waldorf School of Palm Beach",
+      "url": "https://www.youtube.com/channel/UCn4JWPVdDhCubY91RVsrwXA",
+      "channel_id": "UCn4JWPVdDhCubY91RVsrwXA",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }
