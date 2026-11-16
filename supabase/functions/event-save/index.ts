@@ -172,18 +172,20 @@ async function buildEvent(db: ReturnType<typeof createClient>, uid: string, admi
     return { start: start.toISOString(), end: end ? end.toISOString() : null };
   });
 
-  const online = e.is_online === true;
+  // In person, online, or both (owner, 2026-11-16): "both" is saved as an online event that keeps its venue
+  const mode = e.attendance === "both" ? "both" : e.is_online === true ? "online" : "place";
+  const online = mode !== "place", inPlace = mode !== "online";
   const place = {
     is_online: online,
     online_url: online ? httpUrl(e.online_url, "the online link") : null,
-    location_name: online ? "Online" : line(e.location_name, 200) || null,
-    address: online ? null : line(e.address, 300) || null,
-    city: online ? null : line(e.city, 120) || null,
-    region: online ? null : line(e.region, 120) || null,
-    country: online ? null : line(e.country, 120) || null,
+    location_name: inPlace ? line(e.location_name, 200) || null : "Online",
+    address: inPlace ? line(e.address, 300) || null : null,
+    city: inPlace ? line(e.city, 120) || null : null,
+    region: inPlace ? line(e.region, 120) || null : null,
+    country: inPlace ? line(e.country, 120) || null : null,
   };
   if (online && !place.online_url) fail("Please give the link for the online event.");
-  if (!online && !place.city && !place.location_name) fail("Please give the venue or the city.");
+  if (inPlace && !place.city && !place.location_name) fail("Please give the venue or the city.");
 
   const price = line(e.price_text, 100);
   const organizerName = line(e.organizer_name, 200);
@@ -270,8 +272,9 @@ async function emailPoster(rows: Row[], c: Row, to: string, isPrivate: boolean) 
   if (!key || !rows.length || !to) return;
   const first = rows[0];
   const tz = String(c.timezone || "UTC"), allDay = c.is_all_day === true;
-  const place = c.is_online ? "Online" : [c.location_name, c.address, c.city, c.region, c.country].filter(Boolean).map(String)
-    .filter((v, i, a) => a.indexOf(v) === i).join(", ");
+  const physical = [c.location_name, c.address, c.city, c.region, c.country].filter(Boolean).map(String)
+    .filter((v, i, a) => v !== "Online" && a.indexOf(v) === i).join(", ");
+  const place = !c.is_online ? physical : physical ? `${physical}, and online` : "Online";
   const dates = rows.map((r) => `<li><a href="${SITE}/event/${r.id}">${esc(whenText(String(r.start_date), r.end_date, tz, allDay))}</a></li>`).join("");
   const row = (label: string, value: unknown) => value ? `<tr><td style="padding:4px 12px 4px 0;color:#6b6358;vertical-align:top">${label}</td><td style="padding:4px 0">${value}</td></tr>` : "";
   const html = `<div style="font-family:Georgia,serif;font-size:16px;line-height:1.55;color:#2b2620;max-width:560px">

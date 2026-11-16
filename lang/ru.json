@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.122.0",
+  "footer.version": "v1.123.0",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1369,5 +1369,9 @@
   "claim.pic_err_type": "Выберите изображение JPEG, PNG или WEBP.",
   "claim.pic_err_size": "Изображение больше 8 МБ. Выберите поменьше.",
   "claim.pic_uploading": "Загрузка...",
-  "claim.pic_saved": "Изображение изменено."
+  "claim.pic_saved": "Изображение изменено.",
+  "event_detail.hybrid": "Очно и онлайн",
+  "event_detail.attendance": "Формат участия",
+  "event_detail.where": "Где",
+  "org.mode_both": "Оба варианта (очно и онлайн)"
 }

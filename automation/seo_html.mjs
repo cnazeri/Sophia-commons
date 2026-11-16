@@ -188,11 +188,29 @@ function eventDay(iso, country, withYear = true) {
 }
 const httpUrl = u => (u && /^https?:\/\//.test(u) ? u : '');
 
+// In person ('place'), 'online', or 'both' (owner, 2026-11-16). Same rule as _eventMode() in sophia_commons_v9.js:
+// "both" is an online event with a real venue or street address; an "Online"/"Zoom" venue with a city is online only.
+const ONLINE_VENUE = /^\s*(online|virtual|zoom|youtube|webinar|live ?stream)/i;
+export function eventMode(ev) {
+  if (!ev || !ev.is_online) return 'place';
+  const venue = ev.location_name && !ONLINE_VENUE.test(ev.location_name);
+  return ev.address || venue || (!ev.location_name && ev.city) ? 'both' : 'online';
+}
+export function eventPlace(ev) {
+  const seen = new Set();
+  return [ev.location_name, ev.address, ev.city, ev.region, ev.country].filter(v => {
+    const k = String(v || '').trim().toLowerCase();
+    if (!k || seen.has(k) || ONLINE_VENUE.test(k)) return false;
+    seen.add(k); return true;
+  }).join(', ');
+}
+
 // Everything applySeo needs for /event/<id>. `others` = a few upcoming events to link to.
 export function eventPage(ev, others = []) {
   const name = ev.title || 'Event';
   const when = eventDay(ev.start_date, ev.country) + (ev.end_date && String(ev.end_date).slice(0, 10) !== String(ev.start_date).slice(0, 10) ? ' to ' + eventDay(ev.end_date, ev.country) : '');
-  const where = ev.is_online ? 'Online' + (ev.location_name && !/online|zoom/i.test(ev.location_name) ? ' (' + ev.location_name + ')' : '') : [ev.location_name, ev.city, ev.country].filter(Boolean).join(', ');
+  const mode = eventMode(ev), physical = eventPlace(ev);
+  const where = mode === 'online' ? 'Online' : mode === 'both' ? (physical ? physical + ', and online' : 'In person and online') : physical;
   const about = String(ev.description || '').replace(/\s+/g, ' ').trim();
   const fallback = `${when}${where ? ', ' + where : ''}.${ev.organizer_name ? ' Organized by ' + ev.organizer_name + '.' : ''} Details and add-to-calendar on Sophia Commons.`;
   const desc = shorten(about ? `${eventDay(ev.start_date, ev.country, false)}${where ? ', ' + where : ''}: ${about}` : fallback, 158);
@@ -201,7 +219,8 @@ export function eventPage(ev, others = []) {
   const cancelled = ev.status === 'cancelled';
   const facts = [
     `<li>When: ${esc(when)}</li>`,
-    where ? `<li>Where: ${esc(where)}${ev.address && !ev.is_online ? ', ' + esc(ev.address) : ''}</li>` : '',
+    `<li>Attendance: ${mode === 'online' ? 'Online' : mode === 'both' ? 'In person and online' : 'In person'}</li>`,
+    where ? `<li>Where: ${esc(where)}</li>` : '',
     ev.organizer_name ? `<li>Organizer: ${orgUrl ? `<a href="${attr(orgUrl)}" rel="nofollow noopener">${esc(ev.organizer_name)}</a>` : esc(ev.organizer_name)}</li>` : '',
     ev.is_free ? '<li>Admission: free</li>' : (ev.ticket_price ? `<li>Price: ${esc(ev.ticket_price)}</li>` : ''),
     ticket ? `<li><a href="${attr(ticket)}" rel="nofollow noopener">Tickets and registration</a></li>` : '',
@@ -212,22 +231,22 @@ export function eventPage(ev, others = []) {
     + '<p><a href="/events">All events and the calendar</a></p>';
 
   const route = '/event/' + ev.id;
-  const location = ev.is_online
-    ? { '@type': 'VirtualLocation', url: online || SITE + route }
-    : { '@type': 'Place', name: ev.location_name || ev.city || name,
-        address: { '@type': 'PostalAddress', ...(ev.address ? { streetAddress: ev.address } : {}), ...(ev.city ? { addressLocality: ev.city } : {}), ...(ev.region ? { addressRegion: ev.region } : {}), ...(ev.country ? { addressCountry: ev.country } : {}) } };
+  const virtual = { '@type': 'VirtualLocation', url: online || SITE + route };
+  const venue = { '@type': 'Place', name: (ev.location_name && !ONLINE_VENUE.test(ev.location_name) ? ev.location_name : '') || ev.city || name,
+    address: { '@type': 'PostalAddress', ...(ev.address ? { streetAddress: ev.address } : {}), ...(ev.city ? { addressLocality: ev.city } : {}), ...(ev.region ? { addressRegion: ev.region } : {}), ...(ev.country ? { addressCountry: ev.country } : {}) } };
+  const location = mode === 'online' ? virtual : mode === 'both' ? [venue, virtual] : venue;
   const ld = {
     '@context': 'https://schema.org', '@type': 'Event', name, url: SITE + route,
     startDate: ev.start_date, ...(ev.end_date ? { endDate: ev.end_date } : {}),
     eventStatus: cancelled ? 'https://schema.org/EventCancelled' : 'https://schema.org/EventScheduled',
-    eventAttendanceMode: ev.is_online ? 'https://schema.org/OnlineEventAttendanceMode' : 'https://schema.org/OfflineEventAttendanceMode',
+    eventAttendanceMode: `https://schema.org/${mode === 'online' ? 'Online' : mode === 'both' ? 'Mixed' : 'Offline'}EventAttendanceMode`,
     location,
     ...(about ? { description: shorten(about, 500) } : {}),
     ...(image ? { image: [image] } : {}),
     ...(ev.organizer_name ? { organizer: { '@type': 'Organization', name: ev.organizer_name, ...(orgUrl ? { url: orgUrl } : {}) } } : {}),
     ...(ev.is_free || ticket ? { offers: { '@type': 'Offer', url: ticket || SITE + route, ...(ev.is_free ? { price: 0, priceCurrency: 'USD' } : {}), availability: 'https://schema.org/InStock' } } : {}),
   };
-  const city = ev.is_online ? 'Online' : (ev.city || ev.country || '');
+  const city = mode === 'online' ? 'Online' : (ev.city || ev.country || '');
   return { route, title: `${name} | ${eventDay(ev.start_date, ev.country, false)}${city ? ', ' + city : ''} | Sophia Commons`, desc, bodyHtml, ld, ldId: 'detail-jsonld', image, h1: name };
 }
 

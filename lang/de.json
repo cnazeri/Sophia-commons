@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.122.0",
+  "footer.version": "v1.123.0",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1369,5 +1369,9 @@
   "claim.pic_err_type": "Bitte ein JPEG-, PNG- oder WEBP-Bild wählen.",
   "claim.pic_err_size": "Das Bild ist größer als 8 MB. Bitte ein kleineres wählen.",
   "claim.pic_uploading": "Wird hochgeladen...",
-  "claim.pic_saved": "Bild geändert."
+  "claim.pic_saved": "Bild geändert.",
+  "event_detail.hybrid": "Vor Ort und online",
+  "event_detail.attendance": "Teilnahme",
+  "event_detail.where": "Ort",
+  "org.mode_both": "Beides (vor Ort und online)"
 }

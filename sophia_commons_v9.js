@@ -321,8 +321,39 @@ function _eventZoneLine(ev) {
   return '<p><strong>' + esc(t('org.local_time', 'Local time at the event')) + ':</strong> ' + esc(at) + ' (' + esc(ev.timezone.replace(/_/g, ' ')) + ')</p>';
 }
 
+// In person, online, or both (owner, 2026-11-16). "Both" is an online event that also has a real venue or
+// street address. A city alone does not count when the venue says Online/Zoom: imported online events often
+// carry the host's home city. Keep in step with eventMode() in automation/seo_html.mjs.
+var EV_ONLINE_VENUE = /^\s*(online|virtual|zoom|youtube|webinar|live ?stream)/i;
+function _eventMode(ev) {
+  if (!ev || !ev.is_online) return 'place';
+  var venue = ev.location_name && !EV_ONLINE_VENUE.test(ev.location_name);
+  return ev.address || venue || (!ev.location_name && ev.city) ? 'both' : 'online';
+}
+function _eventModeLabel(mode) {
+  return mode === 'both' ? t('event_detail.hybrid', 'In person and online')
+    : mode === 'online' ? t('event_detail.online', 'Online') : t('org.in_person', 'In person');
+}
+// Venue, street, city, region, country: each once, without the "Online" placeholder venue
+function _eventPlaceText(ev) {
+  var seen = {};
+  return [ev.location_name, ev.address, ev.city, ev.region, ev.country].filter(function (v) {
+    var k = String(v || '').trim().toLowerCase();
+    if (!k || seen[k] || EV_ONLINE_VENUE.test(k)) return false;
+    seen[k] = true; return true;
+  }).join(', ');
+}
+// Short place for event lists: "Online", "Chestnut Ridge, USA", or "Chestnut Ridge, USA + Online"
+function _eventWhereShort(ev) {
+  var mode = _eventMode(ev), online = t('event_detail.online', 'Online');
+  if (mode === 'online') return online;
+  var p = [ev.city, ev.country].filter(Boolean).join(', ') || ev.location_name || '';
+  return mode === 'both' ? (p ? p + ' + ' + online : _eventModeLabel(mode)) : p;
+}
+
 function renderEventDetail(ev) {
   var d = new Date(ev.start_date);
+  var mode = _eventMode(ev), placeText = mode === 'online' ? '' : _eventPlaceText(ev);
   var endStr = ev.end_date ? localDate(ev.end_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'}) : '';
   var dateStr = localDate(ev.start_date, {weekday:'long', month:'long', day:'numeric', year:'numeric'});
   // Times are in the visitor's own time zone, so name it: "05:00 PM - 06:15 PM EST"
@@ -337,13 +368,14 @@ function renderEventDetail(ev) {
   if (ev.featured) badges += '<span class="detail-badge category">' + t('event_detail.featured') + '</span>';
   if (ev.event_type) badges += '<span class="detail-badge type">' + esc(typeLabel) + '</span>';
   if (ev.is_free) badges += '<span class="detail-badge free">' + t('event_detail.free') + '</span>';
-  if (ev.is_online) badges += '<span class="detail-badge type">' + t('event_detail.online') + '</span>';
+  badges += '<span class="detail-badge type ev-mode">' + esc(_eventModeLabel(mode)) + '</span>';
 
   var meta = '';
   meta += '<span>&#128197; ' + esc(dateStr) + '</span>';
   if (endStr && endStr !== dateStr) meta += '<span>to ' + esc(endStr) + '</span>';
   meta += '<span>&#128336; ' + esc(timeStr) + '</span>';
-  if (ev.city) meta += '<span>&#128205; ' + esc(ev.city) + (ev.country ? ', ' + esc(ev.country) : '') + '</span>';
+  if (mode === 'online') meta += '<span>&#127760; ' + esc(t('event_detail.online', 'Online')) + '</span>';
+  else if (ev.city) meta += '<span>&#128205; ' + esc(ev.city) + (ev.country ? ', ' + esc(ev.country) : '') + (mode === 'both' ? ' + ' + esc(t('event_detail.online', 'Online')) : '') + '</span>';
   if (ev.organizer_name) meta += '<span>&#127915; ' + esc(ev.organizer_name) + '</span>';
 
   // Zoom meetings: show the meeting ID and passcode plainly (owner, 2026-10-29)
@@ -391,8 +423,8 @@ function renderEventDetail(ev) {
     + '<p><strong>' + t('event_detail.date') + ':</strong> ' + esc(dateStr) + '</p>'
     + '<p><strong>' + t('event_detail.time') + ':</strong> ' + esc(timeStr) + '</p>'
     + _eventZoneLine(ev)
-    + (ev.location_name ? '<p><strong>' + t('event_detail.venue') + ':</strong> ' + esc(ev.location_name) + '</p>' : '')
-    + (ev.city ? '<p><strong>' + t('event_detail.city') + ':</strong> ' + esc(ev.city) + '</p>' : '')
+    + '<p><strong>' + esc(t('event_detail.attendance', 'Attendance')) + ':</strong> ' + esc(_eventModeLabel(mode)) + '</p>'
+    + (placeText ? '<p><strong>' + esc(t('event_detail.where', 'Where')) + ':</strong> ' + esc(placeText) + '</p>' : '')
     + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
     + price
     + _calButtonsHtml(ev)
@@ -419,7 +451,7 @@ async function _loadNextFromOrganizer(ev) {
   if (new Date(ev.end_date || ev.start_date).getTime() > Date.now()) return;
   if (!ev.directory_entry_id && !ev.organizer_name) return;
   try {
-    var q = _sb.from('events').select('id, title, start_date, city, country, is_online')
+    var q = _sb.from('events').select('id, title, start_date, location_name, address, city, country, is_online')
       .in('status', ['upcoming', 'ongoing']).gte('start_date', new Date().toISOString()).neq('id', ev.id)
       .order('start_date', { ascending: true }).limit(3);
     q = ev.directory_entry_id ? q.eq('directory_entry_id', ev.directory_entry_id) : q.eq('organizer_name', ev.organizer_name);
@@ -430,7 +462,7 @@ async function _loadNextFromOrganizer(ev) {
       + (rows.length
         ? '<p>' + esc(t('event_detail.next_from', 'Coming up next from {org}:').replace('{org}', who)) + '</p><ul>'
           + rows.map(function(x) {
-              var where = x.is_online ? t('event_detail.online', 'Online') : [x.city, x.country].filter(Boolean).join(', ');
+              var where = _eventWhereShort(x);
               return '<li><a href="/event/' + esc(x.id) + '" onclick="showDetail(\'event\',\'' + escJs(x.id) + '\');return false;">' + esc(x.title) + '</a> <span class="ev-next-when">'
                 + esc(localDate(x.start_date, { month: 'short', day: 'numeric', year: 'numeric' })) + (where ? ' &middot; ' + esc(where) : '') + '</span></li>';
             }).join('') + '</ul>'
@@ -785,12 +817,11 @@ function _injectDirectorySEO(d) {
 }
 
 function _injectEventSEO(ev) {
-  var loc = {};
-  if (ev.is_online) {
-    loc = { '@type': 'VirtualLocation', 'url': ev.online_url || '' };
-  } else {
-    loc = { '@type': 'Place', 'name': ev.location_name || ev.city || '', 'address': { '@type': 'PostalAddress', 'addressLocality': ev.city || '', 'addressCountry': ev.country || '' } };
-  }
+  var mode = _eventMode(ev);
+  var virt = { '@type': 'VirtualLocation', 'url': ev.online_url || ('https://sophiacommons.org/event/' + ev.id) };
+  var place = { '@type': 'Place', 'name': (ev.location_name && !EV_ONLINE_VENUE.test(ev.location_name) ? ev.location_name : '') || ev.city || '',
+    'address': { '@type': 'PostalAddress', 'streetAddress': ev.address || undefined, 'addressLocality': ev.city || '', 'addressRegion': ev.region || undefined, 'addressCountry': ev.country || '' } };
+  var loc = mode === 'online' ? virt : mode === 'both' ? [place, virt] : place;
   _injectJsonLd({
     '@context': 'https://schema.org',
     '@type': 'Event',
@@ -799,7 +830,7 @@ function _injectEventSEO(ev) {
     'startDate': ev.start_date,
     'endDate': ev.end_date || undefined,
     'eventStatus': 'https://schema.org/EventScheduled',
-    'eventAttendanceMode': ev.is_online ? 'https://schema.org/OnlineEventAttendanceMode' : 'https://schema.org/OfflineEventAttendanceMode',
+    'eventAttendanceMode': 'https://schema.org/' + (mode === 'online' ? 'Online' : mode === 'both' ? 'Mixed' : 'Offline') + 'EventAttendanceMode',
     'location': loc,
     'organizer': ev.organizer_name ? { '@type': 'Organization', 'name': ev.organizer_name, 'url': ev.organizer_url || undefined } : undefined,
     'isAccessibleForFree': ev.is_free || false,
@@ -1013,14 +1044,16 @@ async function _firstClassBlock() {
   var evs = [];
   if (sbReady()) {
     try {
-      var r = await _sb.from('events').select('id, title, start_date, end_date, location_name, city, region, country, is_online, organizer_name')
+      var r = await _sb.from('events').select('id, title, start_date, end_date, location_name, address, city, region, country, is_online, organizer_name')
         .eq('event_type', 'first_class').in('status', ['upcoming', 'ongoing'])
         .gte('start_date', new Date(Date.now() - 864e5).toISOString()).order('start_date').limit(20);
       evs = r.data || [];
     } catch (e) { console.warn('first class events unavailable', e); }
   }
   var rows = evs.map(function (ev) {
-    var where = ev.is_online ? t('common.online', 'Online') : [ev.location_name, ev.city, ev.region].filter(Boolean).join(', ');
+    var fcMode = _eventMode(ev);
+    var where = fcMode === 'online' ? t('common.online', 'Online')
+      : [ev.location_name, ev.city, ev.region].filter(Boolean).join(', ') + (fcMode === 'both' ? ' + ' + t('common.online', 'Online') : '');
     var time = localDate(ev.start_date, { weekday: 'short', month: 'short', day: 'numeric' }) + ', '
       + new Date(ev.start_date).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
       + (ev.end_date ? ' - ' + new Date(ev.end_date).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '');
@@ -1566,10 +1599,12 @@ async function showPlace(catSlug, cSlug, skipPush, cityKey) {
 var PLACE_EVENTS_MAX = 6;
 async function _placeEvents(container, countries, cityKey, where) {
   try {
-    var r = await _sb.from('events').select('id, title, start_date, is_all_day, city, location_name')
-      .in('status', ['upcoming', 'ongoing']).eq('is_online', false).in('country', countries)
+    // In person or both: hybrid events have a real place too
+    var r = await _sb.from('events').select('id, title, start_date, is_all_day, is_online, address, city, location_name')
+      .in('status', ['upcoming', 'ongoing']).or('is_online.eq.false,address.not.is.null,location_name.is.null,location_name.not.ilike.*online*')
+      .in('country', countries)
       .gte('start_date', new Date(Date.now() - 864e5).toISOString()).order('start_date').limit(100);
-    var list = (r.data || []).filter(function(e) { return !cityKey || _citySlug(e.city) === cityKey; }).slice(0, PLACE_EVENTS_MAX);
+    var list = (r.data || []).filter(function(e) { return _eventMode(e) !== 'online' && (!cityKey || _citySlug(e.city) === cityKey); }).slice(0, PLACE_EVENTS_MAX);
     if (!list.length || !container.isConnected) return;
     container.insertAdjacentHTML('afterbegin', '<section class="place-events"><h2>' + esc(t('place.events_in', 'Upcoming events in {where}').replace('{where}', where)) + '</h2><ul>'
       + list.map(function(e) {
@@ -3827,9 +3862,9 @@ var _sbMergedEventTitles = {};
 
 // Upcoming events: merged into calEvents (one sorted list, one count). A copy is kept in localStorage
 // so the home page can show events immediately on the next visit, before the network answers.
-var _EV_CACHE_KEY = 'sc_upcoming_events_v5';   // raise the number to drop visitors' saved copies after an event is fixed
+var _EV_CACHE_KEY = 'sc_upcoming_events_v6';   // raise the number to drop visitors' saved copies after an event is fixed
 var _cachedEventIds = [];
-var _EV_CACHE_FIELDS = ['id', 'title', 'description', 'event_type', 'start_date', 'end_date', 'is_all_day', 'location_name',
+var _EV_CACHE_FIELDS = ['id', 'title', 'description', 'event_type', 'start_date', 'end_date', 'is_all_day', 'location_name', 'address',
   'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name', 'title_en', 'description_en', 'lat', 'lng'];
 
 var _dbEventsShown = false;   // true once saved or live database events are in calEvents
@@ -3933,7 +3968,9 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       // Timed event: show the start time in the viewer's own time zone
       time = new Date(ev.start_date).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
     }
-    if (ev.is_online && !loc) loc = ev.location_name || 'Online';
+    var evMode = _eventMode(ev);
+    if (evMode === 'online' && !loc) loc = ev.location_name || 'Online';
+    if (evMode === 'both') loc = (loc || ev.location_name || '') + ' + ' + t('event_detail.online', 'Online');
 
     calEvents.push({
       id: ev.id || null,
@@ -3950,7 +3987,8 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
             ev.ticket_url ? [/forms\.gle|docs\.google\.com\/forms/i.test(ev.ticket_url) ? 'Sign up to attend' : 'Event page', ev.ticket_url] : null].filter(Boolean),
       featured: !!ev.featured,
       country: ev.country || '',
-      online: !!ev.is_online,
+      online: evMode === 'online',   // in person and online events count as in person, with hybrid set
+      hybrid: evMode === 'both',
       lat: typeof ev.lat === 'number' ? ev.lat : null,
       lng: typeof ev.lng === 'number' ? ev.lng : null,
       end: _localDay(ev.end_date) || dateStr,
@@ -4894,9 +4932,9 @@ function renderEventList() {
   if (near) {
     upcoming = upcoming.filter(function(e) {
       if (e.online) return true;
-      if (e.lat == null || e.lng == null) return false;
+      if (e.lat == null || e.lng == null) return !!e.hybrid;   // anyone can join a hybrid event online
       e._km = _distKm(near.lat, near.lng, e.lat, e.lng);
-      return e._km <= EV_NEAR_KM;
+      return e._km <= EV_NEAR_KM || !!e.hybrid;
     });
     var nIn = upcoming.filter(function(e) { return !e.online; }).length;
     var st = document.getElementById('ev-near-status');
@@ -5180,7 +5218,7 @@ function renderHomeNear(slides) {
   var notNow = function (e) { return nowRows.indexOf(e) === -1 && e.date >= today; };
   var rows = place && place !== 'online' ? pick(function (e) { return notNow(e) && !e.online && _nearCountry(e.country) === place; }) : [];
   var online = !rows.length;
-  if (online) rows = pick(function (e) { return notNow(e) && e.online; });
+  if (online) rows = pick(function (e) { return notNow(e) && (e.online || e.hybrid); });
   if (!rows.length && !nowRows.length) { box.innerHTML = ''; return; }
   var label = online
     ? (place && place !== 'online' ? t('home.near_online_instead', 'Nothing coming up in {place} yet. Online events').replace('{place}', place) : t('home.near_online', 'Online events'))
@@ -5338,7 +5376,8 @@ function _homeDesc(ev) { return ev.descEn && _homeEnglish() ? ev.descEn : ev.des
 // so every slide is the same short height and the slider has no empty space under the shorter ones (owner, 2026-11-13).
 function _featWhere(ev) {
   if (ev.online) return '<span class="feat-ev-mode online">' + esc(t('event_detail.online', 'Online')) + '</span>';
-  return '<span class="feat-ev-mode">' + esc(t('org.in_person', 'In person')) + '</span>' + (ev.loc ? ' &middot; ' + esc(ev.loc) : '');
+  var loc = ev.hybrid ? String(ev.loc || '').replace(/ \+ [^+]*$/, '') : ev.loc;
+  return '<span class="feat-ev-mode">' + esc(_eventModeLabel(ev.hybrid ? 'both' : 'place')) + '</span>' + (loc ? ' &middot; ' + esc(loc) : '');
 }
 function _featBannerHtml(feat) {
   return '<div class="feat-ev" data-id="' + esc(feat.id) + '">'

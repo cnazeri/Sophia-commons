@@ -197,7 +197,8 @@ function _evfHtml(listings, isEdit) {
     + '</fieldset>'
     + '<fieldset><legend>' + esc(t('org.s_where', 'Where')) + '</legend>'
     + '<div class="evf-mode"><label class="evf-check"><input type="radio" name="evf-mode" value="place" checked onchange="_evfMode()"> ' + esc(t('org.in_person', 'In person')) + '</label>'
-    + '<label class="evf-check"><input type="radio" name="evf-mode" value="online" onchange="_evfMode()"> ' + esc(t('event_detail.online', 'Online')) + '</label></div>'
+    + '<label class="evf-check"><input type="radio" name="evf-mode" value="online" onchange="_evfMode()"> ' + esc(t('event_detail.online', 'Online')) + '</label>'
+    + '<label class="evf-check"><input type="radio" name="evf-mode" value="both" onchange="_evfMode()"> ' + esc(t('org.mode_both', 'Both (in person and online)')) + '</label></div>'
     + '<div id="evf-place">' + _evfField('venue', t('org.f_venue', 'Venue'), _evfInput('venue', 'text', ' maxlength="200" placeholder="' + esc(t('org.venue_placeholder', 'For example: Rudolf Steiner House, main hall')) + '"'))
     + _evfField('address', t('org.f_address', 'Street address'), _evfInput('address', 'text', ' maxlength="300" autocomplete="street-address"'))
     + '<div class="evf-row">' + _evfField('city', t('org.f_city', 'City'), _evfInput('city', 'text', ' maxlength="120"'))
@@ -276,8 +277,10 @@ function _evfFill(ev, isCopy, listings) {
     }
   }
   _evfAllDay();
-  if (ev.is_online) { document.querySelector('input[name="evf-mode"][value="online"]').checked = true; _evfSet('online_url', ev.online_url); }
-  else { _evfSet('venue', ev.location_name === 'Online' ? '' : ev.location_name); _evfSet('address', ev.address); _evfSet('city', ev.city); _evfSet('region', ev.region); _evfSet('country', ev.country); }
+  var evMode = _eventMode(ev);
+  document.querySelector('input[name="evf-mode"][value="' + evMode + '"]').checked = true;
+  if (evMode !== 'place') _evfSet('online_url', ev.online_url);
+  if (evMode !== 'online') { _evfSet('venue', ev.location_name === 'Online' ? '' : ev.location_name); _evfSet('address', ev.address); _evfSet('city', ev.city); _evfSet('region', ev.region); _evfSet('country', ev.country); }
   _evfMode();
   if (ev.directory_entry_id && listings.some(function (l) { return l.id === ev.directory_entry_id; })) _evfSet('listing', ev.directory_entry_id);
   if (!isCopy) document.getElementById('evf-public').checked = ev.status !== 'pending';
@@ -311,10 +314,11 @@ function _evfAllDay() {
   });
   _evfZoneCheck();
 }
+function _evfModeVal() { return document.querySelector('input[name="evf-mode"]:checked').value; }   // place, online or both
 function _evfMode() {
-  var online = document.querySelector('input[name="evf-mode"]:checked').value === 'online';
-  document.getElementById('evf-place').hidden = online;
-  document.getElementById('evf-online').hidden = !online;
+  var mode = _evfModeVal();
+  document.getElementById('evf-place').hidden = mode === 'online';
+  document.getElementById('evf-online').hidden = mode === 'place';
 }
 function _evfListingChanged() {
   var sel = document.getElementById('evf-listing');
@@ -457,7 +461,7 @@ function _evfCollect() {
   var errs = [];
   var need = function (name, ok, msg) { if (!_evfErr(name, ok ? '' : msg)) errs.push(name); };
   var allDay = document.getElementById('evf-allday').checked;
-  var online = document.querySelector('input[name="evf-mode"]:checked').value === 'online';
+  var mode = _evfModeVal(), online = mode !== 'place', inPlace = mode !== 'online';
   var sd = _evfVal('start_date'), ed = _evfVal('end_date'), st = _evfVal('start_time'), et = _evfVal('end_time');
   need('title', _evfVal('title').length >= 3, t('org.err_title', 'Please give the event a title.'));
   need('start_date', /^\d{4}-\d{2}-\d{2}$/.test(sd), t('org.err_start_date', 'Please give the start date.'));
@@ -465,7 +469,7 @@ function _evfCollect() {
   need('end_date', !ed || ed >= sd, t('org.err_end_date', 'The end date is before the start date.'));
   need('end_time', allDay || !et || (ed && ed > sd) || et > st, t('org.err_end_time', 'The end time is before the start time.'));
   need('online_url', !online || /^https?:\/\/\S+\.\S+/i.test(_evfVal('online_url')), t('org.err_online_url', 'Please give the full link to join, starting with https://'));
-  need('city', online || _evfVal('city') || _evfVal('venue'), t('org.err_place', 'Please give the venue or the city.'));
+  need('city', !inPlace || _evfVal('city') || _evfVal('venue'), t('org.err_place', 'Please give the venue or the city.'));
   need('organizer_url', _orgUrlOk(_evfVal('organizer_url')), t('org.err_url', 'Please enter a valid web address, for example https://example.org'));
   need('donation_url', _orgUrlOk(_evfVal('donation_url')), t('org.err_url', 'Please enter a valid web address, for example https://example.org'));
   var cap = _evfVal('capacity');
@@ -481,9 +485,9 @@ function _evfCollect() {
     start_date: sd, start_time: allDay ? '' : st, end_date: ed, end_time: allDay ? '' : et, is_all_day: allDay,
     timezone: _evfVal('timezone') || _orgZone(),
     repeat: rep ? rep.value : 'none', repeat_count: rep ? parseInt(_evfVal('repeat_count'), 10) : 1,
-    is_online: online, online_url: online ? _evfVal('online_url') : '',
-    location_name: online ? '' : _evfVal('venue'), address: online ? '' : _evfVal('address'), city: online ? '' : _evfVal('city'),
-    region: online ? '' : _evfVal('region'), country: online ? '' : _evfVal('country'),
+    attendance: mode, is_online: online, online_url: online ? _evfVal('online_url') : '',
+    location_name: inPlace ? _evfVal('venue') : '', address: inPlace ? _evfVal('address') : '', city: inPlace ? _evfVal('city') : '',
+    region: inPlace ? _evfVal('region') : '', country: inPlace ? _evfVal('country') : '',
     directory_entry_id: _evfVal('listing'), organizer_name: _evfVal('organizer'), organizer_url: _evfVal('organizer_url'), donation_url: _evfVal('donation_url'),
     signup_enabled: signup,
     signup_questions: signup ? [1, 2, 3].map(function (i) {
@@ -563,7 +567,7 @@ function renderMyEvents() {
   root.innerHTML = '<p class="org-empty">' + esc(t('common.loading', 'Loading...')) + '</p>';
   _orgWithUser(function (me) {
     if (!me) { root.innerHTML = _orgGateHtml(t('org.signin_mine', 'Sign in to see and manage the events you have created.')); return; }
-    _sb.from('events').select('id, title, start_date, end_date, is_all_day, status, signup_enabled, series_id, is_online, city, country')
+    _sb.from('events').select('id, title, start_date, end_date, is_all_day, status, signup_enabled, series_id, is_online, location_name, address, city, country')
       .eq('user_id', me.id).order('start_date', { ascending: true }).limit(300)
       .then(function (r) {
         if (r.error) { root.innerHTML = '<p class="org-empty">' + esc(t('org.err_load', 'Your events could not be loaded. Please try again.')) + '</p>'; return; }
@@ -603,7 +607,7 @@ function _myEventsDraw(root, rows) {
 function _myEventItem(ev) {
   var st = _orgStatus(ev), id = escJs(ev.id);
   _orgShareStore[ev.id] = ev;
-  var place = ev.is_online ? t('event_detail.online', 'Online') : [ev.city, ev.country].filter(Boolean).join(', ');
+  var place = _eventWhereShort(ev);
   var live = st.key === 'listed' || st.key === 'pending';
   return '<li class="myev-item"><div class="myev-main">'
     + '<span class="myev-status st-' + st.key + '">' + esc(st.label) + '</span>'
@@ -763,14 +767,14 @@ function loadListingEvents(d) {
   var since = new Date(Date.now() - 864e5).toISOString();
   var mine = d.claimed_by && _orgMe() && d.claimed_by === _orgMe().id;
   _followFromLink(d);
-  _sb.from('events').select('id, title, start_date, end_date, is_all_day, is_online, city, country')
+  _sb.from('events').select('id, title, start_date, end_date, is_all_day, is_online, location_name, address, city, country')
     .eq('directory_entry_id', d.id).in('status', ['upcoming', 'ongoing']).gte('start_date', since)
     .order('start_date', { ascending: true }).limit(10)
     .then(function (r) {
       var rows = r.error ? [] : (r.data || []);
       box.innerHTML = '<div class="listing-events"><h3>' + esc(t('org.listing_events', 'Upcoming events')) + '</h3>'
         + (rows.length ? '<ul>' + rows.map(function (ev) {
-          var place = ev.is_online ? t('event_detail.online', 'Online') : [ev.city, ev.country].filter(Boolean).join(', ');
+          var place = _eventWhereShort(ev);
           return '<li><a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>'
             + '<span class="lmeta">' + esc(_orgWhen(ev)) + (place ? ' &middot; ' + esc(place) : '') + '</span></li>';
         }).join('') + '</ul>' : '<p class="lmeta">' + esc(t('org.listing_none', 'No upcoming events yet.')) + '</p>')

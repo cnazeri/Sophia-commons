@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { SITE, esc, attr, CATEGORIES, entryList, applySeo, NOT_COUNTRIES, countryLabel, countrySlug, PLACE_CATS, placeCatOf,
-  MIN_COUNTRY, MIN_COMBO, fmtN, breadcrumbLd, countryIn, MIN_CITY, citySlug, cityLabel, cityShort, placeFaq, countOf, listingPath } from './seo_html.mjs';
+  MIN_COUNTRY, MIN_COMBO, fmtN, breadcrumbLd, countryIn, MIN_CITY, citySlug, cityLabel, cityShort, placeFaq, countOf, listingPath, eventMode } from './seo_html.mjs';
 import { DATA_SELECT, directoryJson, directoryCsv, llmsFull } from './agent_data.mjs';
 import { DE_COUNTRIES, countryPageDe, cityPageDe, comboPageDe, hreflang } from './seo_de.mjs';
 
@@ -87,7 +87,7 @@ const written = [];
 
 // Upcoming in-person events in a country or city (owner, 2026-11-04); same matching as _placeEvents() in the app
 const placeEvents = (countryNames, cityKey, where) => {
-  const list = events.filter(e => !e.is_online && countryNames.includes(e.country) && (!cityKey || citySlug(e.city || '') === cityKey)).slice(0, 6);
+  const list = events.filter(e => eventMode(e) !== 'online' && countryNames.includes(e.country) && (!cityKey || citySlug(e.city || '') === cityKey)).slice(0, 6);
   if (!list.length) return '';
   return `<h2>Upcoming events in ${esc(where)}</h2><ul>` + list.map(e => `<li>${esc(String(e.start_date).slice(0, 10))}: <a href="/event/${e.id}">${esc(e.title)}</a>${!cityKey && e.city ? ' (' + esc(e.city) + ')' : ''}</li>`).join('') + '</ul>';
 };
@@ -233,16 +233,23 @@ for (const [slug, label, desc] of SECTIONS) {
       + '<h2>Regions</h2><ul>' + REGIONS.map(([s, l]) => `<li><a href="/region/${s}">${esc(l)}</a></li>`).join('') + '</ul>'
       + '<h2>Countries</h2><ul>' + countries.map(([c, l]) => `<li>${countryLink(c)} (${fmtN(l.length)})</li>`).join('') + '</ul>';
   } else if (slug === 'events') {
-    body = '<h2>Upcoming events</h2><ul>' + events.map(ev => `<li>${esc(day(ev.start_date))}: <a href="/event/${attr(ev.id)}">${esc(ev.title)}</a>${ev.organizer_name ? ' (' + esc(ev.organizer_name) + ')' : ''}${ev.is_online ? ', online' : ev.city ? ', ' + esc([ev.city, ev.country].filter(Boolean).join(', ')) : ''}</li>`).join('') + '</ul>';
+    body = '<h2>Upcoming events</h2><ul>' + events.map(ev => `<li>${esc(day(ev.start_date))}: <a href="/event/${attr(ev.id)}">${esc(ev.title)}</a>${ev.organizer_name ? ' (' + esc(ev.organizer_name) + ')' : ''}${eventMode(ev) === 'online' ? ', online' : (ev.city ? ', ' + esc([ev.city, ev.country].filter(Boolean).join(', ')) : '') + (eventMode(ev) === 'both' ? ', and online' : '')}</li>`).join('') + '</ul>';
   } else if (slug === 'eldercare') {
     body = entryList(dir.filter(e => e.category === 'eldercare'));
   }
+  // In person, online, or both (owner, 2026-11-16)
+  const evAttend = ev => {
+    const mode = eventMode(ev);
+    const virtual = { '@type': 'VirtualLocation', url: ev.online_url || `${SITE}/event/${ev.id}` };
+    const venue = { '@type': 'Place', name: (mode === 'both' ? ev.location_name : ev.location_name || ev.city) || 'See event page', address: [ev.city, ev.country].filter(Boolean).join(', ') || undefined };
+    return { eventAttendanceMode: `https://schema.org/${mode === 'online' ? 'Online' : mode === 'both' ? 'Mixed' : 'Offline'}EventAttendanceMode`,
+      location: mode === 'online' ? virtual : mode === 'both' ? [venue, virtual] : venue };
+  };
   const evLd = slug === 'events' && events.length ? {
     '@context': 'https://schema.org', '@type': 'ItemList', name: 'Upcoming anthroposophical events',
     itemListElement: events.slice(0, 100).map((ev, i) => ({ '@type': 'ListItem', position: i + 1, item: {
       '@type': 'Event', name: ev.title, startDate: ev.start_date, ...(ev.end_date ? { endDate: ev.end_date } : {}),
-      url: `${SITE}/event/${ev.id}`, eventAttendanceMode: ev.is_online ? 'https://schema.org/OnlineEventAttendanceMode' : 'https://schema.org/OfflineEventAttendanceMode',
-      location: ev.is_online ? { '@type': 'VirtualLocation', url: ev.online_url || `${SITE}/event/${ev.id}` } : { '@type': 'Place', name: ev.location_name || ev.city || 'See event page', address: [ev.city, ev.country].filter(Boolean).join(', ') || undefined },
+      url: `${SITE}/event/${ev.id}`, ...evAttend(ev),
       ...(ev.organizer_name ? { organizer: { '@type': 'Organization', name: ev.organizer_name } } : {}),
       ...(ev.image_url ? { image: ev.image_url } : {}),
     } })),
