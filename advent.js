@@ -116,10 +116,10 @@ var ADV_COTS_START = { 35: [10, 24], 36: [11, 1], 37: [11, 8], 38: [11, 15], 39:
 var ADV_LECTURES = [
   { key: true, meta: 'Start here &middot; Hanover, December 26, 1911', url: 'https://rsarchive.org/Lectures/Christmas/19111226p01.html', title: 'The Birth of the Sun Spirit as the Spirit of the Earth', text: 'Steiner\'s lecture on the Thirteen Holy Nights around the winter solstice.' },
   { meta: 'Berlin, December 21, 1911', url: 'https://rsarchive.org/Lectures/Festivals/19111221f01.html', title: 'Christmas: A Festival of Inspiration', text: 'The Holy Nights as a bridge from Christmas to the Feast of the Three Kings on January 6.' },
-  { meta: 'December 17, 1906', url: 'https://rsarchive.org/Lectures/Christmas/19061217p01.html', title: 'Signs and Symbols of the Christmas Festival', text: 'The midnight hour of the Holy Night in the ancient Mysteries.' },
-  { meta: 'December 27, 1910', url: 'https://rsarchive.org/Lectures/19101227a01.html', title: 'Yuletide and the Christmas Festival', text: 'The old Yule season and the Christmas festival.' },
-  { meta: 'December 27, 1914', url: 'https://rsarchive.org/Lectures/Christmas/19141227a01.html', title: 'The Birth of Christ Within Us', text: 'Keeping the Holy Night as an inner event.' },
-  { meta: 'December 23, 1920', url: 'https://rsarchive.org/Lectures/GA202/English/MP1983/19201223p01.html', title: 'A Christmas Lecture: The Search for the New Isis', text: 'The shepherds\' piety and the Magi\'s star wisdom.' },
+  { meta: 'Berlin, December 17, 1906', url: 'https://rsarchive.org/Lectures/Christmas/19061217p01.html', title: 'Signs and Symbols of the Christmas Festival', text: 'The midnight hour of the Holy Night in the ancient Mysteries.' },
+  { meta: 'Stuttgart, December 27, 1910', url: 'https://rsarchive.org/Lectures/19101227a01.html', title: 'Yuletide and the Christmas Festival', text: 'The old Yule season and the Christmas festival.' },
+  { meta: 'Berlin, December 27, 1914', url: 'https://rsarchive.org/Lectures/Christmas/19141227a01.html', title: 'The Birth of Christ Within Us', text: 'Keeping the Holy Night as an inner event.' },
+  { meta: 'Dornach, December 23, 1920', url: 'https://rsarchive.org/Lectures/GA202/English/MP1983/19201223p01.html', title: 'A Christmas Lecture: The Search for the New Isis', text: 'The shepherds\' piety and the Magi\'s star wisdom.' },
   { more: true, meta: 'More', url: 'https://rsarchive.org/Lectures/Christmas/ChrMas_index.html', title: 'All of Steiner\'s Christmas lectures', text: 'The full collection of his Christmas lectures in the Rudolf Steiner Archive.' }
 ];
 var ADV_BOOKS = [

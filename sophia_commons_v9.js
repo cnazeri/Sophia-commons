@@ -7269,7 +7269,7 @@ var podcastData = {
     {title:'ASA Official Podcast', url:'https://anthroposophy.org/podcast/', platform:'Spotify / RSS', desc:'Official podcast of the Anthroposophical Society in America. Interviews, lectures, and community highlights.', lang:'EN', verified:true},
     {title:'Goetheanum Podcast', url:'https://goetheanum.transistor.fm/', platform:'Transistor', desc:'News and perspectives from the Goetheanum in Dornach, Switzerland.', lang:'EN/DE', verified:true},
     {title:'Inner Work Path: Lisa Romero', url:'https://www.innerworkpath.com/category/podcast/', platform:'Australia', desc:'Guided meditations and inner development exercises rooted in anthroposophy.', lang:'EN', verified:true},
-    {title:'Rudolf Steiner Audio Podcast', url:'https://www.rudolfsteiner.podbean.com/', platform:'Podbean', desc:'Audio readings of Rudolf Steiner lectures and written works. Free access.', lang:'EN', verified:true},
+    {title:'Rudolf Steiner Audio Podcast', url:'https://rudolfsteiner.podbean.com/', platform:'Podbean', desc:'Audio readings of Rudolf Steiner lectures and written works. Free access.', lang:'EN', verified:true},
     {title:'New Thinking Allowed', url:'https://newthinkingallowed.org/rudolf-steiner-anthroposophy/', platform:'Video', desc:'Jeffrey Mishlove interviews scholars and practitioners on anthroposophy and spiritual science.', lang:'EN', verified:true},
     {title:'Anthroposophy on Spotify', url:'https://open.spotify.com/show/0M4QfnyYevp54XnlERAPTf', platform:'Spotify', desc:'Curated playlists and episodes exploring anthroposophical themes.', lang:'EN', verified:true}
   ],
@@ -7853,14 +7853,25 @@ function _admDate(iso) {
   return iso ? localDate(iso, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
 }
 
+// The database returns at most 1000 rows per request, so read the subscriber list in pages
+// (the list passed 1000 on 2026-11-16 and the counts stopped growing). Same { data, error } shape as one query.
+var SUB_PAGE = 1000;
+async function _admAllSubscribers() {
+  var all = [];
+  for (var from = 0; ; from += SUB_PAGE) {
+    var r = await _sb.from('newsletter_subscribers').select('id, email, name, confirmed, created_at, confirmed_at, unsubscribed_at, preferences')
+      .order('created_at', { ascending: false }).order('id').range(from, from + SUB_PAGE - 1);
+    if (r.error) return { data: null, error: r.error };
+    all = all.concat(r.data || []);
+    if (!r.data || r.data.length < SUB_PAGE) return { data: all, error: null };
+  }
+}
+
 async function loadAdminMembers() {
   var list = document.getElementById('adm-members-list');
   var subsEl = document.getElementById('adm-subs-list');
   if (!isAdmin() || !sbReady()) { list.innerHTML = '<div class="admin-empty">Admins only.</div>'; return; }
-  var res = await Promise.all([
-    _sb.rpc('admin_list_users'),
-    _sb.from('newsletter_subscribers').select('id, email, name, confirmed, created_at, confirmed_at, unsubscribed_at, preferences').order('created_at', { ascending: false })
-  ]);
+  var res = await Promise.all([_sb.rpc('admin_list_users'), _admAllSubscribers()]);
   if (res[0].error) { list.innerHTML = '<div class="admin-empty">Could not load members: ' + esc(res[0].error.message) + '</div>'; }
   else { _admMembers = res[0].data || []; renderAdminMembers(); }
   if (res[1].error) { subsEl.innerHTML = '<div class="admin-empty">Could not load subscribers.</div>'; return; }
