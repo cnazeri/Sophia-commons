@@ -8163,7 +8163,7 @@ async function moderateAdminPost(kind, id) {
 
 // ══════════════════════════════════════════
 //  WEEKLY DIGEST
-//  The weekly-digest edge function builds the draft (also every Monday from GitHub Actions);
+//  The weekly-digest edge function builds the draft (also every Thursday night from GitHub Actions);
 //  send-newsletter emails an approved draft once and publishes it on the News page.
 // ══════════════════════════════════════════
 

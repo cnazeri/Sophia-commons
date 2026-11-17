@@ -3,7 +3,7 @@
 //  POST /functions/v1/weekly-digest
 //  Body: { preview?: boolean }
 //  Auth: an admin's session token (the "Generate draft" button), or a server secret key
-//        (the Monday GitHub Action). Deploy with --no-verify-jwt; auth is checked here.
+//        (the Thursday-night GitHub Action). Deploy with --no-verify-jwt; auth is checked here.
 //
 //  Builds an email-safe digest (new videos with short descriptions, upcoming events, new
 //  listings, news) and saves it as a pending News item tagged weekly-digest. Nothing is
@@ -322,7 +322,7 @@ serve(async (req: Request) => {
     const title = `Sophia Commons weekly: ${data.weekOf}`;
     if (preview) return jsonResponse({ title, html, counts, translated });
 
-    // one draft per week: the Monday run and a manual click do not stack up drafts
+    // one draft per week: the Thursday-night run and a manual click do not stack up drafts
     const { data: existing } = await sb.from("news").select("id, title").eq("status", "pending")
       .contains("tags", ["weekly-digest"]).gte("created_at", new Date(Date.now() - 5 * DAY).toISOString()).limit(1);
     if (existing && existing.length && isCron) return jsonResponse({ message: "Draft already waiting", id: existing[0].id });

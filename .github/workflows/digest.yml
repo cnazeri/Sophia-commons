@@ -2,7 +2,7 @@ name: Weekly digest draft
 
 on:
   schedule:
-    - cron: "0 15 * * 1"         # Mondays 15:00 UTC (8 am Pacific), after the daily YouTube sync
+    - cron: "0 4 * * 5"          # Thursday night: Fridays 04:00 UTC = Thu 8 pm Pacific (9 pm in summer) (owner, 2026-11-17)
   workflow_dispatch:             # "Run workflow" button in the Actions tab
 
 permissions: {}
