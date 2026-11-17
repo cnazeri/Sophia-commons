@@ -16,6 +16,8 @@ import { englishOnly } from "./translate.ts";
 import { soulVerseHtml } from "./soul_calendar.ts";
 import { writeLetter } from "./letter.ts";
 import { localDay } from "./local_day.ts";
+import { chooseTheme, fallbackTheme } from "./theme.ts";
+import type { Candidate, Theme } from "./theme.ts";
 import { REGION_LABEL, regionOfCountry } from "../_shared/regions.ts";
 
 const ADMIN_EMAILS = ["cameron.nazeri@gmail.com", "cameron@sophiacommons.org", "admin@sophiacommons.org"];  // keep in sync with sophia_commons_v9.js
@@ -229,7 +231,67 @@ function nearHtml(d: Digest): string {
     + `<!--/near:${r}-->`).join("");
 }
 
-export function buildHtml(d: Digest, note = ""): string {
+// The event's own calendar day as "Nov 18", so Claude never reads a UTC date that is a day off
+export function dayLabel(e: { start_date: string; timezone?: string | null }): string {
+  const { month, day } = localDay(e.start_date, e.timezone);
+  return `${month.charAt(0)}${month.slice(1).toLowerCase()} ${day}`;
+}
+
+// Everything this week that could be the theme (owner, 2026-11-17: the most influential item leads)
+export function candidatesOf(d: Digest): Candidate[] {
+  return [
+    ...d.events.map((e): Candidate => ({ id: `event:${e.id}`, kind: "event", title: e.title, date: dayLabel(e),
+      where: e.is_online ? "online" : (e.location_name || [e.city, e.country].filter(Boolean).join(", ")), featured: !!e.featured })),
+    ...d.news.map((n): Candidate => ({ id: `news:${n.id}`, kind: "news", title: n.title, summary: shortDescription(n.excerpt, 200) })),
+    ...d.videos.map((v): Candidate => ({ id: `video:${v.video_id}`, kind: "video", title: v.title, summary: v.summary, where: v.channel })),
+    ...d.listings.map((l): Candidate => ({ id: `listing:${l.id}`, kind: "listing", title: l.organization_name,
+      where: [l.city, l.country].filter(Boolean).join(", ") })),
+  ];
+}
+
+// The theme's pick and related items, in that order; shown in the theme box and left out of the
+// general sections below, so nothing appears twice.
+export function themedItems(d: Digest, theme: Theme | null) {
+  const ids = theme ? [theme.pickId, ...theme.relatedIds] : [];
+  const has = (kind: string, id: string) => ids.includes(`${kind}:${id}`);
+  const order = (kind: string, id: string) => ids.indexOf(`${kind}:${id}`);
+  const by = <T,>(kind: string, key: (x: T) => string) => (a: T, b: T) => order(kind, key(a)) - order(kind, key(b));
+  return {
+    events: d.events.filter((e) => has("event", e.id)).sort(by("event", (e: Digest["events"][number]) => e.id)),
+    videos: d.videos.filter((v) => has("video", v.video_id)).sort(by("video", (v: Digest["videos"][number]) => v.video_id)),
+    listings: d.listings.filter((l) => has("listing", l.id)).sort(by("listing", (l: Digest["listings"][number]) => l.id)),
+    news: d.news.filter((n) => has("news", n.id)).sort(by("news", (n: Digest["news"][number]) => n.id)),
+  };
+}
+
+function newsHtml(n: Digest["news"][number]): string {
+  return `<div ${ITEM}><a href="${SITE}/article/${esc(n.id)}" ${LINK}>${esc(n.title)}</a>`
+    + (n.excerpt ? `<div ${BODY}>${esc(shortDescription(n.excerpt, 160))}</div>` : "") + `</div>`;
+}
+
+function themeHtml(theme: Theme | null, d: Digest, t: ReturnType<typeof themedItems>): string {
+  if (!theme) return "";
+  const html: Record<string, string> = {};
+  for (const e of t.events) html[`event:${e.id}`] = eventHtml(e);
+  for (const v of t.videos) html[`video:${v.video_id}`] = videoHtml(v);
+  for (const l of t.listings) html[`listing:${l.id}`] = listingHtml(l);
+  for (const n of t.news) html[`news:${n.id}`] = newsHtml(n);
+  const items = [theme.pickId, ...theme.relatedIds].map((id) => html[id] ?? "").join("");
+  return `<div style="margin:24px 0 0;padding:16px 20px;background:#FAF6EE;border-left:4px solid ${GOLD_FILL};border-radius:6px">`
+    + `<p style="margin:0 0 2px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${GOLD};font-weight:bold">This week's theme</p>`
+    + `<p style="font-family:Georgia,serif;font-size:20px;margin:0 0 4px;color:${INK}">${esc(theme.label)}</p>`
+    + (theme.why ? `<p style="margin:0 0 14px;color:#3A332A;font-size:14px">${esc(theme.why)}</p>` : `<div style="height:10px"></div>`)
+    + items + `</div>`;
+}
+
+export function buildHtml(d: Digest, note = "", theme: Theme | null = fallbackTheme(candidatesOf(d))): string {
+  const t = themedItems(d, theme);
+  const used = new Set<string>([...t.events.map((e) => e.id), ...t.videos.map((v) => v.video_id),
+    ...t.listings.map((l) => l.id), ...t.news.map((n) => n.id)]);
+  const rest = {
+    events: d.events.filter((e) => !used.has(e.id)), videos: d.videos.filter((v) => !used.has(v.video_id)),
+    listings: d.listings.filter((l) => !used.has(l.id)), news: d.news.filter((n) => !used.has(n.id)),
+  };
   const parts = [
     d.videos.length ? plural(d.videos.length, "new video", "new videos") : "",
     d.events.length ? plural(d.events.length, "event coming up", "events coming up") : "",
@@ -239,23 +301,21 @@ export function buildHtml(d: Digest, note = ""): string {
   h += `<p style="font-family:Georgia,serif;font-size:19px;line-height:1.45;margin:0 0 6px;color:${INK}">This week across the anthroposophical world</p>`;
   h += `<p style="margin:0;color:#3A332A">${parts.length ? `Here's what's new: ${parts.join(", ").replace(/, ([^,]*)$/, " and $1")}. Videos in other languages are marked; their titles and summaries are translated.` : "A quiet week."}</p>`;
 
+  h += themeHtml(theme, d, t);
   h += soulVerseHtml(new Date());
   h += nearHtml(d);
-  if (d.events.length) {
-    h += `<h3 ${H3}>Coming up</h3>` + d.events.slice(0, EMAIL_EVENTS).map(eventHtml).join("");
+  if (rest.events.length) {
+    h += `<h3 ${H3}>Coming up</h3>` + rest.events.slice(0, EMAIL_EVENTS).map(eventHtml).join("");
     h += `<p style="margin:4px 0 0;font-size:14px"><a href="${SITE}/events" ${LINK}>See the full calendar &rarr;</a></p>`;
-    const shown = new Set(d.events.slice(0, EMAIL_EVENTS).map((e) => e.id));
-    const fresh = d.events.filter((e) => e.isNew && !shown.has(e.id)).slice(0, EMAIL_NEW_EVENTS);
+    const shown = new Set(rest.events.slice(0, EMAIL_EVENTS).map((e) => e.id));
+    const fresh = rest.events.filter((e) => e.isNew && !shown.has(e.id)).slice(0, EMAIL_NEW_EVENTS);
     if (fresh.length) h += `<h3 ${H3}>Newly added events</h3>` + fresh.map(eventHtml).join("");
   }
-  if (d.videos.length) h += `<h3 ${H3}>New videos</h3>` + d.videos.map(videoHtml).join("");
-  if (d.listings.length) {
-    h += `<h3 ${H3}>New in the directory</h3>` + d.listings.map(listingHtml).join("");
+  if (rest.videos.length) h += `<h3 ${H3}>New videos</h3>` + rest.videos.map(videoHtml).join("");
+  if (rest.listings.length) {
+    h += `<h3 ${H3}>New in the directory</h3>` + rest.listings.map(listingHtml).join("");
   }
-  if (d.news.length) {
-    h += `<h3 ${H3}>News</h3>` + d.news.map((n) => `<div ${ITEM}><a href="${SITE}/article/${esc(n.id)}" ${LINK}>${esc(n.title)}</a>`
-      + (n.excerpt ? `<div ${BODY}>${esc(shortDescription(n.excerpt, 160))}</div>` : "") + `</div>`).join("");
-  }
+  if (rest.news.length) h += `<h3 ${H3}>News</h3>` + rest.news.map(newsHtml).join("");
   if (!d.videos.length && !d.events.length && !d.listings.length && !d.news.length) {
     h += `<p>Browse the <a href="${SITE}/directory" ${LINK}>directory</a> or the <a href="${SITE}/events" ${LINK}>calendar</a>.</p>`;
   }
@@ -314,8 +374,14 @@ serve(async (req: Request) => {
   try {
     const { digest: data, translated, reason } = await englishOnly(await gather(sb), Deno.env.get("ANTHROPIC_API_KEY"));
     // the personal "Dear Friends" note on top, written from this week's items (editable in Admin)
-    const letter = await writeLetter(data, Deno.env.get("ANTHROPIC_API_KEY"));
-    const html = buildHtml(data, letter.html);
+    const cands = candidatesOf(data);
+    const theme = await chooseTheme(cands, Deno.env.get("ANTHROPIC_API_KEY"));
+    const byId = new Map(cands.map((c) => [c.id, c]));
+    const describe = (id: string) => { const c = byId.get(id)!; return [c.kind, c.title, c.date, c.where].filter(Boolean).join(" | "); };
+    const letter = await writeLetter({ ...data, events: data.events.map((e) => ({ ...e, start_date: dayLabel(e) })), theme: theme
+      ? { label: theme.label, blurb: theme.why, items: [theme.pickId, ...theme.relatedIds].map(describe) } : undefined },
+      Deno.env.get("ANTHROPIC_API_KEY"));
+    const html = buildHtml(data, letter.html, theme);
     const counts = `${data.videos.length} videos, ${data.events.length} events, ${data.listings.length} new listings`
       + (translated ? "" : `; NOT translated to English (${reason})`)
       + (letter.html ? "" : `; no personal note (${letter.reason})`);

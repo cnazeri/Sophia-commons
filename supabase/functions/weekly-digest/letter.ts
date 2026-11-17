@@ -13,7 +13,8 @@ const MAX_PARAGRAPHS = 4;
 const PROMPT = `You write the short personal note that opens the Sophia Commons weekly email, signed by Cameron, who runs the site. Readers are people in the anthroposophical world: Waldorf teachers and parents, biodynamic farmers, eurythmists, Camphill co-workers, members of the Christian Community and of anthroposophical branches.
 
 You get this week's material as JSON: upcoming events (date, title, place, online or not), new videos, new places in the directory and recent news. Write 2 or 3 short paragraphs (each 1 to 3 sentences) in Cameron's voice:
-- Open with what stands out on the calendar this week: name 2 to 4 specific events with their dates and places. Mention online events for people who can't travel, if there are any.
+- Each issue is built around a theme: the most influential item of the week ("theme": its name, why it matters, and the items, the first being the main one). Open with one or two sentences on it: name the main item with its date and place, and mention a related item if there is one. Use only what the JSON says about it.
+- Then what stands out on the calendar this week: name 2 to 4 specific events with their dates and places. Mention online events for people who can't travel, if there are any.
 - Then, if something is worth it, one paragraph on a video, a news story or new places in the directory.
 - End with a short thank-you, for example for reading and for passing the email along.
 
@@ -42,10 +43,12 @@ export interface LetterInput {
   videos: { title: string; channel: string; summary?: string }[];
   listings: { organization_name: string; city?: string | null; country?: string | null }[];
   news: { title: string; excerpt?: string | null }[];
+  theme?: { label: string; blurb: string; items: string[] };
 }
 
 function facts(d: LetterInput) {
   return {
+    theme: d.theme ? { name: d.theme.label, about: d.theme.blurb, items: d.theme.items.slice(0, 8) } : null,
     events: d.events.slice(0, 10).map((e) => ({
       date: e.start_date, title: e.title,
       where: e.is_online ? "online" : (e.location_name || [e.city, e.country].filter(Boolean).join(", ")),
