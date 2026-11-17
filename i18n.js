@@ -70,14 +70,26 @@ var SC_I18N = (function () {
       .catch(function () { console.warn('i18n: could not load lang/' + code + '.json'); return {}; });
   }
 
-  function setLang(code) {
+  function setLang(code, auto) {
     currentLang = code;
-    try { localStorage.setItem('sc-lang', code); } catch (e) {}
+    // A language picked from the visitor's country is not saved, so only a real choice sticks
+    if (!auto) { try { localStorage.setItem('sc-lang', code); } catch (e) {} }
     return loadLang(code).then(function (data) {
       active = data;
       applyTranslations();
       if (typeof rerenderForLang === 'function') rerenderForLang();
     });
+  }
+
+  var GEO_LANG = { DE: 'de' };
+
+  function geoLang() {
+    var timeout = new Promise(function (resolve) { setTimeout(function () { resolve('en'); }, 1500); });
+    var lookup = fetch('/api/geo', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : {}; })
+      .then(function (j) { var code = GEO_LANG[(j && j.country) || '']; return code && LOCALES[code] ? code : 'en'; })
+      .catch(function () { return 'en'; });
+    return Promise.race([lookup, timeout]);
   }
 
   var _ready = false;
@@ -86,12 +98,14 @@ var SC_I18N = (function () {
     return loadLang('en').then(function (data) {
       fallback = data;
       cache.en = data;
-      var saved = 'en';
-      try { saved = localStorage.getItem('sc-lang') || 'en'; } catch (e) {}
+      var saved = null;
+      try { saved = localStorage.getItem('sc-lang'); } catch (e) {}
       // German pages (/de/...) open in German (owner, 2026-10-29)
       if (/^\/de\//.test(location.pathname)) saved = 'de';
-      if (!LOCALES[saved]) saved = 'en';
-      return setLang(saved);
+      if (saved) return setLang(LOCALES[saved] ? saved : 'en');
+      // First visit with no language chosen: visitors in Germany get German (owner, 2026-11-17).
+      // Waits at most 1.5 s for the lookup, then falls back to English.
+      return geoLang().then(function (code) { return setLang(code, true); });
     }).then(function () {
       _ready = true;
       window.dispatchEvent(new Event('i18n-ready'));
