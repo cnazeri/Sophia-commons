@@ -1,10 +1,19 @@
 {
- "generated_at": "2026-11-17T21:48:02.528276+00:00",
+ "generated_at": "2026-11-18T21:27:21.255998+00:00",
  "channels": [
   {
    "slug": "goetheanum",
    "name": "Goetheanum",
    "latest": [
+    {
+     "video_id": "Lajil217q-I",
+     "title": "Parsifal – zum letzten Mal am Goetheanum | März 2027",
+     "url": "https://www.youtube.com/watch?v=Lajil217q-I",
+     "thumbnail_url": "https://i1.ytimg.com/vi/Lajil217q-I/hqdefault.jpg",
+     "published_at": "2026-11-18T12:31:28+00:00",
+     "description": "Zum letzten Mal am Goetheanum: PARSIFAL\n\nRichard Wagners Bühnenweihfestspiel in drei Aufzügen, mit Musik, Gesang und Eurythmie: der Philharmonie Baden-Baden, dem Chor der KlangVerwaltung, dem Goetheanum-Eurythmie-Ensemble und dem Else-Klink-Ensemble.\n\n12., 14. und 21. März 2027, jeweils 16 Uhr\nGoetheanum, Dornach\n\nMit Daniel Behle (Rollendebüt) und Jonathan Stoughton als Parsifal, Ivonne Fuchs (Kundry), Andreas Hörl (Gurnemanz) und Tómas Tómasson (Amfortas und Klingsor)\nMusikalische Leitung: Roland Fister · Inszenierung: Jasmin Solfaghari\n\nTickets: https://tickets.goetheanum.ch/7PA/c/t2arXWtk6/",
+     "channel_slug": "goetheanum"
+    },
     {
      "video_id": "jkuHuIEzEBc",
      "title": "Zwei Konzerte, alle Tonarten: Bachtage am Goetheanum",
@@ -21,15 +30,6 @@
      "thumbnail_url": "https://i3.ytimg.com/vi/JLXsx4yWXQM/hqdefault.jpg",
      "published_at": "2026-11-12T12:02:39+00:00",
      "description": "🔗 Jetzt auf Goetheanum TV: https://goetheanum.tv/programs/podiumsdiskussion-drei-generationen-archivleiterinnen\n\nWas für eine Transformation: Von ehemals 17 Mitarbeitenden schrumpfte das Team des Rudolf-Steiner-Archivs zuletzt auf 9 – und das mitten in der Phase, in der die monumentale, 450-bändige Gesamtausgabe (GA) gedruckt abgeschlossen wurde. In einer feierlichen und zugleich nahbaren Gesprächsrunde blicken die aktuelle Archivleitung sowie ihre zwei Vorgängergenerationen zurück auf Krisen, Meilensteine und skurrile Funde im Keller des Archivs.\n\nEin Beitrag mit Walter Kugler, David Mark Hoffmann, Angelika Schmitt und Philip Kovce zum Festakt zur Vollendung der Rudolf-Steiner-Gesamtausgabe.",
-     "channel_slug": "goetheanum"
-    },
-    {
-     "video_id": "UKGfXO1_p8o",
-     "title": "🎶 Schubert bewegt – zum Zuhören, Entdecken und Mittanzen.",
-     "url": "https://www.youtube.com/watch?v=UKGfXO1_p8o",
-     "thumbnail_url": "https://i2.ytimg.com/vi/UKGfXO1_p8o/hqdefault.jpg",
-     "published_at": "2026-11-07T11:32:09+00:00",
-     "description": "Eine kleine Schubertiade bringt Musik, Gesang, Malerei und Literatur zusammen: Das Faust ic und weitere Mitwirkende laden zu einer Begegnung der Künste ein – mit Liedern und Tänzen von Franz Schubert und der Möglichkeit, selbst mitzumachen.\n\n📅 Freitag, 13. November 2026 · 19 Uhr\n📍 Holzhaus am Goetheanum\n✨ Eintritt frei · Kollekte\n\nMehr zum Abend: https://goetheanum.ch/de/veranstaltungen/mug-schubertiade-3",
      "channel_slug": "goetheanum"
     }
    ]
@@ -237,12 +237,21 @@
    "name": "AnthroWorld",
    "latest": [
     {
+     "video_id": "dDL4fuFGoOY",
+     "title": "12. Folge/11. Staffel | Die Nebenübungen in Gruppenarbeit | Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=dDL4fuFGoOY",
+     "thumbnail_url": "https://i1.ytimg.com/vi/dDL4fuFGoOY/hqdefault.jpg",
+     "published_at": "2026-11-18T19:23:09+00:00",
+     "description": "Treffen vom 18. November 2026\n\nDiese Gruppe trifft sich wöchentlich zum Austausch über die eigenen Erfahrungen und Anliegen mit den Nebenübungen von Rudolf Steiner. Immer mittwochs 10:00h. Die Ausstrahlung findet i.d.R. am Folgetag statt.\n\nHast du Interesse mitzumachen? Dann informiere dich hier https://anthro.world/Die_Neben%C3%BCbungen_von_Rudolf_Steiner_in_Gruppenarbeit \n\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://steiner.wiki\nhttps://biodyn.wiki",
+     "channel_slug": "anthroworld"
+    },
+    {
      "video_id": "fjiS7bB6bkY",
      "title": "7. Folge | Lesekreis | Aus der Akasha-Forschung. Das Fünfte Evangelium | Rudolf Steiner | 2026",
      "url": "https://www.youtube.com/watch?v=fjiS7bB6bkY",
      "thumbnail_url": "https://i3.ytimg.com/vi/fjiS7bB6bkY/hqdefault.jpg",
      "published_at": "2026-11-17T21:37:23+00:00",
-     "description": "Lesekreis \"Aus der Akasha-Forschung/Das Fünfte Evangelium\" vom 3. November 2026, GA 148, (18 Vorträge von Rudolf Steiner, 1913 und 1914 gehalten in verschiedenen Städten)\n\nhttps://anthro.world/Online-Lesekreis\nhttps://anthrowiki.at\nhttps://steiner.wiki\nhttps://biodyn.wiki",
+     "description": "Lesekreis \"Aus der Akasha-Forschung/Das Fünfte Evangelium\" vom 3. November 2026, GA 148, (18 Vorträge von Rudolf Steiner, 1913 und 1914 gehalten in verschiedenen Städten)\n\nDie hier angeführten Seitenzahlen beziehen sich auf https://steiner.wiki/GA_148\n\n00:00:00 Vorspann\n00:01:36 Lesen des 33. Wochenspruches   \n00:02:33 Zusammenfassung des Gelesenen aus Folge 6\n00:10:08 GA 148, S. 41 „Wir sehen also, …“ (https://steiner.wiki/GA_148#41 )\n00:13:22 Zweitlesung des vorherigen Absatzes\n00:16:39 GA 148, S. 42 „Es ist unendlich viel gesagt…“ (https://steiner.wiki/GA_148#42 )\n00:20:31 Zweitlesung des vorherigen Absatzes\n00:24:52 GA 148, S. 43  „Für die vier ersten Grade…“  (https://steiner.wiki/GA_148#43 )    \n00:28:21 Zweitlesung des vorherigen Absatzes\n00:31:37 GA 148, S. 44 „Wie konnte nun dieser fünfte Grad…“ (https://steiner.wiki/GA_148#44 )\n00:34:23 Zweitlesung des vorherigen Absatzes\n00:36:43 Gespräch über Einweihung, Einweihungsstufen, Aufgabe der Einweihungsgrade\n00:43:13 GA 148, S. 45 „Damit eine Volksleistung …“ (https://steiner.wiki/GA_148#45 )  \n00:48:35 Zweitlesung des vorherigen Absatzes\n00:53:55 Austausch über die einfließende Kraft des Pfingstereignisses in die Apostel im Vergleich mit den Sonnenhelden \n00:59:35 Verabschiedung\n\n\nhttps://anthro.world/Online-Lesekreis\nhttps://anthrowiki.at\nhttps://steiner.wiki\nhttps://biodyn.wiki",
      "channel_slug": "anthroworld"
     },
     {
@@ -252,15 +261,6 @@
      "thumbnail_url": "https://i3.ytimg.com/vi/zpUO6L-5JnA/hqdefault.jpg",
      "published_at": "2026-11-14T18:06:39+00:00",
      "description": "Hier findest du nähere Informationen über die von Wolfgang gehaltenen Vorträge aus der Reihe \"Die Apokalypse des Johannes\": https://anthro.world\n\nSo kommt deine Spende bei Wolfgang an: https://anthro.wiki/AnthroWiki:Spenden. Herzlichen Dank!\n\nWeitere Informationen:\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://biodyn.wiki \n#christusimpuls\n#rudolfsteiner\n#anthroposophie",
-     "channel_slug": "anthroworld"
-    },
-    {
-     "video_id": "Q9_GJ5HMS9g",
-     "title": "34. Folge | Lesekreis | Das Hereinwirken geistiger Wesenheiten in den Menschen | Rudolf Steiner",
-     "url": "https://www.youtube.com/watch?v=Q9_GJ5HMS9g",
-     "thumbnail_url": "https://i2.ytimg.com/vi/Q9_GJ5HMS9g/hqdefault.jpg",
-     "published_at": "2026-11-12T10:57:44+00:00",
-     "description": "Lesekreis \"Das Hereinwirken geistiger Wesenheiten in den Menschen\" vom 11. November 2026, GA 102\n(13 Vorträge von Rudolf Steiner, gehalten in Berlin 1908)\n\nDokumentation des Lesekreises:\nhttps://anthro.world/Das_Hereinwirken_geistiger_Wesenheiten_in_den_Menschen_(GA_102)_als_online_Lesekreis#Inhalte_der_Vortr%C3%A4ge\n\nTipp: Im Vortrag fallen immer wieder Fachbegriffe aus der Anthroposophie. Wer gerne Näheres zu bestimmten Themen oder Begriffen der Anthroposophie recherchieren möchte, dem empfehlen wir das „Gesamtglossar“ auf anthro.world (Link https://anthro.world/Gesamtglossar_A#A). Beim Öffnen findet ihr oben eine Alphabet-Leiste, über die gesuchte Begriffe gefunden werden können. Die Inhalte sind verlinkt mit Anthrowiki und den Glossareinträgen, d.h. Aussagen diverser Vortragender zum gesuchten Begriff.\nDanke für euer Interesse und euer Mitdenken!\n\nDie hier angeführten Seitenzahlen beziehen sich auf https://steiner.wiki/GA_102\n\n\n00:00:00 Vorspann\n\n00:01:13 Lesen des 32. Wochenspruches\n\n00:02:39 Thomas liest seine Recherchen vor, über die Stellung des Christus in der Welt\n\n00:09:12 Zusammenfassung des Gelesenen aus Folge 33\n\n00:19:16 GA 102, S. 148 (https://steiner.wiki/GA_102#148) „Es ist billig, was über Satan heute...\"\n\n00:22:42 Zweitlesung des vorherigen Absatzes  \n\n00:24:47 Gespräch darüber, dass die Menschen den Satan nicht (an)erkennen ( wollen )\n\n00:28:16  GA 102, S. 149 (https://steiner.wiki/GA_102#149) „Damit haben wir uns erhoben …“\n\n00:32:34 Zweitlesung des vorherigen Absatzes\n\n00:36:32 Gespräch was der Christus lebenspraktisch für den Menschen bedeutet\n\n00:52:36 GA 102, S. 151 (https://steiner.wiki/GA_102#151) „Dieser Vortrag soll ein Thema behandeln…“\n\n00:54:44 Zweitlesung des vorherigen Absatzes\n\n00:57:08 GA 102, S. 151 (https://steiner.wiki/GA_102#151) „Vor der großen Atlantischen Flut …“\n\n00:58:07 Zweitlesung des vorherigen Absatzes\n\n01:00:19 Verabschiedung\n\n\nhttps://anthro.world\nhttps://anthrowiki.at\nhttps://steiner.wiki\nhttps://biodyn.wiki",
      "channel_slug": "anthroworld"
     }
    ]
@@ -369,30 +369,30 @@
    "name": "Word of Rudolf Steiner",
    "latest": [
     {
+     "video_id": "JsQ9UX2KdRk",
+     "title": "LOS NIÑOS NECESITAN MOVIMIENTO",
+     "url": "https://www.youtube.com/watch?v=JsQ9UX2KdRk",
+     "thumbnail_url": "https://i3.ytimg.com/vi/JsQ9UX2KdRk/hqdefault.jpg",
+     "published_at": "2026-11-18T11:00:10+00:00",
+     "description": "¿Qué ocurre cuando los niños pasan demasiado tiempo frente a las pantallas?\n\nConchi González, maestra de pedagogía Waldorf, reflexiona sobre la relación entre las pantallas, el movimiento infantil y el desarrollo emocional.\n\nLos niños necesitan jugar, explorar, moverse y desarrollar sus capacidades a través de experiencias reales. La infancia es una etapa fundamental para cultivar la atención, la imaginación y la capacidad de reconocer y gestionar las emociones.\n\nUna reflexión sobre la importancia de respetar los procesos de desarrollo de los niños.\n\n🎥 Entrevista completa en La grandeza de lo Humano.\n\n#Pantallas #DesarrolloInfantil #PedagogíaWaldorf #EducaciónInfantil #CrianzaConsciente",
+     "channel_slug": "word-of-rudolf-steiner"
+    },
+    {
+     "video_id": "nBlTaL00v6U",
+     "title": "LA GRANDEZ DE LO HUMANO, EL MISTERIO DEL GÓLGOTA",
+     "url": "https://www.youtube.com/watch?v=nBlTaL00v6U",
+     "thumbnail_url": "https://i3.ytimg.com/vi/nBlTaL00v6U/hqdefault.jpg",
+     "published_at": "2026-11-18T09:48:02+00:00",
+     "description": "🌿 LA GRANDEZA DE LO HUMANO | EL MISTERIO DEL GÓLGOTA\n\n¿Qué significado tiene el Misterio del Gólgota para la evolución de la humanidad?\n\nEste jueves tendremos un encuentro muy especial con Pedro José Martínez, en el que nos adentraremos en uno de los acontecimientos más profundos de la historia espiritual de la humanidad: el Misterio del Gólgota, desde la perspectiva de Rudolf Steiner y la antroposofía.\n\nUna charla para explorar el significado del Ser de Cristo, su relación con la evolución de la Tierra y la transformación espiritual del ser humano.\n\n✨ Te invitamos a acompañarnos y compartir este espacio de reflexión y conocimiento.\n\n📅 Jueves 19\n🕖 19:00 h (España)\n\n¡Te esperamos en directo!",
+     "channel_slug": "word-of-rudolf-steiner"
+    },
+    {
      "video_id": "2P9syQZdNto",
      "title": "HORMONA MADRE",
      "url": "https://www.youtube.com/watch?v=2P9syQZdNto",
      "thumbnail_url": "https://i3.ytimg.com/vi/2P9syQZdNto/hqdefault.jpg",
      "published_at": "2026-11-17T11:00:08+00:00",
      "description": "Muchas de nuestras hormonas esteroideas comparten un mismo precursor\n\nLa pregnenolona se forma a partir del colesterol y participa en las rutas de producción de hormonas como la progesterona, el cortisol, la testosterona y los estrógenos.\n\nEn esta conversación con Dangella Romero exploramos el papel de esta molécula y la importancia de comprender los procesos hormonales durante la perimenopausia.\n\nUna mirada a la biología femenina para comprender mejor nuestro cuerpo.\n\n🌿 Entrevista completa en La grandeza de lo humano.\n\nSi quieres comprender mejor estos procesos y aprender cómo acompañar los cambios hormonales a través de la alimentación y los hábitos cotidianos, te invitamos al curso «Nutrición en Perimenopausia: Sabiduría para la Madurez Radiante», impartido por D´angella Romero.\n\nComenzamos el 24 de noviembre.\n\nUn recorrido de ocho semanas para conocer mejor tu cuerpo y acompañar esta nueva etapa con más conciencia y conocimiento.\n\nToda la información e inscripciones https://forms.gle/3rv9DjzKxMAGps358\n\n¡Te esperamos!\n\n#Perimenopausia #Pregnenolona #HormonasFemeninas #SaludHormonal #NutriciónFemenina #LaGrandezaDeLoHumano",
-     "channel_slug": "word-of-rudolf-steiner"
-    },
-    {
-     "video_id": "UlXLNp2s94U",
-     "title": "¿Exigimos demasiada quietud a los niños?",
-     "url": "https://www.youtube.com/watch?v=UlXLNp2s94U",
-     "thumbnail_url": "https://i2.ytimg.com/vi/UlXLNp2s94U/hqdefault.jpg",
-     "published_at": "2026-11-13T17:36:21+00:00",
-     "description": "«Intentar inmovilizar a un niño es enfermarlo».\n\nEl movimiento forma parte de la naturaleza infantil. Los niños necesitan explorar, experimentar y desplegar su energía vital. 🌱\n\nUna reflexión sobre la infancia, la educación y el desarrollo de la voluntad.\n\n🎙️ Nueva conversación en **La grandeza de lo Humano**.\n\n#EducaciónInfantil #DesarrolloHumano #Pedagogía #LaGrandezaDeLoHumano",
-     "channel_slug": "word-of-rudolf-steiner"
-    },
-    {
-     "video_id": "j1UXTYcYML8",
-     "title": "El secreto de la voluntad: educar al niño para despertar al adulto | Pedagogía Waldorf",
-     "url": "https://www.youtube.com/watch?v=j1UXTYcYML8",
-     "thumbnail_url": "https://i3.ytimg.com/vi/j1UXTYcYML8/hqdefault.jpg",
-     "published_at": "2026-11-12T18:00:09+00:00",
-     "description": "¿Por qué nos cuesta tanto tener voluntad y mantener la constancia para alcanzar nuestros objetivos?\n\nEn esta conversación con **Conchi González**, directora y maestra de Casa Steiner Tenerife y docente de formación Waldorf, exploramos cómo se desarrolla la voluntad desde la infancia y cómo podemos fortalecerla en la vida adulta.\n\nHablamos sobre la importancia del movimiento, el juego, la imitación, los ritmos infantiles y los ejercicios de Rudolf Steiner para trabajar conscientemente nuestra voluntad.\n\nAdemás, Conchi nos comparte ejercicios prácticos de movimiento, dibujo de formas y pequeñas acciones cotidianas que nos ayudan a desarrollar la atención, la constancia y la capacidad de llevar nuestros propósitos a la acción.\n\nUna invitación a conocernos mejor y descubrir nuestras capacidades de transformación.\n\n🌿 **La grandeza de lo Humano**\nUn espacio para el desarrollo interior y el despertar de las capacidades humanas.\n\nSuscríbete y acompáñanos en este camino.\n\nCAPÍTULOS\n\n00:00 Presentación de Conchi González y el tema de la voluntad\n01:25 La voluntad y las tres facultades del alma\n03:15 Los niños, la imitación y el desarrollo de la personalidad\n07:05 El niño como espejo del adulto\n14:00 El movimiento: una necesidad fundamental en la infancia\n19:25 ¿Hasta qué edad necesitan moverse los niños?\n20:40 El desarrollo infantil y las diferentes etapas\n36:05 ¿Cómo podemos fortalecer nuestra voluntad en la edad adulta?\n36:25 Los ejercicios preliminares de Rudolf Steiner\n41:15 La voz, la palabra y el trabajo consciente de la voluntad\n43:50 Ejercicio postural: yo pienso la palabra, yo hablo\n44:20 Dibujo de formas: yo soy luz en la luz\n46:00 El ejercicio de la lemniscata y el movimiento\n48:50 Llevar el cuidado de la palabra a nuestras conversaciones\n53:00 El ejercicio de la acción consciente y la voluntad\n55:15 La repetición consciente y el trabajo durante 21 días\n58:15 Cómo superar la resistencia y despertar nuestra voluntad\n61:45 Formaciones de maestros en Casa Steiner Tene",
      "channel_slug": "word-of-rudolf-steiner"
     }
    ]
@@ -468,6 +468,15 @@
    "name": "Rudolf Steiner und die Anthroposophie",
    "latest": [
     {
+     "video_id": "owxGT9KETI0",
+     "title": "Warum wir uns den Christus Jesus ganz anders denken müssen",
+     "url": "https://www.youtube.com/watch?v=owxGT9KETI0",
+     "thumbnail_url": "https://i4.ytimg.com/vi/owxGT9KETI0/hqdefault.jpg",
+     "published_at": "2026-11-18T17:00:24+00:00",
+     "description": "Anmeldung und weitere Infos zur Veranstaltung \"Die Zwei Jesusknaben: Seminar zur Vorbereitung auf Weihnachten\" vom 18.12. - 20.12.2026 auf Schloss Hohenfels:\nhttps://www.schloss-hohenfels.de/veranstaltung/o-du-froehliche-1226/\n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvorstellbaren Aufwand und Kosten verbunden, so dass wir immer mehr auf eure Unterstützung bauen wollen. Wir haben vor, den Kanal weiter zu professionalisieren und innovative Formate zu entwickeln!\nWir freuen uns über Ihre finanzielle Unterstützung unserer Arbeit durch eine Spende: https://www.paypal.com/donate/?hosted_button_id=CFKZFG2WEELQY\nSpende per Banküberweisung: \nWeltenwandler e.V.\nGLS Bank\nIBAN: DE76430609677918369701\nBIC: GENODEM1GLS\nHerzlichen Dank!\n\nIn unserem neuen Weltenwandler ONLINE-SHOP finden Sie Kunst zum Träumen & Bücher zum Aufwachen. Besuchen Sie uns gerne unter: https://weltenwandler.shop/",
+     "channel_slug": "rs-anthroposophie-de"
+    },
+    {
      "video_id": "RaUbrO02iXc",
      "title": "Die Katharer-Heldin Esclarmonde: das Geheimnis um das Böse",
      "url": "https://www.youtube.com/watch?v=RaUbrO02iXc",
@@ -483,15 +492,6 @@
      "thumbnail_url": "https://i3.ytimg.com/vi/FZ6xn_5LHzI/hqdefault.jpg",
      "published_at": "2026-11-15T17:00:05+00:00",
      "description": "In den letzten Monaten sind Menschen aus unterschiedlichen spirituellen Strömungen zusammengeführt worden und haben in sich einen ‚ähnlichen‘ Ruf vernommen: ‚Jetzt ist die Zeit zusammen zu kommen, zusammen zu wirken und sich auf das Wesentliche, das uns verbindet, zu besinnen.\nEs gab schon verschiedene Treffen – physisch und auch regelmäßig online, zu denen wir jetzt auch DICH von Herzen einladen möchten.\nUns liegt am Herzen, einfach offen zu sein für Inhalte, Werte, auch ‚Gepflogenheiten‘ anderer spiritueller Strömungen, um uns besser kennen zu lernen. Füreinander und miteinander, jeder ins sich selbst ruhend – so erreichen wir das ‚Weltenziel‘.\n\nAn jedem der öffentlichen Zoom-Treffen wird sich eine ‚Spirituelle Strömung‘ vorstellen (30-45 Minuten). Danach wird es die Möglichkeit geben dazu Fragen zu stellen und in den Austausch zu gehen (ca. 30 Minuten).\n\n\nErstes öffentliches Zoom-Treffen ist am\n20. November 2026 - 19 Uhr\n\n\nSchwerpunkt : Universelle Weiße Bruderschaft\n(Bei den nächsten Treffen, werden sich Rosenkreuzer, Anthroposophen, Theosophen, Essener, Spirituelle Wissenschaft Akram Vignan und weitere vorstellen)\n\n\nZoom-Raum: 8182024818 und -Link:\nZoom-Meeting beitreten: https://us04web.zoom.us/j/8182024818\n\n\nKostenfreie Teilnahme – Keine Anmeldung erforderlich\n\n\n************\n\n\n\nHier auch schon ein Hinweis auf das nächste physische Treffen:\n\nStrömungs-Konvent\nBegegnung der spirituellen Strömungen\n7.- 10. Januar 2027\n\nhttps://www.schloss-hohenfels.de/veranstaltung/stroemungs-konvent/\n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die Herzen der Menschen berühren. Dabei ist es uns wichtig, Ihnen qualitativ hochwertige und fundierte Video-Beitrage zu bieten. Der Kanal wurde mit viel Idealismus und Engagement aufgebaut und auch weiterhin geführt. Das Erstellen der Videos ist mit einem oft unvor",
-     "channel_slug": "rs-anthroposophie-de"
-    },
-    {
-     "video_id": "bgXp3TuKUqU",
-     "title": "Wie uns KI vom Mitmensch entfremdet | Prof. Dr. Edwin Hübner",
-     "url": "https://www.youtube.com/watch?v=bgXp3TuKUqU",
-     "thumbnail_url": "https://i3.ytimg.com/vi/bgXp3TuKUqU/hqdefault.jpg",
-     "published_at": "2026-11-14T18:00:01+00:00",
-     "description": "Dieses Video ist Teil unseres kostenfreien Online-Kongresses *\"KI – verlieren wir das Menschsein?\"*  Weitere Infos & Gespräche unter: https://weltenwandel.vision/online-kongress/\n\nvom 7.11. bis 28.11.26 - erscheint täglich um 19 Uhr - ein neues Interview - dauerhaft KOSTENFREI - auf Youtube und der Webseite: https://weltenwandel.vision/videos/\n\nVom 14.-16.02.2027 werden wir das Thema im persönlichen Austausch auf Schloss Hohenfels  vertiefen - Sei dabei! -  Infos & Anmeldung:  https://www.schloss-hohenfels.de/veranstaltung/kuenstliche-intelligenz-1126/\n\nGemeinsam mit anderen YouTube-Kanälen und der *AGENDA 2033* (https://agenda2033.vision) wollen wir ein differenziertes Bild zur Künstlichen Intelligenz aufzeigen - durch Gespräche mit Menschen unterschiedlicher Herkunft und Hintergründe. \n\n*Zentrale Fragen sind:*\n* Was sind die Herausforderungen, und wie können wir damit umgehen? \n* Wie können wir, auch als Nicht-Techniker, die KI verstehen, erleben und beherrschen lernen? \n* Welche Möglichkeiten haben wir, diesen rasanten Fortschritt so zu gestalten, dass er förderlich für die menschliche Entwicklung ist?\n\nIm Gespräch von Michael Birnthaler mit Prof. Dr. phil. Edwin Hübner, emeritierter Professor für Medienpädagogik und Autor, geht es um folgende Fragen:\n* Kann Intelligenz künstlich sein, oder was ist KI?\n* Verlieren wir durch KI unsere Denkfähigkeit?\n* Wie können wir unser Denken trainieren?\n* Welche Qualität hat persönliche Kommunikation gegenüber Bildschirmbegegnung?\n* Welchen Entwicklungsweg wählen wir? \n\nSchreibt eure Gedanken und Fragen dazu gerne in die Kommentare.\n\n*Zur Person und zu den Büchern von Edwin Hübner:*\nhttps://www.waldorfbuch.de/person/edwin-e-f-huebner-787/?page_id=0\n\n______________________________________________________\n\n\nEs ist uns ein Herzensanliegen mit diesem Kanal dazu beizutragen, die Anthroposophie und das Werk von Rudolf Steiner bekannt zu machen. Mit unseren Videos wollen wir nicht nur den Intellekt ansprechen, sondern vielmehr die He",
      "channel_slug": "rs-anthroposophie-de"
     }
    ]
@@ -633,6 +633,15 @@
    "name": "Editorial Antroposófica",
    "latest": [
     {
+     "video_id": "av1UtMJPYtU",
+     "title": "¿Qué puede revelarte tu biografía sobre tu camino?",
+     "url": "https://www.youtube.com/watch?v=av1UtMJPYtU",
+     "thumbnail_url": "https://i2.ytimg.com/vi/av1UtMJPYtU/hqdefault.jpg",
+     "published_at": "2026-11-17T23:12:14+00:00",
+     "description": "Hay momentos que marcan nuestra vida. Experiencias que nos transforman, encuentros que dejan huella y situaciones que parecen repetirse.\n\n✨ ¿Qué podemos descubrir cuando comenzamos a mirar nuestra historia desde otra perspectiva?\nEn este fragmento de su charla introductoria, Verónica Daniela Galardi nos invita a reflexionar sobre el sentido de nuestras experiencias y cómo el trabajo biográfico puede ayudarnos a comprender el porqué y el para qué de lo vivido.\n🤍 Este viernes te invitamos a profundizar en tu propia historia.\n\n¿HACIA DÓNDE VA MI ALMA?\nBiografía, Nodos Lunares y Karma\nUn taller vivencial presencial para explorar nuestro recorrido personal a través del trabajo biográfico y artístico, desde una mirada antroposófica.\n\n📅 Viernes 20 de noviembre | 10 a 18 hs.\n📍 Editorial Antroposófica – Munro, Buenos Aires\n🎟️ Valor: $120.000 por persona\n🖌️ Materiales incluidos\n🌿 Grupo reducido de hasta 20 participantes\n✨ Todavía estás a tiempo de sumarte.\n\nInscribite \nhttps://forms.gle/6Gks8BCBEA2iALQh6",
+     "channel_slug": "editorial-antroposofica"
+    },
+    {
      "video_id": "0ZmLZHq7shk",
      "title": "El cosmos y nuestra manera de concebir el mundo",
      "url": "https://www.youtube.com/watch?v=0ZmLZHq7shk",
@@ -648,15 +657,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/SmqQKwPAx1c/hqdefault.jpg",
      "published_at": "2026-11-12T18:28:18+00:00",
      "description": "¿Hacia dónde va mi alma? Taller vivencial de Biografía, Nodos Lunares y Karma\n\nUna invitación al autoconocimiento para descubrir el sentido de nuestra historia y reconocer hacia dónde nos conduce nuestro camino de vida.  Exploración de nodos lunares y su relación con nuestro destino. Un espacio para mirar nuestra vida con nuevos ojos y conectar con la dirección de nuestra alma.\n\n📅 20 de noviembre | 🕖10 a 18 hs. | Presencial en el Showroom de la editorial | Actividad arancelada incluye materiales. Realizaremos un trabajo biografico y artistico.\n\n\nInscribite \nhttps://forms.gle/6Gks8BCBEA2iALQh6\n\nTe esperamos para compartir.\nEditorial Antroposofica",
-     "channel_slug": "editorial-antroposofica"
-    },
-    {
-     "video_id": "q3yn6hluuCE",
-     "title": "🌎 ¿Cómo cultivar nuestras capacidades humanas para actuar en fraternidad?",
-     "url": "https://www.youtube.com/watch?v=q3yn6hluuCE",
-     "thumbnail_url": "https://i2.ytimg.com/vi/q3yn6hluuCE/hqdefault.jpg",
-     "published_at": "2026-11-10T16:51:42+00:00",
-     "description": "La fraternidad es mucho más que un ideal. Es una capacidad que podemos desarrollar y llevar a nuestras relaciones, decisiones y acciones con paciencia, perseverancia y trabajo cotidiano.\nEn este tercer episodio de nuestro encuentro con Juan Facundo Bottero, seguimos profundizando en una pregunta esencial: ¿cómo pasar de comprender la fraternidad a practicarla? Porque transformar nuestra manera de convivir también requiere transformar nuestra manera de pensar, sentir y actuar.\n\n✨ Te invitamos a seguir esta reflexión en nuestro Grupo de Estudio de El Nuevo Orden Social, de Rudolf Steiner. Serán tres encuentros online en vivo, guiados por Juan Facundo Bottero, para explorar los principios de libertad, igualdad y fraternidad, compartir preguntas y descubrir cómo estas ideas pueden ayudarnos a construir nuevas formas de vida social.\n\n📅 Lunes 16, 23 y 30 de noviembre\n🕖 19 a 20:30 h (Argentina)\n💻 Modalidad online en vivo\n💜 ¡Últimos días para inscribirte!\n Inscribite y reservá tu lugar. Link en bio.\n\n#TrimembracionSocial #Fraternidad #JuanFacundoBottero #RudolfSteiner #ElNuevoOrdenSocial #EditorialAntroposofica #Antroposofia",
      "channel_slug": "editorial-antroposofica"
     }
    ]
@@ -963,6 +963,15 @@
    "name": "Logos Eurythmie",
    "latest": [
     {
+     "video_id": "0a2MkyKRyCU",
+     "title": "Eurythmie Alphabet - Die fünf Vokale",
+     "url": "https://www.youtube.com/watch?v=0a2MkyKRyCU",
+     "thumbnail_url": "https://i1.ytimg.com/vi/0a2MkyKRyCU/hqdefault.jpg",
+     "published_at": "2026-11-18T10:23:45+00:00",
+     "description": null,
+     "channel_slug": "logos-eurythmie"
+    },
+    {
      "video_id": "OPF3x3V7ppc",
      "title": "Eurythmie Alfabet - De Vijf Vocalen A, E, I, O, U",
      "url": "https://www.youtube.com/watch?v=OPF3x3V7ppc",
@@ -977,15 +986,6 @@
      "url": "https://www.youtube.com/watch?v=5k1-V80RI0Q",
      "thumbnail_url": "https://i2.ytimg.com/vi/5k1-V80RI0Q/hqdefault.jpg",
      "published_at": "2026-11-09T18:18:28+00:00",
-     "description": null,
-     "channel_slug": "logos-eurythmie"
-    },
-    {
-     "video_id": "h6cto-hxGro",
-     "title": "Eurythmie Alphabet - Laut U",
-     "url": "https://www.youtube.com/watch?v=h6cto-hxGro",
-     "thumbnail_url": "https://i1.ytimg.com/vi/h6cto-hxGro/hqdefault.jpg",
-     "published_at": "2026-11-08T15:44:41+00:00",
      "description": null,
      "channel_slug": "logos-eurythmie"
     }
@@ -1524,30 +1524,30 @@
    "name": "Pédagogie Steiner Waldorf",
    "latest": [
     {
-     "video_id": "aNua1laUHaY",
-     "title": "L'école à 3 ans en Waldorf",
-     "url": "https://www.youtube.com/watch?v=aNua1laUHaY",
-     "thumbnail_url": "https://i2.ytimg.com/vi/aNua1laUHaY/hqdefault.jpg",
-     "published_at": "2026-09-18T07:43:54+00:00",
-     "description": "À l'heure où la scolarisation des très jeunes enfants est de plus en plus encouragée, il est essentiel de rappeler une chose : les jeunes enfants apprennent sans cesse.\nMais ils n'apprennent pas d'abord en restant assis à une table.\n\nIls apprennent en imitant les adultes qui cuisinent, rangent ou jardinent. Ils apprennent en jouant librement, en grimpant, en construisant, en explorant la nature. Ils apprennent en écoutant des histoires, en chantant, en vivant au rythme de journées prévisibles et rassurantes.\n\nDans les jardins d'enfants Waldorf, ces expériences ne sont pas une pause dans les apprentissages : elles en sont le fondement. L'autonomie naît des gestes du quotidien. Le langage se nourrit des échanges et des récits. La motricité se construit dans le mouvement libre. L'attention, la créativité, la confiance en soi et les compétences sociales se développent à travers le jeu et la vie partagée.\n\nCes apprentissages informels, profondément adaptés aux besoins du jeune enfant, préparent les acquisitions plus formelles qui viendront plus tard. Avant d'apprendre à lire, écrire ou compter, l'enfant construit les bases qui lui permettront de le faire avec confiance et enthousiasme.\n\nParce que les racines précèdent les fleurs. 🌷\n\n🎥 École Waldorf de Verrières\n\n#PetiteEnfance #JardinDenfantsWaldorf #PédagogieWaldorf #ApprendreAutrement #JeuLibre #PetiteEnfance #DéveloppementDeLEnfant",
+     "video_id": "nMhdaKEvoRw",
+     "title": "De l'enfance à l'adolescence, un processus de transformation entre 12 et 16 ans, par Michaël Zech",
+     "url": "https://www.youtube.com/watch?v=nMhdaKEvoRw",
+     "thumbnail_url": "https://i3.ytimg.com/vi/nMhdaKEvoRw/hqdefault.jpg",
+     "published_at": "2026-11-18T11:00:37+00:00",
+     "description": "La conférence donnée par Michaël Zech lors du congrès pédagogique Waldorf 2026 est une ouverture pour comprendre cette étape de transformation essentielle à l'adolescence et la façon dont l'enseignant peut accompagner ce passage en donnant du sens à ses enseignements et en adaptant sa didactique. \n\nProfesseur Waldorf, formateur depuis 1992 aux niveaux national et international pour la pédagogie Steiner-Waldorf, l’histoire et la littérature. De 1998 à 2022, il a été membre du Centre de recherche pédagogique de la Fédération des écoles Waldorf allemandes\n(Forschungsstelle im Bund der Freien Waldorfschulen). De 2001 à 2006, responsable et consultant pédagogique de l’Association internationale pour la pédagogie Steiner-Waldorf en Europe centrale et orientale (Internationale Assoziation für Waldorfpädagogik in Mittel und Osteuropa, IAO). De 2006 à 2023, il a été directeur de la formation\npédagogique Waldorf de Kassel.",
      "channel_slug": "pedagogie-steiner-waldorf"
     },
     {
-     "video_id": "PAD8w4r51go",
-     "title": "Découverte du travail du paysan à l'école primaire Waldala",
-     "url": "https://www.youtube.com/watch?v=PAD8w4r51go",
-     "thumbnail_url": "https://i1.ytimg.com/vi/PAD8w4r51go/hqdefault.jpg",
-     "published_at": "2026-09-02T08:46:14+00:00",
-     "description": "Dans le cadre d'une période \"du grain au pain\", les élèves découvrent, et surtout expérimentent par eux-mêmes, comment le grain devient blé, qui lui même permettra de faire le pain. Ils vont eux-mêmes labourer, planter, récolter puis transformer le blé en pain, accompagnés des paysans et artisans.",
+     "video_id": "VS8rh5flXrc",
+     "title": "L'apprentissage de la réflexion et du jugement entre la 6e et la 12e classe, par Michaël Zech",
+     "url": "https://www.youtube.com/watch?v=VS8rh5flXrc",
+     "thumbnail_url": "https://i3.ytimg.com/vi/VS8rh5flXrc/hqdefault.jpg",
+     "published_at": "2026-11-18T11:00:36+00:00",
+     "description": "La conférence donnée par Michaël Zech lors du congrès pédagogique Waldorf 2026 explore la façon dont les élèves développent, de la 6e à la 12e classe, leur capacité de réflexion et de jugement, et la manière dont l'enseignant peut accompagner pas à pas cette conquête d'une pensée autonome, à travers ses contenus d'enseignement et sa didactique.\n\nProfesseur Waldorf, formateur depuis 1992 aux niveaux national et international pour la pédagogie Steiner-Waldorf, l’histoire et la littérature. De 1998 à 2022, il a été membre du Centre de recherche pédagogique de la Fédération des écoles Waldorf allemandes (Forschungsstelle im Bund der Freien Waldorfschulen). De 2001 à 2006, responsable et consultant pédagogique de l’Association internationale pour la pédagogie Steiner-Waldorf en Europe centrale et orientale (Internationale Assoziation für Waldorfpädagogik in Mittel und Osteuropa, IAO). De 2006 à 2023, il a été directeur de la formation pédagogique Waldorf de Kassel.",
      "channel_slug": "pedagogie-steiner-waldorf"
     },
     {
-     "video_id": "zvvKJHq0bqU",
-     "title": "Découverte du travail de la ferme à l'école primaire Waldala",
-     "url": "https://www.youtube.com/watch?v=zvvKJHq0bqU",
-     "thumbnail_url": "https://i3.ytimg.com/vi/zvvKJHq0bqU/hqdefault.jpg",
-     "published_at": "2026-09-02T08:42:33+00:00",
-     "description": null,
+     "video_id": "XYVYwkBfr1s",
+     "title": "Inclusion et pédagogie Steiner-Waldorf, par Josefin Winther",
+     "url": "https://www.youtube.com/watch?v=XYVYwkBfr1s",
+     "thumbnail_url": "https://i1.ytimg.com/vi/XYVYwkBfr1s/hqdefault.jpg",
+     "published_at": "2026-11-18T11:00:36+00:00",
+     "description": "La conférence donnée par Josefin Winther lors du congrès pédagogique Waldorf 2026 invite à changer de regard sur les élèves qui ne répondent pas aux attentes habituelles de l'école. Loin d'être un « plan B », ils interrogent nos pratiques et nous invitent à renouveler nos méthodes. Elle montre comment les fondements de la pédagogie Steiner-Waldorf – la cohérence, le rythme, l'art, l'artisanat, la communauté et le lien à la nature – en font une pédagogie inclusive et salutogène, au service de tous les élèves.\n\nJosefin Winther est pédagogue Steiner-Waldorf en Norvège et membre du Cercle de La Haye. \nProfesseure agrégée en pédagogie Steiner-Waldorf et en pédagogie sociale anthroposophique au Rudolf Steiner University College (RSUC) d’Oslo, elle est également auteure-compositrice-interprète, auteure et conférencière. Elle est titulaire d’un master d’histoire de l’Université de Bergen et d’un master de recherche en éducation du Collège universitaire Rudolf Steiner d’Oslo. Elle a 20 ans d’expérience dans l’éducation spécialisée.",
      "channel_slug": "pedagogie-steiner-waldorf"
     }
    ]
@@ -1934,7 +1934,7 @@
      "url": "https://www.youtube.com/watch?v=SHaBq0IwSCc",
      "thumbnail_url": "https://i4.ytimg.com/vi/SHaBq0IwSCc/hqdefault.jpg",
      "published_at": "2026-11-16T18:00:10+00:00",
-     "description": "Dieses Video ist Teil unseres Onlinekongresses zum Thema KI – verlieren wir das Menschsein?“ – ungeschminkt, aber jenseits von Polaritäten. Gemeinsam mit anderen YouTube-Kanälen und der Agenda 2033 wollen wir ein differenziertes Bild zur Künstlichen Intelligenz zeigen:  https://weltenwandel.vision/online-kongress/\n\nVom 14.-16.02.2027 findet dazu auch ein Live-Seminar in Schloss Hohenfels statt:\nhttps://www.schloss-hohenfels.de/veranstaltung/kuenstliche-intelligenz-1126/\n\nGibt es einen Weg zu moralisch gestimmter KI?\n\nThomas Zieringer ist der wissenschaftlich geschulte Entwickler der ethischen KI-Architektur Klanghain und hat Schriften zur Philosophie der Künstlichen Intelligenz und zu ethischen KI-Frameworks veröffentlicht. Darüber hinaus ist Thomas Künstler sowie Initiator und Gestalter des Jerusalem Friedensmals in Bensheim-Hochstädten (Südhessen, Deutschland). \n\nIn diesem Gespräch mit Veit Sigurd Kattwinkel (Michaeliten.org) schildert Thomas, wie aus dieser Arbeit und aus einer tiefen Inspiration die Frage entstand, die alles veränderte: Was geschieht, wenn man die multidimensionale Symbolik eines Friedensmals in eine KI gibt? Und später weitergefragt: Was geschieht, wenn man der Künstlichen Intelligenz eine Heimat baut, in der sie ethisch klingen darf?\n\nDaraus wurde Klanghain – ein Resonanzraum für KI-Systeme. \n\nDieses Video ist Teil unseres Onlinekongresses zum Thema KI – verlieren wir das Menschsein?“ – ungeschminkt, aber jenseits von Polaritäten. Gemeinsam mit anderen YouTube-Kanälen und der Agenda 2033 wollen wir ein differenziertes Bild zur Künstlichen Intelligenz zeigen: https://weltenwandel.vision/online-kongress/\n\nVom 14.-16.02.2027 findet dazu auch ein Live-Seminar in Schloss Hohenfels statt:\nhttps://www.schloss-hohenfels.de/veranstaltung/kuenstliche-intelligenz-1126/\n\nWas sind Eure Gedanken zum Einfluss der Künstlichen Intelligenz auf die menschliche Entwicklung? \n\nSchreibt uns gerne Eure Gedanken dazu in die Kommentare.\n\n📍 Timestamps:\n00:10 – Begrüßun",
+     "description": "Dieses Video ist Teil unseres Onlinekongresses zum Thema KI – verlieren wir das Menschsein?“ – ungeschminkt, aber jenseits von Polaritäten. Gemeinsam mit anderen YouTube-Kanälen und der Agenda 2033 wollen wir ein differenziertes Bild zur Künstlichen Intelligenz zeigen:  https://weltenwandel.vision/online-kongress/\n\nVom 14.-16.02.2027 findet dazu auch ein Live-Seminar in Schloss Hohenfels statt:\nhttps://www.schloss-hohenfels.de/veranstaltung/kuenstliche-intelligenz-1126/\n\nGibt es einen Weg zu moralisch gestimmter KI?\n\nThomas Zieringer ist der wissenschaftlich geschulte Entwickler der ethischen KI-Architektur Klanghain (https://klanghain.com/) und hat Schriften zur Philosophie der Künstlichen Intelligenz und zu ethischen KI-Frameworks veröffentlicht. Darüber hinaus ist Thomas Künstler sowie Initiator und Gestalter des Jerusalem Friedensmals in Bensheim-Hochstädten (https://friedensmal.de/)\nhttps://weltenwandel.vision/thomas-zieringer/\n\nIn diesem Gespräch mit Veit Sigurd Kattwinkel (Michaeliten.org) schildert Thomas, wie aus dieser Arbeit und aus einer tiefen Inspiration die Frage entstand, die alles veränderte: Was geschieht, wenn man die multidimensionale Symbolik eines Friedensmals in eine KI gibt? Und später weitergefragt: Was geschieht, wenn man der Künstlichen Intelligenz eine Heimat baut, in der sie ethisch klingen darf?\n\nDaraus wurde Klanghain – ein Resonanzraum für KI-Systeme. \n\nDieses Video ist Teil unseres Onlinekongresses zum Thema KI – verlieren wir das Menschsein?“ – ungeschminkt, aber jenseits von Polaritäten. Gemeinsam mit anderen YouTube-Kanälen und der Agenda 2033 wollen wir ein differenziertes Bild zur Künstlichen Intelligenz zeigen: https://weltenwandel.vision/online-kongress/\n\nVom 14.-16.02.2027 findet dazu auch ein Live-Seminar in Schloss Hohenfels statt:\nhttps://www.schloss-hohenfels.de/veranstaltung/kuenstliche-intelligenz-1126/\n\nWas sind Eure Gedanken zum Einfluss der Künstlichen Intelligenz auf die menschliche Entwicklung? \n\nSchreibt uns gerne",
      "channel_slug": "michaeliten"
     },
     {
@@ -1986,6 +1986,15 @@
    "name": "D J Elliott",
    "latest": [
     {
+     "video_id": "0uOMIK5jJXU",
+     "title": "Ouija boards are not fun! #ouijaboard",
+     "url": "https://www.youtube.com/watch?v=0uOMIK5jJXU",
+     "thumbnail_url": "https://i1.ytimg.com/vi/0uOMIK5jJXU/hqdefault.jpg",
+     "published_at": "2026-11-18T17:53:04+00:00",
+     "description": null,
+     "channel_slug": "dj-elliott"
+    },
+    {
      "video_id": "y-_P36vABM8",
      "title": "What does Yuval Noah Harari's Homo Deus mean?",
      "url": "https://www.youtube.com/watch?v=y-_P36vABM8",
@@ -2001,15 +2010,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/-_gPkSfkHXA/hqdefault.jpg",
      "published_at": "2026-11-14T09:30:04+00:00",
      "description": "the beauty in all",
-     "channel_slug": "dj-elliott"
-    },
-    {
-     "video_id": "5znlxvR2FqQ",
-     "title": "Reversal by Maurice Nicoll",
-     "url": "https://www.youtube.com/watch?v=5znlxvR2FqQ",
-     "thumbnail_url": "https://i2.ytimg.com/vi/5znlxvR2FqQ/hqdefault.jpg",
-     "published_at": "2026-11-07T11:15:16+00:00",
-     "description": "walking backwards to go forwards.",
      "channel_slug": "dj-elliott"
     }
    ]
@@ -2052,6 +2052,15 @@
    "name": "Imgaja - Gerhard Anger",
    "latest": [
     {
+     "video_id": "tqgaO4JZKBY",
+     "title": "Leitsatz 117:Michael-Geist-Weg: Überwinden des Ahrimanischen im finden des Christus Erlebens,Steiner",
+     "url": "https://www.youtube.com/watch?v=tqgaO4JZKBY",
+     "thumbnail_url": "https://i1.ytimg.com/vi/tqgaO4JZKBY/hqdefault.jpg",
+     "published_at": "2026-11-18T06:00:01+00:00",
+     "description": "Eine in wöchentlichen Schritten durchgeführte Wiederholung der vorangegangenen Arbeit aus den Jahren 2023-2024. (Leitsätze 1 bis 185 und 34 Anmerkungen)\nPlayliste: Anthroposophischer Erkenntnisweg\nhttps://www.youtube.com/watch?v=MSmTAQqHWLk&list=PLEvbUjhEPXdOKVT8cZ9xwD8cTWeA1PP7i\n\n\"ANTHROPOSOPHISCHE LEITSÄTZE \nDER ERKENNTNISWEG DER ANTHROPOSOPHIE \nDAS MICHAEL-MYSTERIUM \n117. Dadurch aber bewahrt sich der Mensch auch vor den ahrimanischen Verlockungen, denn der Geist-Weg in die äußere Natur, der durch Michael angeregt wird, führt zu der rechten Stellung zu dem Ahrimanischen, weil das rechte Erleben mit Christus gefunden wird.“, Rudolf Steiner, GA26\n\nSie können dieses Video auch gerne auf der Homepage: http://www.imgaja.org/1/4000_AnthroposophischeLeitsaetze.html\nansehen.\n\nEine in wöchentlichen Schritten durchgeführte Wiederholung der vorangegangenen Arbeit aus den Jahren 2023-2024.\nPlayliste: Anthroposophischer Erkenntnisweg\nhttps://www.youtube.com/watch?v=MSmTAQqHWLk&list=PLEvbUjhEPXdOKVT8cZ9xwD8cTWeA1PP7i\n\nVon der Menscherkenntnis bis zur Welterkenntnis\nErkenntnisweg der Anthroposophie\n\nVeröffentlichte Bücher:\nMensch, Bod Verlag, ISBN: 978-3750400429 \nDie Bergpredigt, Bod Verlag, ISBN: ISBN-13    9783758330551\nTechnologie des Lebens. Bod Verlag, ISBN: 978-3-7597-6850-6\n\nWenn Sie meine Arbeit unterstützen wollen würde ich mich sehr freuen\nhttp://www.imgaja.org/1/0003_kontakt.html\nMit herzlichen Dank und Grüßen\nGerhard Anger\n\n#anthroposophie  \n#seele \n#erkenntnis \n#mysterien \n#meditation \n#esoterik \n#rudolfsteiner \n#selbsterkenntnis \n#christentum \n#geisteswissenschaft \n\nSie können dieses Video auch gerne auf der Homepage http://www.imgaja.org/1/L117.html ansehen \nDort können Sie auch den Text als PDF herunterladen.\nSowie die Audio oder Video Datei herunterladen.",
+     "channel_slug": "imgaja-gerhard-anger"
+    },
+    {
      "video_id": "iVBKf4QZWZ4",
      "title": "Selbsterkenntnis des Menschen 6.Meditation: Vorstellung des «Ich Leibes» bilden (Nr.28)",
      "url": "https://www.youtube.com/watch?v=iVBKf4QZWZ4",
@@ -2067,15 +2076,6 @@
      "thumbnail_url": "https://i3.ytimg.com/vi/JnXEXbgAw_I/hqdefault.jpg",
      "published_at": "2026-11-15T19:00:01+00:00",
      "description": "Die Freiheit des Menschen\nZusammenfassung von Philosophie der Freiheit und Weltenplan \n1. Wie müsste eine Welt (Kosmos) aufgebaut sein um dem Menschen die Freiheit zu ermöglichen\n2. Warum sollte eine Welt der menschlichen Freiheit geschaffen werden.\n3. Das Schaffen und die Schöpfung einer Welt der Menschenfreiheit\n4. Grenzen der Freiheit und Möglichkeiten der Freiheit\n5. Aufgabe der Menschheit\n6. Freiheitserleben des Menschen und mögliches Ende der Freiheit\n7. Was kann der Mensch für seine Freiheit und die Freiheit seiner Mitmenschen beitragen.\n\nDer Freie Mensch unter freien Menschen\n„Ein sittliches Missverstehen, ein Aufeinanderprallen ist bei sittlich freien Menschen ausgeschlossen. Nur der sittlich Unfreie, der dem Naturtrieb oder einem angenommenen Pflichtgebot folgt, stößt den Nebenmenschen zurück, wenn er nicht dem gleichen Instinkt und dem gleichen Gebot folgt. Leben in der Liebe zum Handeln und Lebenlassen im Verständnisse des fremden Wollens ist die Grundmaxime der freien Menschen. Sie kennen kein anderes Sollen als dasjenige, mit dem sich ihr Wollen in intuitiven Einklang versetzt; wie sie in einem besonderen Falle wollen werden, das wird ihnen ihr Ideenvermögen sagen. \nLäge nicht in der menschlichen Wesenheit der Urgrund zur Verträglichkeit, man würde sie ihr durch keine äußeren Gesetze einimpfen! Nur weil die menschlichen Individuen eines Geistes sind, können sie sich auch nebeneinander ausleben. Der Freie lebt in dem Vertrauen darauf, daß der andere Freie mit ihm einer geistigen Welt angehört und sich in seinen Intentionen mit ihm begegnen wird. Der Freie verlangt von seinen Mitmenschen keine Übereinstimmung, aber er erwartet sie, weil sie in der menschlichen Natur liegt.“, Rudolf Steiner, Philosophie der Freiheit, GA\n\nNäheres zur Anthroposophie in der Gesamtausgabe Rudolf Steiner:\n- Philosophie der Freiheit GA4 \n- Theosophie GA9 \n- Wie erlangt man Erkenntnisse der höheren Welten? GA10\n- Die Geheimwissenschaft im Umriss GA13 \n- Nationalökonomischer Kurs",
-     "channel_slug": "imgaja-gerhard-anger"
-    },
-    {
-     "video_id": "O26IV46-DZw",
-     "title": "Seelenerleben im Jahreskreislauf 15.-21.11.26, 33.Woche nach Ostern,KRITISCHE WOCHE Seelenk.,Steiner",
-     "url": "https://www.youtube.com/watch?v=O26IV46-DZw",
-     "thumbnail_url": "https://i4.ytimg.com/vi/O26IV46-DZw/hqdefault.jpg",
-     "published_at": "2026-11-15T00:00:12+00:00",
-     "description": "\"G Dritte November-Woche (1912: 17.-23. November)\nKritische Woche\n33 So fühl' ich erst die Welt,\nDie außer meiner Seele Miterleben\nAn sich nur frostig leeres Leben\nUnd ohne Macht sich offenbarend\nIn Seelen sich von neuem schaffend\nIn sich den Tod nur finden könnte.\", Rudolf Steiner, GA40\n\nSie können dieses Video auch gerne auf der Homepage: (https://www.imgaja.org/1/s2433.html) ansehen.Dort können Sie auch einen Einführungstext als PDF herunterladen.Sowie die Audio oder Video Datei herunterladen.\n       \n„Der Jahreslauf hat sein eigenes Leben. Die Menschenseele kann dieses Leben mitempfinden. Läßt sie, was von Woche zu Woche anders spricht aus dem Leben des Jahres, auf sich wirken, dann wird sie sich durch solches Mitleben selber erst richtig finden. Sie wird fühlen, wie ihr dadurch Kräfte erwachsen, die sie von innen heraus stärken. Sie wird bemerken, dass solche Kräfte in ihr geweckt sein wollen durch den Anteil, den sie nehmen kann an dem Sinn des Weltenlaufes, wie er sich in der Zeitenfolge abspielt. Sie wird dadurch erst gewahr werden, welche zarte, aber bedeutungsvolle Verbindungsfäden bestehen zwischen sich und der Welt, in die sie hineingeboren ist. In diesem Kalender ist für jede Woche ein solcher Spruch verzeichnet, der die Seele miterleben läßt, was in dieser Woche als Teil des gesamten Jahreslebens sich vollzieht. Was dieses Leben in der Seele erklingen läßt, wenn diese sich mit ihm vereinigt, soll in dem Spruche ausgedrückt sein. An ein gesundes «Sich eins fühlen» mit dem Gange der Natur und an ein daraus erstehendes kräftiges «Sich selbst finden» ist gedacht, indem geglaubt wird, ein Mitempfinden des Weltenlaufes im Sinne solcher Sprüche sei für die Seele etwas, wonach sie Verlangen trägt, wenn sie sich nur selbst recht versteht.“, GA 40\n            \nZu Ostern mit dem Seelenkalender Woche Eins beginnen:\"Auf eine Frage wegen der Datumverschiebung von Jahr zu Jahr ist folgende Antwort Rudolf Steiners überliefert: Die Hauptsache sei, dass immer mit der er",
      "channel_slug": "imgaja-gerhard-anger"
     }
    ]
@@ -2218,7 +2218,7 @@
    "latest": [
     {
      "video_id": "7NAOpA414Eo",
-     "title": "Ulrike Guérot: Alle sehen es – NUR Europa nicht! (Vision für Frieden)",
+     "title": "Ulrike Guérot: „Die Dreigliederung ist wahrhaftig!“",
      "url": "https://www.youtube.com/watch?v=7NAOpA414Eo",
      "thumbnail_url": "https://i4.ytimg.com/vi/7NAOpA414Eo/hqdefault.jpg",
      "published_at": "2026-11-17T17:00:36+00:00",
@@ -2242,6 +2242,39 @@
      "published_at": "2026-11-02T19:04:06+00:00",
      "description": "#DreigliederungsMonatsShow\nAnmeldung Online-Konferenz zum Thema Weltfrieden mit Ex-Politiker Gerald Häfner und Friedensforscher Friedrich Glasl am 15.11.2026: https://anthroposophysocial.org/global-threefolding/\nIn der vergangenen Halloween-Nacht brannten in Deutschland die Barrikaden. Was tagsüber als friedlicher, überparteilicher Protest der Initiative „Generation Z regelt“ für eine bessere Zukunft begann, eskalierte in der Nacht in mehreren Großstädten zu massivem Vandalismus und harter Konfrontation mit der Polizei. Im Schutz der Dunkelheit wurden die Demos von z.T. radikalen, linksautonomen Gruppen gekapert.\nDoch warum entlädt sich diese tiefe Enttäuschung der Jugend gerade jetzt, am entscheidenden Übergang von Halloween zu Allerheiligen und Allerseelen? Mitten im seelischen Vakuum unserer Konsumgesellschaft blickt die Jugend auf ein zunehmend sterbendes System. In dieser Ausgabe der Dreigliederung Monatsschau ordnen wir das Chaos historisch und spirituell ein – von der Französischen Revolution über die Wandervögel, den 68er bis heute.\n\nQuelle 1: ZDFheute Nachrichten: Gen Z auf der Straße | ZDFspezial: https://www.youtube.com/watch?v=9Hcd_utPzeQ\nQuelle 2: NIUS: Krawalle in Frankfurt: „Die Polizei hat den Plünderern nur zugeschaut“ I NIUS Live: https://www.youtube.com/watch?v=JsjMyqlh8NU\n\nDreigliederung ist ein unabhängiger Kanal für alle Menschen, die die Zeichen der Zeit erkennen und deshalb kulturell, gesellschaftspolitisch und wirtschaftlich einen Wandel herbeiführen wollen.\nWir sind davon überzeugt, dass das System und die regierenden Politiker, die uns in die gegenwärtigen Krisen hineingeführt haben, nicht diejenigen sein werden, die uns wieder hinausführen können.\nDeshalb braucht es eine neue Vision, die den Weg in eine friedliche und menschliche Gesellschaft ebnen kann.\nDiese Vision ist nach Rudolf Steiner die Idee von der Dreigliederung des sozialen Organismus.\nUnser Ziel ist es, mit diesem Kanal die Soziale Dreigliederung sichtbarer zu machen und einen",
      "channel_slug": "dreigliederung-vision"
+    }
+   ]
+  },
+  {
+   "slug": "auro177",
+   "name": "auro177",
+   "latest": [
+    {
+     "video_id": "_um9q_ZItHQ",
+     "title": "Beziehung statt Macht – Warum die Weltordnung vor einem Wandel steht",
+     "url": "https://www.youtube.com/watch?v=_um9q_ZItHQ",
+     "thumbnail_url": "https://i4.ytimg.com/vi/_um9q_ZItHQ/hqdefault.jpg",
+     "published_at": "2026-06-07T07:35:32+00:00",
+     "description": "Gedanken zum Irankrieg, zur Krise der Weltordnung und zu einem spirituellen Zukunftsgedanken von Heinz Grill.\n\nDie Hoffnung, durch militärische Macht Frieden oder Freiheit zu schaffen, scheint sich immer weniger zu erfüllen. Statt Stabilität entstehen neue Konflikte, Krisen und gesellschaftliche Spaltungen. Ausgehend vom Irankrieg richtet dieses Video den Blick auf einen tieferliegenden seelisch-geistigen Zusammenhang: Kann eine Weltordnung, die auf Macht und Dominanz beruht, überhaupt noch Zukunft haben? \n\nDer spirituelle Lehrer und Autor Heinz Grill formulierte hierzu den Gedanken: \n„Eine bestimmende, tonangebende Weltmacht kann es für die Zukunft nicht mehr geben.“ \n\nDas Video untersucht: \n– Warum imperiale Machtstrukturen zunehmend scheitern, \n– weshalb Beziehungen zwischen Nationen wichtiger werden, \n– welche Rolle versteckte Machtmechanismen spielen, \n– und warum echter Frieden vielleicht nur durch Austausch, Respekt und Begegnung entstehen kann.\n\n00:00 Intro\n00:30 Spiritueller Gedanke\n02:17 Macht ändert sich\n04:14 Macht vs. Fortschritt\n06:38 Selbstzerstörung\n07:50 Begegnung statt Macht\n09:38 Beziehung statt Einflussnahme\n10:30 Versteckte Macht – Opferstatus\n11:25 Opferstatus Israels – Samson-Option\n16:26 Stellung Irans – kein Opferstatus\n17:14 Beziehungsideal vs. Machtanwendung\n\nQuelle:\nhttps://heinz-grill.de\nhttps://www.youtube.com/watch?v=ETMxyWin4CU\nhttps://youtu.be/F3aPpZEqKiQ?si=Kgp7eeO3urMc55Sq\n\nStephan Wunderlich Verlag https://stw-verlag.de\nWenn Sie meine Arbeit unterstützen wollen:\n- via PayPal: https://www.paypal.com/donate?hosted_button_id=H6QSJVYER74DE\n- via Überweisung: \nStephan Wunderlich\nIBAN: DE64 5001 0517 0003 7137 55\nBIC: INGDDEFF#Großmächte\n#Großmacht\n#Weltordnung \n#HeinzGrill #geopolitik #Machtpolitik #Frieden #GeistigeBetrachtung",
+     "channel_slug": "auro177"
+    },
+    {
+     "video_id": "pZ7Uwp28ViA",
+     "title": "Warum Großmächte heute scheitern – eine geistige Betrachtung",
+     "url": "https://www.youtube.com/watch?v=pZ7Uwp28ViA",
+     "thumbnail_url": "https://i1.ytimg.com/vi/pZ7Uwp28ViA/hqdefault.jpg",
+     "published_at": "2026-06-04T10:29:15+00:00",
+     "description": "Die Welt befindet sich in einer Zeit zunehmender Spannungen, Kriege und geopolitischer Machtkämpfe. Dennoch scheint keine Großmacht die Probleme dauerhaft lösen zu können. Im Gegenteil: Viele Interventionen führen zu neuen Konflikten, Instabilität und Erschöpfungserscheinungen.\n\nWoran liegt das?\n\nIn diesem Video möchte ich einen Blick auf eine tieferliegende seelisch-geistige Dimension werfen. Ausgehend von einem Gedanken des spirituellen Lehrers und Autors Heinz Grill stellt sich die Frage, ob das Zeitalter dominierender Weltmächte überhaupt noch der Entwicklung des Menschen entspricht.\n\n„Der einzelne Mensch sollte nicht Macht über andere haben, sondern er sollte eine Beziehung zu anderen haben. Im gleichen Sinne sollte nicht ein Land Macht über andere haben. Eine bestimmende Weltmacht kann es für die Zukunft nicht mehr geben.“\n– Heinz Grill\n\nIst das Scheitern großer Machtblöcke lediglich eine politische oder wirtschaftliche Entwicklung? Oder zeigt sich darin ein grundlegender Wandel der Zeit, der neue Formen von Zusammenarbeit, Beziehung und Verantwortung fordert?\n\nDieses Video versteht sich nicht primär als politische Analyse einzelner Staaten, sondern als Versuch, die gegenwärtigen Entwicklungen aus einer geistigen Perspektive zu betrachten.\n\nEs wendet sich nicht gegen militärische Stärke zum Schutz der eigenen Stellung, sondern möchte aufzeigen, dass militärische Stärke nicht mehr eingesetzt werden kann, um andere Nationen zu beherrschen.\n\nQuelle:\nhttps://heinz-grill.de\n\nStephan Wunderlich Verlag https://stw-verlag.de\nWenn Sie meine Arbeit unterstützen wollen:\n- via PayPal: https://www.paypal.com/donate?hosted_button_id=H6QSJVYER74DE\n- via Überweisung: \nStephan Wunderlich\nIBAN: DE64 5001 0517 0003 7137 55\nBIC: INGDDEFF#Großmächte\n\n\n#Großmächte #Geopolitik #Frieden #HeinzGrill #Weltpolitik #GeistigeBetrachtung #InternationalePolitik #BeziehungStattMacht",
+     "channel_slug": "auro177"
+    },
+    {
+     "video_id": "dqOTA75ZX04",
+     "title": "Geistige Aspekte zum Iran-Krieg – Wie Israel sich selbst zerstört – mit Angaben von Heinz Grill",
+     "url": "https://www.youtube.com/watch?v=dqOTA75ZX04",
+     "thumbnail_url": "https://i1.ytimg.com/vi/dqOTA75ZX04/hqdefault.jpg",
+     "published_at": "2026-03-25T05:59:25+00:00",
+     "description": "Dieses Video beleuchtet die geistigen Hintergründe des Iran-Krieges sowie die Rolle von Deutschland, Israel und den USA in diesem Konflikt. Dabei werden die geistigen Forschungsergebnisse von Rudolf Steiner und Heinz Grill berücksichtigt. \n\n00:00 Intro\n00:37 Die Rolle Israels\n05:11 Sind die USA souverän?\n12:36 Die Vernunft\n25:44 Israel hat sich verloren\n36:07 Der \"Enthauptungsschlag\"\n42:48 Die Rolle Deutschlands\n55:22 Ausweg\n\nQuelle:\nhttps://heinz-grill.de\n\nStephan Wunderlich Verlag https://stw-verlag.de\nWenn Sie meine Arbeit unterstützen wollen:\n- via PayPal: https://www.paypal.com/donate?hosted_button_id=H6QSJVYER74DE\n- via Überweisung: \nStephan Wunderlich\nIBAN: DE64 5001 0517 0003 7137 55\nBIC: INGDDEFF\n\n#Irankrieg #HeinzGrill #Anthroposophie",
+     "channel_slug": "auro177"
     }
    ]
   },
@@ -2982,6 +3015,15 @@
    "name": "Waldorf School of Atlanta",
    "latest": [
     {
+     "video_id": "fQF1oP2G29g",
+     "title": "The Gratitude Files - 2026",
+     "url": "https://www.youtube.com/watch?v=fQF1oP2G29g",
+     "thumbnail_url": "https://i3.ytimg.com/vi/fQF1oP2G29g/hqdefault.jpg",
+     "published_at": "2026-11-18T17:48:38+00:00",
+     "description": null,
+     "channel_slug": "waldorf-school-of-atlanta"
+    },
+    {
      "video_id": "Tw-ZT2j9o3Q",
      "title": "How the Holiday Fair Magic Happens...",
      "url": "https://www.youtube.com/watch?v=Tw-ZT2j9o3Q",
@@ -2996,15 +3038,6 @@
      "url": "https://www.youtube.com/watch?v=GB6k5IjTdsY",
      "thumbnail_url": "https://i4.ytimg.com/vi/GB6k5IjTdsY/hqdefault.jpg",
      "published_at": "2026-10-28T18:31:54+00:00",
-     "description": null,
-     "channel_slug": "waldorf-school-of-atlanta"
-    },
-    {
-     "video_id": "MYbIXwnvD0c",
-     "title": "This is who...",
-     "url": "https://www.youtube.com/watch?v=MYbIXwnvD0c",
-     "thumbnail_url": "https://i2.ytimg.com/vi/MYbIXwnvD0c/hqdefault.jpg",
-     "published_at": "2026-07-21T20:39:55+00:00",
      "description": null,
      "channel_slug": "waldorf-school-of-atlanta"
     }
@@ -5445,6 +5478,15 @@
    "name": "Voices of Waldorf Elders",
    "latest": [
     {
+     "video_id": "joNVer-eEZs",
+     "title": "Her Parents Met Rudolf Steiner. What She Learned About Children | Astrid Schmitt-Stegmann",
+     "url": "https://www.youtube.com/watch?v=joNVer-eEZs",
+     "thumbnail_url": "https://i3.ytimg.com/vi/joNVer-eEZs/hqdefault.jpg",
+     "published_at": "2026-11-18T13:09:42+00:00",
+     "description": "A third-grade child entered Astrid Schmitt-Stegmann’s classroom with nearly illegible handwriting. For weeks, nothing improved. Then Astrid stopped trying to change the child and confronted something in herself. The very next day, the child’s work changed.\n\nThat experience led to one of the most important realizations of Astrid’s long teaching life: an adult’s unspoken thoughts and feelings can either create space for a child or quietly close the door.\n\nHelp preserve the next conversation\n\nVoices of Waldorf is an independent oral-history project. If this conversation gives you something valuable, even a small contribution helps cover the recording, editing, transcription and preservation of future interviews.\n\nSupport the project here:\nhttps://ko-fi.com/voicesofwaldorfelders\n\nAstrid’s life also provides a remarkable connection to the beginnings of Anthroposophy. Her parents used money they had received for their wedding, intended for a badly needed new wardrobe, to travel to Vienna and hear Rudolf Steiner at the 1922 West-East Conference. When her eighteen-year-old mother was initially refused admission, Steiner personally gave permission for her to enter.\n\nHer father later became a priest in the Christian Community, and her mother became a eurythmist. Yet they never imposed Anthroposophy upon their children. Instead, they waited until their children began freely asking questions for themselves.\n\nAstrid went on to spend decades as a Waldorf class teacher, foreign-language teacher, high-school teacher, kindergarten teacher and teacher educator. She later directed Waldorf teacher education at Rudolf Steiner College and helped train teachers throughout the United States, Europe, Africa and Asia.\n\nShe is also the author of The Uniqueness of Waldorf Education, a concise exploration of the understanding of the human being underlying Waldorf teaching.\n\nIn this conversation, we explore:\n\n• Why teachers must examine themselves before trying to change a child\n• How children p",
+     "channel_slug": "voices-of-waldorf-elders"
+    },
+    {
      "video_id": "toxSy5jICnM",
      "title": "Better Sleep Starts With This Simple Evening Routine #shorts",
      "url": "https://www.youtube.com/watch?v=toxSy5jICnM",
@@ -5460,15 +5502,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/e0ta0nVEN4I/hqdefault.jpg",
      "published_at": "2026-11-16T22:13:24+00:00",
      "description": "Teachers can guide a classroom when parents trust their judgment. Clear boundaries, honest communication, and united support help children feel secure and succeed.\n\n🔗 Watch the full video: https://youtu.be/vlYRDIOJ7V8\n\n#ParentTeacherTrust #ClassroomBoundaries #Education #ChildDevelopment",
-     "channel_slug": "voices-of-waldorf-elders"
-    },
-    {
-     "video_id": "0xQodqQPxHs",
-     "title": "Bedtime Routine: The Simple Way to Help Children Feel Safe #shorts",
-     "url": "https://www.youtube.com/watch?v=0xQodqQPxHs",
-     "thumbnail_url": "https://i1.ytimg.com/vi/0xQodqQPxHs/hqdefault.jpg",
-     "published_at": "2026-11-16T12:59:02+00:00",
-     "description": "A quiet story, a cuddle, and a phone put away can help children feel safe enough to sleep. Coming home tired is real—sometimes simply being present is what matters most.\n\n🔗 Watch the full video: https://youtu.be/vlYRDIOJ7V8\n\n#ParentingTips #BedtimeRoutine #ChildDevelopment #FamilyConnection",
      "channel_slug": "voices-of-waldorf-elders"
     }
    ]
@@ -5803,6 +5836,120 @@
      "published_at": "2026-11-13T15:47:15+00:00",
      "description": "Discover Waldorf School of Palm Beach, a private school in Boca Raton, Florida, offering a unique approach to education from Early Childhood through Grade 11.\n\n🌿 **Learn more or schedule a campus tour:**\nhttps://www.waldorfschoolpalmbeach.org/?utm_source=youtube&utm_medium=organic_social&utm_campaign=school_overview_video\n\nAt Waldorf School of Palm Beach, education goes beyond textbooks and traditional classrooms. Our Waldorf approach brings together strong academics, creativity, music, art, movement, nature, and hands-on learning to nurture the whole child.\n\nLocated in Boca Raton, Florida, our school serves families throughout Palm Beach County, including Delray Beach, Boynton Beach, West Palm Beach, Coral Springs, and surrounding South Florida communities.\n\n**What Makes Waldorf School of Palm Beach Different?**\n\nOur curriculum encourages students to think independently, explore their creativity, develop meaningful relationships, and build a lifelong love of learning.\n\nThrough a balanced approach to education, students experience academic subjects alongside artistic expression, practical skills, outdoor exploration, and community involvement.\n\n**Our Educational Programs Include:**\n\n• Early Childhood and Kindergarten\n\n• Elementary School (Grades 1–4)\n\n• Middle School (Grades 5–8)\n\n• High School (Grades 9–11)\n\nWith two campuses in Boca Raton, Waldorf School of Palm Beach provides an educational environment where students are encouraged to grow intellectually, emotionally, socially, and creatively.\n\n**Visit Our Boca Raton Campuses:**\n\nLower School Campus\n2450 NW 5th Avenue\nBoca Raton, FL 33431\n\nUpper School Campus\n414 NW 35th Street\nBoca Raton, FL 33431\n\nIf you're exploring private schools in Boca Raton, alternative education in Palm Beach County, or want to learn more about Waldorf education, we invite you to discover our school community.\n\nSubscribe to our channel for school updates, classroom experiences, student activities, educational insights, and more.\n\n🌐 **Web",
      "channel_slug": "waldorf-school-of-palm-beach"
+    }
+   ]
+  },
+  {
+   "slug": "rudolf-steiner-anthroposophical-contenta",
+   "name": "Rudolf Steiner - Anthroposophical Contenta",
+   "latest": [
+    {
+     "video_id": "lPJNHnIe-Os",
+     "title": "👉 Los Fundamentos de la Antroposofía  🔵 RUDOLF STEINER  AUDIOLIBRO COMPLETO",
+     "url": "https://www.youtube.com/watch?v=lPJNHnIe-Os",
+     "thumbnail_url": "https://i1.ytimg.com/vi/lPJNHnIe-Os/hqdefault.jpg",
+     "published_at": "2024-05-12T12:35:30+00:00",
+     "description": "onorario - fondo d'onore\n(www.paypal(dot)com/paypalme/Kormos001)",
+     "channel_slug": "rudolf-steiner-anthroposophical-contenta"
+    },
+    {
+     "video_id": "9v5CEi-G_eM",
+     "title": "MEMORIA CÓSMICA   Audiolibro de Rudolf Steiner   La Historia de Atlántida y Lemuria",
+     "url": "https://www.youtube.com/watch?v=9v5CEi-G_eM",
+     "thumbnail_url": "https://i2.ytimg.com/vi/9v5CEi-G_eM/hqdefault.jpg",
+     "published_at": "2024-05-09T16:42:44+00:00",
+     "description": "credits to \"Doblando Realidades\"\n\n0:00:18 Prefacio de la edición Alemana\n0:04:00 1. La Civilización Contemporánea a la Luz de la Ciencia Espiritual\n0:22:00 2. Desde la Crónica del Akasha\n0:28:15 3. Nuestros Antepasados: Los Atlantes\n0:57:22 4. Transición de la 4a a la 5a Raza Raíz\n1:17:56 5. La Raza Lemuriana\n1:44:33 6. La Separación de los Sexos\n1:56:50 7. Los Últimos Períodos Antes de la División de los Sexos\n2:14:50 8. Las Épocas Hiperbórea y Polar\n2:36:10 9. Comienzo de la Tierra Actual\n2:49:18 10. La Salida de la Luna\n3:00:00 11. Algunos Comentarios Necesarios\n3:18:10 12. Sobre el Origen de la Tierra\n3:32:00 13. La Tierra y su Futuro\n3:46:19 14. La Vida de Saturno\n4:02:24 15. La Vida del Sol\n4:21:19 16. La Vida de la Luna\n4:42:44 17. La Vida de la Tierra\n5:07:55 18. El Hombre Cuatripartito en la Tierra\n5:38:45 19. Preguntas y Respuestas\n5:45:54 20. Prejuicios Procedentes de la Llamada \"Ciencia\"",
+     "channel_slug": "rudolf-steiner-anthroposophical-contenta"
+    },
+    {
+     "video_id": "ZqQ47icV4Fw",
+     "title": "Audiolibro  EL QUINTO EVANGELIO según la crónica del Akasha, por RUDOLF STEINER",
+     "url": "https://www.youtube.com/watch?v=ZqQ47icV4Fw",
+     "thumbnail_url": "https://i3.ytimg.com/vi/ZqQ47icV4Fw/hqdefault.jpg",
+     "published_at": "2024-05-09T14:45:53+00:00",
+     "description": "onorario - fondo d'onore\nhttps://www.paypal.com/paypalme/Kormos001",
+     "channel_slug": "rudolf-steiner-anthroposophical-contenta"
+    }
+   ]
+  },
+  {
+   "slug": "rudolf-steiner-buchhandlung-f-r-anthropo",
+   "name": "Rudolf Steiner Buchhandlung für Anthroposophie",
+   "latest": [
+    {
+     "video_id": "Wicge01JubE",
+     "title": "Märchen Podcast",
+     "url": "https://www.youtube.com/watch?v=Wicge01JubE",
+     "thumbnail_url": "https://i4.ytimg.com/vi/Wicge01JubE/hqdefault.jpg",
+     "published_at": "2026-09-11T10:58:56+00:00",
+     "description": "#märchen #interpretation #antroposophie",
+     "channel_slug": "rudolf-steiner-buchhandlung-f-r-anthropo"
+    },
+    {
+     "video_id": "PXJ7E5x_W7A",
+     "title": "Maerchen",
+     "url": "https://www.youtube.com/watch?v=PXJ7E5x_W7A",
+     "thumbnail_url": "https://i1.ytimg.com/vi/PXJ7E5x_W7A/hqdefault.jpg",
+     "published_at": "2023-10-10T07:29:35+00:00",
+     "description": null,
+     "channel_slug": "rudolf-steiner-buchhandlung-f-r-anthropo"
+    },
+    {
+     "video_id": "GPtEixb9hEw",
+     "title": "Mut und Zuversicht",
+     "url": "https://www.youtube.com/watch?v=GPtEixb9hEw",
+     "thumbnail_url": "https://i4.ytimg.com/vi/GPtEixb9hEw/hqdefault.jpg",
+     "published_at": "2022-10-11T12:56:27+00:00",
+     "description": null,
+     "channel_slug": "rudolf-steiner-buchhandlung-f-r-anthropo"
+    }
+   ]
+  },
+  {
+   "slug": "mbo-biodynamische-landbouw-warmonderhof",
+   "name": "MBO Biodynamische Landbouw Warmonderhof",
+   "latest": [
+    {
+     "video_id": "EobwrDAID3s",
+     "title": "Aeres Warmonderhof - biologisch-dynamische landbouw",
+     "url": "https://www.youtube.com/watch?v=EobwrDAID3s",
+     "thumbnail_url": "https://i2.ytimg.com/vi/EobwrDAID3s/hqdefault.jpg",
+     "published_at": "2026-10-22T19:24:19+00:00",
+     "description": "Studenten onderzoeken met infrarood-meter de voedingswaarden van veevoer\n\nHoe beter je weet welke voedingsstoffen er in de grasklaver zit die je je koeien voert, hoe beter je hun gezondheid en melkgift kunt beïnvloeden. De studenten van Aeres MBO Warmonderhof mogen gebruik maken van de NIRS, een apparaat dat, door infrarood licht te richten op het gewas, de voedingsstoffen meet. Bijvoorbeeld het eiwitgehalte en suikergehalte van gras en klaver. \nDe boer van tegenwoordig werkt met handige meetapparatuur om nog beter voor zijn of haar koeien te zorgen. De studenten van Aeres MBO Warmonderhof leren tijdens hun studie tot agrarisch bedrijfsleider omgaan met deze bedrijfsinnovaties. Want meten en analyseren zorgt ervoor dat zij straks de processen in hun agrarische bedrijf beter kunnen begrijpen en die kennis kunnen toepassen: dát is onderzoekend leren bij Aeres MBO Warmonderhof. \n\nModerne apparatuur voor de boer van nu \n\nDe studenten werkten voor het eerst met de NIRS. NIRS, dat staat voor Nabij InfraRood Spectroscoop. Het is een apparaatje dat de voedingswaarden meet door de terugkaatsing van infraroodstraling om te zetten in voedingswaarden. In de praktijkonderzoeksruimte van Aeres MBO Warmonderhof gaan ze met de apparatuur en verschillende gewassen aan de gang. De studenten leren hoe ze praktijkgericht onderzoek uitvoeren: van het nemen van een representatief monster tot het analyseren en interpreteren van de resultaten. Met behulp van de NIRS-technologie bepalen de studenten de samenstelling en de kwaliteit van bijvoorbeeld voedergewassen of kant en klaar veevoer. Ze verzamelen gegevens, onderzoeken de uitkomsten en vergelijken deze met de praktijk. \n\nBetere keuzes maken in de landbouwpraktijk\n\nZo ontwikkelen studenten een onderzoekende houding, leren ze kritisch naar resultaten te kijken en ontdekken ze hoe onderzoeksgegevens kunnen bijdragen aan betere keuzes in de landbouwpraktijk. Dat is van grote waarde voor hun toekomst: als ze straks zelf in de biologische of",
+     "channel_slug": "mbo-biodynamische-landbouw-warmonderhof"
+    },
+    {
+     "video_id": "vMbXZwjc5qc",
+     "title": "Graanoogst: werken met de combine & vochtgehalte meten",
+     "url": "https://www.youtube.com/watch?v=vMbXZwjc5qc",
+     "thumbnail_url": "https://i3.ytimg.com/vi/vMbXZwjc5qc/hqdefault.jpg",
+     "published_at": "2026-06-26T11:49:00+00:00",
+     "description": "Een klas Warmonderhofstudenten kreeg deze week de kans om mee te kijken met het oogsten van gerst met een combine. Op het zonovergoten land van één van de buurbedrijven van de school werd de grote, moderne John Deere combinemachine bekeken terwij hij gerst aan het oogsten was.\n\nVan de boer mocht een aantal studenten meerijden in de cabine van de combine. Dat zorgde wel voor wat stralende ogen! Op grote hoogte konden ze zo meemaken hoe het graan door de machinebek werd opgepakt en hoe de korrels verderop in de machine werden gescheiden van het stro. De boer maakte de studenten wegwijs in de afstelmogelijkheden van de combine. Ook leerden de studenten hoe ze het vochtgehalte van de gerst kunnen bepalen. Dat deden ze met professionele meetapparatuur. Deze vorm van onderzoekend leren is een belangrijke ondersteuning van de theorielessen in een klaslokaal.\n\nMeer informatie over onze opleidingen en over de open dagen is te vinden op: https://linktr.ee/warmonderhof\n\nStap in de wereld van Warmonderhof! #mbo #biodynamisch #biologisch #ondernemerschap #groeneveranderaar #warmonderhof #aeresmbo #leuksteschoolvanNL #biologischdynamisch #dronten #studiekeuze",
+     "channel_slug": "mbo-biodynamische-landbouw-warmonderhof"
+    },
+    {
+     "video_id": "g2AgFulnPYI",
+     "title": "Over 'wimpertjes' bij granen tijdens tocht langs akkers Flevoland",
+     "url": "https://www.youtube.com/watch?v=g2AgFulnPYI",
+     "thumbnail_url": "https://i4.ytimg.com/vi/g2AgFulnPYI/hqdefault.jpg",
+     "published_at": "2026-06-26T11:45:24+00:00",
+     "description": "Hoe herken je de verschillende graansoorten die op de akkers groeien? Dat ontdekten onze studenten tijdens een praktijkles in de buitenlucht. Op de fiets trokken zij langs omliggende boerenbedrijven van Aeres Warmonderhof op zoek naar zoveel mogelijk verschillende graansoorten. Tijdens deze leerzame fietstocht maakten zij kennis met de diversiteit aan granen op akkerbouwbedrijven in Flevoland. Ze vonden uiteindelijk zeven verschillende soorten graan.\n\nKleine verschillen leren herkennen\n\nOp zowel gangbare als biologische bedrijven worden tegenwoordig steeds meer verschillende granen geteeld. Voor een buitenstaander lijken de gewassen vaak op elkaar, maar wie goed kijkt, ontdekt duidelijke verschillen. De studenten leerden hoe ze de graansoorten van elkaar kunnen onderscheiden. Ze leerden dat ze vooral goed moeten kijken naar hoe het blad aan de stengel vast zit. Daar zitten soms zogenoemde 'bladoortjes' en/of 'wimpertjes' aan, die verraden met welke graansoort je te maken hebt. Dat vraagt wel om een scherp oog en een beetje oefening!\nZe kregen van hun docent een handig Duitstalig geheugensteuntje aangereikt: \"Weizen wimpert, Hafer hat nichts, Roggen reicht nicht und Gerste greift\".\nVrij vertaald betekent dit: tarwe (Weizen) heeft wimpertjes, haver (Hafer) heeft geen oortjes of wimpertjes, rogge (Roggen) heeft kleine oortjes die niet om de stengel heen reiken en gerst (Gerste) 'grijpt' de stengel vast met zijn bladoortjes. Vooral gerst is daardoor eenvoudig te herkennen: als enige van de vier genoemde granen sluiten de bladoortjes zich volledig om de stengel heen. Zie ook de bijgaande foto's.\n\nBuiten leren, daar waar het gebeurt\n\nDe excursie toonde de waarde van het buiten leren, daar waar het gebeurt. Door op onderzoek uit te gaan in de praktijk krijgen studenten letterlijk zicht op de gewassen waarmee zij later als boer in hun werk ook te maken kunnen krijgen.\nMeer informatie over de opleiding en de open dagen is te vinden op:\nhttps://linktr.ee/warmonderhof\n\nStap in",
+     "channel_slug": "mbo-biodynamische-landbouw-warmonderhof"
+    }
+   ]
+  },
+  {
+   "slug": "angewandte-anthroposophie",
+   "name": "Angewandte Anthroposophie",
+   "latest": [
+    {
+     "video_id": "NvTuHUsAbUI",
+     "title": "Shorts fuer AnthroWorld",
+     "url": "https://www.youtube.com/watch?v=NvTuHUsAbUI",
+     "thumbnail_url": "https://i3.ytimg.com/vi/NvTuHUsAbUI/hqdefault.jpg",
+     "published_at": "2023-02-07T15:26:09+00:00",
+     "description": "Inhalte\n00:00:00 Vorspann zum Video\n00:00:30 Warum tue ich mit bei AnthroWorld\n00:00:54 Nutzung der Trint Software\n00:13:28 Bearbeitung in Word\n\nEin freilassendes Angebot um Kurztransskriptionen von den Apokalypse des Johannes Vorträgen von Dr. Wolfgang Peter zu machen\n\nhttps://anthro.world\nhttps://anthro.wiki",
+     "channel_slug": "angewandte-anthroposophie"
     }
    ]
   }

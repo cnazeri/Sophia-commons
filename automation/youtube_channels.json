@@ -2034,6 +2034,50 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "rudolf-steiner-anthroposophical-contenta",
+      "name": "Rudolf Steiner - Anthroposophical Contenta",
+      "url": "https://www.youtube.com/channel/UC1TDDzWx7vcY9q65DtF4-6g",
+      "channel_id": "UC1TDDzWx7vcY9q65DtF4-6g",
+      "language": null,
+      "category": "other",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "rudolf-steiner-buchhandlung-f-r-anthropo",
+      "name": "Rudolf Steiner Buchhandlung für Anthroposophie",
+      "url": "https://www.youtube.com/channel/UCeP11oF9pDgAkWezeG2GftQ",
+      "channel_id": "UCeP11oF9pDgAkWezeG2GftQ",
+      "language": null,
+      "category": "other",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "mbo-biodynamische-landbouw-warmonderhof",
+      "name": "MBO Biodynamische Landbouw Warmonderhof",
+      "url": "https://www.youtube.com/channel/UC-vncT36gZPfDPlAlwkn6ew",
+      "channel_id": "UC-vncT36gZPfDPlAlwkn6ew",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "angewandte-anthroposophie",
+      "name": "Angewandte Anthroposophie",
+      "url": "https://www.youtube.com/channel/UCv3aze0edQzSI1MZ1xUG0hA",
+      "channel_id": "UCv3aze0edQzSI1MZ1xUG0hA",
+      "language": null,
+      "category": "other",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }
