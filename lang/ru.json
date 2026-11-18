@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.125.0",
+  "footer.version": "v1.125.1",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1373,5 +1373,7 @@
   "event_detail.hybrid": "Очно и онлайн",
   "event_detail.attendance": "Формат участия",
   "event_detail.where": "Где",
-  "org.mode_both": "Оба варианта (очно и онлайн)"
+  "org.mode_both": "Оба варианта (очно и онлайн)",
+  "event_detail.when": "Когда",
+  "event_detail.full_details": "Подробнее"
 }

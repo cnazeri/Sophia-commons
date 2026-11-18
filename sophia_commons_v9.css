@@ -1952,6 +1952,15 @@ footer {
   color: var(--text-muted);
 }
 .day-popup { max-height: 85vh; overflow-y: auto; }
+/* Day view details: in person / online badge, then labelled When / Where / Organizer rows (owner, 2026-11-17) */
+.day-popup .dp-details { margin: 6px 0 4px; font-size: 13px; color: var(--text-secondary); }
+.day-popup .dp-mode { display: inline-block; margin: 0 6px 6px 0; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--sage-light, #E8F0E6); color: var(--sage, #4F6F52); }
+.day-popup .dp-mode.online { background: #E6EEF5; color: var(--info, #4A7A9A); }
+.day-popup .dp-mode.both { background: #F3EBDD; color: #7F6116; }
+.day-popup .dp-mode.free { background: #F5F1E8; color: var(--text-secondary); }
+.day-popup .dp-row { display: flex; gap: 8px; line-height: 1.5; }
+.day-popup .dp-label { flex: 0 0 82px; color: var(--text-muted); font-weight: 600; }
+.day-popup .dp-full { margin-top: 8px; font-size: 13px; font-weight: 700; }
 .day-popup .dp-desc {
   font-size: 13px;
   line-height: 1.5;

@@ -594,7 +594,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.125.0",
+  "footer.version": "v1.125.1",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -1312,5 +1312,7 @@
   "event_detail.hybrid": "In person and online",
   "event_detail.attendance": "Attendance",
   "event_detail.where": "Where",
-  "org.mode_both": "Both (in person and online)"
+  "org.mode_both": "Both (in person and online)",
+  "event_detail.when": "When",
+  "event_detail.full_details": "Full details"
 }

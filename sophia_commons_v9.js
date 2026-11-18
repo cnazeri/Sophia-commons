@@ -3989,6 +3989,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       country: ev.country || '',
       online: evMode === 'online',   // in person and online events count as in person, with hybrid set
       hybrid: evMode === 'both',
+      free: !!ev.is_free,
       lat: typeof ev.lat === 'number' ? ev.lat : null,
       lng: typeof ev.lng === 'number' ? ev.lng : null,
       end: _localDay(ev.end_date) || dateStr,
@@ -4744,6 +4745,28 @@ function _dpDescHtml(ev) {
   return html + '<details class="dp-more"><summary>' + esc(t('home.read_more', 'Read more')) + '</summary>'
     + more.map(function(p) { return '<p class="dp-desc">' + _linkify(esc(p)) + '</p>'; }).join('') + '</details>';
 }
+// In person / online / both, then when, where, organizer and price, each on its own labelled line
+// (owner, 2026-11-17: the day view must say whether an event is online or in person)
+function _dpDetailsHtml(ev) {
+  if (!ev.id) return '';
+  var mode = ev.hybrid ? 'both' : ev.online ? 'online' : 'place';
+  var place = ev.hybrid ? String(ev.loc || '').replace(/ \+ [^+]*$/, '') : (ev.online ? '' : ev.loc);
+  var row = function (label, value) {
+    return value ? '<div class="dp-row"><span class="dp-label">' + esc(label) + '</span><span>' + value + '</span></div>' : '';
+  };
+  return '<div class="dp-details">'
+    + '<span class="dp-mode ' + mode + '">' + esc(_eventModeLabel(mode)) + '</span>'
+    + (ev.free ? '<span class="dp-mode free">' + esc(t('event_detail.free', 'Free')) + '</span>' : '')
+    + row(t('event_detail.when', 'When'), ev.time ? esc(ev.time) : '')
+    + row(t('event_detail.where', 'Where'), place ? esc(place) : (mode === 'online' ? esc(t('event_detail.online', 'Online')) : ''))
+    + row(t('event_detail.organizer', 'Organizer'), ev.org ? esc(ev.org) : '')
+    + '</div>';
+}
+function _dpFullLink(ev) {
+  if (!ev.id) return '';
+  return '<div class="dp-full"><a href="/event/' + esc(ev.id) + '" onclick="closeDayPopup(false);showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">'
+    + esc(t('event_detail.full_details', 'Full details')) + ' &rarr;</a></div>';
+}
 function showDayEvents(dateStr, trigger) {
   var dayEvs = calEvents.filter(function(e) { return e.date === dateStr; });
   var label = localDate(dateStr, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -4766,11 +4789,11 @@ function showDayEvents(dateStr, trigger) {
   var html = '<button class="dp-close" type="button" aria-label="' + esc(t('common.close', 'Close')) + '" onclick="closeDayPopup()">&times;</button>';
   html += '<h4 id="day-popup-title">' + esc(label) + '</h4>';
   dayEvs.forEach(function(ev) {
-    var dpMeta = _evMeta(ev);
+    var dpMeta = ev.id ? '' : _evMeta(ev);   // real events get the labelled details block below
     var dpTitle = ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="closeDayPopup(false);showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title);
     // The day view fills the page, picture beside the text (owner, 2026-11-06)
     html += '<div class="dp-event' + (ev.img ? ' has-img' : '') + '">' + _evImageHtml(ev) + '<div class="dp-text"><h5>' + dpTitle + '</h5>' + (dpMeta ? '<div class="dp-meta">' + dpMeta + '</div>' : '')
-      + _dpDescHtml(ev) + _evSourcesHtml(ev) + '</div></div>';
+      + _dpDetailsHtml(ev) + _dpDescHtml(ev) + _evSourcesHtml(ev) + _dpFullLink(ev) + '</div></div>';
   });
   popup.innerHTML = html;
   document.body.appendChild(popup);
