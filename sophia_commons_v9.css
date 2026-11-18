@@ -3439,6 +3439,7 @@ footer li a { display: inline-block; padding: 10px 0; }
 .blog-card h3 { font-family: 'Lora', Georgia, serif; font-size: 17px; margin: 0 0 4px; }
 .blog-card p { font-size: 13.5px; line-height: 1.55; margin: 6px 0 0; color: var(--text-secondary); }
 .blog-meta { font-size: 12px; color: var(--text-muted); }
+.blog-kind { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent, #2f5fb3); font-weight: 600; margin-bottom: 4px; }
 .blog-form { margin-top: 18px; }
 .blog-form label { display: block; font-size: 12.5px; font-weight: 700; margin: 10px 0 4px; }
 .blog-form input, .blog-form textarea { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font: inherit; font-size: 14px; background: var(--bg); }
@@ -3542,6 +3543,7 @@ footer li a { display: inline-block; padding: 10px 0; }
 .le-pic h4 { margin: 0 0 8px; }
 .le-pic-now { display: block; width: 100%; max-width: 280px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; margin-bottom: 8px; background: var(--bg, #faf7f0); }
 .le-pic-now.is-logo { object-fit: contain; }
+.le-pic .le-pic-remove { background: transparent; color: var(--text-secondary, #5a5348); border: 1px solid var(--border, #e6dfd2); }
 .le-pic .le-pic-logo { display: flex; flex-direction: row; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; font-weight: 400; }
 .le-pic .le-pic-logo input { width: 20px; height: 20px; min-height: 0; margin: 0; padding: 0; flex: none; }
 .le-pic input[type=file] { min-height: 44px; max-width: 100%; }

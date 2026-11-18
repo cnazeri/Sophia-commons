@@ -397,7 +397,8 @@ serve(async (req: Request) => {
     if (!userId) return jsonResponse({ error: "No admin account found to own the draft" }, 500);
     const { data: row, error } = await sb.from("news").insert({
       title, body: html, email_subject: title,
-      excerpt: `This week: ${counts}.`,
+      // shown on the Blog card and used for the social post (owner, 2026-11-18)
+      excerpt: theme?.why ? `${theme.label}. ${theme.why}`.slice(0, 400) : `This week: ${counts}.`,
       source_name: "Sophia Commons", tags: ["weekly-digest"], featured: false,
       user_id: userId, status: "pending", published_at: null,
     }).select("id").single();

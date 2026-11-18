@@ -46,11 +46,32 @@ async function loadBlogList() {
   if (write) write.textContent = '+ ' + t('blog.write', 'Write an article');
   if (!sbReady()) { el.innerHTML = '<div class="empty-note">' + esc(t('blog.offline', 'Articles could not be loaded.')) + '</div>'; return; }
   el.innerHTML = '<div class="empty-note">' + esc(t('common.loading', 'Loading...')) + '</div>';
-  var r = await _sb.from('blog_posts').select(BLOG_FIELDS).eq('status', 'published').order('published_at', { ascending: false }).limit(60);
+  var res = await Promise.all([
+    _sb.from('blog_posts').select(BLOG_FIELDS).eq('status', 'published').order('published_at', { ascending: false }).limit(60),
+    // past weekly newsletters sit in the blog list too, so readers can browse them (owner, 2026-11-18)
+    _sb.from('news').select('id, title, excerpt, published_at').eq('status', 'published')
+      .contains('tags', ['weekly-digest']).order('published_at', { ascending: false }).limit(60)
+  ]);
+  var r = res[0];
   if (r.error) { el.innerHTML = '<div class="empty-note">' + esc(t('blog.offline', 'Articles could not be loaded.')) + '</div>'; return; }
-  el.innerHTML = (r.data && r.data.length)
-    ? r.data.map(_blogCard).join('')
+  var items = (r.data || []).map(function(p) { return { date: p.published_at || p.created_at, html: _blogCard(p) }; })
+    .concat((res[1].data || []).map(function(d) { return { date: d.published_at, html: _digestCard(d) }; }))
+    .sort(function(a, b) { return String(b.date).localeCompare(String(a.date)); });
+  el.innerHTML = items.length
+    ? items.map(function(x) { return x.html; }).join('')
     : '<div class="empty-note">' + esc(t('blog.none', 'No articles yet. Be the first to write one.')) + '</div>';
+}
+
+// A weekly newsletter issue as a blog card; it opens the full issue at /article/<id>.
+function _digestCard(d) {
+  var href = '/article/' + esc(d.id), open = 'showDetail(\'news\',\'' + escJs(d.id) + '\');return false;';
+  var x = String(d.excerpt || '');
+  if (/^This week: /.test(x)) x = t('blog.digest_blurb', 'Events coming up, news, new videos and new places in the directory, from around the anthroposophical world.');
+  return '<article class="blog-card blog-card-digest"><div class="blog-card-text">'
+    + '<div class="blog-kind">' + esc(t('blog.digest_kind', 'Weekly newsletter')) + '</div>'
+    + '<h3><a href="' + href + '" onclick="' + open + '">' + esc(d.title) + '</a></h3>'
+    + '<div class="blog-meta">Sophia Commons &middot; ' + esc(_blogDate(d.published_at)) + '</div>'
+    + '<p>' + esc(x) + '</p></div></article>';
 }
 
 async function showBlogPost(slug, skipPush) {

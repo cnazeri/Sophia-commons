@@ -142,7 +142,29 @@ function _pictureFormHtml(d) {
     + '<label class="le-pic-logo"><input type="checkbox" id="le-pic-logo"' + (isLogo ? ' checked' : '') + '> '
     + esc(t('claim.pic_logo', 'This is a logo: show it whole, not cropped')) + '</label>'
     + '<button type="submit" class="claim-btn">' + esc(t('claim.pic_save', 'Change picture')) + '</button>'
+    + (cur ? ' <button type="button" class="claim-btn le-pic-remove" onclick="removeListingPicture(this)">'
+      + esc(t('claim.pic_remove', 'Remove picture')) + '</button>' : '')
     + '<div id="le-pic-status" class="claim-hint" role="status"></div></form>';
+}
+
+// The manager takes the picture off the listing (owner, 2026-11-18). The file stays in storage.
+// First click asks to confirm, second click removes, so no browser dialog is needed.
+async function removeListingPicture(btn) {
+  var d = _claimEntry, st = document.getElementById('le-pic-status');
+  if (!btn.dataset.armed) {
+    btn.dataset.armed = '1';
+    btn.textContent = t('claim.pic_remove_confirm', 'Click again to remove the picture');
+    return;
+  }
+  btn.disabled = true;
+  var r = await _sb.rpc('owner_clear_listing_photo', { entry: d.id });
+  if (r.error) {
+    btn.disabled = false;
+    st.textContent = t('claim.err_save', 'Could not save: ') + r.error.message;
+    return;
+  }
+  st.textContent = t('claim.pic_removed', 'Picture removed. You can add a new one any time.');
+  setTimeout(function () { closeClaimModal(); showDetail('directory', d.id, true); }, 900);
 }
 
 // Large pictures are scaled down in the browser so listing pages stay quick. Falls back to the original file.
