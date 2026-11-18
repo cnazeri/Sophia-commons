@@ -1,0 +1,11 @@
+{
+  "note": "Event pages with no machine-readable feed. Read once a week (Mondays) by automation/events_from_pages.py: Claude lists the upcoming events on the page and new ones are added as PENDING for the owner to approve in Admin > Events (owner, 2026-11-18).",
+  "sources": [
+    {
+      "name": "Michaeliten (Michaelites)",
+      "page": "https://michaeliten.org/en/conferences-webinars/",
+      "directory_entry_id": "8cd839d3-2b3c-46b2-ae31-03106c2429ec",
+      "timezone": "Europe/Berlin"
+    }
+  ]
+}
