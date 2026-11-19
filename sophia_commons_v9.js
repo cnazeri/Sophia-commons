@@ -8931,7 +8931,9 @@ async function _loadChannelReviews(slug) {
 
 function _reviewHtml(x, name, me) {
   var acts = '';
-  if (isAdmin()) acts += '<button type="button" onclick="hideChannelReview(\'' + escJs(x.id) + '\',' + !x.is_hidden + ')">' + (x.is_hidden ? t('channel.unhide', 'Show') : t('channel.hide', 'Hide')) + '</button>';
+  // No Hide button on the admin's own review: it sat next to "Delete my review" and hid the owner's rating
+  // by mistake (owner, 2026-11-18). A hidden own review still gets "Show" so it can be undone.
+  if (isAdmin() && (x.user_id !== me || x.is_hidden)) acts += '<button type="button" onclick="hideChannelReview(\'' + escJs(x.id) + '\',' + !x.is_hidden + ')">' + (x.is_hidden ? t('channel.unhide', 'Show') : t('channel.hide', 'Hide')) + '</button>';
   else if (signedIn && x.user_id !== me) acts += '<button type="button" onclick="closeDayPopup(false);openReportModal(\'channel_review\',\'' + escJs(x.id) + '\')">' + t('channel.report', 'Report') + '</button>';
   return '<div class="ch-review' + (x.is_hidden ? ' is-hidden' : '') + '">'
     + '<div class="ch-review-head">' + _stars(x.rating) + ' <b>' + esc(name || t('channel.member', 'Member')) + '</b>'

@@ -6,6 +6,12 @@
       "page": "https://michaeliten.org/en/conferences-webinars/",
       "directory_entry_id": "8cd839d3-2b3c-46b2-ae31-03106c2429ec",
       "timezone": "Europe/Berlin"
+    },
+    {
+      "name": "Anthroposophy NYC",
+      "page": "https://www.anthroposophynyc.org/events",
+      "directory_entry_id": "76ecf1e1-b96c-4ffe-929c-f80a460d7492",
+      "timezone": "America/New_York"
     }
   ]
 }
