@@ -2078,6 +2078,17 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "newcastle-waldorf-school",
+      "name": "Newcastle Waldorf School",
+      "url": "https://www.youtube.com/channel/UCkcNl1c0ykmbU6ubvCWvLEg",
+      "channel_id": "UCkcNl1c0ykmbU6ubvCWvLEg",
+      "language": null,
+      "category": "waldorf",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }
