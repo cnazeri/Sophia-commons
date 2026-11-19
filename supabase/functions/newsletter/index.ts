@@ -6,6 +6,8 @@
 //        { action: "confirm", token }              -> confirms the subscription
 //        { action: "unsubscribe", token }          -> unsubscribes (token from any newsletter)
 //        { action: "admin_add", entries: [{email, name}] } -> admins only: adds people as confirmed
+//        { action: "remind" }                      -> server key only (daily workflow): one reminder to people who
+//                                                     signed up 5+ days ago and never confirmed (owner, 2026-11-18)
 //  Public endpoint (no login). Deploy with:  supabase functions deploy newsletter --no-verify-jwt
 //  Secrets: RESEND_API_KEY (already used by send-newsletter)
 // ══════════════════════════════════════════
@@ -65,6 +67,75 @@ function alreadySubscribedHtml() {
   <p>Not seeing it? Check your spam or promotions folder, and add newsletter@sophiacommons.org to your contacts.</p>
   <p style="color:#6F665B;font-size:13px">If you didn't ask for this, you can ignore it. Every newsletter has a one-click unsubscribe link at the bottom.</p>
 </div>`;
+}
+
+// One reminder, 5 days after the first confirmation email, to people who never clicked it (owner, 2026-11-18).
+// Sent once: the row's preferences.reminded_at marks it. Signups older than REMIND_MAX_DAYS are left alone.
+const REMIND_AFTER_DAYS = 5;
+const REMIND_MAX_DAYS = 30;
+const REMIND_PER_RUN = 50;
+
+function reminderEmailHtml(confirmUrl: string) {
+  return `<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;color:#1E1810;line-height:1.6">
+  <div style="text-align:center;padding:8px 0 4px"><img src="https://sophiacommons.org/img/email-logo.png" width="300" height="73" alt="Sophia Commons" style="display:block;width:300px;max-width:100%;height:auto;border:0;margin:0 auto"></div>
+  <h2 style="font-weight:600">One click left</h2>
+  <p>A few days ago someone (hopefully you) signed up for the Sophia Commons weekly newsletter with this address, but the subscription was never confirmed, so nothing has been sent yet.</p>
+  <p>Each week it brings new events, talks, videos and places from the anthroposophical world. If you'd still like it, confirm here:</p>
+  <p><a href="${confirmUrl}" style="display:inline-block;background:#C9A035;color:#1E1810;padding:10px 22px;border-radius:50px;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold">Yes, subscribe me</a></p>
+  <p style="color:#6F665B;font-size:13px">This is the only reminder we'll send. If you didn't sign up, just ignore it and you won't hear from us again.</p>
+</div>`;
+}
+
+// Every server key that may run the daily reminder (as outreach-send)
+function serverKeys(): string[] {
+  const keys: string[] = [];
+  try {
+    for (const v of Object.values(JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}"))) if (typeof v === "string" && v) keys.push(v);
+  } catch (_) { /* none */ }
+  for (const n of ["SUPABASE_SERVICE_ROLE_KEY", "DIGEST_CRON_KEY"]) { const v = Deno.env.get(n); if (v) keys.push(v); }
+  return keys;
+}
+function sameKey(a: string, b: string) {
+  if (a.length !== b.length) return false;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
+}
+
+async function remindUnconfirmed(req: Request, supabase: SupabaseClient) {
+  const token = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  if (!token || !serverKeys().some((k) => sameKey(token, k))) return json(req, { error: "Not allowed." }, 403);
+  const resendKey = Deno.env.get("RESEND_API_KEY");
+  if (!resendKey) return json(req, { error: "email_not_configured" }, 500);
+  const now = Date.now();
+  const { data: due, error } = await supabase.from("newsletter_subscribers")
+    .select("id, email, confirm_token, preferences")
+    .eq("confirmed", false).is("unsubscribed_at", null).not("confirm_token", "is", null)
+    .lte("confirm_sent_at", new Date(now - REMIND_AFTER_DAYS * 864e5).toISOString())
+    .gte("created_at", new Date(now - REMIND_MAX_DAYS * 864e5).toISOString())
+    .is("preferences->>reminded_at", null)
+    .order("created_at").limit(REMIND_PER_RUN);
+  if (error) return json(req, { error: error.message }, 500);
+  const list = (due || []) as { id: string; email: string; confirm_token: string; preferences: Record<string, unknown> | null }[];
+  const { data: granted } = await supabase.rpc("email_quota_take", { p_want: list.length });
+  const allowed = Number(granted) || 0;
+  let sent = 0, failed = 0;
+  for (const s of list.slice(0, allowed)) {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: FROM_ADDRESS, reply_to: REPLY_TO, to: [s.email],
+        subject: "Still want the Sophia Commons newsletter? One click to confirm",
+        html: reminderEmailHtml(`${SITE}/newsletter/confirm?t=${s.confirm_token}`) }),
+    });
+    if (!res.ok) { failed++; continue; }
+    sent++;
+    const at = new Date().toISOString();
+    await supabase.from("newsletter_subscribers")
+      .update({ confirm_sent_at: at, preferences: { ...(s.preferences || {}), reminded_at: at } }).eq("id", s.id);
+  }
+  if (allowed > sent) await supabase.rpc("email_quota_note", { p_n: sent - allowed });   // give back what was not used
+  return json(req, { ok: true, due: list.length, sent, failed, waiting: list.length - Math.min(allowed, list.length) });
 }
 
 // Site-wide brake on confirmation emails: at most this many per window, counted in the database
@@ -178,6 +249,7 @@ serve(async (req: Request) => {
   }
 
   if (body.action === "admin_add") return adminAdd(req, supabase, (body as { entries?: unknown }).entries);
+  if (body.action === "remind") return remindUnconfirmed(req, supabase);
 
   return json(req, { error: "unknown_action" }, 400);
 });

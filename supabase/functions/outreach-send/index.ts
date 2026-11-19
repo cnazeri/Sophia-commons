@@ -9,7 +9,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const FROM_ADDRESS = "Cameron at Sophia Commons <hello@sophiacommons.org>";
 const REPLY_TO = "hello@sophiacommons.org";
-const PER_RUN = 8;   // spread out: at most this many per hourly run
+const PER_RUN = 20;  // spread out: at most this many per hourly run (was 8; raised by the owner 2026-11-18)
 
 type Row = Record<string, any>;
 

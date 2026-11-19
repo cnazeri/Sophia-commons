@@ -3861,10 +3861,25 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 #audio-more .audio-more-body { padding: 0 18px 14px; }
 /* Home: community card and news slider under Events (2026-10-24) */
 .home-social-card { margin-bottom: 12px; }
+/* Sophia Commons on X: an ink card with the X mark, so it reads as X at a glance (owner, 2026-11-18) */
+.xcard { box-sizing: border-box; max-width: 100%; min-width: 0; overflow: hidden; background: #0f1419; color: #e7e9ea; border-radius: 14px; padding: 12px 13px 13px; display: grid; gap: 9px; box-shadow: 0 1px 0 rgba(0,0,0,.08); }
+.xc-top { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+.xc-mark { color: #fff; flex: 0 0 auto; }
+.xc-handle { font-weight: 700; color: #fff; }
+.xc-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.xc-date { margin-left: auto; color: #8b98a5; font-size: 12px; white-space: nowrap; }
+.xc-handle { min-width: 0; overflow-wrap: anywhere; }
+.xcard a.xc-text { color: #e7e9ea; text-decoration: none; font-size: 13.5px; line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; }
+.xcard a.xc-text:hover { text-decoration: underline; }
+.xcard a.xc-follow { background: #fff; color: #0f1419; font-weight: 700; font-size: 12px; padding: 5px 13px; border-radius: 999px; text-decoration: none; }
+.xcard a.xc-follow:hover { background: #d7dbdc; }
+.xcard a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.rd-empty { margin: 0; padding: 10px 16px 12px; color: var(--text-secondary); font-size: 14px; }
+.rd-empty a { color: var(--gold-text); white-space: nowrap; }
 .home-reddit { padding: 0 16px 10px; }
 .home-reddit-h { font-family: Lora, serif; font-size: 13px; font-weight: 700; margin: 10px 0 2px; color: var(--text-secondary); }
 .home-reddit-h a { color: var(--gold-text); }
-.home-reddit .lrow .ltitle { flex: 1; }
+.home-reddit .lrow .ltitle, .social-reddit .lrow .ltitle { flex: 1; }
 .home-reddit .lrow { align-items: center; }
 .rd-thumb { flex: none; line-height: 0; }
 .rd-thumb img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; background: var(--surface); }

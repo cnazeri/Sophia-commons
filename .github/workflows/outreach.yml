@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Send approved outreach emails that are due (at most 8 per run)
+      - name: Send approved outreach emails that are due (at most 20 per run)
         env:
           URL: ${{ secrets.SUPABASE_URL }}
           KEY: ${{ secrets.DIGEST_CRON_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}

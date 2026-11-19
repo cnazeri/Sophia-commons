@@ -131,6 +131,17 @@ jobs:
         run: python3 automation/mark_past_events.py --apply
         continue-on-error: true      # stops by itself (changing nothing) until the read policy allows past
 
+      - name: One reminder to newsletter signups that were never confirmed after 5 days (owner, 2026-11-18)
+        continue-on-error: true
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.DIGEST_CRON_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          code=$(curl -s -o remind.json -w "%{http_code}" -X POST "$URL/functions/v1/newsletter" \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{"action":"remind"}')
+          cat remind.json; echo
+          [ "$code" = "200" ] || { echo "newsletter remind returned HTTP $code"; exit 1; }
+
       - name: Tell search engines about new and changed pages (IndexNow)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

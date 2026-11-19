@@ -14,4 +14,9 @@
 /category/social-media/*  /podcasts  301
 # Sign-up form on its own page (owner, 2026-11-01)
 /signup/*  /signup.html  200
+# Legal page aliases, e.g. for the X developer app form (owner, 2026-11-18)
+/term-of-service  /terms  301
+/terms-of-service  /terms  301
+/terms-of-use  /terms  301
+/privacy-policy  /privacy  301
 /*    /index.html   200

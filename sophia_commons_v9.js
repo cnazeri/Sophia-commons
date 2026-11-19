@@ -1884,7 +1884,7 @@ function showSec(id, skipPush) {
   if (id === 'books') _ensureBooksLoaded();
   if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
   if (id === 'podcasts' && typeof renderFacebookPages === 'function') renderFacebookPages();
-  if (id === 'podcasts') renderVideoSpotlight();
+  if (id === 'podcasts') { renderVideoSpotlight(); renderSocialReddit(); }
   if (id === 'home') renderHomeExtras();
   if (id === 'digest') renderDigestArchive();
   // Organizer pages are private: not for search engines (the robots tag goes back to normal elsewhere)
@@ -5662,7 +5662,7 @@ function rerenderForLang() {
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
   if (id === 'marketplace') { renderMarketplace(); }
-  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); renderFacebookPages(); renderVideoSpotlight(); }
+  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); renderFacebookPages(); renderVideoSpotlight(); renderSocialReddit(); }
   if (id === 'books') { renderTop50Books(); }
   if (id === 'directory' && !_allDataLoaded) { _loadAllSupabaseData(); }
   if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
@@ -6512,7 +6512,7 @@ function _outreachBulkHtml(n) {
   var d = new Date(Date.now() + 864e5), p = function (x) { return (x < 10 ? '0' : '') + x; };
   return '<div class="adm-post outreach-bulk"><strong>Schedule all ' + n + ' queued</strong> '
     + '<label class="adm-post-meta">starting <input type="date" id="ob-start" value="' + d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + '"></label> '
-    + '<label class="adm-post-meta"><select id="ob-perday">' + [5, 10, 15, 20, 30].map(function (x) { return '<option' + (x === 20 ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select> a day</label> '
+    + '<label class="adm-post-meta"><select id="ob-perday">' + [10, 20, 30, 50, 75, 100].map(function (x) { return '<option' + (x === 50 ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select> a day</label> '
     + '<label class="adm-post-meta"><input type="checkbox" id="ob-weekdays" checked> weekdays only</label> '
     + '<button type="button" class="adm-btn" onclick="scheduleAllOutreach()">Approve and schedule all</button>'
     + '<div class="adm-post-meta" id="ob-status" role="status"></div></div>';
@@ -6532,7 +6532,7 @@ async function scheduleOutreach(i) {
 }
 
 async function scheduleAllOutreach() {
-  var start = (document.getElementById('ob-start') || {}).value, per = parseInt((document.getElementById('ob-perday') || {}).value, 10) || 20;
+  var start = (document.getElementById('ob-start') || {}).value, per = parseInt((document.getElementById('ob-perday') || {}).value, 10) || 50;
   var weekdays = (document.getElementById('ob-weekdays') || {}).checked, st = document.getElementById('ob-status');
   if (!start || !_outreachRows.length) return;
   if (!confirm('Approve all ' + _outreachRows.length + ' queued emails to send from hello@sophiacommons.org, ' + per + ' a day from ' + start + '?')) return;
@@ -8971,7 +8971,9 @@ async function saveChannelReview(slug) {
   var r = await _sb.from('channel_reviews').upsert({
     channel_slug: slug, user_id: window._supabaseUser.id, rating: Number(picked.value), comment: comment
   }, { onConflict: 'channel_slug,user_id' });
-  if (r.error) { status.textContent = t('channel.save_error', 'Could not save. Please try again.'); console.warn(r.error); return; }
+  // Show the reason too, so a failed save can be diagnosed from a screenshot (owner, 2026-11-18)
+  if (r.error) { status.textContent = t('channel.save_error', 'Could not save. Please try again.') + ' (' + (r.error.message || r.error.code || 'error') + ')'; console.warn(r.error); return; }
+  status.textContent = t('channel.saved', 'Saved. Thank you!');
   _afterReviewChange(slug);
 }
 
@@ -9189,31 +9191,29 @@ async function renderSocialFeatured() {
   el.innerHTML = html.replace('<div class="listblock social-feat">', '<div class="listblock social-feat home-social-card">' + head);
 }
 
-// Newest r/Anthroposophy posts under the community card (owner, 2026-10-31). /api/reddit is cached on the
-// server for an hour; when Reddit can't be reached the list is simply left out.
-async function renderHomeReddit() {
-  var el = document.getElementById('home-social');
+// Newest r/Anthroposophy posts on the Social Media page (moved from the home page, owner 2026-11-18).
+// /api/reddit is cached on the server for an hour. When Reddit can't be reached the block still shows,
+// with a link to the subreddit instead of the posts.
+async function renderSocialReddit() {
+  var el = document.getElementById('social-reddit');
   if (!el) return;
-  var data;
+  var data = null;
   try {
     var r = await fetch('/api/reddit');
-    if (!r.ok) return;
-    data = await r.json();
-  } catch (e) { return; }
-  if (!data || !data.posts || !data.posts.length) return;
-  // The card holds only Reddit now (owner, 2026-10-31: no Facebook post on the home page). Replacing the
-  // whole card also means a second render of the home page never shows the list twice.
-  el.innerHTML = '<div class="listblock home-social-card"><div class="listblock-head"><h3 aria-level="2">'
-    + esc(t('home.social_heading', 'From the community')) + '</h3>'
-    + '<a href="' + escUrl(data.url) + '" target="_blank" rel="noopener">r/' + esc(data.subreddit) + ' &rarr;</a></div>'
-    + '<div class="home-reddit"><h4 class="home-reddit-h">' + esc(t('home.reddit_heading', 'From Reddit')) + '</h4>'
-    + data.posts.map(function (p) {
-      var img = /^https:\/\/(i|preview|external-preview)\.redd\.it\//.test(p.image || '')
-        ? '<a class="rd-thumb" href="' + escUrl(p.url) + '" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">'
-          + '<img src="' + escUrl(p.image) + '" alt="" width="56" height="56" loading="lazy" decoding="async"></a>' : '';
-      return '<div class="lrow">' + img + '<a class="ltitle" href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a>'
-        + '<span class="lmeta">' + esc([p.author ? 'u/' + p.author : '', timeAgo(p.date)].filter(Boolean).join(' · ')) + '</span></div>';
-    }).join('') + '</div></div>';
+    if (r.ok) data = await r.json();
+  } catch (e) { data = null; }
+  if (!data || !data.posts || !data.posts.length) {
+    el.innerHTML = '<p class="rd-empty">' + esc(t('social.reddit_offline', 'Talk about anthroposophy, questions and shared reading on Reddit.'))
+      + ' <a href="https://www.reddit.com/r/Anthroposophy/" target="_blank" rel="noopener">' + esc(t('social.reddit_visit', 'Visit r/Anthroposophy')) + ' &rarr;</a></p>';
+    return;
+  }
+  el.innerHTML = data.posts.map(function (p) {
+    var img = /^https:\/\/(i|preview|external-preview)\.redd\.it\//.test(p.image || '')
+      ? '<a class="rd-thumb" href="' + escUrl(p.url) + '" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">'
+        + '<img src="' + escUrl(p.image) + '" alt="" width="56" height="56" loading="lazy" decoding="async"></a>' : '';
+    return '<div class="lrow">' + img + '<a class="ltitle" href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a>'
+      + '<span class="lmeta">' + esc([p.author ? 'u/' + p.author : '', timeAgo(p.date)].filter(Boolean).join(' · ')) + '</span></div>';
+  }).join('');
 }
 
 // ── Home news: highlighted stories in a slider built like the featured events ──
@@ -9446,8 +9446,28 @@ async function toggleFeaturedJob(id, btn) {
   renderHomeJobs();
 }
 
+// ── Sophia Commons on X (owner, 2026-11-18) ──
+// The home card stays hidden while X_LATEST_POST is null. After each post, set it to
+// { url: 'https://x.com/SophiaCommons7/status/<id>', text: '<the post>', date: 'YYYY-MM-DD' }.
+// No X embed script: it sets third-party cookies, so the card shows the text and a link instead.
+var X_HANDLE = 'SophiaCommons7';
+var X_LATEST_POST = null;
+function renderHomeX() {
+  var block = document.getElementById('side-x-block'), el = document.getElementById('side-x');
+  var p = X_LATEST_POST;
+  if (!block || !el || !p || !/^https:\/\/x\.com\//.test(p.url || '') || !p.text) return;
+  var mark = '<svg class="xc-mark" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23 22h-6.3l-4.9-6.4L6.2 22H3l7.3-8.3L1 2h6.4l4.4 5.9L18.9 2zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20z"/></svg>';
+  el.innerHTML = '<div class="xcard">'
+    + '<div class="xc-top">' + mark + '<span class="xc-handle">@' + esc(X_HANDLE) + '</span></div>'
+    + '<a class="xc-text" href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.text) + '</a>'
+    + '<div class="xc-foot"><a class="xc-follow" href="https://x.com/' + X_HANDLE + '" target="_blank" rel="noopener">' + esc(t('home.x_follow_btn', 'Follow on X')) + '</a>'
+    + (p.date ? '<span class="xc-date">' + esc(timeAgo(p.date)) + '</span>' : '') + '</div></div>';
+  block.hidden = false;
+}
+// The side panel is on every page, so the card is drawn once at start-up, not with the home page.
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderHomeX); else renderHomeX();
+
 function renderHomeExtras() {
-  renderHomeReddit();   // the Facebook card (renderSocialFeatured) is off the home page (owner, 2026-10-31)
   renderHomeNews();
   renderHomeJobs();
   renderHomeBook();
