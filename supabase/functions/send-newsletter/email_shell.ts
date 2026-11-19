@@ -57,6 +57,10 @@ ${body}
       Know someone who'd enjoy this? Forward it to them.<br>
       <span style="color:${C.muted};font-size:13px">Got this from a friend? ${footLink(`${SITE}/?subscribe=1#home-nl-email`, "Get your own copy")}, free each week.</span>
     </td></tr>
+    <!-- Every issue ends with the X handle (owner, 2026-11-19) -->
+    <tr><td align="center" style="padding:12px 16px 0;font-family:${SANS};font-size:14px;line-height:1.6;color:${C.ink}">
+      Follow us on X: ${footLink("https://x.com/SophiaCommons7", "@SophiaCommons7")}
+    </td></tr>
     <tr><td align="center" style="padding:14px 16px 8px;font-family:${SANS};font-size:13px;line-height:1.6;color:${C.muted}">
       ${footLink(`${SITE}/directory`, "Directory")} &nbsp;&middot;&nbsp; ${footLink(`${SITE}/events`, "Events")} &nbsp;&middot;&nbsp; ${footLink(`${SITE}/podcasts`, "Podcasts &amp; Media")}
     </td></tr>

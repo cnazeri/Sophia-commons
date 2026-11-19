@@ -1,0 +1,75 @@
+name: Weekly backup (encrypted)
+
+# Owner, 2026-11-18: a weekly copy of everything needed to bring the site back: every database table, the
+# member accounts, every uploaded picture, and (when SUPABASE_DB_URL is set) the database structure itself
+# (tables, rules, functions). The code is already in git. The repository is public, so the backup is
+# encrypted with BACKUP_PASSPHRASE before it is stored; without that secret the job stops and stores nothing.
+# Each backup is kept 90 days under Actions > this workflow > the run > Artifacts. How to open one: BACKUPS.md.
+
+on:
+  schedule:
+    - cron: "41 9 * * 0"         # Sundays 09:41 UTC (01:41 Pacific)
+  workflow_dispatch:             # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Stop unless the encryption passphrase is set (never store a readable backup)
+        env:
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          [ -n "$PASS" ] || { echo "BACKUP_PASSPHRASE is not set: nothing backed up. See BACKUPS.md."; exit 1; }
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install --quiet requests
+
+      - name: Copy every table, member account and uploaded picture
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          mkdir -p out
+          # a partial backup is still stored, and the run is marked failed at the end so it gets looked at
+          python3 automation/backup_db.py out/data.json.gz --files out/storage || echo "PARTIAL=1" >> "$GITHUB_ENV"
+          [ -s out/data.json.gz ] || { echo "No data file was written."; exit 1; }
+
+      - name: Database structure (tables, security rules, functions), when SUPABASE_DB_URL is set
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$DB_URL" ]; then echo "SUPABASE_DB_URL not set: structure skipped (the data is still backed up)."; exit 0; fi
+          docker run --rm -e DB_URL postgres:17 sh -c 'pg_dump "$DB_URL" --schema-only --no-owner --no-privileges --schema=public --schema=storage' > out/schema.sql
+          echo "structure: $(wc -l < out/schema.sql) lines"
+
+      - name: Encrypt, then delete the readable copy
+        env:
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          day=$(date -u +%F)
+          tar -czf - -C out . | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass env:PASS -out "sophia-commons-backup-$day.tar.gz.enc"
+          rm -rf out
+          echo "DAY=$day" >> "$GITHUB_ENV"
+          ls -lh sophia-commons-backup-*.enc
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sophia-commons-backup-${{ env.DAY }}
+          path: sophia-commons-backup-*.enc
+          retention-days: 90
+          compression-level: 0     # already compressed and encrypted
+
+      - name: Mark the run failed if anything was left out (the backup above is still kept)
+        if: env.PARTIAL == '1'
+        run: |
+          echo "Some tables or pictures were not backed up this week; see the 'Copy every table' step log."
+          exit 1
