@@ -69,3 +69,12 @@ CLAUDE.md
 **/.omc/
 sophia-commons-6ce169/
 sophia_commons_seed_data.sql
+
+# Android app (Trusted Web Activity): the signing key and build output never go in git (owner, 2026-11-19)
+*.keystore
+*.jks
+android/app/build/
+android/.gradle/
+android/*.apk
+android/*.aab
+android/*.idsig

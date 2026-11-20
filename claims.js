@@ -17,7 +17,9 @@ function claimBoxHtml(d) {
   var mine = d.claimed_by && d.claimed_by === _myUserId();
   if (mine) {
     return '<div class="claim-box mine"><strong>' + esc(t('claim.you_manage', 'You manage this listing')) + '</strong>'
-      + '<button type="button" class="claim-btn" onclick="openListingEditor()">' + esc(t('claim.edit', 'Edit listing details')) + '</button></div>';
+      + '<button type="button" class="claim-btn" onclick="openListingEditor()">' + esc(t('claim.edit', 'Edit listing details')) + '</button>'
+      // Straight to the picture section, which sits below the text form (owner, 2026-11-20)
+      + ' <button type="button" class="claim-btn" onclick="openListingEditor(true)">' + esc(t('claim.pic_save', 'Change picture')) + '</button></div>';
   }
   if (d.claimed_by) {
     return '<div class="claim-box managed">&#10003; ' + esc(t('claim.managed', 'Managed by the organization')) + '</div>';
@@ -105,7 +107,7 @@ async function submitClaim(ev) {
   ev.target.querySelector('button[type=submit]').disabled = true;
 }
 
-function openListingEditor() {
+function openListingEditor(toPicture) {
   var d = _claimEntry;
   if (!d) return;
   var f = function(id, label, val, type) {
@@ -124,6 +126,10 @@ function openListingEditor() {
     + '<button type="submit" class="claim-btn">' + esc(t('claim.save', 'Save changes')) + '</button>'
     + '<div id="le-status" class="claim-hint" role="status"></div></form>'
     + _pictureFormHtml(d));
+  if (toPicture) {
+    var pic = document.querySelector('.le-pic');
+    if (pic) { pic.scrollIntoView({ block: 'start' }); var inp = document.getElementById('le-pic-file'); if (inp) inp.focus({ preventScroll: true }); }
+  }
 }
 
 // ── Listing picture: the manager uploads a logo or photo (owner, 2026-11-15) ──

@@ -81,8 +81,9 @@ async function showDetail(type, id, skipPush) {
       _injectDirectorySEO(data);
       loadRelatedDirectory(data.category, data.id);
       if (typeof loadListingEvents === 'function') loadListingEvents(data);
-      loadComments('directory', id);
-      _trackView('directory', id);
+      // Use the listing's id, not the readable address: comments and views are stored by id (fixed 2026-11-20)
+      loadComments('directory', data.id);
+      _trackView('directory', data.id);
     } else if (type === 'event') {
       var { data, error } = await _sb.from('events')
         .select('*').eq('id', id).maybeSingle();
@@ -369,6 +370,10 @@ function renderEventDetail(ev) {
   if (ev.event_type) badges += '<span class="detail-badge type">' + esc(typeLabel) + '</span>';
   if (ev.is_free) badges += '<span class="detail-badge free">' + t('event_detail.free') + '</span>';
   badges += '<span class="detail-badge type ev-mode">' + esc(_eventModeLabel(mode)) + '</span>';
+  // Written in another language: English readers get the English version first, the original below (owner, 2026-11-19)
+  var foreign = _evForeign(ev), showEn = foreign && ev.title_en && _homeEnglish();
+  if (foreign) badges += '<span class="detail-badge type ev-lang-badge">' + esc(_evLangText(ev)) + '</span>';
+  var langName = foreign ? _langName(ev.lang) : '';
 
   var meta = '';
   meta += '<span>&#128197; ' + esc(dateStr) + '</span>';
@@ -414,11 +419,22 @@ function renderEventDetail(ev) {
     + pendingNote
     + img
     + badges
-    + '<h1>' + esc(ev.title) + '</h1>'
+    + '<h1>' + esc(showEn ? ev.title_en : ev.title) + '</h1>'
+    + (showEn ? '<p class="ev-translated">' + esc(t('event_detail.translated_from', 'Translated from {lang}. Original title:').replace('{lang}', langName)) + ' <span lang="' + esc(ev.lang) + '">' + esc(ev.title) + '</span></p>' : '')
     + '<div class="detail-meta">' + meta + '</div>'
     + '</div>'
     + '<div id="ev-next"></div>'
-    + '<div class="ev-reg' + (reg ? '' : ' ev-reg-solo') + '">' + reg
+    // Left: how to attend, sign-ups and the description; right: the event details (owner, 2026-11-19: no empty gap)
+    + '<div class="ev-reg"><div class="ev-main">' + reg
+    + '<div id="ev-signups-list"></div>'
+    + '<div class="detail-hero ev-about">'
+    + (ev.description ? '<h2>' + esc(t('event_detail.about', 'About this event')) + '</h2><div class="detail-body" style="white-space:pre-line;">' + _linkify(esc(showEn && ev.description_en ? ev.description_en : ev.description)) + '</div>' : '')
+    + (showEn && ev.description_en && ev.description ? '<details class="ev-orig"><summary>' + esc(t('event_detail.original_text', 'Original text ({lang})').replace('{lang}', langName)) + '</summary><div class="detail-body" lang="' + esc(ev.lang) + '" style="white-space:pre-line;">' + _linkify(esc(ev.description)) + '</div></details>' : '')
+    + zoom
+    + (actions ? '<div class="detail-actions">' + actions + '</div>' : '')
+    + '<div id="ev-share"></div>'
+    + '</div>'
+    + '</div>'
     + '<div class="detail-sidebar ev-facts"><h4>' + t('event_detail.title') + '</h4>'
     + '<p><strong>' + t('event_detail.date') + ':</strong> ' + esc(dateStr) + '</p>'
     + '<p><strong>' + t('event_detail.time') + ':</strong> ' + esc(timeStr) + '</p>'
@@ -430,13 +446,7 @@ function renderEventDetail(ev) {
     + _calButtonsHtml(ev)
     + '<p class="ev-nl-link"><a href="#nl-card" onclick="var c=document.getElementById(\'nl-card\');if(c){c.scrollIntoView({behavior:\'smooth\',block:\'center\'});var i=document.getElementById(\'dt-nl-email\');if(i)i.focus({preventScroll:true});}return false;">&#9993; ' + esc(t('newsletter.event_link', 'Get events like this by email')) + '</a></p>'
     + (signedIn ? '<button class="btn-report" onclick="openReportModal(\'event\',\'' + ev.id + '\')">' + t('report.flag_btn') + '</button>' : '')
-    + '</div></div>'
-    + '<div id="ev-signups-list"></div>'
-    + '<div class="detail-hero ev-about">'
-    + (ev.description ? '<h2>' + esc(t('event_detail.about', 'About this event')) + '</h2><div class="detail-body" style="white-space:pre-line;">' + esc(ev.description) + '</div>' : '')
-    + zoom
-    + (actions ? '<div class="detail-actions">' + actions + '</div>' : '')
-    + '<div id="ev-share"></div>'
+    + '</div>'
     + '</div>'
     + _nlCardHtml('event')
     + renderCommentsSection('event', ev.id)
@@ -1044,7 +1054,7 @@ async function _firstClassBlock() {
   var evs = [];
   if (sbReady()) {
     try {
-      var r = await _sb.from('events').select('id, title, start_date, end_date, location_name, address, city, region, country, is_online, organizer_name')
+      var r = await _sb.from('events').select('id, title, title_en, lang, start_date, end_date, location_name, address, city, region, country, is_online, organizer_name')
         .eq('event_type', 'first_class').in('status', ['upcoming', 'ongoing'])
         .gte('start_date', new Date(Date.now() - 864e5).toISOString()).order('start_date').limit(20);
       evs = r.data || [];
@@ -1060,7 +1070,7 @@ async function _firstClassBlock() {
     var d = new Date(ev.start_date);
     return '<div class="evrow"><div class="evdate"><div class="mo">' + esc(localDate(ev.start_date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
       + '<div class="evinfo"><div class="etag">' + esc(t('firstclass.tag', 'Blue card admission')) + '</div>'
-      + '<h5><a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a></h5>'
+      + '<h5><a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(_dbEvTitle(ev)) + '</a>' + _dbEvLangTag(ev) + '</h5>'
       + '<div class="emeta">' + esc(time) + (where ? ' &middot; ' + esc(where) : '') + '</div></div></div>';
   }).join('');
   return '<div class="listblock fc-block" id="first-class" style="margin-bottom:16px;">'
@@ -1145,7 +1155,7 @@ async function loadCategoryPage(catKey, dirCat, opts) {
   if (sbReady()) {
     try {
       var { data } = await _sb.from('events')
-        .select('id, title, description, start_date, end_date, city, country, organizer_name, is_free, event_type')
+        .select('id, title, title_en, lang, description, start_date, end_date, city, country, organizer_name, is_free, event_type')
         .in('status', ['upcoming', 'ongoing']).gte('start_date', new Date(Date.now() - 60 * 864e5).toISOString())
         .order('start_date').limit(40);
       if (data) {
@@ -1173,7 +1183,7 @@ async function loadCategoryPage(catKey, dirCat, opts) {
         + '<div class="evdate"><div class="mo">' + MONTHS_SHORT[d.getMonth()] + '</div><div class="dy">' + d.getDate() + '</div></div>'
         + '<div class="evinfo">'
         + '<div class="etag">' + esc(ev.event_type || '') + (ev.is_free ? ' &middot; ' + t('common.free') : '') + '</div>'
-        + '<h5>' + esc(ev.title) + '</h5>'
+        + '<h5>' + esc(_dbEvTitle(ev)) + _dbEvLangTag(ev) + '</h5>'
         + '<div class="emeta">' + esc(loc) + (ev.organizer_name ? ' &middot; ' + esc(ev.organizer_name) : '') + '</div>'
         + '</div></div>';
     });
@@ -1600,7 +1610,7 @@ var PLACE_EVENTS_MAX = 6;
 async function _placeEvents(container, countries, cityKey, where) {
   try {
     // In person or both: hybrid events have a real place too
-    var r = await _sb.from('events').select('id, title, start_date, is_all_day, is_online, address, city, location_name')
+    var r = await _sb.from('events').select('id, title, title_en, lang, start_date, is_all_day, is_online, address, city, location_name')
       .in('status', ['upcoming', 'ongoing']).or('is_online.eq.false,address.not.is.null,location_name.is.null,location_name.not.ilike.*online*')
       .in('country', countries)
       .gte('start_date', new Date(Date.now() - 864e5).toISOString()).order('start_date').limit(100);
@@ -1610,7 +1620,7 @@ async function _placeEvents(container, countries, cityKey, where) {
       + list.map(function(e) {
         var day = e.is_all_day ? localDate(String(e.start_date).slice(0, 10), { weekday: 'short', month: 'short', day: 'numeric' })
           : localDate(e.start_date, { weekday: 'short', month: 'short', day: 'numeric' });
-        return '<li><span class="place-ev-date">' + esc(day) + '</span> <a href="/event/' + esc(e.id) + '" onclick="showDetail(\'event\',\'' + escJs(e.id) + '\');return false;">' + esc(e.title) + '</a>'
+        return '<li><span class="place-ev-date">' + esc(day) + '</span> <a href="/event/' + esc(e.id) + '" onclick="showDetail(\'event\',\'' + escJs(e.id) + '\');return false;">' + esc(_dbEvTitle(e)) + '</a>' + _dbEvLangTag(e)
           + (e.city && !cityKey ? ' <span class="lmeta">' + esc(e.city) + '</span>' : '') + '</li>';
       }).join('') + '</ul>'
       + '<p><a href="/events" onclick="showSec(\'events\');return false;">' + esc(t('place.all_events', 'All events')) + ' &rarr;</a></p></section>');
@@ -3862,10 +3872,10 @@ var _sbMergedEventTitles = {};
 
 // Upcoming events: merged into calEvents (one sorted list, one count). A copy is kept in localStorage
 // so the home page can show events immediately on the next visit, before the network answers.
-var _EV_CACHE_KEY = 'sc_upcoming_events_v6';   // raise the number to drop visitors' saved copies after an event is fixed
+var _EV_CACHE_KEY = 'sc_upcoming_events_v7';   // raise the number to drop visitors' saved copies after an event is fixed
 var _cachedEventIds = [];
 var _EV_CACHE_FIELDS = ['id', 'title', 'description', 'event_type', 'start_date', 'end_date', 'is_all_day', 'location_name', 'address',
-  'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name', 'title_en', 'description_en', 'lat', 'lng'];
+  'city', 'country', 'is_online', 'online_url', 'organizer_name', 'ticket_url', 'is_free', 'image_url', 'featured', 'category_name', 'title_en', 'description_en', 'lang', 'lat', 'lng'];
 
 var _dbEventsShown = false;   // true once saved or live database events are in calEvents
 function _loadCachedEvents() {
@@ -3883,9 +3893,14 @@ function _loadCachedEvents() {
 async function loadEventsFromSupabase() {
   if (!sbReady()) return;
   try {
-    var result = await _sb.rpc('get_upcoming_events', { days_ahead: 365, limit_n: 200 });
+    // get_upcoming_events has no lang column, so the languages of non-English events come alongside
+    var both = await Promise.all([_sb.rpc('get_upcoming_events', { days_ahead: 365, limit_n: 200 }),
+      _sb.from('events').select('id, lang').neq('lang', 'en').limit(1000)]);
+    var result = both[0];
     if (result.error || !result.data) { console.warn('Events load failed:', result.error); return; }
-    var data = result.data;
+    var langOf = {};
+    (both[1].data || []).forEach(function(x) { langOf[x.id] = x.lang; });
+    var data = result.data.map(function(ev) { return langOf[ev.id] ? Object.assign({}, ev, { lang: langOf[ev.id] }) : ev; });
     _dbEventsShown = true;
     try {
       localStorage.setItem(_EV_CACHE_KEY, JSON.stringify({ saved: Date.now(), events: data.map(function(ev) {
@@ -3909,7 +3924,7 @@ async function loadEventsFromSupabase() {
 // Lists below the calendar and the home sliders filter to today onward, so only the calendar shows these.
 async function loadPastEventsFromSupabase() {
   try {
-    var r = await _sb.from('events').select(_EV_CACHE_FIELDS.filter(function(k) { return ['category_name', 'title_en', 'description_en', 'lat', 'lng'].indexOf(k) === -1; }).join(', '))
+    var r = await _sb.from('events').select(_EV_CACHE_FIELDS.filter(function(k) { return ['category_name', 'lat', 'lng'].indexOf(k) === -1; }).join(', '))
       .in('status', ['past', 'upcoming', 'ongoing']).lt('start_date', new Date().toISOString())
       .order('start_date', { ascending: false }).limit(1000);
     if (r.error || !r.data) { console.warn('Past events load failed:', r.error); return; }
@@ -3978,6 +3993,7 @@ function _mergeSupabaseEventsIntoCalendar(sbEvents) {
       title: ev.title || '',
       titleEn: ev.title_en || '',
       descEn: ev.description_en || '',
+      lang: ev.lang || '',
       cat: cat,
       loc: loc,
       org: org,
@@ -4341,7 +4357,9 @@ var calEvents = [];
 // Memorial commemorative dates (recurring annually)
 var MEMORIAL_DATES = [
   { month: 2, day: 27, name: 'Rudolf Steiner', type: 'birth', year: 1861 },
-  { month: 3, day: 30, name: 'Rudolf Steiner', type: 'death', year: 1925 },
+  { month: 3, day: 30, name: 'Rudolf Steiner', type: 'death', year: 1925, key: 'steiner_death',
+    desc: 'Rudolf Steiner died in Dornach, Switzerland, on 30 March 1925, at the age of 64, in his studio beside the building site of the second Goetheanum.',
+    src: [['Rudolf Steiner (Wikipedia)', 'https://en.wikipedia.org/wiki/Rudolf_Steiner']] },
   { month: 3, day: 14, name: 'Marie Steiner-von Sivers', type: 'birth', year: 1867 },
   { month: 12, day: 27, name: 'Marie Steiner-von Sivers', type: 'death', year: 1948 },
   { month: 2, day: 22, name: 'Ita Wegman', type: 'birth', year: 1876 },
@@ -4398,7 +4416,11 @@ var FESTIVAL_IMAGES = {
   goetheanum_fire: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/goetheanum_fire.jpg", "alt": "Smouldering ruins of the First Goetheanum after the fire, 1923", "page": "https://commons.wikimedia.org/wiki/File:Brandruine_Goetheanum_1923.jpg", "credit": "Max Benzinger, Public domain, via Wikimedia Commons"},
   christmas_conference: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/christmas_conference.jpg", "alt": "Rudolf Steiner's blackboard drawing of the second Goetheanum motif, 1 January 1924 (Christmas Conference)", "page": "https://commons.wikimedia.org/wiki/File:Wandtafelbild_-_Gotheanum-Motiv_(1924).jpg", "credit": "Rudolf Steiner, Public domain, via Wikimedia Commons"},
   koberwitz: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/koberwitz.jpg", "alt": "Koberwitz manor (Kobierzyce palace), site of the 1924 Agriculture Course", "page": "https://commons.wikimedia.org/wiki/File:Kobierzyce-palac.jpg", "credit": "Julo (Wikimedia user), Public domain, via Wikimedia Commons"}
+,
+  steiner_death: {"src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/steiner_death.jpg", "alt": "Rudolf Steiner in Dornach, 1914", "page": "https://commons.wikimedia.org/wiki/File:Rudolf_Steiner_1914.jpg", "credit": "Unknown author, Public domain, via Wikimedia Commons"}
 };
+// The Christmas Conference opening day shares the Foundation Stone picture
+FESTIVAL_IMAGES.christmas_conference_open = FESTIVAL_IMAGES.christmas_conference;
 
 // Standard picture for an event that has none: the matching festival by title, else one per event type
 var EVENT_FALLBACK_IMG = [
@@ -4463,8 +4485,11 @@ var ANTHRO_ANNIVERSARIES = [
     desc: 'The Free Waldorf School on the Uhlandshoehe in Stuttgart opened for the children of Waldorf-Astoria factory workers, founded by Emil Molt with Rudolf Steiner.',
     src: [_SRC.wiki('History of Waldorf schools', 'History_of_Waldorf_schools'), ['German History in Documents: Opening of the first Waldorf school', 'https://germanhistorydocs.org/en/weimar-germany-1918-1933/opening-of-the-first-waldorf-school-september-1919.pdf']] },
   { key: 'goetheanum_fire', month: 12, day: 31, year: 1922, title: 'First Goetheanum destroyed by fire',
-    desc: 'The first Goetheanum in Dornach burned on New Year\'s Eve 1922 into 1 January 1923.',
+    desc: 'The First Goetheanum, the double-domed wooden headquarters of the Anthroposophical Society in Dornach, Switzerland, was destroyed by fire on New Year\'s Eve, 31 December 1922. It burned through the night into 1 January 1923.',
     src: [_SRC.wiki('Goetheanum', 'Goetheanum')] },
+  { key: 'christmas_conference_open', month: 12, day: 24, year: 1923, title: 'Christmas Conference opens (Dornach)',
+    desc: 'The Christmas Conference (24 December 1923 to 1 January 1924) was the foundational gathering led by Rudolf Steiner in Dornach, Switzerland, to refound the General Anthroposophical Society. It met beside the ruins of the First Goetheanum, lost to fire a year earlier.',
+    src: [['Steiner, The Christmas Conference, GA 260 (rsarchive)', 'https://rsarchive.org/Lectures/ChrCnf_intro.html'], _SRC.wiki('General Anthroposophical Society', 'General_Anthroposophical_Society')] },
   { key: 'christmas_conference', month: 12, day: 25, year: 1923, title: 'Foundation Stone laid (Christmas Conference)',
     desc: 'At the Christmas Conference in Dornach (24 December 1923 to 1 January 1924) Steiner refounded the General Anthroposophical Society and laid the Foundation Stone meditation on 25 December.',
     src: [_SRC.wiki('General Anthroposophical Society', 'General_Anthroposophical_Society'), ['Steiner, The Christmas Conference, GA 260 (e.Lib)', 'https://rudolfsteinerelib.org/GA/index.php?ga=GA0260']] },
@@ -4641,10 +4666,11 @@ function _injectMemorialDates(yr) {
     var label = m.type === 'birth'
       ? 'Born ' + age + ' yrs ago: ' + m.name
       : 'Remembering ' + m.name + ' (' + age + ' yrs)';
-    // Avoid duplicates
-    var exists = calEvents.some(function(e) { return e.date === dateStr && e.cat === 'memorial'; });
+    // Avoid duplicates (by title, so two people remembered on one day both show)
+    var exists = calEvents.some(function(e) { return e.date === dateStr && e.title === label; });
     if (!exists) {
-      calEvents.push({ date: dateStr, title: label, cat: 'memorial', loc: '', org: '', time: '' });
+      calEvents.push({ date: dateStr, title: label, cat: 'memorial', loc: '', org: '', time: '',
+        desc: m.desc || '', src: m.src || [], img: (m.key && FESTIVAL_IMAGES[m.key]) || null });
     }
   });
 }
@@ -4664,6 +4690,11 @@ var mcYear = _calNow.getFullYear();
 
 var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 var DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+// Yearly days (festivals, anniversaries, memorials: no database id) go above the dated events (owner, 2026-11-19)
+function _yearlyFirst(list) {
+  return list.filter(function(e) { return !e.id; }).concat(list.filter(function(e) { return e.id; }));
+}
 
 function renderCalendar() {
   var grid = document.getElementById('cal-grid');
@@ -4690,7 +4721,7 @@ function renderCalendar() {
   for (var d = 1; d <= daysInMonth; d++) {
     var dateStr = calYear + '-' + String(calMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
     var isToday = (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear());
-    var dayEvents = calEvents.filter(function(e) { return e.date === dateStr; });
+    var dayEvents = _yearlyFirst(calEvents.filter(function(e) { return e.date === dateStr; }));
     var hasMemorial = dayEvents.some(function(e) { return e.cat === 'memorial'; });
     var hasFestival = dayEvents.some(function(e) { return e.cat === 'festival'; });
 
@@ -4703,7 +4734,7 @@ function renderCalendar() {
     html += '<div class="cal-day' + (isToday ? ' today' : '') + (hasFestival ? ' festival-day' : '') + (hasMemorial ? ' memorial-day' : '') + (dayEvents.length ? ' has-events' : '') + '"' + dayAttrs + '>';
     html += '<div class="d-num">' + d + '</div>';
     dayEvents.forEach(function(ev) {
-      html += '<div class="cal-ev ' + esc(ev.cat) + '" title="' + esc(ev.title) + '">' + esc(ev.title) + '</div>';
+      html += '<div class="cal-ev ' + esc(ev.cat) + '" title="' + esc(_homeTitle(ev) + (_evForeign(ev) ? ' (' + _evLangText(ev) + ')' : '')) + '">' + esc(_homeTitle(ev)) + '</div>';
     });
     html += '</div>';
   }
@@ -4739,7 +4770,7 @@ var DP_DESC_CHARS = 800;
 // no page of their own, so any further paragraphs open in place under "Read more" (owner, 2026-11-10).
 function _dpDescHtml(ev) {
   if (!ev.desc) return '';
-  var html = '<p class="dp-desc">' + _linkify(esc(_shortText(ev.desc, DP_DESC_CHARS))) + '</p>';
+  var html = '<p class="dp-desc">' + _linkify(esc(_shortText(_homeDesc(ev), DP_DESC_CHARS))) + '</p>';
   var more = ev.id ? [] : String(ev.desc).split('\n\n').slice(1);
   if (!more.length) return html;
   return html + '<details class="dp-more"><summary>' + esc(t('home.read_more', 'Read more')) + '</summary>'
@@ -4768,7 +4799,7 @@ function _dpFullLink(ev) {
     + esc(t('event_detail.full_details', 'Full details')) + ' &rarr;</a></div>';
 }
 function showDayEvents(dateStr, trigger) {
-  var dayEvs = calEvents.filter(function(e) { return e.date === dateStr; });
+  var dayEvs = _yearlyFirst(calEvents.filter(function(e) { return e.date === dateStr; }));
   var label = localDate(dateStr, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
   closeDayPopup(false);
@@ -4790,7 +4821,7 @@ function showDayEvents(dateStr, trigger) {
   html += '<h4 id="day-popup-title">' + esc(label) + '</h4>';
   dayEvs.forEach(function(ev) {
     var dpMeta = ev.id ? '' : _evMeta(ev);   // real events get the labelled details block below
-    var dpTitle = ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="closeDayPopup(false);showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a>' : esc(ev.title);
+    var dpTitle = ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="closeDayPopup(false);showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(_homeTitle(ev)) + '</a>' + _evLangTag(ev) : esc(_homeTitle(ev));
     // The day view fills the page, picture beside the text (owner, 2026-11-06)
     html += '<div class="dp-event' + (ev.img ? ' has-img' : '') + '">' + _evImageHtml(ev) + '<div class="dp-text"><h5>' + dpTitle + '</h5>' + (dpMeta ? '<div class="dp-meta">' + dpMeta + '</div>' : '')
       + _dpDetailsHtml(ev) + _dpDescHtml(ev) + _evSourcesHtml(ev) + _dpFullLink(ev) + '</div></div>';
@@ -4801,10 +4832,22 @@ function showDayEvents(dateStr, trigger) {
   if (closeBtn) closeBtn.focus();
 }
 
-// Turn bare http(s) URLs in already-escaped text into links that wrap
+// Turn web addresses (http, https, www.) and email addresses in already-escaped text into links
+// (owner, 2026-11-19: links in event text must be clickable)
+var _LINK_RE = /\b(?:https?:\/\/|www\.)[^\s<]+|[\w.+-]+@[\w-]+(?:\.[\w-]+)+/gi;
 function _linkify(escaped) {
-  return escaped.replace(/https?:\/\/[^\s<]+/g, function(u) {
-    return '<a href="' + escUrl(u.replace(/&amp;/g, '&')) + '" target="_blank" rel="noopener" class="dp-url">' + u + '</a>';
+  return String(escaped).replace(_LINK_RE, function(m) {
+    var tail = '', cut = m.search(/&(?:quot|#39|#96|gt|lt);/);
+    if (cut > -1) { tail = m.slice(cut); m = m.slice(0, cut); }
+    // Leave closing punctuation outside the link, and a ")" that has no "(" in the address
+    while (m && (/[.,;:!?\]]$/.test(m) || (/\)$/.test(m) && (m.split('(').length < m.split(')').length)))) {
+      tail = m.slice(-1) + tail; m = m.slice(0, -1);
+    }
+    if (!m) return tail;
+    var raw = m.replace(/&amp;/g, '&');
+    var isMail = !/^(https?:\/\/|www\.)/i.test(raw) && raw.indexOf('@') > -1;
+    var href = isMail ? 'mailto:' + raw : (/^www\./i.test(raw) ? 'https://' + raw : raw);
+    return '<a href="' + escUrl(href) + '"' + (isMail ? '' : ' target="_blank" rel="noopener"') + ' class="dp-url">' + m + '</a>' + tail;
   });
 }
 
@@ -4884,15 +4927,15 @@ function _evRowHtml(ev, seriesInfo) {
   var isToday = (d.toDateString() === new Date().toDateString());
   var cat = String(ev.cat || 'event').replace('_', ' ');
   var meta = _evMeta(ev);
-  var title = seriesInfo ? seriesInfo.name + ': ' + seriesInfo.count + ' sessions' : ev.title;
+  var title = seriesInfo ? seriesInfo.name + ': ' + seriesInfo.count + ' sessions' : _homeTitle(ev);
   var html = '<div class="evrow reveal">';
   html += '<div class="evdate' + (isToday ? ' today' : '') + '"><div class="mo">' + localDate(ev.date, { month: 'short' }) + '</div><div class="dy">' + d.getDate() + '</div></div>';
   if (ev.img && ev.img.src) {
     html += '<img class="evthumb" src="' + escUrl(_imgSized(ev.img.src, 160)) + '" alt="" loading="lazy" title="' + esc(ev.img.credit || '') + '">';
   }
   html += '<div class="evinfo"><div class="etag">' + esc(cat.charAt(0).toUpperCase() + cat.slice(1)) + (seriesInfo ? ' &middot; ' + esc(t('events.series', 'series')) : '') + '</div>';
-  html += '<h5>' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(title) + '</a>' : esc(title)) + '</h5>';
-  if (seriesInfo) html += '<div class="emeta">' + esc(t('events.series_next', 'Next session')) + ': ' + esc(ev.title.replace(/^[^:]+:\s*/, '')) + '</div>';
+  html += '<h5>' + (ev.id ? '<a href="/event/' + esc(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(title) + '</a>' : esc(title)) + _evLangTag(ev) + '</h5>';
+  if (seriesInfo) html += '<div class="emeta">' + esc(t('events.series_next', 'Next session')) + ': ' + esc(_homeTitle(ev).replace(/^[^:]+:\s*/, '')) + '</div>';
   if (meta) html += '<div class="emeta">' + meta + '</div>';
   if (window._evNear && !ev.online && ev._km != null) html += '<div class="emeta ev-dist">' + esc(_fmtDist(ev._km)) + '</div>';
   if (seriesInfo && seriesInfo.later.length) {
@@ -5023,7 +5066,7 @@ function renderSeminars() {
       html += '<' + (href ? 'a href="' + escUrl(href) + '" tabindex="-1" aria-hidden="true"' : 'div') + ' class="sem-img' + (/#contain$/.test(src) ? ' contain' : '') + '">'
         + '<img src="' + escUrl(src.replace(/#contain$/, '')) + '" alt="" loading="lazy" width="320" height="180"></' + (href ? 'a' : 'div') + '>';
     }
-    html += '<h5>' + (href ? '<a href="' + escUrl(href) + '">' + esc(ev.title) + '</a>' : esc(ev.title)) + '</h5>';
+    html += '<h5>' + (href ? '<a href="' + escUrl(href) + '">' + esc(_homeTitle(ev)) + '</a>' : esc(_homeTitle(ev))) + _evLangTag(ev) + '</h5>';
     html += '<div class="sem-meta">' + esc(ev.time || localDate(ev.date, { month: 'short', day: 'numeric', year: 'numeric' })) + (ev.loc ? '<br>' + esc(ev.loc) : '') + '</div>';
     html += '<span class="sem-tag ' + esc(ev.cat) + '">' + esc(String(ev.cat).replace('_', ' ')) + '</span>';
     html += '</div>';
@@ -5395,6 +5438,23 @@ function _homeEnglish() { return typeof SC_I18N === 'undefined' || SC_I18N.getLa
 function _homeTitle(ev) { return ev.titleEn && _homeEnglish() ? ev.titleEn : ev.title; }
 function _homeDesc(ev) { return ev.descEn && _homeEnglish() ? ev.descEn : ev.desc; }
 
+// The whole calendar does the same, and every event written in another language says which one (owner,
+// 2026-11-19), e.g. "In German". The tag shows in every site language; the English text only in English.
+function _langName(code) {
+  var ui = typeof SC_I18N !== 'undefined' ? SC_I18N.getLang() : 'en';
+  try { return new Intl.DisplayNames([ui], { type: 'language' }).of(code) || code; } catch (e) { return String(code).toUpperCase(); }
+}
+function _evForeign(ev) { return !!(ev.lang && ev.lang !== 'en'); }
+function _evLangText(ev) { return t('events.lang_tag', 'In {lang}').replace('{lang}', _langName(ev.lang)); }
+function _evLangTag(ev) {
+  if (!_evForeign(ev)) return '';
+  var orig = ev.titleEn && _homeEnglish() ? ' title="' + esc(t('events.lang_original', 'Original title') + ': ' + ev.title) + '"' : '';
+  return ' <span class="ev-lang"' + orig + '>' + esc(_evLangText(ev)) + '</span>';
+}
+// The same for event rows read straight from the database (title_en, lang)
+function _dbEvTitle(e) { return e.title_en && _homeEnglish() ? e.title_en : e.title; }
+function _dbEvLangTag(e) { return _evLangTag({ lang: e.lang, title: e.title, titleEn: e.title_en }); }
+
 // Home slider: name, date and time, and whether it is in person (with the place) or online. No description,
 // so every slide is the same short height and the slider has no empty space under the shorter ones (owner, 2026-11-13).
 function _featWhere(ev) {
@@ -5422,7 +5482,7 @@ function _homeEvRow(ev, isNow) {
   var meta = _evMeta(ev);
   return '<div class="evrow">'
     + '<div class="evdate"><div class="mo">' + esc(localDate(ev.date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
-    + '<div class="evinfo"><div class="etag">' + (isNow ? '<span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) : esc(cat.charAt(0).toUpperCase() + cat.slice(1))) + '</div><h5 aria-level="3">' + titleHtml + '</h5>'
+    + '<div class="evinfo"><div class="etag">' + (isNow ? '<span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) : esc(cat.charAt(0).toUpperCase() + cat.slice(1))) + '</div><h5 aria-level="3">' + titleHtml + _evLangTag(ev) + '</h5>'
     + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
 }
 

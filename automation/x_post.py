@@ -10,6 +10,8 @@ the exact text ("post it").
 
   python3 automation/x_post.py draft                 # newest sent issue -> automation/x_drafts/<id>.json
   python3 automation/x_post.py draft --text "..."    # replace the sentences (hashtags and link are added)
+  python3 automation/x_post.py events                # Monday post: this week's events + /events link
+  python3 automation/x_post.py events --text "..."   # replace the sentences
   python3 automation/x_post.py show                  # print the current draft and its length
   python3 automation/x_post.py post --approved       # post via Composio, then fill the home page X card
                                                      # (X_LATEST_POST in sophia_commons_v9.js; deploy after)
@@ -22,7 +24,7 @@ import os
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import requests
 
@@ -171,6 +173,82 @@ def cmd_draft(a):
     print('Nothing was posted. It goes out only after the owner approves this exact text.')
 
 
+EVENTS_TAG = '#AnthroposophyEvents'
+TITLE_MAX = 70
+
+
+def week_events(monday):
+    """Public events that start Monday to Sunday of the given week (UTC days)."""
+    url, H = supabase()
+    end = monday + timedelta(days=7)
+    rows = requests.get(url + '/rest/v1/events', headers=H, timeout=30, params={
+        'select': 'id,title,title_en,description,description_en,is_online,city,country,featured,start_date',
+        'status': 'in.(upcoming,ongoing)', 'and': f'(start_date.gte.{monday:%Y-%m-%d},start_date.lt.{end:%Y-%m-%d})',
+        'order': 'featured.desc,start_date.asc', 'limit': '500'}).json()
+    if not isinstance(rows, list):
+        sys.exit(f'Could not read events: {rows}')
+    return rows
+
+
+def short_title(e):
+    t = clean(e.get('title_en') or e['title'])
+    t = re.split(r'\s*[|(]\s*', t)[0].strip(' :-')
+    return t if len(t) <= TITLE_MAX else ''
+
+
+def events_text(evs, n=2):
+    """Two plain sentences from the week's calendar: the count, how many online, and two named events."""
+    online = sum(1 for e in evs if e.get('is_online'))
+    places = sorted({e['city'] for e in evs if e.get('city') and not e.get('is_online')})
+    picks, seen = [], set()
+    for e in evs:
+        t = short_title(e)
+        if t and t.lower() not in seen:
+            seen.add(t.lower())
+            picks.append(t + (' (online)' if e.get('is_online') else f" in {e['city']}" if e.get('city') else ''))
+        if len(picks) >= n:
+            break
+    first = f'{len(evs)} anthroposophical events this week on the Sophia Commons calendar'
+    first += f', {online} of them online.' if online else '.'
+    if picks:
+        second = 'Among them: ' + ' and '.join(picks) + '.'
+    elif places and n:
+        second = 'In ' + ', '.join(places[:3]) + ' and more.'
+    else:
+        second = ''
+    return clean(f'{first} {second}'.strip())
+
+
+def cmd_events(a):
+    today = datetime.now(timezone.utc).date()
+    monday = today - timedelta(days=today.weekday()) if not a.next else today + timedelta(days=7 - today.weekday())
+    evs = week_events(monday)
+    if not evs:
+        sys.exit(f'No events on the calendar for the week of {monday}; nothing drafted.')
+    blob = ' '.join((e.get('title_en') or e['title']) + ' ' + (e.get('description_en') or e.get('description') or '') for e in evs)
+    tags = pick_tags(blob)[:2] + [EVENTS_TAG]
+    link = f'{SITE}/events'
+    # Too long: name fewer events first, keep the hashtags; the link always stays
+    for n in ((None,) if a.text else (2, 1, 0)):
+        text = clean(a.text) if a.text else events_text(evs, n)
+        post, length = compose(text, tags, link)
+        if length <= LIMIT:
+            break
+    if length > LIMIT:
+        sys.exit(f'Too long ({length}); shorten it with --text.')
+    d = {'news_id': f'events-{monday}', 'title': f'Events, week of {monday} ({len(evs)} events)', 'text': text,
+         'tags': tags, 'link': link, 'post': post, 'length': length, 'drafted_at': datetime.now(timezone.utc).isoformat()}
+    if a.preview:
+        show(d)
+        print('Preview only: no draft saved, nothing posted.')
+        return
+    if os.path.exists(draft_path(d['news_id'])) and json.load(open(draft_path(d['news_id']))).get('posted_url'):
+        sys.exit('This week\'s events post already went out.')
+    save(d)
+    show(d)
+    print('Nothing was posted. It goes out only after the owner approves this exact text.')
+
+
 def tweet_id(obj):
     if isinstance(obj, dict):
         if re.fullmatch(r'\d{6,25}', str(obj.get('id', ''))):
@@ -228,11 +306,15 @@ def main():
     sub = ap.add_subparsers(dest='cmd', required=True)
     p = sub.add_parser('draft'); p.add_argument('--id'); p.add_argument('--text')
     p.add_argument('--preview', action='store_true', help='print the draft without saving it')
+    p = sub.add_parser('events'); p.add_argument('--text'); p.add_argument('--preview', action='store_true')
+    p.add_argument('--next', action='store_true', help="next week's Monday instead of this week")
     sub.add_parser('show')
     p = sub.add_parser('post'); p.add_argument('--id'); p.add_argument('--approved', action='store_true')
     a = ap.parse_args()
     if a.cmd == 'draft':
         cmd_draft(a)
+    elif a.cmd == 'events':
+        cmd_events(a)
     elif a.cmd == 'show':
         show(newest_draft())
     else:

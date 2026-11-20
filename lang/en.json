@@ -594,7 +594,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.125.6",
+  "footer.version": "v1.125.11",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -1326,5 +1326,9 @@
   "event_detail.where": "Where",
   "org.mode_both": "Both (in person and online)",
   "event_detail.when": "When",
-  "event_detail.full_details": "Full details"
+  "event_detail.full_details": "Full details",
+  "events.lang_tag": "In {lang}",
+  "events.lang_original": "Original title",
+  "event_detail.translated_from": "Translated from {lang}. Original title:",
+  "event_detail.original_text": "Original text ({lang})"
 }

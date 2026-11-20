@@ -1,5 +1,5 @@
-"""English versions of upcoming events written in another language, shown on the home page to English
-readers (owner, 2026-11-09). Each event is checked once: lang is NULL until then. Safe to run twice.
+"""English versions of events written in another language, shown on the home page to English readers
+(owner, 2026-11-09) and across the whole calendar, past events included, with the language named (owner, 2026-11-19). Each event is checked once: lang is NULL until then. Safe to run twice.
 Env:   ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_SERVICE_KEY); ../.env is read
        when they are not set. TRANSLATE_MODEL to override the model. --dry-run prints without saving."""
 import json, os, sys, time
@@ -59,8 +59,8 @@ def main():
     key = env('ANTHROPIC_API_KEY')
     head = {'apikey': service, 'Authorization': f'Bearer {service}', 'Content-Type': 'application/json'}
     r = requests.get(f'{url}/rest/v1/events', headers=head, timeout=60, params={
-        'select': 'id,title,description', 'lang': 'is.null', 'status': 'in.(upcoming,ongoing)',
-        'start_date': 'gte.now()', 'order': 'start_date.asc', 'limit': 300})
+        'select': 'id,title,description', 'lang': 'is.null', 'status': 'in.(upcoming,ongoing,past)',
+        'order': 'start_date.desc', 'limit': 300})
     r.raise_for_status()
     todo = r.json()
     print(f'{len(todo)} events to check')
