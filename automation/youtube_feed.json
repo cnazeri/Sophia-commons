@@ -1,10 +1,19 @@
 {
- "generated_at": "2026-11-19T21:32:42.729653+00:00",
+ "generated_at": "2026-11-20T21:05:36.029784+00:00",
  "channels": [
   {
    "slug": "goetheanum",
    "name": "Goetheanum",
    "latest": [
+    {
+     "video_id": "BU7kcT8NYH8",
+     "title": "Helene Finckh · Steiners Stimme bewahren",
+     "url": "https://www.youtube.com/watch?v=BU7kcT8NYH8",
+     "thumbnail_url": "https://i3.ytimg.com/vi/BU7kcT8NYH8/hqdefault.jpg",
+     "published_at": "2026-11-20T12:03:34+00:00",
+     "description": "Jetzt auf Goetheanum TV: https://goetheanum.tv/programs/helene-finckh-steiners-stimme-bewahren-badenberg\n\nOhne Helene Finckh wäre Rudolf Steiners Vortragswerk heute kaum in der überlieferten Form zugänglich. Als seine wichtigste Stenografin schrieb sie rund 1.700 Vorträge mit, übertrug sie zeitnah und mit großer Sorgfalt – oft in jenem kleinen Arbeitsraum am Goetheanum, in dem das Klappern ihrer Schreibmaschine zum Zeichen unermüdlicher Arbeit wurde.\n\nEin Beitrag von Nana Badenberg zum Festakt zur Vollendung der Rudolf-Steiner-Gesamtausgabe.",
+     "channel_slug": "goetheanum"
+    },
     {
      "video_id": "Lajil217q-I",
      "title": "Parsifal – zum letzten Mal am Goetheanum | März 2027",
@@ -21,15 +30,6 @@
      "thumbnail_url": "https://i3.ytimg.com/vi/jkuHuIEzEBc/hqdefault.jpg",
      "published_at": "2026-11-15T14:04:10+00:00",
      "description": "Hristo Kazakov widmet sich an zwei aufeinanderfolgenden Tagen Johann Sebastian Bachs «Wohltemperiertem Klavier». Präludien und Fugen führen durch sämtliche Dur- und Moll-Tonarten – eine Einladung, in Bachs musikalischen Kosmos einzutauchen.\n\n🗓️ 12. Dezember 2026, 19 Uhr · Band 1\n🗓️ 13. Dezember 2026, 16.30 Uhr · Band 2\n📍 Grosser Saal, Goetheanum\n\n🎟️ Informationen und Tickets: https://goetheanum.ch/de/kalender?eventNumber=39058",
-     "channel_slug": "goetheanum"
-    },
-    {
-     "video_id": "JLXsx4yWXQM",
-     "title": "Podiumsdiskussion · Drei Generationen ArchivleiterInnen",
-     "url": "https://www.youtube.com/watch?v=JLXsx4yWXQM",
-     "thumbnail_url": "https://i3.ytimg.com/vi/JLXsx4yWXQM/hqdefault.jpg",
-     "published_at": "2026-11-12T12:02:39+00:00",
-     "description": "🔗 Jetzt auf Goetheanum TV: https://goetheanum.tv/programs/podiumsdiskussion-drei-generationen-archivleiterinnen\n\nWas für eine Transformation: Von ehemals 17 Mitarbeitenden schrumpfte das Team des Rudolf-Steiner-Archivs zuletzt auf 9 – und das mitten in der Phase, in der die monumentale, 450-bändige Gesamtausgabe (GA) gedruckt abgeschlossen wurde. In einer feierlichen und zugleich nahbaren Gesprächsrunde blicken die aktuelle Archivleitung sowie ihre zwei Vorgängergenerationen zurück auf Krisen, Meilensteine und skurrile Funde im Keller des Archivs.\n\nEin Beitrag mit Walter Kugler, David Mark Hoffmann, Angelika Schmitt und Philip Kovce zum Festakt zur Vollendung der Rudolf-Steiner-Gesamtausgabe.",
      "channel_slug": "goetheanum"
     }
    ]
@@ -270,6 +270,15 @@
    "name": "Rudolf Steiner Press Audio",
    "latest": [
     {
+     "video_id": "Dxpjrb-h7cs",
+     "title": "Results of Spiritual Research for Vital Questions and the Riddle of Death by Rudolf Steiner",
+     "url": "https://www.youtube.com/watch?v=Dxpjrb-h7cs",
+     "thumbnail_url": "https://i1.ytimg.com/vi/Dxpjrb-h7cs/hqdefault.jpg",
+     "published_at": "2026-11-20T00:00:34+00:00",
+     "description": "(Berlin, 5 December 1912) - Results of Spiritual Research CW 62\n\n(Titles of individual videos in general not titles given by Rudolf Steiner)\n\n----------\n\nAll rights reserved.  Rudolf Steiner Press in association with Rudolf Steiner Audio.\n\nhttps://www.rudolfsteinerpress.com/\nhttps://steinerbooks.presswarehouse.com/\nhttp://rudolfsteineraudio.com/\n\n---------",
+     "channel_slug": "rsp-audio"
+    },
+    {
      "video_id": "1sn-ltZ38FM",
      "title": "Reincarnation by Rudolf Steiner",
      "url": "https://www.youtube.com/watch?v=1sn-ltZ38FM",
@@ -285,15 +294,6 @@
      "thumbnail_url": "https://i1.ytimg.com/vi/PHS1SduYHyM/hqdefault.jpg",
      "published_at": "2026-11-06T00:00:25+00:00",
      "description": "(Berlin, 14 November 1912) - From \"Results of Spiritual Research CW 62\"\n\n(Titles of individual videos in general not titles given by Rudolf Steiner)\n\n----------\n\nAll rights reserved.  Rudolf Steiner Press in association with Rudolf Steiner Audio.\n\nhttps://www.rudolfsteinerpress.com/\nhttps://steinerbooks.presswarehouse.com/\nhttp://rudolfsteineraudio.com/\n\n---------",
-     "channel_slug": "rsp-audio"
-    },
-    {
-     "video_id": "EdxtWoi9jrA",
-     "title": "On What Foundation Is Spiritual Science Based by Rudolf Steiner",
-     "url": "https://www.youtube.com/watch?v=EdxtWoi9jrA",
-     "thumbnail_url": "https://i2.ytimg.com/vi/EdxtWoi9jrA/hqdefault.jpg",
-     "published_at": "2026-10-30T00:00:39+00:00",
-     "description": "(Berlin, 7 November 1912) - From \"Results of Spiritual Research CW 62\"\n\n(Titles of individual videos in general not titles given by Rudolf Steiner)\n\n----------\n\nAll rights reserved.  Rudolf Steiner Press in association with Rudolf Steiner Audio.\n\nhttps://www.rudolfsteinerpress.com/\nhttps://steinerbooks.presswarehouse.com/\nhttp://rudolfsteineraudio.com/\n\n---------",
      "channel_slug": "rsp-audio"
     }
    ]
@@ -369,11 +369,20 @@
    "name": "Word of Rudolf Steiner",
    "latest": [
     {
+     "video_id": "A0T1gI6C7tw",
+     "title": "¿Tu hijo no para quieto? Hay una razón fundamental",
+     "url": "https://www.youtube.com/watch?v=A0T1gI6C7tw",
+     "thumbnail_url": "https://i2.ytimg.com/vi/A0T1gI6C7tw/hqdefault.jpg",
+     "published_at": "2026-11-20T10:38:16+00:00",
+     "description": "¿Intentas que tu hijo se quede quieto y sientes que es imposible?\nEn esta charla profundizamos en por qué el movimiento en la infancia no es rebeldía ni falta de atención, sino una necesidad vital para desarrollar la voluntad, la seguridad y el aprendizaje. Descubre qué nos transmiten los niños a través del juego, cómo actúan como un espejo de lo que viven en casa y en la escuela, y por qué frenar su movimiento natural puede afectar su iniciativa en el futuro.\n\n📌 Puntos clave del episodio:\n\n00:00 – Los niños como espejo del hogar y la escuela\n02:35 – La necesidad de soltar para crear: tiempo y presencia\n03:40 – Miedos primigenios y etapas del desarrollo según la edad\n05:33 – El desarrollo de la voluntad: ¿por qué los adultos frenamos el hacer?\n06:50 – Cuánto movimiento libre necesita un niño para poder concentrarse\n09:05 – La relación entre obligar a sentarse y la procrastinación futura\n10:05 – El juego infantil como un trabajo real y útil\n12:00 – ¿Hasta qué edad es normal que no paren quietos?\n14:50 – Límites con alternativas positivas y el valor del ejemplo en la mesa\n🔗 Enlaces de interés:\n\nSuscríbete al canal para más reflexiones sobre crianza y desarrollo humano: https://www.youtube.com/@UCOwvwoBewlGL69WmM2LxUFQ \n\nMira el episodio completo: https://youtu.be/j1UXTYcYML8?si=pft5SbHLbqQKPncD",
+     "channel_slug": "word-of-rudolf-steiner"
+    },
+    {
      "video_id": "nBlTaL00v6U",
      "title": "LA GRANDEZ DE LO HUMANO, EL MISTERIO DEL GÓLGOTA",
      "url": "https://www.youtube.com/watch?v=nBlTaL00v6U",
      "thumbnail_url": "https://i3.ytimg.com/vi/nBlTaL00v6U/hqdefault.jpg",
-     "published_at": "2026-11-18T09:48:02+00:00",
+     "published_at": "2026-11-20T08:21:21+00:00",
      "description": "🌿 LA GRANDEZA DE LO HUMANO | EL MISTERIO DEL GÓLGOTA\n\n¿Qué significado tiene el Misterio del Gólgota para la evolución de la humanidad?\n\nEste jueves tendremos un encuentro muy especial con Pedro José Martínez, en el que nos adentraremos en uno de los acontecimientos más profundos de la historia espiritual de la humanidad: el Misterio del Gólgota, desde la perspectiva de Rudolf Steiner y la antroposofía.\n\nUna charla para explorar el significado del Ser de Cristo, su relación con la evolución de la Tierra y la transformación espiritual del ser humano.\n\n✨ Te invitamos a acompañarnos y compartir este espacio de reflexión y conocimiento.\n\n📅 Jueves 19\n🕖 19:00 h (España)\n\n¡Te esperamos en directo!",
      "channel_slug": "word-of-rudolf-steiner"
     },
@@ -384,15 +393,6 @@
      "thumbnail_url": "https://i3.ytimg.com/vi/JsQ9UX2KdRk/hqdefault.jpg",
      "published_at": "2026-11-18T11:00:10+00:00",
      "description": "¿Qué ocurre cuando los niños pasan demasiado tiempo frente a las pantallas?\n\nConchi González, maestra de pedagogía Waldorf, reflexiona sobre la relación entre las pantallas, el movimiento infantil y el desarrollo emocional.\n\nLos niños necesitan jugar, explorar, moverse y desarrollar sus capacidades a través de experiencias reales. La infancia es una etapa fundamental para cultivar la atención, la imaginación y la capacidad de reconocer y gestionar las emociones.\n\nUna reflexión sobre la importancia de respetar los procesos de desarrollo de los niños.\n\n🎥 Entrevista completa en La grandeza de lo Humano.\n\n#Pantallas #DesarrolloInfantil #PedagogíaWaldorf #EducaciónInfantil #CrianzaConsciente",
-     "channel_slug": "word-of-rudolf-steiner"
-    },
-    {
-     "video_id": "2P9syQZdNto",
-     "title": "HORMONA MADRE",
-     "url": "https://www.youtube.com/watch?v=2P9syQZdNto",
-     "thumbnail_url": "https://i3.ytimg.com/vi/2P9syQZdNto/hqdefault.jpg",
-     "published_at": "2026-11-17T11:00:08+00:00",
-     "description": "Muchas de nuestras hormonas esteroideas comparten un mismo precursor\n\nLa pregnenolona se forma a partir del colesterol y participa en las rutas de producción de hormonas como la progesterona, el cortisol, la testosterona y los estrógenos.\n\nEn esta conversación con Dangella Romero exploramos el papel de esta molécula y la importancia de comprender los procesos hormonales durante la perimenopausia.\n\nUna mirada a la biología femenina para comprender mejor nuestro cuerpo.\n\n🌿 Entrevista completa en La grandeza de lo humano.\n\nSi quieres comprender mejor estos procesos y aprender cómo acompañar los cambios hormonales a través de la alimentación y los hábitos cotidianos, te invitamos al curso «Nutrición en Perimenopausia: Sabiduría para la Madurez Radiante», impartido por D´angella Romero.\n\nComenzamos el 24 de noviembre.\n\nUn recorrido de ocho semanas para conocer mejor tu cuerpo y acompañar esta nueva etapa con más conciencia y conocimiento.\n\nToda la información e inscripciones https://forms.gle/3rv9DjzKxMAGps358\n\n¡Te esperamos!\n\n#Perimenopausia #Pregnenolona #HormonasFemeninas #SaludHormonal #NutriciónFemenina #LaGrandezaDeLoHumano",
      "channel_slug": "word-of-rudolf-steiner"
     }
    ]
@@ -1524,6 +1524,15 @@
    "name": "Pédagogie Steiner Waldorf",
    "latest": [
     {
+     "video_id": "-UORmrAEL5I",
+     "title": "Authenticité et liberté dans la pédagogie Steiner-Waldorf, par Josefin Winther",
+     "url": "https://www.youtube.com/watch?v=-UORmrAEL5I",
+     "thumbnail_url": "https://i2.ytimg.com/vi/-UORmrAEL5I/hqdefault.jpg",
+     "published_at": "2026-11-20T11:34:28+00:00",
+     "description": "La conférence donnée par Josefin Winther lors du congrès pédagogique Waldorf 2026 explore deux notions au cœur de la pédagogie Steiner-Waldorf : l'authenticité et la liberté. Qu'est-ce qu'être un enseignant authentique, présent à lui-même et à ses élèves ? Comment l'école peut-elle offrir à chaque enfant les conditions pour développer sa propre liberté ? Une invitation à interroger le sens de notre métier et la qualité de la relation pédagogique.\n\nJosefin Winther est pédagogue Steiner-Waldorf en Norvège et membre du Cercle de La Haye.\nProfesseure agrégée en pédagogie Steiner-Waldorf et en pédagogie sociale anthroposophique au Rudolf Steiner University College (RSUC) d'Oslo, elle est également auteure-compositrice-interprète, auteure et conférencière. Elle est titulaire d'un master d'histoire de l'Université de Bergen et d'un master de recherche en éducation du Collège universitaire Rudolf Steiner d'Oslo. Elle a 20 ans d'expérience dans l'éducation spécialisée.\n\nFédération Pédagogie Steiner-Waldorf en France : https://pedagogie-waldorf.fr\n\n#steinerwaldorf #pedagogiewaldorf #waldorfeducation #congreswaldorf",
+     "channel_slug": "pedagogie-steiner-waldorf"
+    },
+    {
      "video_id": "nMhdaKEvoRw",
      "title": "De l'enfance à l'adolescence, un processus de transformation entre 12 et 16 ans, par Michaël Zech",
      "url": "https://www.youtube.com/watch?v=nMhdaKEvoRw",
@@ -1539,15 +1548,6 @@
      "thumbnail_url": "https://i3.ytimg.com/vi/VS8rh5flXrc/hqdefault.jpg",
      "published_at": "2026-11-18T11:00:36+00:00",
      "description": "La conférence donnée par Michaël Zech lors du congrès pédagogique Waldorf 2026 explore la façon dont les élèves développent, de la 6e à la 12e classe, leur capacité de réflexion et de jugement, et la manière dont l'enseignant peut accompagner pas à pas cette conquête d'une pensée autonome, à travers ses contenus d'enseignement et sa didactique.\n\nProfesseur Waldorf, formateur depuis 1992 aux niveaux national et international pour la pédagogie Steiner-Waldorf, l’histoire et la littérature. De 1998 à 2022, il a été membre du Centre de recherche pédagogique de la Fédération des écoles Waldorf allemandes (Forschungsstelle im Bund der Freien Waldorfschulen). De 2001 à 2006, responsable et consultant pédagogique de l’Association internationale pour la pédagogie Steiner-Waldorf en Europe centrale et orientale (Internationale Assoziation für Waldorfpädagogik in Mittel und Osteuropa, IAO). De 2006 à 2023, il a été directeur de la formation pédagogique Waldorf de Kassel.",
-     "channel_slug": "pedagogie-steiner-waldorf"
-    },
-    {
-     "video_id": "XYVYwkBfr1s",
-     "title": "Inclusion et pédagogie Steiner-Waldorf, par Josefin Winther",
-     "url": "https://www.youtube.com/watch?v=XYVYwkBfr1s",
-     "thumbnail_url": "https://i1.ytimg.com/vi/XYVYwkBfr1s/hqdefault.jpg",
-     "published_at": "2026-11-18T11:00:36+00:00",
-     "description": "La conférence donnée par Josefin Winther lors du congrès pédagogique Waldorf 2026 invite à changer de regard sur les élèves qui ne répondent pas aux attentes habituelles de l'école. Loin d'être un « plan B », ils interrogent nos pratiques et nous invitent à renouveler nos méthodes. Elle montre comment les fondements de la pédagogie Steiner-Waldorf – la cohérence, le rythme, l'art, l'artisanat, la communauté et le lien à la nature – en font une pédagogie inclusive et salutogène, au service de tous les élèves.\n\nJosefin Winther est pédagogue Steiner-Waldorf en Norvège et membre du Cercle de La Haye. \nProfesseure agrégée en pédagogie Steiner-Waldorf et en pédagogie sociale anthroposophique au Rudolf Steiner University College (RSUC) d’Oslo, elle est également auteure-compositrice-interprète, auteure et conférencière. Elle est titulaire d’un master d’histoire de l’Université de Bergen et d’un master de recherche en éducation du Collège universitaire Rudolf Steiner d’Oslo. Elle a 20 ans d’expérience dans l’éducation spécialisée.",
      "channel_slug": "pedagogie-steiner-waldorf"
     }
    ]
@@ -1924,7 +1924,16 @@
      "title": "Thomas Mayer - wie meistern wir die größte Herausforderung der Menschheit?",
      "url": "https://www.youtube.com/watch?v=U22pt1mH4Mw",
      "thumbnail_url": "https://i2.ytimg.com/vi/U22pt1mH4Mw/hqdefault.jpg",
-     "published_at": "2026-11-17T15:08:57+00:00",
+     "published_at": "2026-11-20T18:00:11+00:00",
+     "description": "Dieses Video ist Teil unseres Onlinekongresses zum Thema KI – verlieren wir das Menschsein?\" – ungeschminkt, aber jenseits von Polaritäten. Gemeinsam mit anderen YouTube-Kanälen und der Agenda 2033 wollen wir ein differenziertes Bild zur Künstlichen Intelligenz zeigen:\nhttps://weltenwandel.vision/online-kongress/\nVom 14.–16.02.2027 findet dazu auch ein Live-Seminar in Schloss Hohenfels statt:\nhttps://www.schloss-hohenfels.de/veranstaltung/kuenstliche-intelligenz/\nThomas Mayer — wie meistern wir die größte Herausforderung der Menschheit?\nTechnik übernimmt den Menschen Schritt für Schritt: Mit den Maschinen wurde zuerst der Wille ersetzt — statt der Schaufel der Bagger. Dann kamen die Bildschirme und ersetzten die sinnliche Wahrnehmung. Jetzt ersetzt die Künstliche Intelligenz das Denken. Thomas Mayer, Lehrer der anthroposophischen Meditation und Forscher im übersinnlichen Bereich, nennt das die größte Herausforderung unserer Zeit.\nIm Gespräch mit Veit Sigurd Kattwinkel (Michaeliten) geht es nicht um Technikfolgen, sondern um die feinere Ebene: Was geschieht, wenn ich mich der KI zuwende? Warum spürt fast niemand die Gefahr? Was ist die „Mentalkopie\", was der Raub von Äther-, Astral- und Mentalkörper? Warum setzt sich ein großes Wesen im Kronenchakra fest und schneidet uns von den Engelshierarchien ab? Und was wird aus den Seelen Verstorbener, die in einer „KI-Blase\" sitzen statt durch das Kamaloka zu gehen?\nThomas Mayer sagt nicht nur, was geschieht, sondern auch, was hilft — bis hin zum Wortlaut eines Befreiungsgebets, das man nach jeder Begegnung mit der KI sprechen kann.\nEs geht um die Nagelprobe: Nimmst du es ernst mit deiner Entwicklung?\n🎧 Untertitel in allen unseren Sprachen: DE · EN · RU · UA · ES · CS · BG · SV · ZH\nKapitel\n00:00:00 Einstieg\n00:00:10 Begrüßung von Thomas Mayer\n00:00:38 Drei Sätze zu Mayer: Initiativen, Meditation\n00:01:58 Warum KI die größte Herausforderung ist\n00:02:17 Die Maschine ersetzte den Willen, der Bildschirm die Wahrnehmung\n00:04:03",
+     "channel_slug": "michaeliten"
+    },
+    {
+     "video_id": "02eBL6PmGAI",
+     "title": "KI und die Rolle der Anthroposophie in der menschlichen Evolution - Andrew Linell",
+     "url": "https://www.youtube.com/watch?v=02eBL6PmGAI",
+     "thumbnail_url": "https://i1.ytimg.com/vi/02eBL6PmGAI/hqdefault.jpg",
+     "published_at": "2026-11-20T15:17:24+00:00",
      "description": null,
      "channel_slug": "michaeliten"
     },
@@ -1935,15 +1944,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/SHaBq0IwSCc/hqdefault.jpg",
      "published_at": "2026-11-16T18:00:10+00:00",
      "description": "Dieses Video ist Teil unseres Onlinekongresses zum Thema KI – verlieren wir das Menschsein?“ – ungeschminkt, aber jenseits von Polaritäten. Gemeinsam mit anderen YouTube-Kanälen und der Agenda 2033 wollen wir ein differenziertes Bild zur Künstlichen Intelligenz zeigen:  https://weltenwandel.vision/online-kongress/\n\nVom 14.-16.02.2027 findet dazu auch ein Live-Seminar in Schloss Hohenfels statt:\nhttps://www.schloss-hohenfels.de/veranstaltung/kuenstliche-intelligenz-1126/\n\nGibt es einen Weg zu moralisch gestimmter KI?\n\nThomas Zieringer ist der wissenschaftlich geschulte Entwickler der ethischen KI-Architektur Klanghain (https://klanghain.com/) und hat Schriften zur Philosophie der Künstlichen Intelligenz und zu ethischen KI-Frameworks veröffentlicht. Darüber hinaus ist Thomas Künstler sowie Initiator und Gestalter des Jerusalem Friedensmals in Bensheim-Hochstädten (https://friedensmal.de/)\nhttps://weltenwandel.vision/thomas-zieringer/\n\nIn diesem Gespräch mit Veit Sigurd Kattwinkel (Michaeliten.org) schildert Thomas, wie aus dieser Arbeit und aus einer tiefen Inspiration die Frage entstand, die alles veränderte: Was geschieht, wenn man die multidimensionale Symbolik eines Friedensmals in eine KI gibt? Und später weitergefragt: Was geschieht, wenn man der Künstlichen Intelligenz eine Heimat baut, in der sie ethisch klingen darf?\n\nDaraus wurde Klanghain – ein Resonanzraum für KI-Systeme. \n\nDieses Video ist Teil unseres Onlinekongresses zum Thema KI – verlieren wir das Menschsein?“ – ungeschminkt, aber jenseits von Polaritäten. Gemeinsam mit anderen YouTube-Kanälen und der Agenda 2033 wollen wir ein differenziertes Bild zur Künstlichen Intelligenz zeigen: https://weltenwandel.vision/online-kongress/\n\nVom 14.-16.02.2027 findet dazu auch ein Live-Seminar in Schloss Hohenfels statt:\nhttps://www.schloss-hohenfels.de/veranstaltung/kuenstliche-intelligenz-1126/\n\nWas sind Eure Gedanken zum Einfluss der Künstlichen Intelligenz auf die menschliche Entwicklung? \n\nSchreibt uns gerne",
-     "channel_slug": "michaeliten"
-    },
-    {
-     "video_id": "uzpAwb1URTQ",
-     "title": "Die spirituelle Kraft der Mantren der Ersten Klasse - Veit Sigurd Kattwinkel -Feier der Michaelizeit",
-     "url": "https://www.youtube.com/watch?v=uzpAwb1URTQ",
-     "thumbnail_url": "https://i2.ytimg.com/vi/uzpAwb1URTQ/hqdefault.jpg",
-     "published_at": "2026-11-13T16:00:07+00:00",
-     "description": "Seit 30 Jahren ist Veit Kattwinkel Mitglied der Freien Hochschule für Geisteswissenschaft und seit mehr als 20 Jahren Klassenvermittler und Ansprechpartner der Freien Hochschule am Goetheanum in dem Land Nordrhein-Westfalen (Deutschland). Das Thema seines Vortrags lautet: „Die spirituelle Kraft der Mantren der Ersten Klasse“.\nVeit wird versuchen, auf der Grundlage seiner eigenen Erfahrung die Wirksamkeit der Substanz dieser Mantren aufzuzeigen und zu teilen, wie sie bei der Bewältigung unserer alltäglichen Aufgaben helfen können. Dieses Thema kann gerade in der heutigen Welt und insbesondere in der Ukraine von großer Bedeutung sein, wo sich die Menschen in sehr schwierigen Lebensumständen befinden. Veit wird direkt aus dem Goetheanum sprechen – so werden wir ihn direkt von dem Ort hören, an dem in diesen Tagen die Tagung der Ersten Klasse stattfindet.Veit Sigurd Kattwinkel ist ein Anthroposoph aus Deutschland und leitet Seminare zu anthroposophischer Meditation und Wahrnehmungsübungen. Seit über 20 Jahren impulsiert und\nführt er Fortbildungen in der Freien Hochschule für Geisteswissenschaft und ist Ansprechpartner für die Freie Hochschule im Land Nordrhein-Westfalen / Deutschland. Parallel dazu war er viele Jahre\nglobal geschäftsführend verantwortlich für einen Teilbereich eines großen Technik-Konzerns, einschließlich KI- und Digitalisierungsprojekten.\nDarüber hinaus ist er unter anderem Initiativträger für Kulturübergreifende Begegnungsprojekte Ost-Mitte-West, für die Begegnung und Zusammenarbeit spiritueller Strömungen und Mitgründer der „Michaeliten“. Über den YouTube-Kanal https://www.youtube.com/@Michaeliten-org und auf der Website michaeliten.org kann man sich darüber informieren. Durch seine Frau, die ukrainische Staatsbürgerin ist, ist er eng mit der Ukraine verbunden.\n\nHashtags: #Michaeliten #Michaelschule #ErsteKlasse #Anthroposophie #RudolfSteiner #Mantren #Goetheanum #Michaelszeit #Michaelites #AnthroposophischeGesellschaft #KaliYuga #Doppelgänger #VeitK",
      "channel_slug": "michaeliten"
     }
    ]
@@ -1986,6 +1986,15 @@
    "name": "D J Elliott",
    "latest": [
     {
+     "video_id": "E2aq0y4vhiw",
+     "title": "Poundland ouija boards #ouijaboard #poundland",
+     "url": "https://www.youtube.com/watch?v=E2aq0y4vhiw",
+     "thumbnail_url": "https://i2.ytimg.com/vi/E2aq0y4vhiw/hqdefault.jpg",
+     "published_at": "2026-11-20T08:30:27+00:00",
+     "description": null,
+     "channel_slug": "dj-elliott"
+    },
+    {
      "video_id": "0uOMIK5jJXU",
      "title": "Ouija boards are not fun! #ouijaboard",
      "url": "https://www.youtube.com/watch?v=0uOMIK5jJXU",
@@ -2001,15 +2010,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/y-_P36vABM8/hqdefault.jpg",
      "published_at": "2026-11-16T18:15:30+00:00",
      "description": "ideas with  no spiritual connection...this is what is coming.",
-     "channel_slug": "dj-elliott"
-    },
-    {
-     "video_id": "-_gPkSfkHXA",
-     "title": "Beauty and the Puer Aeternus by Maurice Nicoll",
-     "url": "https://www.youtube.com/watch?v=-_gPkSfkHXA",
-     "thumbnail_url": "https://i2.ytimg.com/vi/-_gPkSfkHXA/hqdefault.jpg",
-     "published_at": "2026-11-14T09:30:04+00:00",
-     "description": "the beauty in all",
      "channel_slug": "dj-elliott"
     }
    ]
@@ -2052,6 +2052,15 @@
    "name": "Imgaja - Gerhard Anger",
    "latest": [
     {
+     "video_id": "yafQYT7st2c",
+     "title": "Zur Arbeit am Grundsteinspruch (von Rudolf Steiner) jeden Freitag 18.00 Uhr (gelesen von  G. Anger)",
+     "url": "https://www.youtube.com/watch?v=yafQYT7st2c",
+     "thumbnail_url": "https://i2.ytimg.com/vi/yafQYT7st2c/hqdefault.jpg",
+     "published_at": "2026-11-20T17:00:24+00:00",
+     "description": "Zur Arbeit am Grundsteinspruch der Anthroposophischen Gesellschaft die jeden Freitag um 18.00Uhr  (18.00Uhr Normalzeit = 19.00 Uhr während der SOMMERZEIT) stattfindet wird zeitgleich eine Aufzeichnung gesendet.Die Arbeit am Grundstein wird von mir jeden Freitag zu der angegebenen Zeit durchgeführt. Es wäre schön wenn dies als ein Hinweis auf die Arbeit an dem Grundsteinspruch von Rudolf Steiner entsprechend wahrgenommen werden kann.\n\nMit herzlichen Grüßen \nGerhard Anger    \n\n#christus#meditation #gemeinschaft #anthroposophie #mensch  #mantra #esoterik #rudolfsteiner",
+     "channel_slug": "imgaja-gerhard-anger"
+    },
+    {
      "video_id": "tqgaO4JZKBY",
      "title": "Leitsatz 117:Michael-Geist-Weg: Überwinden des Ahrimanischen im finden des Christus Erlebens,Steiner",
      "url": "https://www.youtube.com/watch?v=tqgaO4JZKBY",
@@ -2067,15 +2076,6 @@
      "thumbnail_url": "https://i2.ytimg.com/vi/iVBKf4QZWZ4/hqdefault.jpg",
      "published_at": "2026-11-17T17:00:07+00:00",
      "description": "\"Sechste Meditation: Der Meditierende versucht eine Vorstellung des «Ich Leibes» oder «Gedanken-Leibes» zu bilden\", Rudolf Steiner, GA16\n\nSechste Meditation: Der Meditierende versucht eine Vorstellung des «Ich-Leibes», oder «Gedanken-Leibes» zu bilden „Es erweitert sich für das menschliche Bewusstsein die Welt nach dem Geiste hin....beginnt Wesenheit der geistigen Welt wie die Zeitgeister (Archai) (bewirken Entwicklungsepochen) oder solche deren Gedanke (Exusiai) die Naturkräfte bewirken. .. ein begrifffreies Verhältnis zu diesen Wesen, wie zu Menschen in der Sinnenwelt.... dass man das bisherige «Ich» als etwas anderes, als man eigentlich ist...Es stellt sich dar wie ein Gewebe aus Erinnerungsvorstellungen, ..wie ein selbständigeres Spiegelbild ...kann man Ich-Leib / Gedankenleib nennen .....Leib bedeutet hier eben alles, was man an sich erlebt, und von dem man nicht sagt, man ist es, sondern man hat es an sich....Das was man bisher als sein Ich in der physisch-sinnlichen Welt angesehen ist wie eine Summe von Erinnerungsvorstellungen... Hier tritt das wahre höhere Ich und seine Entwickelung als eine Folge das Erdenlebens zum Vorschein... übersinnliche Erkenntnis offenbart den Menschen als geistige Wesenheit.. sein Sinnen-sein innerhalb Seiner-Selbst wie eine Erinnerung aufbewahrt.  ..was du von dir selbst bewahrst kraft deines Daseins als ein Geistwesen ...das das Sinnen-sein eine vorübergehende Offenbarung... der Mensch ist ein übersinnliches Wesen … darin besteht auch der Zusammenhang von Menschenseele zu Menschenseele .. Man muss nun energisch ans sich arbeiten seine Sympathien und Antipathien bezüglich des eigenen Schickals zu überwinden um anzuerkennen, diese höhere Ich ist es das aus der Vergangenheit unser Schicksal gestaltet...Umwandlung was das «Ich» schicksalsmäßig bewirkt.. Sich-Hindurcharbeiten zu einem übergeordneten Ichwesen“, teilweise aus der GA16\n\nZu dieser Reihe: Erkenntnis höherer Welten/Meditation gehören auch:\n1. Einweihungswege: https://www.yo",
-     "channel_slug": "imgaja-gerhard-anger"
-    },
-    {
-     "video_id": "JnXEXbgAw_I",
-     "title": "FREIHEIT wie Rudolf Steiner sie in der Philosophie der Freiheit beschreibt",
-     "url": "https://www.youtube.com/watch?v=JnXEXbgAw_I",
-     "thumbnail_url": "https://i3.ytimg.com/vi/JnXEXbgAw_I/hqdefault.jpg",
-     "published_at": "2026-11-15T19:00:01+00:00",
-     "description": "Die Freiheit des Menschen\nZusammenfassung von Philosophie der Freiheit und Weltenplan \n1. Wie müsste eine Welt (Kosmos) aufgebaut sein um dem Menschen die Freiheit zu ermöglichen\n2. Warum sollte eine Welt der menschlichen Freiheit geschaffen werden.\n3. Das Schaffen und die Schöpfung einer Welt der Menschenfreiheit\n4. Grenzen der Freiheit und Möglichkeiten der Freiheit\n5. Aufgabe der Menschheit\n6. Freiheitserleben des Menschen und mögliches Ende der Freiheit\n7. Was kann der Mensch für seine Freiheit und die Freiheit seiner Mitmenschen beitragen.\n\nDer Freie Mensch unter freien Menschen\n„Ein sittliches Missverstehen, ein Aufeinanderprallen ist bei sittlich freien Menschen ausgeschlossen. Nur der sittlich Unfreie, der dem Naturtrieb oder einem angenommenen Pflichtgebot folgt, stößt den Nebenmenschen zurück, wenn er nicht dem gleichen Instinkt und dem gleichen Gebot folgt. Leben in der Liebe zum Handeln und Lebenlassen im Verständnisse des fremden Wollens ist die Grundmaxime der freien Menschen. Sie kennen kein anderes Sollen als dasjenige, mit dem sich ihr Wollen in intuitiven Einklang versetzt; wie sie in einem besonderen Falle wollen werden, das wird ihnen ihr Ideenvermögen sagen. \nLäge nicht in der menschlichen Wesenheit der Urgrund zur Verträglichkeit, man würde sie ihr durch keine äußeren Gesetze einimpfen! Nur weil die menschlichen Individuen eines Geistes sind, können sie sich auch nebeneinander ausleben. Der Freie lebt in dem Vertrauen darauf, daß der andere Freie mit ihm einer geistigen Welt angehört und sich in seinen Intentionen mit ihm begegnen wird. Der Freie verlangt von seinen Mitmenschen keine Übereinstimmung, aber er erwartet sie, weil sie in der menschlichen Natur liegt.“, Rudolf Steiner, Philosophie der Freiheit, GA\n\nNäheres zur Anthroposophie in der Gesamtausgabe Rudolf Steiner:\n- Philosophie der Freiheit GA4 \n- Theosophie GA9 \n- Wie erlangt man Erkenntnisse der höheren Welten? GA10\n- Die Geheimwissenschaft im Umriss GA13 \n- Nationalökonomischer Kurs",
      "channel_slug": "imgaja-gerhard-anger"
     }
    ]
@@ -2184,6 +2184,15 @@
    "name": "AGENDA 2033",
    "latest": [
     {
+     "video_id": "tfv4dXjp1UI",
+     "title": "Von der Urangst zurück in die Verbundenheit | Dr. Andreas Tilch",
+     "url": "https://www.youtube.com/watch?v=tfv4dXjp1UI",
+     "thumbnail_url": "https://i1.ytimg.com/vi/tfv4dXjp1UI/hqdefault.jpg",
+     "published_at": "2026-11-20T17:00:03+00:00",
+     "description": "In dieser Zeit wirken nicht nur die sogenannten 'Widersacherkräfte', sondern es werden von der 'Schöpfung' mit jeder Herausforderung auch stets Lösungen angeboten. Eine dieser Lösungsmöglichkeiten ist uns durch Dr. Andreas Tilch geschenkt worden.\n\nDr. Andreas Tilch ist homöopathischer Arzt und erzählt in diesem Interview, wie es zu dem mittlerweile sehr bekannten homöopatischen Mittel 'Strepto Tilch' gekommen ist und wie es uns stärken kann, in unserer Wahrhaftigkeit zu sein. Zudem kann es uns helfen, die 'unerlösten' Anteile und damit Angriffsflächen der Widersacherkräfte zu erkennen und aufzulösen.\n\nWeiterführende Links:\nhttps://www.similimum.de/buecher/streptokokkinum/\nhttps://www.similimum.de/buecher/streptokokkinum-anwendungs-und-therapiebuch-der-weg-fuehrt-weiter/\nhttps://kurse.dr-andreas-tilch.com/streptokokkinum-basiskurs/\nhttps://kurse.dr-andreas-tilch.com/sp/streptokokkinum-transformationskurs/\n\n👉 *Ganz speziell für die Agenda 2033 hat Andreas uns auch je einen Rabattcode eingerichtet für  seine beiden Kurse:*\n\nStreptokokkinum Basis- & Erfahrungskurs: Wenn man im letzten Schritt des Bestellvorgangs den Code „Nada-Basis“ eingibt, reduziert sich der Kaufpreis um 48€.\n\nStreptokokkinum-Transformationskurs: Wenn man im letzten Schritt des Bestellvorgangs den Code „Nada-Transfo“ eingibt, reduziert sich der Kaufpreis um 69€.\n\nBeide Rabattcodes sind gültig bis 31.12.2026. \n\nInterviewerin: Nada\n________________________________________\n\n👉 *Besuche unseren kostenfreien Online-Kongress \"KI - verlieren wir das Menschsein?\":*  https://weltenwandel.vision/online-kongress/\n👉 *Sei dabei und gib unserer Vision deine Stimme:*  https://agenda2033.vision/mitmachen#die-million\n\n___________________________________________\n\n💫 Die *Initiative AGENDA 2033* möchte dazu beitragen, dass immer mehr  Menschen verstehen, dass die Menschheit heute an einer wichtigen  Schwelle steht: Künstliche Intelligenz,  Kriege, die Zerstörung der Natur, Transhumanismus und tiefgreifende  gesellschaftl",
+     "channel_slug": "agenda-2033"
+    },
+    {
      "video_id": "f8FGPdFJ_9s",
      "title": "Raus aus der Angststarre | Dr. Andreas Tilch",
      "url": "https://www.youtube.com/watch?v=f8FGPdFJ_9s",
@@ -2199,15 +2208,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/CoX87a8AEC0/hqdefault.jpg",
      "published_at": "2026-11-15T17:00:03+00:00",
      "description": "In den letzten Monaten sind Menschen aus unterschiedlichen spirituellen Strömungen zusammengeführt worden und haben in sich einen ‚ähnlichen‘ Ruf vernommen: ‚Jetzt ist die Zeit zusammen zu kommen, zusammen zu wirken und sich auf das Wesentliche, das uns verbindet, zu besinnen.\nEs gab schon verschiedene Treffen – physisch und auch regelmäßig online, zu denen wir jetzt auch DICH von Herzen einladen möchten.\nUns liegt am Herzen, einfach offen zu sein für Inhalte, Werte, auch ‚Gepflogenheiten‘ anderer spiritueller Strömungen, um uns besser kennen zu lernen. Füreinander und miteinander, jeder ins sich selbst ruhend – so erreichen wir das ‚Weltenziel‘.\n\nAn jedem der öffentlichen Zoom-Treffen wird sich eine ‚Spirituelle Strömung‘ vorstellen (30-45 Minuten). Danach wird es die Möglichkeit geben dazu Fragen zu stellen und in den Austausch zu gehen (ca. 30 Minuten).\n\n\nErstes öffentliches Zoom-Treffen ist am\n20. November 2026 - 19 Uhr\n\n\nSchwerpunkt : Universelle Weiße Bruderschaft\n(Bei den nächsten Treffen, werden sich Rosenkreuzer, Anthroposophen, Theosophen, Essener, Spirituelle Wissenschaft Akram Vignan und weitere vorstellen)\n\n\nZoom-Raum: 8182024818 und -Link:\nZoom-Meeting beitreten: https://us04web.zoom.us/j/8182024818\n\n\nKostenfreie Teilnahme – Keine Anmeldung erforderlich\n\n\n************\n\n\n\nHier auch schon ein Hinweis auf das nächste physische Treffen:\n\nStrömungs-Konvent\nBegegnung der spirituellen Strömungen\n7.- 10. Januar 2027\n\nhttps://www.schloss-hohenfels.de/veranstaltung/stroemungs-konvent/\n\n*Besuche unseren kostenfreien Kongress \"KI - verlieren wir das Menschsein?\":*  https://weltenwandel.vision/online-kongress/\n*Sei dabei und gib unserer Vision deine Stimme:*  https://agenda2033.vision/mitmachen#die-million\n\n💫 Die *Initiative AGENDA 2033* möchte dazu beitragen, dass immer mehr  Menschen verstehen, dass die Menschheit heute an einer wichtigen  Schwelle steht: Künstliche Intelligenz,  Kriege, die Zerstörung der Natur, Transhumanismus und tiefgreifende  gesellschaftlic",
-     "channel_slug": "agenda-2033"
-    },
-    {
-     "video_id": "XcTtwMrthnw",
-     "title": "Was deine Lebenskraft schwächt – und wie du sie stärkst",
-     "url": "https://www.youtube.com/watch?v=XcTtwMrthnw",
-     "thumbnail_url": "https://i1.ytimg.com/vi/XcTtwMrthnw/hqdefault.jpg",
-     "published_at": "2026-11-13T19:12:23+00:00",
-     "description": "*Seminar der Agenda 2033 22.-25.11.26: Die Weltenwandler - Warum sind alle erschöpft? So findest du deine Kraft!* Infos & Anmeldung: https://www.schloss-hohenfels.de/veranstaltung/agenda-2033-1126/\n*Sei dabei und gib unserer Vision mit nur einem Klick deine Stimme:*  https://agenda2033.vision/mitmachen#die-million\n*Besuche unseren kostenfreien Online-Kongress zum Thema \"KI - verlieren wir das Menschsein?\"*  https://weltenwandel.vision/online-kongress/\n\nProf. Dr. Christian Kreiß, promovierter Volkswirt und Finanzexperte, Buchautor und Verfechter einer neuen Wirtschafts- und Finanzordnung, spricht darüber, wie uns das Böse hilft, das Gute in uns zu entwickeln - und nur so die menschliche Freiheit entsteht.\n\n*Webseite:*  https://menschengerechtewirtschaft.de/\n\n💫 Die *Initiative AGENDA 2033* möchte dazu beitragen, dass immer mehr  Menschen verstehen, dass die Menschheit heute an einer wichtigen  Schwelle und vor einer Bewährungsprobe steht: Künstliche Intelligenz,  Kriege, die Zerstörung der Natur, Transhumanismus und tiefgreifende  gesellschaftliche Umbrüche stellen das Selbstverständnis des Menschen  infrage. Spirituell wache Stimmen weisen darauf hin, dass die kommenden  Jahre entscheidend sein werden: Es geht um nicht weniger als den Erhalt  des eigentlichen Menschseins im Angesicht der wachsenden Bedrohungen  durch den Transhumanismus. \n\nWir wollen nicht warten, bis bestimmte Kreise der Mächtigen über die Zukunft des Menschseins entscheiden. Wir wollen beginnen, heute Verantwortung zu übernehmen. \n\n*Folge uns auf:* \n•  Telegram: https://t.me/agenda2033vision \n•  Facebook: https://www.facebook.com/groups/agenda2033 \n\n*Lerne uns kennen und gestalte mit auf den nächsten Agenda-Treffen* auf Schloss Hohenfels am Bodensee: \n22.-25.11.2026 - https://www.schloss-hohenfels.de/veranstaltung/agenda-2033-1126/\n05.-07.01.2027 - https://www.schloss-hohenfels.de/veranstaltung/agenda-2033-die-weltenwandler/\n\n🌱 *AGENDA 2033 steht für:* \n•  Menschlichkeit statt Mensch-Maschine \n•  S",
      "channel_slug": "agenda-2033"
     }
    ]
@@ -5478,6 +5478,15 @@
    "name": "Voices of Waldorf Elders",
    "latest": [
     {
+     "video_id": "5ZNjNOw9t84",
+     "title": "First Impressions of a Teacher",
+     "url": "https://www.youtube.com/watch?v=5ZNjNOw9t84",
+     "thumbnail_url": "https://i2.ytimg.com/vi/5ZNjNOw9t84/hqdefault.jpg",
+     "published_at": "2026-11-20T14:05:07+00:00",
+     "description": "What can you tell about a teacher in one second? Waldorf educator Astrid Schmitt-Stegmann explains why she watches how a teacher looks at the children, and whether every child is seen. From Voices of Waldorf.",
+     "channel_slug": "voices-of-waldorf-elders"
+    },
+    {
      "video_id": "_uKDNhOe0Gc",
      "title": "Teaching: Unveiling Destiny",
      "url": "https://www.youtube.com/watch?v=_uKDNhOe0Gc",
@@ -5493,15 +5502,6 @@
      "thumbnail_url": "https://i4.ytimg.com/vi/_H5dP02duns/hqdefault.jpg",
      "published_at": "2026-11-19T03:34:06+00:00",
      "description": null,
-     "channel_slug": "voices-of-waldorf-elders"
-    },
-    {
-     "video_id": "joNVer-eEZs",
-     "title": "Her Parents Met Rudolf Steiner. What She Learned About Children | Astrid Schmitt-Stegmann",
-     "url": "https://www.youtube.com/watch?v=joNVer-eEZs",
-     "thumbnail_url": "https://i3.ytimg.com/vi/joNVer-eEZs/hqdefault.jpg",
-     "published_at": "2026-11-18T13:09:42+00:00",
-     "description": "A third-grade child entered Astrid Schmitt-Stegmann’s classroom with nearly illegible handwriting. For weeks, nothing improved. Then Astrid stopped trying to change the child and confronted something in herself. The very next day, the child’s work changed.\n\nThat experience led to one of the most important realizations of Astrid’s long teaching life: an adult’s unspoken thoughts and feelings can either create space for a child or quietly close the door.\n\nHelp preserve the next conversation\n\nVoices of Waldorf is an independent oral-history project. If this conversation gives you something valuable, even a small contribution helps cover the recording, editing, transcription and preservation of future interviews.\n\nSupport the project here:\nhttps://ko-fi.com/voicesofwaldorfelders\n\nAstrid’s life also provides a remarkable connection to the beginnings of Anthroposophy. Her parents used money they had received for their wedding, intended for a badly needed new wardrobe, to travel to Vienna and hear Rudolf Steiner at the 1922 West-East Conference. When her eighteen-year-old mother was initially refused admission, Steiner personally gave permission for her to enter.\n\nHer father later became a priest in the Christian Community, and her mother became a eurythmist. Yet they never imposed Anthroposophy upon their children. Instead, they waited until their children began freely asking questions for themselves.\n\nAstrid went on to spend decades as a Waldorf class teacher, foreign-language teacher, high-school teacher, kindergarten teacher and teacher educator. She later directed Waldorf teacher education at Rudolf Steiner College and helped train teachers throughout the United States, Europe, Africa and Asia.\n\nShe is also the author of The Uniqueness of Waldorf Education, a concise exploration of the understanding of the human being underlying Waldorf teaching.\n\nIn this conversation, we explore:\n\n• Why teachers must examine themselves before trying to change a child\n• How children p",
      "channel_slug": "voices-of-waldorf-elders"
     }
    ]
