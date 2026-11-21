@@ -4438,3 +4438,33 @@ body.ev-focus #center { width: 100%; max-width: 1040px; margin: 0 auto; padding-
 .ev-orig { margin: 14px 0 6px; }
 .ev-orig summary { cursor: pointer; font-weight: 600; color: var(--text-muted); }
 .ev-orig .detail-body { margin-top: 8px; }
+
+/* Admin: X posts (owner, 2026-11-20) */
+.xp-row { display: block; padding-left: 14px; }
+.xp-row.is-draft { border-left: 4px solid var(--gold); }
+.xp-row.is-posted { border-left: 4px solid var(--sage, #5B7A5A); }
+.xp-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px; }
+.xp-row.is-draft .xp-status { background: var(--gold-light); color: var(--gold-text); }
+.xp-title { font-weight: 600; margin-bottom: 4px; }
+.xp-text { white-space: pre-line; overflow-wrap: anywhere; margin-bottom: 8px; font-size: 14px; line-height: 1.5; }
+.xp-post-btn { background: var(--gold); color: var(--on-gold, #1E1810); border-color: var(--gold); font-weight: 700; }
+.xp-post-btn.xp-armed { background: var(--rose, #A33); color: #fff; border-color: var(--rose, #A33); }
+
+/* Home X box before the first post (owner, 2026-11-20) */
+.xcard .xc-intro { margin: 0; font-size: 13px; line-height: 1.45; color: #e7e9ea; }
+/* Admin: link-buttons (<a class="adm-btn">) line up with real buttons: same height, text centered (owner, 2026-11-20) */
+.adm-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-sizing: border-box; text-decoration: none; line-height: 1.2; vertical-align: middle; }
+a.adm-btn, a.adm-btn:visited { color: var(--text-primary); }
+.xp-row .adm-btn { margin: 0 8px 6px 0; }
+.rp-form { display: grid; gap: 6px; max-width: 640px; margin: 8px 0 16px; }
+.rp-form label { font-size: 13px; font-weight: 600; margin-top: 4px; }
+.rp-form input { min-height: 44px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font: inherit; font-size: 14px; }
+.rp-form button { justify-self: start; margin-top: 8px; }
+/* X card in the site's own neutral colors instead of X black (owner, 2026-11-21) */
+.xcard { background: var(--surface, #F0EBE3); color: var(--text-primary, #2C2418); border: 1px solid var(--border, #E4DDD4); box-shadow: none; }
+.xcard .xc-mark { color: var(--text-primary, #2C2418); }
+.xcard .xc-handle { color: var(--text-primary, #2C2418); }
+.xcard a.xc-text, .xcard .xc-intro { color: var(--text-primary, #2C2418); }
+.xcard .xc-date { color: var(--text-muted, #9A8F82); }
+.xcard a.xc-follow { background: var(--gold, #B8923A); color: var(--on-gold, #1E1810); }
+.xcard a.xc-follow:hover { background: var(--gold-hover, #9A7A2E); }

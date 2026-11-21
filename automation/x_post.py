@@ -142,6 +142,30 @@ def newest_draft():
 def save(d):
     os.makedirs(DRAFTS, exist_ok=True)
     json.dump(d, open(draft_path(d['news_id']), 'w'), indent=2, ensure_ascii=False)
+    log_post(d)
+
+
+def log_post(d):
+    """Copy the draft or post to the x_posts table for the Admin "X posts" tab (owner, 2026-11-20).
+    The local file stays the source of truth; a failed copy only prints a warning."""
+    try:
+        url, H = supabase()
+        # Never turn a post that already went out (or is going out) back into a draft
+        cur = requests.get(url + '/rest/v1/x_posts', headers=H, timeout=30,
+                           params={'select': 'status', 'id': 'eq.' + d['news_id']}).json()
+        if cur and isinstance(cur, list) and cur[0].get('status') in ('posted', 'posting') and not d.get('posted_url'):
+            print('(This post already went out; the Admin X posts tab keeps the sent version.)')
+            return
+        row = {'id': d['news_id'], 'kind': 'events' if d['news_id'].startswith('events-') else 'newsletter',
+               'title': d.get('title'), 'post': d['post'], 'text': d.get('text'), 'length': d.get('length'),
+               'status': 'posted' if d.get('posted_url') else 'draft', 'posted_url': d.get('posted_url'),
+               'drafted_at': d.get('drafted_at') or datetime.now(timezone.utc).isoformat(), 'posted_at': d.get('posted_at')}
+        r = requests.post(url + '/rest/v1/x_posts', json=row, timeout=30,
+                          headers={**H, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal'})
+        if r.status_code >= 300:
+            print(f'(Admin X posts tab not updated: HTTP {r.status_code})')
+    except Exception as e:
+        print(f'(Admin X posts tab not updated: {e})')
 
 
 def show(d):
@@ -151,8 +175,42 @@ def show(d):
         print('Posted: ' + d['posted_url'])
 
 
+def already_drafted(post_id):
+    """True when the Admin X posts tab already has this post (automatic runs leave it alone)."""
+    url, H = supabase()
+    r = requests.get(url + '/rest/v1/x_posts', headers=H, timeout=30, params={'select': 'id', 'id': 'eq.' + post_id})
+    return r.ok and bool(r.json())
+
+
+def auto_post(post_id):
+    """Owner rule 2026-11-20: the Friday newsletter post and the Monday events post go out on their own.
+    Posts through the website's x-post function (the X keys live there), never twice."""
+    url, H = supabase()
+    cur = requests.get(url + '/rest/v1/x_posts', headers=H, timeout=30, params={'select': 'status,posted_url', 'id': 'eq.' + post_id}).json()
+    if not cur:
+        sys.exit('No draft to post.')
+    if cur[0]['status'] != 'draft':
+        print('Already ' + cur[0]['status'] + ': ' + str(cur[0].get('posted_url') or '')); return
+    r = requests.post(url + '/functions/v1/x-post', headers={**H, 'Content-Type': 'application/json'},
+                      json={'id': post_id, 'auto': True}, timeout=120)
+    out = r.json() if r.headers.get('content-type', '').startswith('application/json') else {}
+    if not r.ok or not out.get('url'):
+        sys.exit(f"Post failed: {out.get('error') or r.status_code}")
+    print('Posted: ' + out['url'])
+
+
 def cmd_draft(a):
     issue = latest_issue(a.id)
+    if a.if_new:
+        # Automatic Friday run: only this week's issue, and only once
+        age = datetime.now(timezone.utc) - datetime.fromisoformat(issue['published_at'].replace('Z', '+00:00'))
+        if age > timedelta(days=4):
+            print('No issue sent in the last 4 days; nothing drafted.'); return
+        if already_drafted(issue['id']):
+            print('This issue already has an X draft; left as it is.')
+            if a.post_now:
+                auto_post(issue['id'])
+            return
     text = clean(a.text) if a.text else sentences(issue)
     tags = pick_tags(issue['title'] + ' ' + (issue.get('excerpt') or '') + ' ' + plain(issue['body']))
     link = f"{SITE}/article/{issue['id']}"
@@ -170,7 +228,9 @@ def cmd_draft(a):
         return
     save(d)
     show(d)
-    print('Nothing was posted. It goes out only after the owner approves this exact text.')
+    if a.post_now:
+        auto_post(d['news_id']); return
+    print('Nothing was posted yet: post it from Admin > X posts.')
 
 
 EVENTS_TAG = '#AnthroposophyEvents'
@@ -222,6 +282,11 @@ def events_text(evs, n=2):
 def cmd_events(a):
     today = datetime.now(timezone.utc).date()
     monday = today - timedelta(days=today.weekday()) if not a.next else today + timedelta(days=7 - today.weekday())
+    if a.if_new and already_drafted(f'events-{monday}'):
+        print('This week already has an events draft; left as it is.')
+        if a.post_now:
+            auto_post(f'events-{monday}')
+        return
     evs = week_events(monday)
     if not evs:
         sys.exit(f'No events on the calendar for the week of {monday}; nothing drafted.')
@@ -246,7 +311,9 @@ def cmd_events(a):
         sys.exit('This week\'s events post already went out.')
     save(d)
     show(d)
-    print('Nothing was posted. It goes out only after the owner approves this exact text.')
+    if a.post_now:
+        auto_post(d['news_id']); return
+    print('Nothing was posted yet: post it from Admin > X posts.')
 
 
 def tweet_id(obj):
@@ -306,8 +373,12 @@ def main():
     sub = ap.add_subparsers(dest='cmd', required=True)
     p = sub.add_parser('draft'); p.add_argument('--id'); p.add_argument('--text')
     p.add_argument('--preview', action='store_true', help='print the draft without saving it')
+    p.add_argument('--if-new', action='store_true', help='automatic run: skip if already drafted or no issue this week')
+    p.add_argument('--post-now', action='store_true', help='post right after drafting (scheduled weekly run, owner rule 2026-11-20)')
     p = sub.add_parser('events'); p.add_argument('--text'); p.add_argument('--preview', action='store_true')
     p.add_argument('--next', action='store_true', help="next week's Monday instead of this week")
+    p.add_argument('--if-new', action='store_true', help='automatic run: skip if this week is already drafted')
+    p.add_argument('--post-now', action='store_true', help='post right after drafting (scheduled weekly run, owner rule 2026-11-20)')
     sub.add_parser('show')
     p = sub.add_parser('post'); p.add_argument('--id'); p.add_argument('--approved', action='store_true')
     a = ap.parse_args()

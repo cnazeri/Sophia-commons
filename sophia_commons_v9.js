@@ -5951,6 +5951,99 @@ function adminSwitchTab(tab) {
   else if (tab === 'featpost') loadAdminFeatPost();
   else if (tab === 'bookweek') loadAdminBookWeek();
   else if (tab === 'ytsugg') loadAdminYtSuggestions();
+  else if (tab === 'xposts') loadAdminXPosts();
+  else if (tab === 'redditpicks') loadAdminRedditPicks();
+}
+
+// ── Admin: hand-picked Reddit posts (owner, 2026-11-21) ── table reddit_picks; newest 3 active show on Social Media
+async function loadAdminRedditPicks() {
+  var box = document.getElementById('admin-redditpicks-list');
+  if (!box || !sbReady()) return;
+  var r = await _sb.from('reddit_picks').select('*').order('created_at', { ascending: false }).limit(30);
+  if (r.error) { box.innerHTML = '<div class="admin-empty">Could not load: ' + esc(r.error.message) + '</div>'; return; }
+  var rows = r.data || [], shown = 0;
+  box.innerHTML = rows.length ? rows.map(function (p) {
+    var live = p.active && shown++ < 3;
+    return '<div class="adm-row xp-row ' + (live ? 'is-posted' : 'is-draft') + '"><div class="xp-main">'
+      + '<div class="xp-meta"><span class="adm-tag">' + (live ? 'Showing now' : p.active ? 'Waiting (only the newest 3 show)' : 'Removed') + '</span>'
+      + ' <span class="adm-note">Added ' + esc(localDate(p.created_at, { month: 'short', day: 'numeric' })) + (p.author ? ' &middot; u/' + esc(p.author) : '') + '</span></div>'
+      + '<div class="xp-title"><a href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a></div>'
+      + (p.active ? '<button type="button" class="adm-btn adm-btn-danger" onclick="adminRemoveRedditPick(\'' + escJs(p.id) + '\')">Remove</button>' : '')
+      + '</div></div>';
+  }).join('') : '<div class="admin-empty">No Reddit posts yet. Add one above.</div>';
+}
+async function adminAddRedditPick(ev) {
+  ev.preventDefault();
+  var msg = document.getElementById('rp-msg');
+  var url = document.getElementById('rp-url').value.trim().split('?')[0];
+  var title = document.getElementById('rp-title').value.trim();
+  var author = document.getElementById('rp-author').value.trim().replace(/^\/?u\//, '');
+  if (!/^https:\/\/(www\.|old\.)?reddit\.com\/r\/[A-Za-z0-9_]+\//.test(url)) { msg.textContent = 'That is not a Reddit post link. It should start with https://www.reddit.com/r/'; return; }
+  var r = await _sb.from('reddit_picks').insert({ url: url.replace('://old.', '://www.'), title: title, author: author || null });
+  if (r.error) { msg.textContent = 'Not saved: ' + r.error.message; return; }
+  msg.textContent = 'Added. It now shows in From Reddit on the Social Media page.';
+  ev.target.reset();
+  _redditPicks = null;
+  loadAdminRedditPicks();
+}
+async function adminRemoveRedditPick(id) {
+  var r = await _sb.from('reddit_picks').update({ active: false }).eq('id', id);
+  if (r.error) { alert('Not removed: ' + r.error.message); return; }
+  _redditPicks = null;
+  loadAdminRedditPicks();
+}
+
+// Post a draft from Admin: the first click asks, the second posts this exact text (owner, 2026-11-20)
+async function adminPostToX(btn, id) {
+  var msg = btn.parentNode.querySelector('.xp-msg');
+  if (!btn.dataset.armed) {
+    btn.dataset.armed = '1';
+    btn.textContent = 'Click again to post this exact text to X';
+    btn.classList.add('xp-armed');
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Posting...';
+  try {
+    var s = await _sb.auth.getSession();
+    var tok = s && s.data && s.data.session && s.data.session.access_token;
+    var r = await fetch(SUPABASE_URL + '/functions/v1/x-post', { method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok, 'apikey': SUPABASE_ANON_KEY },
+      body: JSON.stringify({ id: id }) });
+    var out = await r.json().catch(function () { return {}; });
+    if (!r.ok || !out.url) throw new Error(out.error || ('HTTP ' + r.status));
+    if (msg) msg.innerHTML = 'Posted. <a href="' + escUrl(out.url) + '" target="_blank" rel="noopener">View on X</a>';
+    renderHomeX({ url: out.url, text: '', date: String(out.posted_at || '').slice(0, 10) });
+    setTimeout(loadAdminXPosts, 1500);
+  } catch (e) {
+    btn.disabled = false; delete btn.dataset.armed; btn.classList.remove('xp-armed'); btn.textContent = 'Post to X';
+    if (msg) msg.textContent = 'Not posted: ' + e.message;
+  }
+}
+
+// ── Admin: X posts (owner, 2026-11-20) ── written by automation/x_post.py into x_posts (admins read only)
+async function loadAdminXPosts() {
+  var box = document.getElementById('admin-xposts-list');
+  if (!box || !sbReady()) return;
+  box.innerHTML = '<div class="admin-empty">Loading...</div>';
+  var r = await _sb.from('x_posts').select('*').order('drafted_at', { ascending: false }).limit(60);
+  if (r.error) { box.innerHTML = '<div class="admin-empty">Could not load X posts: ' + esc(r.error.message) + '</div>'; return; }
+  var rows = r.data || [];
+  if (!rows.length) { box.innerHTML = '<div class="admin-empty">No X posts yet.</div>'; return; }
+  var when = function (d) { return d ? localDate(d, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; };
+  box.innerHTML = rows.map(function (x) {
+    var posted = x.status === 'posted';
+    return '<div class="adm-row xp-row' + (posted ? ' is-posted' : ' is-draft') + '"><div class="xp-main">'
+      + '<div class="xp-meta"><span class="adm-tag xp-status">' + (posted ? 'Posted' : 'Draft: waiting for your OK') + '</span> '
+      + '<span class="adm-tag">' + (x.kind === 'events' ? 'Monday events' : x.kind === 'newsletter' ? 'Newsletter' : 'Other') + '</span> '
+      + '<span class="adm-note">' + esc(posted ? 'Posted ' + when(x.posted_at) : 'Drafted ' + when(x.drafted_at)) + (x.length ? ' &middot; ' + x.length + ' of 280 characters' : '') + '</span></div>'
+      + (x.title ? '<div class="xp-title">' + esc(x.title) + '</div>' : '')
+      + '<div class="xp-text">' + _linkify(esc(x.post)) + '</div>'
+      + (posted && x.posted_url ? '<a class="adm-btn" href="' + escUrl(x.posted_url) + '" target="_blank" rel="noopener">View on X &#8599;</a>' : '')
+      + (x.status === 'draft' ? '<button type="button" class="adm-btn xp-post-btn" onclick="adminPostToX(this, \'' + escJs(x.id) + '\')">Post to X</button>' : '')
+      + (x.status === 'posting' ? '<span class="adm-note">Posting...</span>' : '')
+      + '<div class="adm-note xp-msg" role="status"></div>'
+      + '</div></div>';
+  }).join('');
 }
 
 function adminEsc(s) { return esc(s); }
@@ -9159,15 +9252,28 @@ async function renderSocialDirectory(fbRows) {
   var seen = {};
   fbRows.forEach(function (f) { seen[_bareUrl(f.url)] = true; });
   (_socialExtraHtml().match(/href="[^"]+"/g) || []).forEach(function (a) { seen[_bareUrl(a.slice(6, -1))] = true; });
-  var rows = _socialDirRows.filter(function (e) { return !e.website_url || !seen[_bareUrl(e.website_url)]; });
+  // Already in Online Resources on the Resources page: listed there, not here (owner, 2026-11-21)
+  document.querySelectorAll('#resources-list a.ltitle').forEach(function (a) { seen[_bareUrl(a.getAttribute('href'))] = true; });
+  // YouTube channels belong in the YouTube section, listed by channel (owner, 2026-11-21)
+  var isYouTube = function (e) { return /youtube\.com|youtu\.be/i.test(e.website_url || '') || /youtube/i.test(e.organization_name || ''); };
+  var rows = _socialDirRows.filter(function (e) { return !isYouTube(e) && (!e.website_url || !seen[_bareUrl(e.website_url)]); });
   if (!rows.length) { el.innerHTML = ''; return; }
-  el.innerHTML = '<div class="listblock" style="margin-bottom:16px;"><div class="listblock-head"><h3>' + esc(t('podcasts.more_social', 'More Social Media')) + '</h3></div><div class="listblock-body">'
-    + rows.map(function (e) {
+  var rowHtml = function (e) {
         var link = e.website_url
           ? '<a class="ltitle" href="' + escUrl(e.website_url) + '" target="_blank" rel="noopener">' + esc(e.organization_name) + '</a>'
           : '<a class="ltitle" href="/listing/' + esc(e.id) + '" onclick="showDetail(\'directory\',\'' + esc(escJs(e.id)) + '\');return false;">' + esc(e.organization_name) + '</a>';
         return '<div class="lrow">' + link + (e.location ? '<span class="lmeta">' + esc(e.location) + '</span>' : '') + (e.is_verified ? '<span class="lv">&#10003;</span>' : '') + '</div>';
-      }).join('') + '</div></div>';
+  };
+  // First 10, then a button for the rest, like the YouTube list (owner, 2026-11-21)
+  var more = rows.length > MEDIA_FIRST
+    ? '<div id="social-more-rest" hidden>' + rows.slice(MEDIA_FIRST).map(rowHtml).join('') + '</div>'
+      + '<button type="button" class="ev-more more-toggle" aria-controls="social-more-rest" aria-expanded="false"'
+      + ' data-more="' + esc(t('podcasts.show_all_social', 'Show all {n}').replace('{n}', rows.length)) + '" data-less="' + esc(t('common.show_fewer', 'Show fewer')) + '"'
+      + ' onclick="_moreToggle(this)">' + esc(t('podcasts.show_all_social', 'Show all {n}').replace('{n}', rows.length)) + '</button>'
+    : '';
+  el.innerHTML = '<div class="listblock" style="margin-bottom:16px;"><div class="listblock-head"><h3>' + esc(t('podcasts.more_social', 'More Social Media')) + '</h3>'
+    + '<span class="podcast-count">' + rows.length + '</span></div><div class="listblock-body">'
+    + rows.slice(0, MEDIA_FIRST).map(rowHtml).join('') + more + '</div></div>';
 }
 
 // "Video & Social": hand-picked links on other platforms (Goetheanum TV, Instagram, ...), kept in the
@@ -9256,11 +9362,20 @@ async function renderSocialFeatured() {
 // Newest r/Anthroposophy posts on the Social Media page (moved from the home page, owner 2026-11-18).
 // /api/reddit is cached on the server for an hour. When Reddit can't be reached the block still shows,
 // with a link to the subreddit instead of the posts.
+var _redditPicks = null;
 async function renderSocialReddit() {
   var el = document.getElementById('social-reddit');
   if (!el) return;
   var data = null;
+  // Hand-picked in Admin > Reddit posts come first (owner, 2026-11-21: Reddit blocks the automatic feed)
   try {
+    if (!_redditPicks && sbReady()) {
+      var pk = await _sb.from('reddit_picks').select('url, title, author, created_at').eq('active', true).order('created_at', { ascending: false }).limit(3);
+      _redditPicks = pk.error ? [] : (pk.data || []);
+    }
+    if (_redditPicks && _redditPicks.length) data = { posts: _redditPicks.map(function (p) { return { url: p.url, title: p.title, author: p.author, date: p.created_at, image: '' }; }) };
+  } catch (e) { data = null; }
+  if (!data) try {
     var r = await fetch('/api/reddit');
     if (r.ok) data = await r.json();
   } catch (e) { data = null; }
@@ -9514,10 +9629,31 @@ async function toggleFeaturedJob(id, btn) {
 // No X embed script: it sets third-party cookies, so the card shows the text and a link instead.
 var X_HANDLE = 'SophiaCommons7';
 var X_LATEST_POST = null;
-function renderHomeX() {
+function renderHomeX(fromDb) {
   var block = document.getElementById('side-x-block'), el = document.getElementById('side-x');
-  var p = X_LATEST_POST;
-  if (!block || !el || !p || !/^https:\/\/x\.com\//.test(p.url || '') || !p.text) return;
+  var p = fromDb || X_LATEST_POST;
+  // Newest sent post from the database (owner, 2026-11-20: Admin can post, so no redeploy is needed)
+  if (!fromDb && typeof sbReady === 'function') {
+    var tryDb = function (n) {
+      if (!sbReady()) { if (n < 20) setTimeout(function () { tryDb(n + 1); }, 500); return; }
+      _sb.rpc('latest_x_post').then(function (r) {
+        var row = r && !r.error && r.data && r.data[0];
+        if (row && row.url) renderHomeX({ url: row.url, text: row.text, date: String(row.posted_at || '').slice(0, 10) });
+      }, function () {});
+    };
+    tryDb(0);
+  }
+  if (!block || !el) return;
+  if (!p || !/^https:\/\/x\.com\//.test(p.url || '') || !p.text) {
+    // No post yet: show a follow card so the box is there from day one (owner, 2026-11-20)
+    if (fromDb || el.querySelector('.xc-text')) return;
+    el.innerHTML = '<div class="xcard">'
+      + '<div class="xc-top"><svg class="xc-mark" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23 22h-6.3l-4.9-6.4L6.2 22H3l7.3-8.3L1 2h6.4l4.4 5.9L18.9 2zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20z"/></svg><span class="xc-handle">@' + esc(X_HANDLE) + '</span></div>'
+      + '<p class="xc-intro">' + esc(t('home.x_intro', 'The weekly newsletter on Fridays and this week\'s events on Mondays.')) + '</p>'
+      + '<div class="xc-foot"><a class="xc-follow" href="https://x.com/' + X_HANDLE + '" target="_blank" rel="noopener">' + esc(t('home.x_follow_btn', 'Follow on X')) + '</a></div></div>';
+    block.hidden = false;
+    return;
+  }
   var mark = '<svg class="xc-mark" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23 22h-6.3l-4.9-6.4L6.2 22H3l7.3-8.3L1 2h6.4l4.4 5.9L18.9 2zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20z"/></svg>';
   el.innerHTML = '<div class="xcard">'
     + '<div class="xc-top">' + mark + '<span class="xc-handle">@' + esc(X_HANDLE) + '</span></div>'

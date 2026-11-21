@@ -34,11 +34,46 @@ function posts(xml) {
   })).filter(p => p.title && /^https:\/\/www\.reddit\.com\/r\//.test(p.url)).slice(0, SHOW);
 }
 
+// Official API with an app key (owner, 2026-11-21): Reddit now refuses most anonymous reads of the feed
+// (404/403/429), so when REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET are set (Netlify environment variables),
+// the posts come from oauth.reddit.com with an app-only token. Without them, the public feed is tried as before.
+const UA = 'web:org.sophiacommons:1.0 (by /u/SophiaCommons)';
+async function apiPosts() {
+  const id = Netlify.env.get('REDDIT_CLIENT_ID'), secret = Netlify.env.get('REDDIT_CLIENT_SECRET');
+  if (!id || !secret) return null;
+  const tok = await fetch('https://www.reddit.com/api/v1/access_token', {
+    method: 'POST', body: 'grant_type=client_credentials',
+    headers: { Authorization: 'Basic ' + btoa(`${id}:${secret}`), 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': UA },
+  });
+  if (!tok.ok) throw new Error(`reddit token HTTP ${tok.status}`);
+  const { access_token } = await tok.json();
+  const r = await fetch(`https://oauth.reddit.com/r/${SUB}/new?limit=10&raw_json=1`,
+    { headers: { Authorization: `Bearer ${access_token}`, 'User-Agent': UA } });
+  if (!r.ok) throw new Error(`reddit api HTTP ${r.status}`);
+  const kids = ((await r.json()).data || {}).children || [];
+  return kids.map(k => k.data || {}).filter(d => d.title && !d.stickied && !d.over_18).map(d => {
+    const prev = (((d.preview || {}).images || [])[0] || {}).resolutions || [];
+    const small = prev.find(x => x.width >= 108) || prev[0];
+    const thumb = /^https:\/\//.test(d.thumbnail || '') ? d.thumbnail : '';
+    return {
+      title: plain(d.title),
+      url: 'https://www.reddit.com' + (d.permalink || ''),
+      author: d.author || '',
+      date: new Date((d.created_utc || 0) * 1000).toISOString(),
+      image: small ? small.url : thumb,
+    };
+  }).filter(p => /^https:\/\/www\.reddit\.com\/r\//.test(p.url)).slice(0, SHOW);
+}
+
 export default async () => {
   try {
-    const r = await fetch(FEED, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SophiaCommons/1.0; +https://sophiacommons.org)' } });
-    if (!r.ok) throw new Error(`reddit HTTP ${r.status}`);
-    const list = posts(await r.text());
+    let list = null;
+    try { list = await apiPosts(); } catch (e) { list = null; }   // key missing or refused: try the feed
+    if (!list || !list.length) {
+      const r = await fetch(FEED, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SophiaCommons/1.0; +https://sophiacommons.org)' } });
+      if (!r.ok) throw new Error(`reddit HTTP ${r.status}`);
+      list = posts(await r.text());
+    }
     if (!list.length) throw new Error('no posts');
     return new Response(JSON.stringify({ subreddit: SUB, url: `https://www.reddit.com/r/${SUB}/`, posts: list }), { headers: {
       'Content-Type': 'application/json; charset=utf-8',

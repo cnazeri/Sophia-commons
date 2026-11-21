@@ -1,0 +1,39 @@
+name: Weekly X posts (Monday events, Friday newsletter)
+
+# Owner, 2026-11-20: two X posts a week, and both go out on their own (rule changed the same day):
+# the newsletter post goes out with the newsletter, and the events post every Monday. Each one is also listed in
+# Admin > X posts. Posting goes through the website's x-post function, which holds the X keys.
+# - Monday morning: this week's events post.
+# - Friday: the newsletter post, once the issue has been sent (checked several times; posted once).
+# A late or repeated run is harmless: a post that already went out is never sent again.
+
+on:
+  schedule:
+    - cron: "7 14 * * 1"            # Monday 14:07 UTC (6:07 am Pacific)
+    - cron: "7 17,20,23 * * 5"      # Friday 9 am, noon, 3 pm Pacific
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet requests
+      - name: Draft this week's X post
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ "$(date -u +%u)" = "1" ]; then
+            python3 automation/x_post.py events --if-new --post-now
+          else
+            python3 automation/x_post.py draft --if-new --post-now
+          fi
