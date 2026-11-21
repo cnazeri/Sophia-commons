@@ -942,7 +942,9 @@ const catMeta = {
   'esoteric studies':        { dirCat: ['societies', 'online'],          desc: 'Study groups, lecture cycles, meditation practices, courses in spiritual science, and resources for the independent study of Rudolf Steiner\'s work.' },
   'arts & eurythmy':         { dirCat: 'eurythmy',   desc: 'Eurythmy schools and performances, visual arts, music, speech formation, drama, and artistic practices rooted in anthroposophical principles.' },
   'anthroposophic medicine': { dirCat: 'medicine',    desc: 'Anthroposophic physicians, clinics, hospitals, therapeutic eurythmy, art therapy, Weleda and WALA remedies, and nurse training programs.' },
-  'the christian community':  { dirCat: 'christian_community', label: 'The Christian Community', desc: 'Congregations and centers of The Christian Community (Die Christengemeinschaft), the Movement for Religious Renewal founded in 1922 with the help of Rudolf Steiner: Sunday services, sacraments, festivals and study.' },
+  'the christian community':  { dirCat: 'christian_community', label: 'The Christian Community',
+    firstPage: 10,   // first 10, then "Show more" (owner, 2026-11-21)
+    hero: { src: '/img/cat-christian-community.webp', alt: 'The Christian Community, Movement for Religious Renewal: an altar with seven candles before a painted window' }, desc: 'Congregations and centers of The Christian Community (Die Christengemeinschaft), the Movement for Religious Renewal founded in 1922 with the help of Rudolf Steiner: Sunday services, sacraments, festivals and study.' },
   'community & camphill':    { dirCat: ['camphill', 'community'],    desc: 'Camphill communities, intentional living, co-worker positions, volunteer programs, and inclusive communities for people with disabilities.' },
   'free & sharing':          { dirCat: null,          desc: 'Free items, giveaways, seed exchanges, skill shares, tool lending, and community barter within the anthroposophical world.' },
   'marketplace':             { dirCat: null,          desc: 'Buy, sell, and trade anthroposophical books, biodynamic products, handcrafts, musical instruments, art, and educational materials.' },
@@ -981,6 +983,11 @@ function showCategory(name, skipPush, opts) {
   var displayName = meta.label || (name.charAt(0).toUpperCase() + name.slice(1));
 
   document.getElementById('cat-page-label').textContent = displayName;
+  var hero = document.getElementById('cat-hero'), heroImg = document.getElementById('cat-hero-img');
+  if (hero && heroImg) {
+    if (meta.hero) { heroImg.src = meta.hero.src; heroImg.alt = meta.hero.alt || ''; hero.hidden = false; }
+    else { hero.hidden = true; heroImg.removeAttribute('src'); }
+  }
   var catI18nKey = 'catmeta.' + key.replace(/[^a-z]/g, '_') + '_desc';
   document.getElementById('cat-page-desc').textContent = t(catI18nKey) !== catI18nKey ? t(catI18nKey) : (meta.desc || t('catpage.default_browse_desc'));
   document.getElementById('cat-page-content').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + t('common.loading') + '</div>';
@@ -997,6 +1004,7 @@ function showCategory(name, skipPush, opts) {
     }
   }
 
+  window._catFirstPage = meta.firstPage || CAT_PAGE;   // per-category first page (owner, 2026-11-21)
   loadCategoryPage(key, meta.dirCat, opts);
 }
 
@@ -1387,7 +1395,7 @@ function _catRichness(d) {
   return (d.photo_url ? 3 : 0) + ((d.description || '').length >= 120 ? 2 : 0) + (d.website_url ? 1 : 0) + (d.is_verified ? 1 : 0);
 }
 function _catShowMore() {
-  window._catShown = (window._catShown || CAT_PAGE) + CAT_PAGE;
+  window._catShown = (window._catShown || window._catFirstPage || CAT_PAGE) + CAT_PAGE;
   var f = document.getElementById('cat-filter');
   _applyCatFilter(f ? f.value : '', true);
 }
@@ -1403,7 +1411,7 @@ function _applyCatFilter(q, more) {
     var hay = [d.organization_name, d.description, d.location, d.country, (d.tags || []).join(' ')].join(' ').toLowerCase();
     return words.every(function(w) { return hay.indexOf(w) !== -1; });
   });
-  if (!(more && box.childElementCount)) window._catShown = CAT_PAGE;   // a new filter starts at the first page
+  if (!(more && box.childElementCount)) window._catShown = window._catFirstPage || CAT_PAGE;   // a new filter starts at the first page
   var note = '';
   if (words.length && !list.length) {
     note = '<div class="empty-note">' + esc(t('dir.no_match_honest', 'No listings match "{q}".').replace('{q}', q))
@@ -1440,7 +1448,7 @@ function _applyCatFilter(q, more) {
   var html = note;
   var lastCat = null;
   var total = list.length;
-  list = list.slice(0, window._catShown || CAT_PAGE);
+  list = list.slice(0, window._catShown || window._catFirstPage || CAT_PAGE);
   list.forEach(function(d) {
     if (groupByCat && d.category !== lastCat) {
       lastCat = d.category;
@@ -1491,6 +1499,7 @@ var REGIONS = {
 };
 
 async function showRegion(key, skipPush, opts) {
+  window._catFirstPage = CAT_PAGE;   // region pages keep the usual first page
   _clearPlaceFaq();
   opts = opts || {};
   var r = REGIONS[key];
@@ -5966,9 +5975,11 @@ async function loadAdminRedditPicks() {
     var live = p.active && shown++ < 3;
     return '<div class="adm-row xp-row ' + (live ? 'is-posted' : 'is-draft') + '"><div class="xp-main">'
       + '<div class="xp-meta"><span class="adm-tag">' + (live ? 'Showing now' : p.active ? 'Waiting (only the newest 3 show)' : 'Removed') + '</span>'
-      + ' <span class="adm-note">Added ' + esc(localDate(p.created_at, { month: 'short', day: 'numeric' })) + (p.author ? ' &middot; u/' + esc(p.author) : '') + '</span></div>'
+      + ' <span class="adm-note">' + esc(['r/' + _redditSub(p.url), p.author ? 'u/' + p.author : '', p.posted_on ? 'posted ' + localDate(p.posted_on + 'T12:00:00Z', { month: 'short', day: 'numeric', year: 'numeric' }) : 'no date'].filter(Boolean).join(' · ')) + '</span></div>'
       + '<div class="xp-title"><a href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a></div>'
-      + (p.active ? '<button type="button" class="adm-btn adm-btn-danger" onclick="adminRemoveRedditPick(\'' + escJs(p.id) + '\')">Remove</button>' : '')
+      + (p.active ? '<label class="rp-date-edit">Date posted <input type="date" value="' + esc(p.posted_on || '') + '" max="' + new Date().toISOString().slice(0, 10) + '"'
+          + ' onchange="adminSetRedditDate(\'' + escJs(p.id) + '\', this)"></label> '
+          + '<button type="button" class="adm-btn adm-btn-danger" onclick="adminRemoveRedditPick(\'' + escJs(p.id) + '\')">Remove</button>' : '')
       + '</div></div>';
   }).join('') : '<div class="admin-empty">No Reddit posts yet. Add one above.</div>';
 }
@@ -5978,13 +5989,21 @@ async function adminAddRedditPick(ev) {
   var url = document.getElementById('rp-url').value.trim().split('?')[0];
   var title = document.getElementById('rp-title').value.trim();
   var author = document.getElementById('rp-author').value.trim().replace(/^\/?u\//, '');
+  var postedOn = document.getElementById('rp-date').value || null;
+  if (postedOn && postedOn > new Date().toISOString().slice(0, 10)) { msg.textContent = 'The date posted cannot be in the future.'; return; }
   if (!/^https:\/\/(www\.|old\.)?reddit\.com\/r\/[A-Za-z0-9_]+\//.test(url)) { msg.textContent = 'That is not a Reddit post link. It should start with https://www.reddit.com/r/'; return; }
-  var r = await _sb.from('reddit_picks').insert({ url: url.replace('://old.', '://www.'), title: title, author: author || null });
+  var r = await _sb.from('reddit_picks').insert({ url: url.replace('://old.', '://www.'), title: title, author: author || null, posted_on: postedOn });
   if (r.error) { msg.textContent = 'Not saved: ' + r.error.message; return; }
   msg.textContent = 'Added. It now shows in From Reddit on the Social Media page.';
   ev.target.reset();
   _redditPicks = null;
   loadAdminRedditPicks();
+}
+// Set or change a post's original date from the list (owner, 2026-11-21)
+async function adminSetRedditDate(id, input) {
+  var r = await _sb.from('reddit_picks').update({ posted_on: input.value || null }).eq('id', id);
+  input.style.borderColor = r.error ? 'var(--error)' : 'var(--sage, #5E7B5A)';
+  if (!r.error) { _redditPicks = null; setTimeout(loadAdminRedditPicks, 600); }
 }
 async function adminRemoveRedditPick(id) {
   var r = await _sb.from('reddit_picks').update({ active: false }).eq('id', id);
@@ -9363,6 +9382,7 @@ async function renderSocialFeatured() {
 // /api/reddit is cached on the server for an hour. When Reddit can't be reached the block still shows,
 // with a link to the subreddit instead of the posts.
 var _redditPicks = null;
+function _redditSub(url) { var m = /reddit\.com\/r\/([A-Za-z0-9_]+)/.exec(url || ''); return m ? m[1] : 'reddit'; }
 async function renderSocialReddit() {
   var el = document.getElementById('social-reddit');
   if (!el) return;
@@ -9370,10 +9390,10 @@ async function renderSocialReddit() {
   // Hand-picked in Admin > Reddit posts come first (owner, 2026-11-21: Reddit blocks the automatic feed)
   try {
     if (!_redditPicks && sbReady()) {
-      var pk = await _sb.from('reddit_picks').select('url, title, author, created_at').eq('active', true).order('created_at', { ascending: false }).limit(3);
+      var pk = await _sb.from('reddit_picks').select('url, title, author, posted_on, created_at').eq('active', true).order('created_at', { ascending: false }).limit(3);
       _redditPicks = pk.error ? [] : (pk.data || []);
     }
-    if (_redditPicks && _redditPicks.length) data = { posts: _redditPicks.map(function (p) { return { url: p.url, title: p.title, author: p.author, date: p.created_at, image: '' }; }) };
+    if (_redditPicks && _redditPicks.length) data = { posts: _redditPicks.map(function (p) { return { url: p.url, title: p.title, author: p.author, posted_on: p.posted_on, image: '' }; }) };
   } catch (e) { data = null; }
   if (!data) try {
     var r = await fetch('/api/reddit');
@@ -9389,7 +9409,10 @@ async function renderSocialReddit() {
       ? '<a class="rd-thumb" href="' + escUrl(p.url) + '" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">'
         + '<img src="' + escUrl(p.image) + '" alt="" width="56" height="56" loading="lazy" decoding="async"></a>' : '';
     return '<div class="lrow">' + img + '<a class="ltitle" href="' + escUrl(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a>'
-      + '<span class="lmeta">' + esc([p.author ? 'u/' + p.author : '', timeAgo(p.date)].filter(Boolean).join(' · ')) + '</span></div>';
+      // Subreddit and the post's original date (owner, 2026-11-21)
+      + '<span class="lmeta">' + esc(['r/' + _redditSub(p.url), p.author ? 'u/' + p.author : '',
+          p.posted_on ? localDate(p.posted_on + 'T12:00:00Z', { month: 'short', day: 'numeric', year: 'numeric' })
+            : (p.date ? localDate(p.date, { month: 'short', day: 'numeric', year: 'numeric' }) : '')].filter(Boolean).join(' · ')) + '</span></div>';
   }).join('');
 }
 

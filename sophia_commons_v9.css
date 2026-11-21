@@ -4468,3 +4468,9 @@ a.adm-btn, a.adm-btn:visited { color: var(--text-primary); }
 .xcard .xc-date { color: var(--text-muted, #9A8F82); }
 .xcard a.xc-follow { background: var(--gold, #B8923A); color: var(--on-gold, #1E1810); }
 .xcard a.xc-follow:hover { background: var(--gold-hover, #9A7A2E); }
+.rp-date-edit { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; margin: 0 8px 6px 0; }
+.rp-date-edit input { min-height: 40px; padding: 0 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font: inherit; }
+
+/* Category header picture (owner, 2026-11-21) */
+.cat-hero { margin: 0 0 16px; border-radius: 14px; overflow: hidden; background: var(--surface); }
+.cat-hero img { display: block; width: 100%; height: auto; aspect-ratio: 1015 / 276; object-fit: cover; }
