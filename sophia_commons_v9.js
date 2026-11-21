@@ -1903,7 +1903,7 @@ function showSec(id, skipPush) {
   if (id === 'books') _ensureBooksLoaded();
   if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
   if (id === 'podcasts' && typeof renderFacebookPages === 'function') renderFacebookPages();
-  if (id === 'podcasts') { renderVideoSpotlight(); renderSocialReddit(); }
+  if (id === 'podcasts') { renderVideoSpotlight(); renderSocialReddit(); renderSubstack(); }
   if (id === 'home') renderHomeExtras();
   if (id === 'digest') renderDigestArchive();
   // Organizer pages are private: not for search engines (the robots tag goes back to normal elsewhere)
@@ -5731,7 +5731,7 @@ function rerenderForLang() {
   if (id === 'books') { typeof renderBookResults === 'function' && renderBookResults(); }
   if (id === 'memorial') { loadCommunityMemorials(); }
   if (id === 'marketplace') { renderMarketplace(); }
-  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); renderFacebookPages(); renderVideoSpotlight(); renderSocialReddit(); }
+  if (id === 'podcasts') { renderPodcastSection(); renderYouTubeChannels(); renderFacebookPages(); renderVideoSpotlight(); renderSocialReddit(); renderSubstack(); }
   if (id === 'books') { renderTop50Books(); }
   if (id === 'directory' && !_allDataLoaded) { _loadAllSupabaseData(); }
   if (typeof updateHeaderCalendar === 'function') updateHeaderCalendar();
@@ -8935,17 +8935,25 @@ async function renderFeaturedTalk(channels) {
       .not('title', 'ilike', '*#shorts*').order('video_id').limit(1000);
     var pool = (r.data || []).filter(function (v) { return v.video_id && v.title && !TALK_NOT.test(v.title); });
     if (r.error || !pool.length) return;
-    var v = pool[isoWeekKey() % pool.length];
-    var ch = channels.filter(function (c) { return c.slug === v.channel_slug; })[0] || {};
-    var url = v.url || ('https://www.youtube.com/watch?v=' + v.video_id);
-    var thumb = v.thumbnail_url || ('https://i.ytimg.com/vi/' + v.video_id + '/hqdefault.jpg');
-    box.innerHTML = '<div class="video-card" style="max-width:420px;">'
-      + '<a class="video-thumb" href="' + escUrl(url) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(thumb) + '" alt="" loading="lazy" width="480" height="360"></a>'
-      + '<div class="video-body"><div class="video-kicker">' + esc(t('podcasts.talk_of_week', 'Talk of the week')) + (ch.language ? ' &middot; ' + esc(ch.language) : '') + '</div>'
-      + '<a class="video-title" href="' + escUrl(url) + '" target="_blank" rel="noopener">' + esc(v.title) + '</a>'
-      + (ch.name ? '<div class="video-channel"><b>' + esc(ch.name) + '</b></div>' : '')
-      + (v.published_at ? '<div class="video-meta">' + esc(ytAgo(v.published_at)) + '</div>' : '')
-      + '</div></div>';
+    // Three talks a week (owner, 2026-11-21): spread through the pool, one per channel where possible
+    var picks = [], used = {}, start = isoWeekKey() % pool.length, step = Math.max(1, Math.floor(pool.length / 3));
+    for (var k = 0; k < pool.length && picks.length < 3; k++) {
+      var cand = pool[(start + k * step + Math.floor(k / 3)) % pool.length];
+      if (picks.indexOf(cand) !== -1 || (used[cand.channel_slug] && k < pool.length - 3)) continue;
+      picks.push(cand); used[cand.channel_slug] = true;
+    }
+    box.innerHTML = '<div class="talk-grid">' + picks.map(function (v) {
+      var ch = channels.filter(function (c) { return c.slug === v.channel_slug; })[0] || {};
+      var url = v.url || ('https://www.youtube.com/watch?v=' + v.video_id);
+      var thumb = v.thumbnail_url || ('https://i.ytimg.com/vi/' + v.video_id + '/hqdefault.jpg');
+      return '<div class="video-card">'
+        + '<a class="video-thumb" href="' + escUrl(url) + '" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="' + escUrl(thumb) + '" alt="" loading="lazy" width="480" height="360"></a>'
+        + '<div class="video-body"><div class="video-kicker">' + esc(t('podcasts.talk_of_week', 'Talk of the week')) + (ch.language ? ' &middot; ' + esc(ch.language) : '') + '</div>'
+        + '<a class="video-title" href="' + escUrl(url) + '" target="_blank" rel="noopener">' + esc(v.title) + '</a>'
+        + (ch.name ? '<div class="video-channel"><b>' + esc(ch.name) + '</b></div>' : '')
+        + (v.published_at ? '<div class="video-meta">' + esc(ytAgo(v.published_at)) + '</div>' : '')
+        + '</div></div>';
+    }).join('') + '</div>';
     _talkDone = true;
   } catch (e) { /* keep the static talk */ }
 }
@@ -9283,16 +9291,17 @@ async function renderSocialDirectory(fbRows) {
           : '<a class="ltitle" href="/listing/' + esc(e.id) + '" onclick="showDetail(\'directory\',\'' + esc(escJs(e.id)) + '\');return false;">' + esc(e.organization_name) + '</a>';
         return '<div class="lrow">' + link + (e.location ? '<span class="lmeta">' + esc(e.location) + '</span>' : '') + (e.is_verified ? '<span class="lv">&#10003;</span>' : '') + '</div>';
   };
-  // First 10, then a button for the rest, like the YouTube list (owner, 2026-11-21)
-  var more = rows.length > MEDIA_FIRST
-    ? '<div id="social-more-rest" hidden>' + rows.slice(MEDIA_FIRST).map(rowHtml).join('') + '</div>'
+  // First 4, then a button for the rest (owner, 2026-11-21: was 10; room for the new sections)
+  var SOCIAL_FIRST = 4;
+  var more = rows.length > SOCIAL_FIRST
+    ? '<div id="social-more-rest" hidden>' + rows.slice(SOCIAL_FIRST).map(rowHtml).join('') + '</div>'
       + '<button type="button" class="ev-more more-toggle" aria-controls="social-more-rest" aria-expanded="false"'
       + ' data-more="' + esc(t('podcasts.show_all_social', 'Show all {n}').replace('{n}', rows.length)) + '" data-less="' + esc(t('common.show_fewer', 'Show fewer')) + '"'
       + ' onclick="_moreToggle(this)">' + esc(t('podcasts.show_all_social', 'Show all {n}').replace('{n}', rows.length)) + '</button>'
     : '';
   el.innerHTML = '<div class="listblock" style="margin-bottom:16px;"><div class="listblock-head"><h3>' + esc(t('podcasts.more_social', 'More Social Media')) + '</h3>'
     + '<span class="podcast-count">' + rows.length + '</span></div><div class="listblock-body">'
-    + rows.slice(0, MEDIA_FIRST).map(rowHtml).join('') + more + '</div></div>';
+    + rows.slice(0, SOCIAL_FIRST).map(rowHtml).join('') + more + '</div></div>';
 }
 
 // "Video & Social": hand-picked links on other platforms (Goetheanum TV, Instagram, ...), kept in the
@@ -9303,6 +9312,19 @@ function _socialExtraHtml() {
   var box = document.createElement('div');
   box.appendChild(tpl.content.cloneNode(true));
   box.querySelectorAll('[data-i18n]').forEach(function (n) { var k = n.getAttribute('data-i18n'), v = t(k); if (v && v !== k) n.textContent = v; });
+  // First 4, then a button for the rest (owner, 2026-11-21)
+  var wrap = box.querySelector('.social-extra'), rows = wrap ? wrap.querySelectorAll(':scope > .lrow') : [];
+  if (rows.length > 4) {
+    var rest = document.createElement('div'); rest.id = 'social-extra-rest'; rest.hidden = true;
+    for (var i = 4; i < rows.length; i++) rest.appendChild(rows[i]);
+    wrap.appendChild(rest);
+    var more = t('podcasts.show_all_social', 'Show all {n}').replace('{n}', rows.length);
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'ev-more more-toggle'; btn.setAttribute('aria-controls', 'social-extra-rest'); btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('data-more', more); btn.setAttribute('data-less', t('common.show_fewer', 'Show fewer')); btn.setAttribute('onclick', '_moreToggle(this)');
+    btn.textContent = more;
+    wrap.appendChild(btn);
+  }
   return box.innerHTML;
 }
 
@@ -9381,6 +9403,39 @@ async function renderSocialFeatured() {
 // Newest r/Anthroposophy posts on the Social Media page (moved from the home page, owner 2026-11-18).
 // /api/reddit is cached on the server for an hour. When Reddit can't be reached the block still shows,
 // with a link to the subreddit instead of the posts.
+// ── Substack blogs (owner, 2026-11-21) ── /api/substack reads each blog's feed; the static links stay if it fails
+var _substackDone = false;
+async function renderSubstack() {
+  var el = document.getElementById('substack-list');
+  if (!el || _substackDone) return;
+  try {
+    var r = await fetch('/api/substack');
+    var data = r.ok ? await r.json() : null;
+    var blogs = (data && data.blogs) || [];
+    if (!blogs.length) return;
+    var rowHtml = function (b) {
+      var ava = /^https:\/\/substackcdn\.com\//.test(b.image || '')
+        ? '<img class="ss-ava" src="' + escUrl(b.image) + '" alt="" width="44" height="44" loading="lazy">' : '<span class="ss-ava" aria-hidden="true"></span>';
+      var latest = b.latest && b.latest.title
+        ? '<div class="ss-latest"><span>' + esc(t('podcasts.substack_latest', 'Latest:')) + '</span> <a href="' + escUrl(b.latest.url) + '" target="_blank" rel="noopener">' + esc(b.latest.title) + '</a>'
+          + (b.latest.date ? ' <span class="lmeta">' + esc(localDate(b.latest.date, { month: 'short', day: 'numeric', year: 'numeric' })) + '</span>' : '') + '</div>' : '';
+      return '<div class="ss-row">' + ava + '<div class="ss-main">'
+        + '<a class="ltitle" href="' + escUrl(b.url) + '" target="_blank" rel="noopener">' + esc(b.name) + '</a>'
+        + (b.author && b.author !== b.name ? '<span class="lmeta">' + esc(b.author) + '</span>' : '')
+        + (b.desc ? '<div class="ss-desc">' + esc(b.desc) + '</div>' : '') + latest + '</div></div>';
+    };
+    // The 3 with the newest posts first, the rest behind a button (owner, 2026-11-21)
+    var SS_FIRST = 3, more = t('podcasts.show_all_social', 'Show all {n}').replace('{n}', blogs.length);
+    el.innerHTML = blogs.slice(0, SS_FIRST).map(rowHtml).join('')
+      + (blogs.length > SS_FIRST
+        ? '<div id="substack-rest" hidden>' + blogs.slice(SS_FIRST).map(rowHtml).join('') + '</div>'
+          + '<button type="button" class="ev-more more-toggle" aria-controls="substack-rest" aria-expanded="false" data-more="' + esc(more) + '"'
+          + ' data-less="' + esc(t('common.show_fewer', 'Show fewer')) + '" onclick="_moreToggle(this)">' + esc(more) + '</button>'
+        : '');
+    _substackDone = true;
+  } catch (e) { /* keep the static links */ }
+}
+
 var _redditPicks = null;
 function _redditSub(url) { var m = /reddit\.com\/r\/([A-Za-z0-9_]+)/.exec(url || ''); return m ? m[1] : 'reddit'; }
 async function renderSocialReddit() {

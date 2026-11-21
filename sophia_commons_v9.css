@@ -4474,3 +4474,29 @@ a.adm-btn, a.adm-btn:visited { color: var(--text-primary); }
 /* Category header picture (owner, 2026-11-21) */
 .cat-hero { margin: 0 0 16px; border-radius: 14px; overflow: hidden; background: var(--surface); }
 .cat-hero img { display: block; width: 100%; height: auto; aspect-ratio: 1015 / 276; object-fit: cover; }
+
+/* Featured talks: three side by side, stacked on phones (owner, 2026-11-21) */
+.talk-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.talk-grid .video-card { max-width: none; }
+@media (max-width: 760px) { .talk-grid { grid-template-columns: minmax(0, 1fr); } .talk-grid .video-card { max-width: 420px; } }
+/* Substack blogs (owner, 2026-11-21) */
+.ss-row { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); }
+.ss-row:last-child { border-bottom: 0; }
+.ss-ava { flex: 0 0 44px; width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: var(--surface); }
+.ss-main { min-width: 0; display: grid; gap: 3px; }
+.ss-main .ltitle { font-weight: 700; }
+.ss-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.45; overflow-wrap: anywhere; }
+.ss-latest { font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+.ss-latest > span:first-child { color: var(--text-muted); font-weight: 600; }
+.ss-main > .lmeta { font-size: 12.5px; color: var(--text-muted); margin: 0; }
+/* Submit a Listing opens full screen, with the form in a readable column (owner, 2026-11-21) */
+#submit-overlay { align-items: stretch; justify-content: stretch; }
+#submit-box {
+  width: 100vw; max-width: none; height: 100vh; height: 100dvh; max-height: none;
+  border: 0; border-radius: 0; box-shadow: none;
+  padding: 56px max(20px, calc((100vw - 760px) / 2)) 48px;
+}
+#submit-box h2 { font-size: 1.7rem; }
+#submit-box p { font-size: 15px; }
+#submit-box textarea { min-height: 220px; font-size: 15px; line-height: 1.6; }
+#submit-box .submit-close-btn { position: fixed; top: 14px; right: 18px; z-index: 2; width: 44px; height: 44px; font-size: 26px; }

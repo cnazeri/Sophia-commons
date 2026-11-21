@@ -272,7 +272,7 @@
   "podcasts.podcasts_heading": "Подкасты",
   "podcasts.video_social_heading": "Видео и соцсети",
   "podcasts.all_channels_link": "все каналы →",
-  "podcasts.featured_talk_heading": "Рекомендуемая лекция",
+  "podcasts.featured_talk_heading": "Рекомендуемые лекции",
   "podcasts.featured_talk_kicker": "Взгляд со стороны · на немецком",
   "podcasts.featured_talk_desc": "Историк Хельмут Цандер, автор крупного исследования антропософии, рассказывает о духовности Рудольфа Штайнера с критической, научной точки зрения.",
   "directory.section_label": "Мировой каталог",
@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.125.20",
+  "footer.version": "v1.125.27",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1392,5 +1392,7 @@
   "events.lang_tag": "Язык: {lang}",
   "events.lang_original": "Оригинальное название",
   "event_detail.translated_from": "Перевод, язык оригинала: {lang}. Оригинальное название:",
-  "event_detail.original_text": "Оригинальный текст ({lang})"
+  "event_detail.original_text": "Оригинальный текст ({lang})",
+  "podcasts.substack_heading": "На Substack",
+  "podcasts.substack_latest": "Новое:"
 }

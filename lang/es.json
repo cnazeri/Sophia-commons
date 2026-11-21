@@ -272,7 +272,7 @@
   "podcasts.podcasts_heading": "Podcasts",
   "podcasts.video_social_heading": "Video y Redes Sociales",
   "podcasts.all_channels_link": "todos los canales →",
-  "podcasts.featured_talk_heading": "Charla destacada",
+  "podcasts.featured_talk_heading": "Charlas destacadas",
   "podcasts.featured_talk_kicker": "Una mirada externa · en alemán",
   "podcasts.featured_talk_desc": "El historiador Helmut Zander, autor de un amplio estudio sobre la antroposofía, habla de la espiritualidad de Rudolf Steiner desde un punto de vista crítico y académico.",
   "directory.section_label": "Directorio Mundial",
@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.125.20",
+  "footer.version": "v1.125.27",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -1392,5 +1392,7 @@
   "events.lang_tag": "En {lang}",
   "events.lang_original": "Título original",
   "event_detail.translated_from": "Traducido (idioma original: {lang}). Título original:",
-  "event_detail.original_text": "Texto original ({lang})"
+  "event_detail.original_text": "Texto original ({lang})",
+  "podcasts.substack_heading": "En Substack",
+  "podcasts.substack_latest": "Lo último:"
 }

@@ -272,7 +272,7 @@
   "podcasts.podcasts_heading": "Podcasts",
   "podcasts.video_social_heading": "Video & Soziale Medien",
   "podcasts.all_channels_link": "alle Kanäle →",
-  "podcasts.featured_talk_heading": "Empfohlener Vortrag",
+  "podcasts.featured_talk_heading": "Empfohlene Vorträge",
   "podcasts.featured_talk_kicker": "Ein Blick von außen · auf Deutsch",
   "podcasts.featured_talk_desc": "Der Historiker Helmut Zander, Autor einer großen Studie zur Anthroposophie, spricht aus kritischer, wissenschaftlicher Sicht über Rudolf Steiners Spiritualität.",
   "directory.section_label": "Weltverzeichnis",
@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.125.20",
+  "footer.version": "v1.125.27",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1392,5 +1392,7 @@
   "events.lang_tag": "Auf {lang}",
   "events.lang_original": "Originaltitel",
   "event_detail.translated_from": "Übersetzt (Originalsprache: {lang}). Originaltitel:",
-  "event_detail.original_text": "Originaltext ({lang})"
+  "event_detail.original_text": "Originaltext ({lang})",
+  "podcasts.substack_heading": "Auf Substack",
+  "podcasts.substack_latest": "Neu:"
 }

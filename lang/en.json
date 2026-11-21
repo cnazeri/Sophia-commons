@@ -274,7 +274,7 @@
   "podcasts.podcasts_heading": "Podcasts",
   "podcasts.video_social_heading": "Video & Social",
   "podcasts.all_channels_link": "all channels →",
-  "podcasts.featured_talk_heading": "Featured Talk",
+  "podcasts.featured_talk_heading": "Featured Talks",
   "podcasts.featured_talk_kicker": "An outside view · in German",
   "podcasts.featured_talk_desc": "Historian Helmut Zander, author of a major study of anthroposophy, talks about Rudolf Steiner's spirituality from a critical, scholarly point of view.",
   "directory.section_label": "World Directory",
@@ -594,7 +594,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.125.20",
+  "footer.version": "v1.125.27",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -1331,5 +1331,7 @@
   "events.lang_tag": "In {lang}",
   "events.lang_original": "Original title",
   "event_detail.translated_from": "Translated from {lang}. Original title:",
-  "event_detail.original_text": "Original text ({lang})"
+  "event_detail.original_text": "Original text ({lang})",
+  "podcasts.substack_heading": "On Substack",
+  "podcasts.substack_latest": "Latest:"
 }
