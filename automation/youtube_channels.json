@@ -2089,6 +2089,61 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "biodynamic-marketing-company",
+      "name": "Biodynamic Marketing Company",
+      "url": "https://www.youtube.com/channel/UC4LXzh8Vae5okmnbJZCzFvw",
+      "channel_id": "UC4LXzh8Vae5okmnbJZCzFvw",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "biodynamic-agriculture",
+      "name": "Biodynamic agriculture",
+      "url": "https://www.youtube.com/channel/UCTWHUHWXUxyhkHEkcLn8CYg",
+      "channel_id": "UCTWHUHWXUxyhkHEkcLn8CYg",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "biodynamic-network",
+      "name": "Biodynamic Network",
+      "url": "https://www.youtube.com/channel/UClLP3EUpj9Zhteqr7k9zmaw",
+      "channel_id": "UClLP3EUpj9Zhteqr7k9zmaw",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "biodynamic-gardening",
+      "name": "Biodynamic Gardening",
+      "url": "https://www.youtube.com/channel/UCRzLyv3BvnQSrz8gbGhjGuQ",
+      "channel_id": "UCRzLyv3BvnQSrz8gbGhjGuQ",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "san-miguel-biodinamico",
+      "name": "San Miguel Biodinamico",
+      "url": "https://www.youtube.com/channel/UC3wWdDlW17JfRmOpsBzuFuQ",
+      "channel_id": "UC3wWdDlW17JfRmOpsBzuFuQ",
+      "language": null,
+      "category": "biodynamic",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }
