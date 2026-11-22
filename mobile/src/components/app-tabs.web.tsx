@@ -12,7 +12,7 @@ const TABS = [
   { name: '(home)', href: '/', key: 'nav.home', fb: 'Home', icon: 'home' },
   { name: 'events', href: '/events', key: 'nav.events', fb: 'Events', icon: 'event' },
   { name: 'directory', href: '/directory', key: 'nav.directory', fb: 'Directory', icon: 'map' },
-  { name: 'media', href: '/media', key: 'app.tab_media', fb: 'Media', icon: 'smart-display' },
+  { name: 'chat', href: '/chat', key: 'app.tab_chat', fb: 'Chat', icon: 'forum' },
   { name: 'saved', href: '/saved', key: 'app.tab_saved', fb: 'Saved', icon: 'bookmark' },
 ] as const;
 

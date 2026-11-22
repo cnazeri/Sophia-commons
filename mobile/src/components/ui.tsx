@@ -7,7 +7,7 @@ import { Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 // Page with the wordmark on top, scrolling content, centered on tablets
-export function Screen({ children, title, scroll = true }: { children: ReactNode; title?: string; scroll?: boolean }) {
+export function Screen({ children, title, scroll = true, underHeader = false }: { children: ReactNode; title?: string; scroll?: boolean; underHeader?: boolean }) {
   const c = useTheme();
   const inner = (
     <View style={styles.inner}>
@@ -17,7 +17,7 @@ export function Screen({ children, title, scroll = true }: { children: ReactNode
     </View>
   );
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: c.background }}>
+    <SafeAreaView edges={underHeader ? [] : ['top']} style={{ flex: 1, backgroundColor: c.background }}>
       {scroll ? <ScrollView contentContainerStyle={styles.scroll}>{inner}</ScrollView> : <View style={[styles.scroll, { flex: 1 }]}>{inner}</View>}
     </SafeAreaView>
   );

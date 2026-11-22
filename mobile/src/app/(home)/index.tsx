@@ -8,6 +8,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '@/components/button';
 import { EventCard } from '@/components/event-card';
 import { JobCard } from '@/components/job-card';
+import { LinkRow } from '@/components/link-row';
 import { NewsCard } from '@/components/news-card';
 import { Body, Card, H2, Kicker, Screen } from '@/components/ui';
 import { Fonts, Spacing } from '@/constants/theme';
@@ -15,6 +16,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { type EventRow, fetchUpcoming, sizedImage } from '@/lib/events';
 import { localDate, t } from '@/lib/i18n';
 import { fetchJobs, type Job } from '@/lib/jobs';
+import { fetchVideos, type Video } from '@/lib/media';
 import { type Article, fetchNewsList } from '@/lib/news';
 import { cotsWeek, upcomingYearDays } from '@/lib/year';
 
@@ -23,11 +25,13 @@ export default function Home() {
   const [events, setEvents] = useState<EventRow[]>([]);
   const [news, setNews] = useState<Article[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
   useEffect(() => {
     let alive = true;
     fetchUpcoming().then((r) => { if (alive) setEvents([...r].sort((a, b) => a.start_date.localeCompare(b.start_date)).slice(0, 4)); }).catch(() => {});
     fetchNewsList(4).then((r) => { if (alive) setNews(r); }).catch(() => {});
     fetchJobs('', 40).then((r) => { if (alive) setJobs(r.slice(0, 3)); }).catch(() => {});
+    fetchVideos(2).then((r) => { if (alive) setVideos(r); }).catch(() => {});
     return () => { alive = false; };
   }, []);
 
@@ -84,6 +88,14 @@ export default function Home() {
           ))}
         </View>
       ) : null}
+      <View style={styles.section}>
+        <H2>{t('app.media_title', 'Talks, blogs and podcasts')}</H2>
+        {videos.map((v) => (
+          <LinkRow key={v.video_id} wide title={v.title} image={v.thumbnail_url} url={v.url || 'https://www.youtube.com/watch?v=' + v.video_id}
+            meta={[v.channel, localDate(v.published_at, short)].filter(Boolean).join(' · ')} />
+        ))}
+        <Button kind="secondary" label={t('app.media_more', 'More talks, blogs and podcasts')} onPress={() => router.push('/media')} />
+      </View>
     </Screen>
   );
 }

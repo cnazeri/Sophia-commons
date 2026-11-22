@@ -17,7 +17,7 @@ export default function AppTabs() {
     { name: '(home)', label: cap(t('nav.home', 'Home')), sf: 'house', md: 'home' },
     { name: 'events', label: cap(t('nav.events', 'Events')), sf: 'calendar', md: 'event' },
     { name: 'directory', label: cap(t('nav.directory', 'Directory')), sf: 'map', md: 'map' },
-    { name: 'media', label: cap(t('app.tab_media', 'Media')), sf: 'play.rectangle', md: 'smart-display' },
+    { name: 'chat', label: cap(t('app.tab_chat', 'Chat')), sf: 'bubble.left.and.bubble.right', md: 'forum' },
     { name: 'saved', label: cap(t('app.tab_saved', 'Saved')), sf: 'bookmark', md: 'bookmark' },
   ];
   return (

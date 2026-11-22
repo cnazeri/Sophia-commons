@@ -19,7 +19,7 @@ export default function MediaScreen() {
   }, []);
   const short = { month: 'short', day: 'numeric' } as const;
   return (
-    <Screen title={t('app.media_title', 'Talks, blogs and podcasts')}>
+    <Screen underHeader title={t('app.media_title', 'Talks, blogs and podcasts')}>
       <View style={styles.section}>
         <H2>{t('app.new_videos', 'New videos')}</H2>
         {videos.map((v) => (

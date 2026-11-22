@@ -15,6 +15,7 @@ export default function StackLayout() {
       <Stack.Screen name="article/[id]" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="jobs/index" options={{ title: t('app.jobs', 'Jobs'), headerBackTitle: '' }} />
       <Stack.Screen name="jobs/[id]" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="media" options={{ title: '', headerBackTitle: '' }} />
     </Stack>
   );
 }
