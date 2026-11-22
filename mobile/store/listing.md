@@ -22,7 +22,7 @@ Listen and read. New talks from anthroposophical YouTube channels, essays from S
 
 Saved events and places stay on your phone, so they open even without a connection.
 
-No ads. No account needed. Available in English, German, Spanish and Russian.
+No ads. No account needed to browse; a free account opens the community chat. Available in English, German, Spanish and Russian.
 
 ## Keywords (App Store, 100 characters max)
 anthroposophy,waldorf,steiner,biodynamic,camphill,eurythmy,festivals,christian community
@@ -35,15 +35,22 @@ Primary: Lifestyle (Google Play: Lifestyle). Secondary (App Store): Education
 - Privacy policy: https://sophiacommons.org/privacy
 - Support: hello@sophiacommons.org
 
-## Privacy answers
-- Data collected by the app: none. There is no account and no tracking.
-- Location: used only on the phone when "Near me" is tapped, to sort places by distance. Not stored or sent anywhere.
+## Privacy answers (updated 2026-11-21: the app now has optional sign-in and chat)
+- Without an account: no data collected, no tracking, no ads.
+- With an account (optional, only for chat):
+  - Email address: collected for sign-in. Linked to the member. Not used for tracking.
+  - User ID: collected for sign-in. Linked to the member.
+  - User content (chat messages, reports, block list): collected to run the chat. Linked to the member.
+  - Newsletter: only if the member ticks the box at sign-up.
+- Location: used only on the phone when "Near me" or the map is used, to sort and show places. Not stored or sent.
 - Notifications: reminders for saved events are scheduled on the phone itself.
-- Saved events and places: stored on the phone only.
-- App Store "Data Not Collected": yes. Google Play Data safety: no data collected or shared.
+- Saved events, places and articles: stored on the phone only.
+- Account deletion: in the app (Chat, Account, Delete account) and by email to hello@sophiacommons.org.
+- App Store "Data Not Collected": NO (email, user ID and user content are collected for accounts).
+- Google Play Data safety: personal info (email), app activity (messages); not shared; encrypted in transit; deletion available.
 
 ## Content rating
-Everyone / 4+. No user-generated content in the app (version 1 has no posting or comments).
+Teen / 12+ is likely, because members can chat (user-generated content). Moderation in the app: word filter, report a message, block a member, admin removal; reports reviewed within 24 hours.
 
 ## Screenshots needed
 - iPhone 6.9" (1320 x 2868): Home, Events, event page, Directory with Near me, Media
