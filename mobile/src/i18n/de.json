@@ -1618,5 +1618,14 @@
   "app.job_st_declined": "Nicht sichtbar",
   "app.renew_90": "Um 90 Tage verlängern",
   "app.renewed": "Verlängert",
-  "app.renewed_until": "Ihre Stellenanzeige bleibt jetzt bis {date} online."
+  "app.renewed_until": "Ihre Stellenanzeige bleibt jetzt bis {date} online.",
+  "app.report_event": "Diese Veranstaltung melden",
+  "app.report_title": "Melden",
+  "app.report_why": "Was stimmt damit nicht?",
+  "app.report_email_body": "Was stimmt damit nicht?",
+  "app.report_email_fallback": "Bitte schreiben Sie mit dem Link an hello@sophiacommons.org.",
+  "app.reported": "Danke. Wir prüfen es innerhalb von 24 Stunden.",
+  "app.reason_wrong": "Falsch oder irreführend",
+  "app.reason_offensive": "Anstößig oder unangemessen",
+  "app.report_post": "Diesen Beitrag melden"
 }

@@ -1618,5 +1618,14 @@
   "app.job_st_declined": "No se muestra",
   "app.renew_90": "Renovar por 90 días",
   "app.renewed": "Renovado",
-  "app.renewed_until": "Tu empleo seguirá publicado hasta el {date}."
+  "app.renewed_until": "Tu empleo seguirá publicado hasta el {date}.",
+  "app.report_event": "Denunciar este evento",
+  "app.report_title": "Denunciar",
+  "app.report_why": "¿Qué problema tiene?",
+  "app.report_email_body": "¿Qué problema tiene?",
+  "app.report_email_fallback": "Escribe a hello@sophiacommons.org con el enlace.",
+  "app.reported": "Gracias. Lo revisaremos en 24 horas.",
+  "app.reason_wrong": "Incorrecto o engañoso",
+  "app.reason_offensive": "Ofensivo o inapropiado",
+  "app.report_post": "Denunciar esta publicación"
 }

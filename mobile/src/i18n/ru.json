@@ -1618,5 +1618,14 @@
   "app.job_st_declined": "Не показывается",
   "app.renew_90": "Продлить на 90 дней",
   "app.renewed": "Продлено",
-  "app.renewed_until": "Теперь ваша вакансия будет опубликована до {date}."
+  "app.renewed_until": "Теперь ваша вакансия будет опубликована до {date}.",
+  "app.report_event": "Пожаловаться на мероприятие",
+  "app.report_title": "Пожаловаться",
+  "app.report_why": "Что с ним не так?",
+  "app.report_email_body": "Что с ним не так?",
+  "app.report_email_fallback": "Напишите на hello@sophiacommons.org и приложите ссылку.",
+  "app.reported": "Спасибо. Мы проверим это в течение 24 часов.",
+  "app.reason_wrong": "Неверно или вводит в заблуждение",
+  "app.reason_offensive": "Оскорбительно или неуместно",
+  "app.report_post": "Пожаловаться на пост"
 }

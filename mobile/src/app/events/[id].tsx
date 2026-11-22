@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, Platform, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { Body, Card, H1, Kicker } from '@/components/ui';
@@ -14,7 +14,9 @@ import { addToCalendar } from '@/lib/calendar';
 import { cancelReminder, remindEvent } from '@/lib/reminders';
 import { toggleEvent, useSaved } from '@/lib/saved';
 import { type EventRow, eventDescription, eventPlace, eventTitle, fetchEvent, sizedImage } from '@/lib/events';
+import { useAuth } from '@/lib/auth';
 import { localDate, localTime, t } from '@/lib/i18n';
+import { reportItem } from '@/lib/report';
 import { SITE } from '@/lib/supabase';
 
 export default function EventDetail() {
@@ -22,6 +24,7 @@ export default function EventDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [e, setE] = useState<EventRow | null | undefined>(undefined);
   const saved = useSaved();
+  const { session } = useAuth();
   useEffect(() => { fetchEvent(String(id)).then(setE).catch(() => setE(null)); }, [id]);
 
   if (e === undefined) return <ActivityIndicator style={{ marginTop: 80 }} color={c.goldText} />;
@@ -74,6 +77,11 @@ export default function EventDetail() {
           <Body selectable>{eventDescription(e)}</Body>
         </Card>
       ) : null}
+
+      <Pressable onPress={() => reportItem({ type: 'event', id: e.id, title: eventTitle(e), url }, session)} accessibilityRole="button"
+        hitSlop={8} style={styles.report}>
+        <Text style={[styles.reportText, { color: c.textMuted }]}>{t('app.report_event', 'Report this event')}</Text>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -89,6 +97,8 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
+  report: { alignSelf: 'center', paddingVertical: Spacing.md },
+  reportText: { fontFamily: Fonts.bodySemi, fontSize: 13, textDecorationLine: 'underline' },
   wrap: { padding: Spacing.lg, gap: Spacing.md, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center', paddingBottom: 48 },
   poster: { width: '100%', aspectRatio: 4 / 3, borderRadius: 14 },
   actions: { gap: Spacing.sm },

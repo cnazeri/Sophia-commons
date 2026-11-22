@@ -1557,5 +1557,14 @@
   "app.job_st_declined": "Not shown",
   "app.renew_90": "Renew for 90 days",
   "app.renewed": "Renewed",
-  "app.renewed_until": "Your job post now stays up until {date}."
+  "app.renewed_until": "Your job post now stays up until {date}.",
+  "app.report_event": "Report this event",
+  "app.report_title": "Report",
+  "app.report_why": "What is wrong with it?",
+  "app.report_email_body": "What is wrong with it?",
+  "app.report_email_fallback": "Please email hello@sophiacommons.org with the link.",
+  "app.reported": "Thank you. We will review it within 24 hours.",
+  "app.reason_wrong": "Wrong or misleading",
+  "app.reason_offensive": "Offensive or inappropriate",
+  "app.report_post": "Report this post"
 }
