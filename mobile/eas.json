@@ -20,7 +20,8 @@
         "buildType": "app-bundle",
         "credentialsSource": "local"
       },
-      "channel": "production"
+      "channel": "production",
+      "autoIncrement": true
     },
     "simulator": {
       "distribution": "internal",
