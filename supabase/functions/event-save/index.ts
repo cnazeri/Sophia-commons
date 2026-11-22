@@ -371,7 +371,8 @@ serve(async (req) => {
     const imageUrl = input.image ? await uploadImage(db, uid, input.image) : ownImageUrl(input.copy_image_url);
     const series = dates.length > 1 ? crypto.randomUUID() : null;
     const rows = dates.map((d) => ({ ...columns, start_date: d.start, end_date: d.end, image_url: imageUrl,
-      series_id: series, status, needs_review: review, featured: false, user_id: uid }));
+      series_id: series, status, needs_review: review, featured: false, user_id: uid,
+      source: input.source === "app" ? "app" : "web" })); // App or Website tag in Admin > Events (2026-11-22)
     const { data, error } = await db.from("events").insert(rows).select("id, title, status, start_date, end_date, organizer_name, signup_enabled");
     if (error) throw new Error("insert: " + error.message);
     const saved = (data || []).sort((a: Row, b: Row) => String(a.start_date).localeCompare(String(b.start_date)));

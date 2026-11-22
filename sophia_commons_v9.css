@@ -2179,6 +2179,11 @@ footer {
   transition: background 0.2s, transform 0.1s;
 }
 .admin-actions button:active { transform: scale(0.97); }
+/* App or Website tag on Admin items (2026-11-22) */
+.admin-src { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;
+  letter-spacing: .3px; vertical-align: middle; }
+.admin-src-app { background: #2A5DB0; color: #fff; }
+.admin-src-web { background: var(--border); color: var(--text-secondary); }
 .admin-btn-approve {
   background: var(--sage);
   color: #fff;

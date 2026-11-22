@@ -22,7 +22,7 @@ export type PlaceIn = { name: string; category: string; url: string; location: s
 export async function postPlace(p: PlaceIn): Promise<void> {
   const { error } = await supabase.from('listings_pending').insert({
     name: p.name.slice(0, 200), category: p.category, url: p.url || null, location: p.location.slice(0, 200) || null,
-    description: p.description.slice(0, 5000) || null, contact_email: p.email || null, status: 'pending',
+    description: p.description.slice(0, 5000) || null, contact_email: p.email || null, status: 'pending', source: 'app',
   });
   if (error) throw new Error(error.message);
 }
@@ -43,7 +43,7 @@ export async function postEvent(e: EventIn, s: Session): Promise<EventOut> {
     signup_enabled: false, signup_questions: [], signup_capacity: '', signup_close_hours: '', is_public: true,
   };
   const { data, error } = await supabase.functions.invoke('event-save', {
-    body: { event }, headers: { Authorization: `Bearer ${s.access_token}` },
+    body: { event, source: 'app' }, headers: { Authorization: `Bearer ${s.access_token}` },
   });
   // On a refusal the function says why (for example "Please give the start date"); show that to the member
   let out = data as { ok?: boolean; status?: string; events?: { id: string; event: string }[]; error?: string; msg?: string } | null;
@@ -61,7 +61,7 @@ export async function postJob(j: JobIn, s: Session): Promise<void> {
   const { error } = await supabase.from('listings').insert({
     user_id: s.user.id, category_id: JOBS_CAT_ID, listing_type: 'offering', status: 'draft',
     title: j.title.slice(0, 200), description: j.description.slice(0, 10000), location: j.location || null,
-    country: j.country || null, website_url: j.url || null, contact_email: j.email || null, contact_phone: j.phone || null, tags: ['member'],
+    country: j.country || null, website_url: j.url || null, contact_email: j.email || null, contact_phone: j.phone || null, tags: ['member'], source: 'app',
   });
   if (error) throw new Error(error.message);
 }
@@ -75,7 +75,7 @@ export async function postCommunity(p: CommunityIn, author: string): Promise<voi
   const tags = p.tags.split(',').map((x) => x.trim().toLowerCase()).filter(Boolean).slice(0, 8);
   const { error } = await supabase.from('blog_posts').insert({
     author_name: author.slice(0, 80) || 'Member', title: p.title.slice(0, 200), slug: slugify(p.title),
-    body: p.body.slice(0, 60000), tags,
+    body: p.body.slice(0, 60000), tags, source: 'app',
   });
   if (error) throw new Error(error.message);
 }
@@ -91,7 +91,9 @@ export async function pendingJobs(): Promise<PendingJob[]> {
   return (data || []) as PendingJob[];
 }
 export async function reviewJob(id: string, approve: boolean): Promise<void> {
-  const { error } = await supabase.from('listings').update({ status: approve ? 'active' : 'expired' }).eq('id', id);
+  // Approved jobs stay up 90 days from approval (same as Admin > Pending Jobs on the website)
+  const patch = approve ? { status: 'active', expires_at: new Date(Date.now() + 90 * 864e5).toISOString() } : { status: 'expired' };
+  const { error } = await supabase.from('listings').update(patch).eq('id', id);
   if (error) throw new Error(error.message);
 }
 

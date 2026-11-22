@@ -2,7 +2,7 @@
 // publishes them) and the admin review tab. Uses globals from sophia_commons_v9.js:
 // _sb, sbReady, signedIn, username, isAdmin, esc, escUrl, t, showSec, openModal, updateSEOMeta.
 
-var BLOG_FIELDS = 'id, author_name, title, slug, excerpt, body, cover_url, tags, status, created_at, published_at';
+var BLOG_FIELDS = 'id, author_name, title, slug, excerpt, body, cover_url, tags, status, created_at, published_at, source';
 
 function _blogSlug(title) {
   var base = String(title || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -134,7 +134,7 @@ async function loadAdminBlog() {
   el.innerHTML = rows.map(function(p) {
     var pending = p.status === 'pending';
     return '<div class="lrow" id="ab-' + p.id + '" style="display:block;">'
-      + '<span class="ltag">' + esc(p.status) + '</span> <a class="ltitle" href="/blog/' + encodeURIComponent(p.slug) + '" onclick="showBlogPost(\'' + esc(p.slug) + '\');return false;">' + esc(p.title) + '</a>'
+      + '<span class="ltag">' + esc(p.status) + '</span>' + (typeof adminSourceTag === 'function' ? adminSourceTag(p.source) : '') + ' <a class="ltitle" href="/blog/' + encodeURIComponent(p.slug) + '" onclick="showBlogPost(\'' + esc(p.slug) + '\');return false;">' + esc(p.title) + '</a>'
       + '<span class="lmeta"> ' + esc(p.author_name) + ' &middot; ' + esc(_blogDate(p.created_at)) + '</span>'
       + '<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;">'
       + (pending ? '<button class="btn-sm" onclick="adminBlogSet(\'' + p.id + '\',\'published\')">Publish</button>' : '<button class="btn-sm" onclick="adminBlogSet(\'' + p.id + '\',\'pending\')">Unpublish</button>')

@@ -5946,6 +5946,7 @@ function adminSwitchTab(tab) {
   document.getElementById('admin-' + tab).classList.add('active');
   if (tab === 'listings') loadAdminListings();
   else if (tab === 'events') loadAdminEvents();
+  else if (tab === 'jobs') loadAdminJobs();
   else if (tab === 'memorials') loadAdminMemorials();
   else if (tab === 'newsletter') loadNewsletterSubscriberCount();
   else if (tab === 'reports') loadAdminReports('pending');
@@ -6066,6 +6067,11 @@ async function loadAdminXPosts() {
 }
 
 function adminEsc(s) { return esc(s); }
+// Where a post came from (column 'source', 2026-11-22): 'app' = the phone app; empty or 'web' = the website
+function adminSourceTag(src) {
+  var app = src === 'app';
+  return '<span class="admin-src ' + (app ? 'admin-src-app' : 'admin-src-web') + '">' + (app ? 'App' : 'Website') + '</span>';
+}
 
 // ── Admin: book of the week (owner, 2026-10-24) ──
 // Three recommendations come from /api/book-of-the-week?options=1; a pick is saved in book_picks
@@ -6314,7 +6320,7 @@ async function loadAdminListings() {
       var dateStr = submitDate ? localDate(submitDate, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
       return '<div class="admin-card" id="admin-listing-' + d.id + '">'
         + '<div style="display:flex;justify-content:space-between;align-items:start;">'
-        + '<h4 style="margin:0;">' + adminEsc(d.name) + statusBadge + '</h4>'
+        + '<h4 style="margin:0;">' + adminEsc(d.name) + statusBadge + adminSourceTag(d.source) + '</h4>'
         + (dateStr ? '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + dateStr + '</span>' : '')
         + '</div>'
         + '<div class="admin-meta" style="margin-top:6px;">'
@@ -6431,7 +6437,7 @@ async function loadAdminEvents() {
       var submitDate = d.created_at ? localDate(d.created_at, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
       return '<div class="admin-card" id="admin-event-' + d.id + '">'
         + '<div style="display:flex;justify-content:space-between;align-items:start;">'
-        + '<h4 style="margin:0;">' + adminEsc(d.title) + '</h4>'
+        + '<h4 style="margin:0;">' + adminEsc(d.title) + adminSourceTag(d.source) + '</h4>'
         + (submitDate ? '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + submitDate + '</span>' : '')
         + '</div>'
         + '<div class="admin-meta" style="margin-top:6px;">'
@@ -6450,6 +6456,51 @@ async function loadAdminEvents() {
         + '</div></div>';
     }).join('');
   } catch(e) { el.innerHTML = '<div class="admin-empty">Error: ' + esc(e.message) + '</div>'; }
+}
+
+// ── Admin: Pending Jobs (owner, 2026-11-22) ── jobs members post are saved as drafts (listings_guard_member);
+// Approve sets them active (on the Jobs page for 90 days from now), Decline sets them expired.
+async function loadAdminJobs() {
+  var el = document.getElementById('admin-jobs-list');
+  if (!el || !sbReady()) return;
+  el.innerHTML = '<div class="admin-empty">Loading...</div>';
+  var r = await _sb.from('listings').select('id, title, description, location, country, website_url, contact_email, contact_phone, created_at, source')
+    .eq('status', 'draft').eq('category_id', 11).order('created_at', { ascending: true }).limit(100);
+  if (r.error) { el.innerHTML = '<div class="admin-empty">Error: ' + esc(r.error.message) + '</div>'; return; }
+  var rows = r.data || [];
+  if (!rows.length) { el.innerHTML = '<div class="admin-empty">No jobs waiting. New job posts from the app show here.</div>'; return; }
+  el.innerHTML = rows.map(function (d) {
+    var when = d.created_at ? localDate(d.created_at, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    var place = [d.location, d.country].filter(Boolean).join(', ');
+    return '<div class="admin-card" id="admin-job-' + d.id + '">'
+      + '<div style="display:flex;justify-content:space-between;align-items:start;">'
+      + '<h4 style="margin:0;">' + adminEsc(d.title) + adminSourceTag(d.source) + '</h4>'
+      + (when ? '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + when + '</span>' : '')
+      + '</div>'
+      + '<div class="admin-meta" style="margin-top:6px;">'
+      + (place ? '<span><strong>' + t('admin.location_label') + '</strong> ' + adminEsc(place) + '</span>' : '')
+      + (d.website_url ? '<span><strong>' + t('admin.url_label') + '</strong> <a href="' + escUrl(d.website_url) + '" target="_blank" rel="noopener">' + adminEsc(d.website_url) + '</a></span>' : '')
+      + (d.contact_email ? '<span><strong>' + t('admin.email_label') + '</strong> ' + adminEsc(d.contact_email) + '</span>' : '')
+      + (d.contact_phone ? '<span><strong>Phone:</strong> ' + adminEsc(d.contact_phone) + '</span>' : '')
+      + '</div>'
+      + (d.description ? '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;white-space:pre-line;">' + adminEsc(d.description) + '</p>' : '')
+      + '<div class="admin-actions">'
+      + '<button class="admin-btn-approve" onclick="adminReviewJob(\'' + d.id + '\', true)">' + t('admin.approve') + '</button>'
+      + '<button class="admin-btn-reject" onclick="adminReviewJob(\'' + d.id + '\', false)">' + t('admin.reject') + '</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+async function adminReviewJob(id, approve) {
+  if (!isAdmin() || !sbReady()) return;
+  var patch = approve ? { status: 'active', expires_at: new Date(Date.now() + 90 * 864e5).toISOString() } : { status: 'expired' };
+  var r = await _sb.from('listings').update(patch).eq('id', id);
+  if (r.error) { scNotify('Error: ' + r.error.message); return; }
+  var card = document.getElementById('admin-job-' + id);
+  if (card) card.remove();
+  scNotify(approve ? 'Job approved: it is on the Jobs page now.' : 'Job declined.');
+  if (!document.querySelector('#admin-jobs-list .admin-card')) loadAdminJobs();
+  checkAdminPendingCounts();
 }
 
 async function adminApproveEvent(id) {
@@ -6574,6 +6625,7 @@ function initAdminPanel() {
 var ADMIN_PENDING = [
   { tab: 'listings',  table: 'listings_pending',  q: function (x) { return x.or('status.is.null,status.eq.pending'); } },
   { tab: 'events',    table: 'events',            q: function (x) { return x.eq('needs_review', true).neq('status', 'cancelled'); } },
+  { tab: 'jobs',      table: 'listings',          q: function (x) { return x.eq('status', 'draft').eq('category_id', 11); } },
   { tab: 'memorials', table: 'memorials_pending', q: function (x) { return x.eq('status', 'pending'); } },
   { tab: 'reports',   table: 'reports',           q: function (x) { return x.eq('status', 'pending'); } },
   { tab: 'claims',    table: 'listing_claims',    q: function (x) { return x.eq('status', 'pending'); } },
