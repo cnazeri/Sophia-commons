@@ -64,14 +64,24 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Every weekly issue's subject starts "Sophia Commons weekly: <date>", then the issue's own title if it has one:
-// "Sophia Commons weekly: November 13, 2026 | Keeping the heart alive" (owner, 2026-11-13)
+// Every weekly issue's subject is "Sophia Commons weekly: <date>: <the issue's own title>" (owner, 2026-11-22; was
+// "<date> | <title>" from 2026-11-13). Works on any input:
+//   "Keeping the heart alive: news and gatherings..."              -> "Sophia Commons weekly: November 13, 2026: Keeping the heart alive"
+//   "Sophia Commons weekly: November 13, 2026 | Keeping the heart" -> "Sophia Commons weekly: November 13, 2026: Keeping the heart"
+//   "Sophia Commons weekly: November 20, 2026"                     -> unchanged (no title given)
 const WEEKLY_PREFIX = "Sophia Commons weekly:";
+const DATE_RE = /^([A-Z][a-z]+ \d{1,2}, \d{4})\s*(?:[|:]\s*)?(.*)$/;
 export function weeklySubject(subject: string, createdAt: string): string {
-  if (subject.startsWith(WEEKLY_PREFIX)) return subject;
-  const date = new Date(createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "America/Los_Angeles" });
-  const theme = subject.split(/:\s/)[0].trim();   // "Keeping the heart alive: news and gatherings..." -> "Keeping the heart alive"
-  return `${WEEKLY_PREFIX} ${date}` + (theme ? ` | ${theme}` : "");
+  let date = new Date(createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "America/Los_Angeles" });
+  let theme: string;
+  if (subject.startsWith(WEEKLY_PREFIX)) {
+    const rest = subject.slice(WEEKLY_PREFIX.length).trim();
+    const m = rest.match(DATE_RE);
+    if (m) { date = m[1]; theme = m[2].trim(); } else theme = rest;
+  } else {
+    theme = subject.split(/:\s/)[0].trim();   // "Keeping the heart alive: news and gatherings..." -> "Keeping the heart alive"
+  }
+  return `${WEEKLY_PREFIX} ${date}` + (theme ? `: ${theme}` : "");
 }
 
 // Weekly digests older than this are never emailed (see the check where the digest is loaded)
