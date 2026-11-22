@@ -1,9 +1,10 @@
 // A news article read inside the app. Works offline once opened or bookmarked; the original source is an
 // optional link at the end, never where the reader is sent.
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as WebBrowser from 'expo-web-browser';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
@@ -14,6 +15,8 @@ import { localDate, t } from '@/lib/i18n';
 import { type Article, fetchArticle, paragraphs } from '@/lib/news';
 import { useSaved } from '@/lib/saved';
 import { SITE } from '@/lib/supabase';
+
+const hostOf = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
 
 export function ArticleView() {
   const c = useTheme();
@@ -40,6 +43,7 @@ export function ArticleView() {
     );
   }
   const url = SITE + '/article/' + shown.id;
+  const openSource = () => { if (shown.source_url) WebBrowser.openBrowserAsync(shown.source_url); };
   return (
     <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={styles.wrap}>
       <View style={styles.head}>
@@ -47,16 +51,22 @@ export function ArticleView() {
         <BookmarkButton article={shown} />
       </View>
       <Text style={[styles.title, { color: c.text }]} selectable>{shown.title}</Text>
-      {shown.source_name ? <Text style={[styles.source, { color: c.textMuted }]}>{shown.source_name}</Text> : null}
+      {shown.source_url ? (
+        <Pressable onPress={openSource} accessibilityRole="link" hitSlop={6}
+          accessibilityLabel={t('app.read_source', 'Original source') + ': ' + (shown.source_name || hostOf(shown.source_url))}
+          style={({ pressed }) => [styles.srcRow, { opacity: pressed ? 0.6 : 1 }]}>
+          <Text style={[styles.source, styles.srcLink, { color: c.goldText }]}>{shown.source_name || hostOf(shown.source_url)}</Text>
+          <MaterialIcons name="open-in-new" size={15} color={c.goldText} />
+        </Pressable>
+      ) : shown.source_name ? <Text style={[styles.source, { color: c.textMuted }]}>{shown.source_name}</Text> : null}
       {paragraphs(shown.body || shown.excerpt).map((p, i) => (
         <Text key={i} style={[styles.para, { color: c.text }]} selectable>{p}</Text>
       ))}
       <View style={styles.actions}>
-        <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: shown.title + '\n' + url, url })} />
         {shown.source_url ? (
-          <Button kind="secondary" label={t('app.read_source', 'Original source') + (shown.source_name ? ': ' + shown.source_name : '')}
-            onPress={() => WebBrowser.openBrowserAsync(String(shown.source_url))} />
+          <Button label={t('app.read_full', 'Read the full article at') + ' ' + (shown.source_name || hostOf(shown.source_url))} onPress={openSource} />
         ) : null}
+        <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: shown.title + '\n' + url, url })} />
       </View>
     </ScrollView>
   );
@@ -68,6 +78,8 @@ const styles = StyleSheet.create({
   head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { fontFamily: Fonts.headingBold, fontSize: 26, lineHeight: 32 },
   source: { fontFamily: Fonts.bodySemi, fontSize: 14 },
+  srcRow: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start' },
+  srcLink: { textDecorationLine: 'underline' },
   para: { fontFamily: Fonts.body, fontSize: 17, lineHeight: 26 },
   actions: { gap: Spacing.sm, marginTop: Spacing.md },
 });

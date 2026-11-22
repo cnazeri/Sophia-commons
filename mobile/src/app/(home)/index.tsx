@@ -7,12 +7,14 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { EventCard } from '@/components/event-card';
+import { JobCard } from '@/components/job-card';
 import { NewsCard } from '@/components/news-card';
 import { Body, Card, H2, Kicker, Screen } from '@/components/ui';
 import { Fonts, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { type EventRow, fetchUpcoming, sizedImage } from '@/lib/events';
 import { localDate, t } from '@/lib/i18n';
+import { fetchJobs, type Job } from '@/lib/jobs';
 import { type Article, fetchNewsList } from '@/lib/news';
 import { cotsWeek, upcomingYearDays } from '@/lib/year';
 
@@ -20,10 +22,12 @@ export default function Home() {
   const c = useTheme();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [news, setNews] = useState<Article[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   useEffect(() => {
     let alive = true;
     fetchUpcoming().then((r) => { if (alive) setEvents([...r].sort((a, b) => a.start_date.localeCompare(b.start_date)).slice(0, 4)); }).catch(() => {});
     fetchNewsList(4).then((r) => { if (alive) setNews(r); }).catch(() => {});
+    fetchJobs('', 40).then((r) => { if (alive) setJobs(r.slice(0, 3)); }).catch(() => {});
     return () => { alive = false; };
   }, []);
 
@@ -61,6 +65,14 @@ export default function Home() {
           <H2>{t('app.coming_up', 'Coming up')}</H2>
           {events.map((e) => <EventCard key={e.id} e={e} />)}
           <Button kind="secondary" label={t('app.all_events', 'All events')} onPress={() => router.push('/events')} />
+        </View>
+      ) : null}
+
+      {jobs.length ? (
+        <View style={styles.section}>
+          <H2>{t('app.jobs', 'Jobs')}</H2>
+          {jobs.map((j) => <JobCard key={j.id} j={j} />)}
+          <Button kind="secondary" label={t('app.jobs_all', 'All jobs')} onPress={() => router.push('/jobs')} />
         </View>
       ) : null}
 

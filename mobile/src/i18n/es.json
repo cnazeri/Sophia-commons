@@ -1399,6 +1399,12 @@
     "bookmark": "Guardar",
     "remove_bookmark": "Quitar de guardados",
     "read_source": "Fuente original",
-    "article_offline": "Este artículo aún no está en tu teléfono. Ábrelo una vez con conexión y quedará guardado."
+    "article_offline": "Este artículo aún no está en tu teléfono. Ábrelo una vez con conexión y quedará guardado.",
+    "read_full": "Leer el artículo completo en",
+    "jobs": "Empleos",
+    "jobs_all": "Todos los empleos",
+    "jobs_search": "Empleo, ciudad o país",
+    "jobs_error": "No se pudieron cargar los empleos. Inténtalo de nuevo en un momento.",
+    "job_apply": "Detalles y cómo postularse"
   }
 }

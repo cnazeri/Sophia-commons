@@ -1338,6 +1338,12 @@
     "bookmark": "Bookmark",
     "remove_bookmark": "Remove bookmark",
     "read_source": "Original source",
-    "article_offline": "This article is not on your phone yet. Open it once with a connection and it will be kept."
+    "article_offline": "This article is not on your phone yet. Open it once with a connection and it will be kept.",
+    "read_full": "Read the full article at",
+    "jobs": "Jobs",
+    "jobs_all": "All jobs",
+    "jobs_search": "Job, town or country",
+    "jobs_error": "Could not load jobs. Try again in a moment.",
+    "job_apply": "Details and how to apply"
   }
 }

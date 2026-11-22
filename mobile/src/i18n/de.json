@@ -1399,6 +1399,12 @@
     "bookmark": "Merken",
     "remove_bookmark": "Lesezeichen entfernen",
     "read_source": "Originalquelle",
-    "article_offline": "Dieser Artikel ist noch nicht auf deinem Telefon. Öffne ihn einmal mit Internetverbindung, dann bleibt er gespeichert."
+    "article_offline": "Dieser Artikel ist noch nicht auf deinem Telefon. Öffne ihn einmal mit Internetverbindung, dann bleibt er gespeichert.",
+    "read_full": "Ganzen Artikel lesen bei",
+    "jobs": "Stellen",
+    "jobs_all": "Alle Stellen",
+    "jobs_search": "Stelle, Ort oder Land",
+    "jobs_error": "Stellen konnten nicht geladen werden. Bitte gleich nochmal versuchen.",
+    "job_apply": "Details und Bewerbung"
   }
 }
