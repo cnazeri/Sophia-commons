@@ -7503,7 +7503,8 @@ var podcastData = {
     {title:"IVAA", url:'https://x.com/IVAAmeds', platform:'X', desc:"International Federation of Anthroposophic Medical Associations.", lang:'EN', verified:true},
     {title:"Dr. Hauschka UK", url:'https://x.com/LoveHauschka', platform:'X', desc:"UK account of the WALA skin care brand.", lang:'EN', verified:true},
     {title:"Gesundheit Aktiv", url:'https://x.com/gesundheitaktiv', platform:'X', desc:"German patient association rooted in anthroposophic medicine.", lang:'DE', verified:true},
-    {title:"Gary Lachman", url:'https://x.com/GaryLachman', platform:'X', desc:"Author, including a biography of Rudolf Steiner.", lang:'EN', verified:true}
+    {title:"Gary Lachman", url:'https://x.com/GaryLachman', platform:'X', desc:"Author, including a biography of Rudolf Steiner.", lang:'EN', verified:true},
+    {title:"Thalira", url:'https://x.com/ThaliraWisdom', platform:'X', desc:"Free articles, study paths and a glossary on anthroposophy and Rudolf Steiner.", lang:'EN', verified:true}
   ],
   archives: [
     {title:'Rudolf Steiner Archive', url:'https://rsarchive.org', platform:'rsarchive.org', desc:'Complete archive of Steiner lectures and writings. The largest online collection.', lang:'EN', verified:true},

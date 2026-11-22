@@ -2144,6 +2144,17 @@
       "description": null,
       "verified": false,
       "added_from": "admin approval"
+    },
+    {
+      "slug": "wisdom-temple-of-thalira",
+      "name": "Wisdom Temple of Thalira",
+      "url": "https://www.youtube.com/@thalirawisdomtemple",
+      "channel_id": "UCmTJhpGtCpSpqGJwji6MeAA",
+      "language": "EN",
+      "category": "study-group",
+      "description": "Videos from Thalira on ancient wisdom for modern life: Rudolf Steiner, meditation, alternative education and community.",
+      "verified": false,
+      "added_from": "owner request 2026-11-21"
     }
   ]
 }
