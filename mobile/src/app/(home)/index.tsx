@@ -18,6 +18,7 @@ import { localDate, t } from '@/lib/i18n';
 import { fetchJobs, type Job } from '@/lib/jobs';
 import { fetchVideos, type Video } from '@/lib/media';
 import { type Article, fetchNewsList } from '@/lib/news';
+import cotsDe from '@/data/cots-de.json';
 import { cotsWeek, upcomingYearDays } from '@/lib/year';
 
 export default function Home() {
@@ -60,8 +61,14 @@ export default function Home() {
       <Card>
         <Kicker>{t('cots.title', 'Calendar of the Soul')}</Kicker>
         <H2>{t('cots.week', 'Week')} {w.week} · {localDate(w.from.toISOString(), short)} - {localDate(w.to.toISOString(), short)}</H2>
+        <View style={styles.verse} accessible accessibilityLabel={(cotsDe as Record<string, string[]>)[String(w.week)]?.join(' ')}>
+          {((cotsDe as Record<string, string[]>)[String(w.week)] || []).map((ln, i) => (
+            <Text key={i} style={[styles.verseLine, { color: c.text }]} selectable>{ln}</Text>
+          ))}
+        </View>
+        <Text style={[styles.verseBy, { color: c.textMuted }]}>Rudolf Steiner, Anthroposophischer Seelenkalender (1912)</Text>
         <Body muted>{t('cots.mirror', 'Mirror verse')}: {t('cots.week', 'Week')} {w.mirror} · {t('cots.southern', 'Southern Hemisphere')}: {t('cots.week', 'Week')} {w.southern}</Body>
-        <Button kind="secondary" label={t('cots.read', "Read this week's verse")} onPress={() => WebBrowser.openBrowserAsync(w.url(w.week))} />
+        <Button kind="secondary" label={t('app.cots_translations', 'English and other translations')} onPress={() => WebBrowser.openBrowserAsync(w.url(w.week))} />
       </Card>
 
       {events.length ? (
@@ -104,4 +111,7 @@ const styles = StyleSheet.create({
   festImg: { width: '100%', aspectRatio: 16 / 9, borderRadius: 10, marginBottom: Spacing.xs },
   next: { fontFamily: Fonts.body, fontSize: 14, lineHeight: 20 },
   section: { gap: Spacing.sm, marginTop: Spacing.sm },
+  verse: { gap: 2, paddingVertical: Spacing.xs },
+  verseLine: { fontFamily: Fonts.heading, fontStyle: 'italic', fontSize: 17, lineHeight: 25 },
+  verseBy: { fontFamily: Fonts.body, fontSize: 12.5 },
 });

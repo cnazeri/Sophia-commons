@@ -1384,5 +1384,8 @@
   "app.unblock": "Unblock",
   "app.guidelines_desc": "Be kind and stay on topic. Reported messages are reviewed within 24 hours, and abusive members are removed.",
   "app.media_title": "Talks, blogs and podcasts",
-  "app.media_more": "More talks, blogs and podcasts"
+  "app.media_more": "More talks, blogs and podcasts",
+  "app.view_list": "List",
+  "app.view_map": "Map",
+  "app.cots_translations": "English and other translations"
 }

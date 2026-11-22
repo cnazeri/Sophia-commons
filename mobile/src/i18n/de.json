@@ -1445,5 +1445,8 @@
   "app.unblock": "Blockierung aufheben",
   "app.guidelines_desc": "Sei freundlich und bleib beim Thema. Gemeldete Nachrichten werden innerhalb von 24 Stunden geprüft, beleidigende Mitglieder werden entfernt.",
   "app.media_title": "Vorträge, Blogs und Podcasts",
-  "app.media_more": "Mehr Vorträge, Blogs und Podcasts"
+  "app.media_more": "Mehr Vorträge, Blogs und Podcasts",
+  "app.view_list": "Liste",
+  "app.view_map": "Karte",
+  "app.cots_translations": "Übersetzungen (Englisch und weitere)"
 }

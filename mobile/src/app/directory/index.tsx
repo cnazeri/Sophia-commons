@@ -7,6 +7,7 @@ import { Button } from '@/components/button';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Chips } from '@/components/chips';
+import { DirectoryMap } from '@/components/directory-map';
 import { ListingCard } from '@/components/listing-card';
 import { Body, H1, Wordmark } from '@/components/ui';
 import { Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
@@ -22,6 +23,7 @@ export default function DirectoryScreen() {
   const [near, setNear] = useState<{ lat: number; lng: number } | null>(null);
   const [locMsg, setLocMsg] = useState('');
   const [error, setError] = useState('');
+  const [view, setView] = useState<'list' | 'map'>('list');
 
   // Search shortly after typing stops
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function DirectoryScreen() {
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: c.background }}>
       <FlatList
-        data={rows || []}
+        data={view === 'map' ? [] : rows || []}
         keyExtractor={(l) => l.id}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.list}
@@ -63,11 +65,14 @@ export default function DirectoryScreen() {
             <Button kind={near ? 'primary' : 'secondary'} label={near ? t('app.near_me_on', 'Showing places near you (tap to search instead)') : t('app.near_me', 'Near me')} onPress={findNear} />
             {locMsg ? <Body muted>{locMsg}</Body> : null}
             <Chips value={cat} onChange={setCat} items={[{ key: 'all', label: t('app.filter_all', 'All') }, ...CATEGORIES.map((x) => ({ key: x.key, label: t('app.cat_' + x.key, x.label) }))]} />
+            <Chips value={view} onChange={(v) => setView(v as 'list' | 'map')} items={[
+              { key: 'list', label: t('app.view_list', 'List') }, { key: 'map', label: t('app.view_map', 'Map') }]} />
+            {view === 'map' && rows ? <DirectoryMap rows={rows} near={near} /> : null}
             {!rows && !error ? <ActivityIndicator style={{ marginTop: 40 }} color={c.goldText} /> : null}
           </View>
         }
         renderItem={({ item }) => <View style={styles.item}><ListingCard l={item} km={item.km} /></View>}
-        ListEmptyComponent={rows ? <Body muted style={{ paddingVertical: Spacing.lg }}>{error ? t('app.load_error_dir', 'Could not load the directory. Try again in a moment.') : t('app.no_results', 'Nothing found. Try another word or category.')}</Body> : undefined}
+        ListEmptyComponent={rows && view === 'list' ? <Body muted style={{ paddingVertical: Spacing.lg }}>{error ? t('app.load_error_dir', 'Could not load the directory. Try again in a moment.') : t('app.no_results', 'Nothing found. Try another word or category.')}</Body> : undefined}
       />
     </SafeAreaView>
   );

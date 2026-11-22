@@ -1445,5 +1445,8 @@
   "app.unblock": "Desbloquear",
   "app.guidelines_desc": "Sé amable y no te salgas del tema. Los mensajes denunciados se revisan en 24 horas y los miembros ofensivos son expulsados.",
   "app.media_title": "Charlas, blogs y pódcasts",
-  "app.media_more": "Más charlas, blogs y pódcasts"
+  "app.media_more": "Más charlas, blogs y pódcasts",
+  "app.view_list": "Lista",
+  "app.view_map": "Mapa",
+  "app.cots_translations": "Traducciones (inglés y otras)"
 }
