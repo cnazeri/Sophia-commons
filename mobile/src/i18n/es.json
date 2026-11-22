@@ -1496,5 +1496,8 @@
   "app.cat_societies": "Grupos y sociedades",
   "app.cat_eldercare": "Cuidado de mayores",
   "app.cat_online": "En línea",
-  "app.location_unavailable": "Tu ubicación no está disponible ahora. Aún puedes buscar por ciudad."
+  "app.location_unavailable": "Tu ubicación no está disponible ahora. Aún puedes buscar por ciudad.",
+  "app.open": "Abrir",
+  "app.map_group": "{n} lugares aquí. Toca para acercar.",
+  "app.map_count": "{n} lugares en el mapa"
 }

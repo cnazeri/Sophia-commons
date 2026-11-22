@@ -1435,5 +1435,8 @@
   "app.cat_societies": "Groups & societies",
   "app.cat_eldercare": "Eldercare",
   "app.cat_online": "Online",
-  "app.location_unavailable": "Your location is not available right now. You can still search by town."
+  "app.location_unavailable": "Your location is not available right now. You can still search by town.",
+  "app.open": "Open",
+  "app.map_group": "{n} places here. Tap to zoom in.",
+  "app.map_count": "{n} places on the map"
 }

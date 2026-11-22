@@ -1496,5 +1496,8 @@
   "app.cat_societies": "Gruppen & Gesellschaften",
   "app.cat_eldercare": "Altenpflege",
   "app.cat_online": "Online",
-  "app.location_unavailable": "Dein Standort ist gerade nicht verfügbar. Du kannst trotzdem nach Ort suchen."
+  "app.location_unavailable": "Dein Standort ist gerade nicht verfügbar. Du kannst trotzdem nach Ort suchen.",
+  "app.open": "Öffnen",
+  "app.map_group": "{n} Orte hier. Tippen zum Vergrößern.",
+  "app.map_count": "{n} Orte auf der Karte"
 }

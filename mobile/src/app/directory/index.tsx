@@ -71,8 +71,8 @@ export default function DirectoryScreen() {
             <Chips value={cat} onChange={setCat} items={[{ key: 'all', label: t('app.filter_all', 'All') }, ...CATEGORIES.map((x) => ({ key: x.key, label: t('app.cat_' + x.key, x.label) }))]} />
             <Chips value={view} onChange={(v) => setView(v as 'list' | 'map')} items={[
               { key: 'list', label: t('app.view_list', 'List') }, { key: 'map', label: t('app.view_map', 'Map') }]} />
-            {view === 'map' && rows ? <DirectoryMap rows={rows} near={near} /> : null}
-            {!rows && !error ? <ActivityIndicator style={{ marginTop: 40 }} color={c.goldText} /> : null}
+            {view === 'map' ? <DirectoryMap cat={cat === 'all' ? null : cat} q={q} near={near} /> : null}
+            {!rows && !error && view === 'list' ?<ActivityIndicator style={{ marginTop: 40 }} color={c.goldText} /> : null}
           </View>
         }
         renderItem={({ item }) => <View style={styles.item}><ListingCard l={item} km={item.km} /></View>}
