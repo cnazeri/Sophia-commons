@@ -1525,7 +1525,7 @@
   "app.err_job_desc": "Please describe the job in a few sentences.",
   "app.err_job_place": "Please give the city, or write Remote.",
   "app.err_job_contact": "Please give at least one way to apply: a link, an email or a phone number.",
-  "app.job_sent": "Thank you. Your job will appear on the Jobs page after a quick review, usually within a day or two. It stays up for 90 days.",
+  "app.job_sent": "Thank you. Your job will appear on the Jobs page after a quick review, usually within a day or two. It stays up for 90 days; we email you a week before it ends so you can renew it under Post > My posts.",
   "app.job_intro": "Jobs, training places and volunteer roles in Waldorf schools, farms, Camphill, clinics and other anthroposophical work.",
   "app.f_job_title": "Job title",
   "app.f_job_title_ph": "Class teacher, grade 1",
@@ -1546,5 +1546,16 @@
   "app.etype_festival": "Festival",
   "app.etype_retreat": "Retreat",
   "app.etype_other": "Talk or other",
-  "app.f_region": "State or province"
+  "app.f_region": "State or province",
+  "app.my_posts": "My posts",
+  "app.my_posts_intro": "Job posts stay up for 90 days. In the last two weeks you can renew a post for another 90 days, and we email you a reminder a week before it ends.",
+  "app.my_posts_none": "You have not posted a job yet.",
+  "app.job_st_review": "Waiting for review",
+  "app.job_st_live": "Live until {date}",
+  "app.job_st_ending": "Ends in {n} days, on {date}",
+  "app.job_st_ended": "Ended on {date}",
+  "app.job_st_declined": "Not shown",
+  "app.renew_90": "Renew for 90 days",
+  "app.renewed": "Renewed",
+  "app.renewed_until": "Your job post now stays up until {date}."
 }

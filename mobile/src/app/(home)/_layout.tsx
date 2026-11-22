@@ -22,6 +22,7 @@ export default function StackLayout() {
       <Stack.Screen name="post/job" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="post/community" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="post/review" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="post/mine" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="community/[slug]" options={{ title: '', headerBackTitle: '' }} />
     </Stack>
   );

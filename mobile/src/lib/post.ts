@@ -111,3 +111,28 @@ export async function fetchCommunityPost(slug: string): Promise<CommunityPost | 
   if (error) throw new Error(error.message);
   return (data as CommunityPost) || null;
 }
+
+// The member's own job posts (newest first), for Post > My posts. Jobs last 90 days; the member renews them there.
+export type MyJob = { id: string; title: string; status: string; expires_at: string | null; created_at: string; location: string | null; region: string | null };
+export const RENEW_WINDOW_DAYS = 14;
+export async function myJobs(s: Session): Promise<MyJob[]> {
+  const { data, error } = await supabase.from('listings').select('id,title,status,expires_at,created_at,location,region')
+    .eq('user_id', s.user.id).eq('category_id', JOBS_CAT_ID).order('created_at', { ascending: false }).limit(50);
+  if (error) throw new Error(error.message);
+  return (data || []) as MyJob[];
+}
+// What a job post's state is, and whether it can be renewed now (14 days or less left, or ended)
+export function jobState(j: MyJob): { key: 'review' | 'live' | 'ending' | 'ended' | 'declined'; daysLeft: number } {
+  const daysLeft = j.expires_at ? Math.ceil((Date.parse(j.expires_at) - Date.now()) / 864e5) : 0;
+  if (j.status === 'draft') return { key: 'review', daysLeft };
+  if (j.status !== 'active') return { key: 'declined', daysLeft };
+  if (daysLeft <= 0) return { key: 'ended', daysLeft };
+  return { key: daysLeft <= RENEW_WINDOW_DAYS ? 'ending' : 'live', daysLeft };
+}
+// Another 90 days from today (the database never allows more than that)
+export async function renewJob(id: string): Promise<string> {
+  const until = new Date(Date.now() + 90 * 864e5).toISOString();
+  const { data, error } = await supabase.from('listings').update({ expires_at: until }).eq('id', id).select('expires_at').single();
+  if (error) throw new Error(error.message);
+  return (data as { expires_at: string }).expires_at;
+}

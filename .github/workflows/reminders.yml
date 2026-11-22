@@ -32,3 +32,14 @@ jobs:
             -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{"action":"notify"}')
           cat out.json; echo
           [ "$code" = "200" ] || { echo "event-follow returned HTTP $code"; exit 1; }
+
+      - name: Email members whose job post ends in the next 7 days, so they can renew it in the app (owner, 2026-11-22)
+        if: always()
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.DIGEST_CRON_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          code=$(curl -s -o out.json -w "%{http_code}" -X POST "$URL/functions/v1/job-renew" \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{"action":"remind"}')
+          cat out.json; echo
+          [ "$code" = "200" ] || { echo "job-renew returned HTTP $code"; exit 1; }

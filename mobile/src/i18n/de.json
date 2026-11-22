@@ -1586,7 +1586,7 @@
   "app.err_job_desc": "Bitte beschreiben Sie die Stelle in ein paar Sätzen.",
   "app.err_job_place": "Bitte geben Sie die Stadt an, oder schreiben Sie Remote.",
   "app.err_job_contact": "Bitte geben Sie mindestens einen Weg zur Bewerbung an: einen Link, eine E-Mail oder eine Telefonnummer.",
-  "app.job_sent": "Danke. Ihre Stelle erscheint nach kurzer Prüfung auf der Stellenseite, meist innerhalb von ein, zwei Tagen. Sie bleibt 90 Tage online.",
+  "app.job_sent": "Danke. Ihre Stelle erscheint nach kurzer Prüfung auf der Stellenseite, meist innerhalb von ein, zwei Tagen. Sie bleibt 90 Tage online; eine Woche vor dem Ende erinnern wir Sie per E-Mail, damit Sie sie unter Posten > Meine Beiträge verlängern können.",
   "app.job_intro": "Stellen, Ausbildungsplätze und Ehrenämter in Waldorfschulen, auf Höfen, in Camphill, Kliniken und anderer anthroposophischer Arbeit.",
   "app.f_job_title": "Stellenbezeichnung",
   "app.f_job_title_ph": "Klassenlehrer/in, 1. Klasse",
@@ -1607,5 +1607,16 @@
   "app.etype_festival": "Fest",
   "app.etype_retreat": "Retreat",
   "app.etype_other": "Vortrag oder anderes",
-  "app.f_region": "Bundesland oder Kanton"
+  "app.f_region": "Bundesland oder Kanton",
+  "app.my_posts": "Meine Beiträge",
+  "app.my_posts_intro": "Stellenanzeigen bleiben 90 Tage online. In den letzten zwei Wochen können Sie eine Anzeige um weitere 90 Tage verlängern, und wir erinnern Sie eine Woche vorher per E-Mail.",
+  "app.my_posts_none": "Sie haben noch keine Stelle ausgeschrieben.",
+  "app.job_st_review": "Wartet auf Prüfung",
+  "app.job_st_live": "Online bis {date}",
+  "app.job_st_ending": "Endet in {n} Tagen, am {date}",
+  "app.job_st_ended": "Beendet am {date}",
+  "app.job_st_declined": "Nicht sichtbar",
+  "app.renew_90": "Um 90 Tage verlängern",
+  "app.renewed": "Verlängert",
+  "app.renewed_until": "Ihre Stellenanzeige bleibt jetzt bis {date} online."
 }

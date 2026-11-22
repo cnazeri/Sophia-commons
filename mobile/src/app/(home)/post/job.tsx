@@ -46,7 +46,7 @@ export default function PostJob() {
       await postJob({ ...f, title: f.title.trim(), description: f.description.trim(), location: f.location.trim(), region: f.region.trim(), country: f.country.trim(),
         url: url || '', email: f.email.trim(), phone: f.phone.trim() }, session);
       setDone(true);
-      setMsg({ text: t('app.job_sent', 'Thank you. Your job will appear on the Jobs page after a quick review, usually within a day or two. It stays up for 90 days.') });
+      setMsg({ text: t('app.job_sent', 'Thank you. Your job will appear on the Jobs page after a quick review, usually within a day or two. It stays up for 90 days; we email you a week before it ends so you can renew it under Post > My posts.') });
     } catch (x) {
       setMsg({ text: t('app.err_send', 'Sorry, this could not be sent. Please try again, or email hello@sophiacommons.org.') + ' (' + (x as Error).message + ')', error: true });
     } finally { setBusy(false); }

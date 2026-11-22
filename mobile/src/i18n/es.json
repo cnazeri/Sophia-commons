@@ -1586,7 +1586,7 @@
   "app.err_job_desc": "Describe el empleo en unas frases.",
   "app.err_job_place": "Indica la ciudad, o escribe Remoto.",
   "app.err_job_contact": "Indica al menos una forma de postularse: un enlace, un correo o un teléfono.",
-  "app.job_sent": "Gracias. Tu empleo aparecerá en la página de Empleos tras una breve revisión, normalmente en uno o dos días. Estará publicado 90 días.",
+  "app.job_sent": "Gracias. Tu empleo aparecerá en la página de Empleos tras una breve revisión, normalmente en uno o dos días. Estará publicado 90 días; te escribiremos una semana antes de que termine para que puedas renovarlo en Publicar > Mis publicaciones.",
   "app.job_intro": "Empleos, plazas de formación y voluntariados en escuelas Waldorf, granjas, Camphill, clínicas y otras iniciativas antroposóficas.",
   "app.f_job_title": "Puesto",
   "app.f_job_title_ph": "Maestro/a de primer grado",
@@ -1607,5 +1607,16 @@
   "app.etype_festival": "Festival",
   "app.etype_retreat": "Retiro",
   "app.etype_other": "Charla u otro",
-  "app.f_region": "Estado o provincia"
+  "app.f_region": "Estado o provincia",
+  "app.my_posts": "Mis publicaciones",
+  "app.my_posts_intro": "Los empleos se publican durante 90 días. En las dos últimas semanas puedes renovar una publicación por otros 90 días, y te enviamos un recordatorio una semana antes de que termine.",
+  "app.my_posts_none": "Todavía no has publicado ningún empleo.",
+  "app.job_st_review": "Pendiente de revisión",
+  "app.job_st_live": "Publicado hasta el {date}",
+  "app.job_st_ending": "Termina en {n} días, el {date}",
+  "app.job_st_ended": "Terminó el {date}",
+  "app.job_st_declined": "No se muestra",
+  "app.renew_90": "Renovar por 90 días",
+  "app.renewed": "Renovado",
+  "app.renewed_until": "Tu empleo seguirá publicado hasta el {date}."
 }

@@ -50,6 +50,7 @@ export default function PostScreen() {
           <MaterialIcons name="chevron-right" size={24} color={c.textMuted} />
         </Pressable>
       ))}
+      {session ? <Button kind="secondary" onPress={() => router.push('/post/mine')} label={t('app.my_posts', 'My posts')} /> : null}
       {admin ? (
         <Button kind="secondary" onPress={() => router.push('/post/review')}
           label={t('app.review_jobs', 'Review jobs') + (waiting != null ? ` (${waiting})` : '')} />
