@@ -42,7 +42,11 @@ export default function DirectoryScreen() {
     setLocMsg('');
     const perm = await Location.requestForegroundPermissionsAsync();
     if (!perm.granted) { setLocMsg(t('app.location_denied', 'Location is off for Sophia Commons. You can still search by town.')); return; }
-    const pos = (await Location.getLastKnownPositionAsync()) || (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
+    // A fresh position first (the last known one can be hours old); fall back to it after 8 seconds
+    const fresh = Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }).catch(() => null);
+    const timeout = new Promise<null>((r) => setTimeout(() => r(null), 8000));
+    const pos = (await Promise.race([fresh, timeout])) || (await Location.getLastKnownPositionAsync());
+    if (!pos) { setLocMsg(t('app.location_unavailable', 'Your location is not available right now. You can still search by town.')); return; }
     setQ(''); setRows(null);
     setNear({ lat: pos.coords.latitude, lng: pos.coords.longitude });
   };

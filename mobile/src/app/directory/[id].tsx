@@ -28,7 +28,10 @@ export default function ListingDetail() {
   const logo = (l.photo_url || '').includes('#contain');
   const img = sizedImage((l.photo_url || '').split('#')[0], 900);
   const cat = CATEGORIES.find((x) => x.key === l.category);
-  const place = [l.address, listingPlace(l)].filter(Boolean).join(', ');
+  // Address and town often repeat each other ("Livermore, CA" + "Livermore, USA"): keep each part once
+  const seen = new Set<string>();
+  const place = [l.address, listingPlace(l)].filter(Boolean).join(', ').split(',').map((x) => x.trim())
+    .filter((x) => x && !seen.has(x.toLowerCase()) && (seen.add(x.toLowerCase()), true)).join(', ');
   const url = SITE + '/listing/' + (l.slug || l.id);
   const directions = () => {
     const q = l.latitude != null && l.longitude != null ? `${l.latitude},${l.longitude}` : encodeURIComponent(place);

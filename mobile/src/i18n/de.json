@@ -1495,5 +1495,6 @@
   "app.cat_eurythmy": "Kunst & Eurythmie",
   "app.cat_societies": "Gruppen & Gesellschaften",
   "app.cat_eldercare": "Altenpflege",
-  "app.cat_online": "Online"
+  "app.cat_online": "Online",
+  "app.location_unavailable": "Dein Standort ist gerade nicht verfügbar. Du kannst trotzdem nach Ort suchen."
 }

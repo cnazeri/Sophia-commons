@@ -20,7 +20,9 @@ export function DirectoryMap({ rows, near }: Props) {
   }, [pins, near]);
 
   return (
-    <MapView style={styles.map} region={region} showsUserLocation={!!near} toolbarEnabled={false}>
+    // initialRegion (not region) so the map stays where the reader moves it; a new search or Near me re-centers it
+    <MapView key={near ? 'near-' + near.lat + ',' + near.lng : 'all-' + pins.length + '-' + (pins[0]?.id || '')}
+      style={styles.map} initialRegion={region} showsUserLocation={!!near} toolbarEnabled={false}>
       {pins.map((l) => (
         <Marker key={l.id} coordinate={{ latitude: l.latitude as number, longitude: l.longitude as number }} pinColor="#C9A035">
           <Callout onPress={() => router.push({ pathname: '/directory/[id]', params: { id: l.id } })}

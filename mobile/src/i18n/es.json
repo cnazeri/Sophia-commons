@@ -1495,5 +1495,6 @@
   "app.cat_eurythmy": "Artes y euritmia",
   "app.cat_societies": "Grupos y sociedades",
   "app.cat_eldercare": "Cuidado de mayores",
-  "app.cat_online": "En línea"
+  "app.cat_online": "En línea",
+  "app.location_unavailable": "Tu ubicación no está disponible ahora. Aún puedes buscar por ciudad."
 }

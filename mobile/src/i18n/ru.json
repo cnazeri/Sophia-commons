@@ -1495,5 +1495,6 @@
   "app.cat_eurythmy": "Искусство и эвритмия",
   "app.cat_societies": "Группы и общества",
   "app.cat_eldercare": "Уход за пожилыми",
-  "app.cat_online": "Онлайн"
+  "app.cat_online": "Онлайн",
+  "app.location_unavailable": "Местоположение сейчас недоступно. Можно искать по городу."
 }
