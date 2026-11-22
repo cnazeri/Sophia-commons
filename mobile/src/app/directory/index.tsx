@@ -60,7 +60,7 @@ export default function DirectoryScreen() {
         contentContainerStyle={styles.list}
         ListHeaderComponent={
           <View style={styles.head}>
-            <Wordmark />
+            <Wordmark post />
             <H1>{t('app.directory_title', 'Find anthroposophy near you')}</H1>
             <TextInput value={q} onChangeText={setQ} placeholder={t('app.search_placeholder', 'School, farm, group, town or country')}
               placeholderTextColor={c.textMuted} returnKeyType="search" clearButtonMode="while-editing" autoCorrect={false}

@@ -16,6 +16,13 @@ export default function StackLayout() {
       <Stack.Screen name="jobs/index" options={{ title: t('app.jobs', 'Jobs'), headerBackTitle: '' }} />
       <Stack.Screen name="jobs/[id]" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="media" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="post/index" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="post/event" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="post/place" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="post/job" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="post/community" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="post/review" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="community/[slug]" options={{ title: '', headerBackTitle: '' }} />
     </Stack>
   );
 }

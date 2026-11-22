@@ -1,17 +1,20 @@
 // Small shared pieces so every screen has the same look.
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router } from 'expo-router';
 import { type ReactNode } from 'react';
-import { ScrollView, StyleSheet, Text, View, type TextProps, type ViewStyle } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, type TextProps, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { t } from '@/lib/i18n';
 
 // Page with the wordmark on top, scrolling content, centered on tablets
-export function Screen({ children, title, scroll = true, underHeader = false }: { children: ReactNode; title?: string; scroll?: boolean; underHeader?: boolean }) {
+export function Screen({ children, title, scroll = true, underHeader = false, post = false }: { children: ReactNode; title?: string; scroll?: boolean; underHeader?: boolean; post?: boolean }) {
   const c = useTheme();
   const inner = (
     <View style={styles.inner}>
-      <Wordmark />
+      <Wordmark post={post} />
       {title ? <H1>{title}</H1> : null}
       {children}
     </View>
@@ -23,11 +26,20 @@ export function Screen({ children, title, scroll = true, underHeader = false }: 
   );
 }
 
-export function Wordmark() {
+// The site name; with `post`, a gold "Post" button on the right opens the Post screen
+export function Wordmark({ post = false }: { post?: boolean }) {
   const c = useTheme();
   return (
-    <View style={styles.wordmarkRow} accessibilityRole="header" accessibilityLabel="Sophia Commons">
-      <Text style={[styles.wordmark, { color: c.text }]} maxFontSizeMultiplier={1.25}>Sophia Commons</Text>
+    <View style={styles.wordmarkRow}>
+      <Text style={[styles.wordmark, { color: c.text }]} maxFontSizeMultiplier={1.25} accessibilityRole="header">Sophia Commons</Text>
+      {post ? (
+        <Pressable onPress={() => router.push('/post')} accessibilityRole="button"
+          accessibilityLabel={t('app.post_open', 'Post: share an event, a place, a job or a community post')}
+          hitSlop={8} style={({ pressed }) => [styles.postBtn, { backgroundColor: c.gold, opacity: pressed ? 0.85 : 1 }]}>
+          <MaterialIcons name="add" size={18} color={c.onGold} />
+          <Text style={[styles.postLabel, { color: c.onGold }]} maxFontSizeMultiplier={1.3}>{t('app.post_btn', 'Post')}</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -56,7 +68,9 @@ export function Card({ children, style }: { children: ReactNode; style?: ViewSty
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: Spacing.lg, paddingBottom: Spacing.xxl },
   inner: { width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center', gap: Spacing.md },
-  wordmarkRow: { paddingTop: Spacing.sm, paddingBottom: Spacing.xs },
+  wordmarkRow: { paddingTop: Spacing.sm, paddingBottom: Spacing.xs, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.sm },
+  postBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 40, paddingHorizontal: 14, borderRadius: Radius.pill },
+  postLabel: { fontFamily: Fonts.bodyBold, fontSize: 15 },
   wordmark: { fontFamily: Fonts.logo, fontSize: 26, letterSpacing: 0.5 },
   h1: { fontFamily: Fonts.headingBold, fontSize: 26, lineHeight: 32, marginTop: Spacing.sm },
   h2: { fontFamily: Fonts.heading, fontSize: 19, lineHeight: 25 },

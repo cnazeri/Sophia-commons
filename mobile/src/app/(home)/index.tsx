@@ -18,6 +18,7 @@ import { localDate, t } from '@/lib/i18n';
 import { fetchJobs, type Job } from '@/lib/jobs';
 import { fetchVideos, type Video } from '@/lib/media';
 import { type Article, fetchNewsList } from '@/lib/news';
+import { type CommunityPost, fetchCommunityPosts } from '@/lib/post';
 import cotsDe from '@/data/cots-de.json';
 import { cotsWeek, upcomingYearDays } from '@/lib/year';
 
@@ -27,12 +28,14 @@ export default function Home() {
   const [news, setNews] = useState<Article[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
   useEffect(() => {
     let alive = true;
     fetchUpcoming().then((r) => { if (alive) setEvents([...r].sort((a, b) => a.start_date.localeCompare(b.start_date)).slice(0, 4)); }).catch(() => {});
     fetchNewsList(4).then((r) => { if (alive) setNews(r); }).catch(() => {});
     fetchJobs('', 40).then((r) => { if (alive) setJobs(r.slice(0, 3)); }).catch(() => {});
     fetchVideos(2).then((r) => { if (alive) setVideos(r); }).catch(() => {});
+    fetchCommunityPosts(3).then((r) => { if (alive) setPosts(r); }).catch(() => {});
     return () => { alive = false; };
   }, []);
 
@@ -43,7 +46,7 @@ export default function Home() {
   const short = { month: 'short', day: 'numeric' } as const;
 
   return (
-    <Screen>
+    <Screen post>
       {first ? (
         <Card>
           {first.img ? <Image source={sizedImage(first.img.src, 800)} style={styles.festImg} contentFit="cover" accessibilityLabel={first.img.alt} /> : null}
@@ -86,6 +89,16 @@ export default function Home() {
           <Button kind="secondary" label={t('app.jobs_all', 'All jobs')} onPress={() => router.push('/jobs')} />
         </View>
       ) : null}
+
+      <View style={styles.section}>
+        <H2>{t('app.community_posts', 'From the community')}</H2>
+        {posts.map((p) => (
+          <LinkRow key={p.id} title={p.title} meta={[p.author_name, p.published_at ? localDate(p.published_at, short) : ''].filter(Boolean).join(' · ')}
+            onPress={() => router.push({ pathname: '/community/[slug]', params: { slug: p.slug } })} />
+        ))}
+        {!posts.length ? <Body muted>{t('app.community_empty', 'Share news, a reflection or a question with the community.')}</Body> : null}
+        <Button kind="secondary" label={t('app.post_community', 'Write a community post')} onPress={() => router.push('/post/community')} />
+      </View>
 
       {news.length ? (
         <View style={styles.section}>

@@ -11,7 +11,8 @@ import { resetPassword, signIn, signUp } from '@/lib/auth';
 import { t } from '@/lib/i18n';
 import { SITE } from '@/lib/supabase';
 
-export function AuthForm() {
+// chatIntro: the line about chat rooms (shown on the Chat tab, not on the Post forms)
+export function AuthForm({ chatIntro = true }: { chatIntro?: boolean } = {}) {
   const c = useTheme();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
@@ -57,7 +58,7 @@ export function AuthForm() {
   return (
     <View style={styles.wrap}>
       <H2>{signup ? t('modal.title_signup', 'Create account') : t('modal.title_signin', 'Sign in')}</H2>
-      <Body muted>{t('chat.gate_desc', 'Join conversations with anthroposophists worldwide across 9 topic rooms.')}</Body>
+      {chatIntro ? <Body muted>{t('chat.gate_desc', 'Join conversations with anthroposophists worldwide across 9 topic rooms.')}</Body> : null}
       <TextInput value={email} onChangeText={setEmail} placeholder={t('modal.email_placeholder', 'you@example.com')} placeholderTextColor={c.textMuted}
         autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress" autoCorrect={false}
         accessibilityLabel={t('modal.email_label', 'Email address')} style={input} />

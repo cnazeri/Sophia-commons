@@ -6,10 +6,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Fonts, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
-export function LinkRow({ title, meta, body, url, image, wide }: { title: string; meta?: string; body?: string; url: string; image?: string | null; wide?: boolean }) {
+export function LinkRow({ title, meta, body, url, image, wide, onPress }: { title: string; meta?: string; body?: string; url?: string; image?: string | null; wide?: boolean; onPress?: () => void }) {
   const c = useTheme();
   return (
-    <Pressable onPress={() => WebBrowser.openBrowserAsync(url)} accessibilityRole="link" accessibilityLabel={title}
+    <Pressable onPress={onPress || (() => { if (url) WebBrowser.openBrowserAsync(url); })} accessibilityRole={onPress ? 'button' : 'link'} accessibilityLabel={title}
       style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}>
       <View style={[styles.row, { borderColor: c.border }]}>
         {image ? <Image source={image} style={wide ? styles.wide : styles.square} contentFit="cover" transition={150} /> : null}

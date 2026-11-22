@@ -40,7 +40,7 @@ export default function EventsScreen() {
 
   const header = (
     <View style={styles.head}>
-      <Wordmark />
+      <Wordmark post />
       <H1>{t('app.events_title', 'Upcoming events')}</H1>
       <Chips<EventFilter> value={filter} onChange={setFilter} items={[
         { key: 'all', label: t('app.filter_all', 'All') },
