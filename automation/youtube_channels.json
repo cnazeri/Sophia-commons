@@ -2155,6 +2155,28 @@
       "description": "Videos from Thalira on ancient wisdom for modern life: Rudolf Steiner, meditation, alternative education and community.",
       "verified": false,
       "added_from": "owner request 2026-11-21"
+    },
+    {
+      "slug": "antroposofia-epistemolog-a",
+      "name": "Antroposofia Epistemología",
+      "url": "https://www.youtube.com/channel/UCJIxfE17jocysEUMO031ewA",
+      "channel_id": "UCJIxfE17jocysEUMO031ewA",
+      "language": null,
+      "category": "other",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
+    },
+    {
+      "slug": "divine-esotericism",
+      "name": "Divine Esotericism",
+      "url": "https://www.youtube.com/channel/UCq0E9FqbMDSb2_dHu2lrKKQ",
+      "channel_id": "UCq0E9FqbMDSb2_dHu2lrKKQ",
+      "language": null,
+      "category": "steiner-lectures",
+      "description": null,
+      "verified": false,
+      "added_from": "admin approval"
     }
   ]
 }
