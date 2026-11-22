@@ -27,7 +27,7 @@ export function Wordmark() {
   const c = useTheme();
   return (
     <View style={styles.wordmarkRow} accessibilityRole="header" accessibilityLabel="Sophia Commons">
-      <Text style={[styles.wordmark, { color: c.text }]}>Sophia Commons</Text>
+      <Text style={[styles.wordmark, { color: c.text }]} maxFontSizeMultiplier={1.25}>Sophia Commons</Text>
     </View>
   );
 }

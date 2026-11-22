@@ -80,9 +80,9 @@ export function AuthForm() {
       {!signup ? <Text onPress={forgot} accessibilityRole="button" style={[styles.link, { color: c.goldText }]}>{t('modal.forgot_password', 'Forgot password?')}</Text> : null}
       <Text style={[styles.small, { color: c.textMuted }]}>
         {t('app.auth_agree', 'By continuing you agree to the community guidelines and terms. Abusive or hateful messages are not allowed and lead to removal.')}{' '}
-        <Text style={{ color: c.goldText }} onPress={() => WebBrowser.openBrowserAsync(SITE + '/guidelines')}>{t('app.guidelines', 'Guidelines')}</Text>
+        <Text accessibilityRole="link" style={{ color: c.goldText }} onPress={() => WebBrowser.openBrowserAsync(SITE + '/guidelines')}>{t('app.guidelines', 'Guidelines')}</Text>
         {' · '}
-        <Text style={{ color: c.goldText }} onPress={() => WebBrowser.openBrowserAsync(SITE + '/terms')}>{t('app.terms', 'Terms')}</Text>
+        <Text accessibilityRole="link" style={{ color: c.goldText }} onPress={() => WebBrowser.openBrowserAsync(SITE + '/terms')}>{t('app.terms', 'Terms')}</Text>
       </Text>
     </View>
   );
