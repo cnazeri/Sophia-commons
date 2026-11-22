@@ -1518,7 +1518,7 @@
   "app.err_name": "Bitte geben Sie den Namen an.",
   "app.err_category": "Bitte wählen Sie eine Kategorie.",
   "app.err_url": "Bitte geben Sie eine Webadresse ein, zum Beispiel example.org",
-  "app.err_location": "Bitte geben Sie Ort und Land an.",
+  "app.err_location": "Bitte geben Sie Stadt, Bundesland und Land an.",
   "app.err_email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
   "app.err_check": "Bitte prüfen Sie die rot markierten Felder.",
   "app.place_sent": "Danke. Wir prüfen den Ort und nehmen ihn ins Verzeichnis auf, meist innerhalb weniger Tage.",
@@ -1526,7 +1526,7 @@
   "app.place_intro": "Eine Waldorfschule, ein Hof, Camphill, eine Praxis, Gruppe oder Initiative, die im Verzeichnis fehlt.",
   "app.f_name": "Name",
   "app.f_category": "Kategorie",
-  "app.f_location": "Ort und Land",
+  "app.f_location": "Stadt, Bundesland und Land",
   "app.f_website": "Website",
   "app.f_description": "Beschreibung",
   "app.f_description_hint": "Was es ist und was es anbietet, in ein paar Sätzen.",
@@ -1560,7 +1560,7 @@
   "app.where_both": "Beides",
   "app.f_venue": "Veranstaltungsort",
   "app.f_address": "Straße und Hausnummer",
-  "app.f_city": "Ort",
+  "app.f_city": "Stadt",
   "app.f_country": "Land",
   "app.f_online_url": "Link zur Teilnahme",
   "app.f_price": "Preis (freiwillig)",
@@ -1584,7 +1584,7 @@
   "app.decline": "Ablehnen",
   "app.err_job_title": "Bitte geben Sie die Stellenbezeichnung an.",
   "app.err_job_desc": "Bitte beschreiben Sie die Stelle in ein paar Sätzen.",
-  "app.err_job_place": "Bitte geben Sie den Ort an, oder schreiben Sie Remote.",
+  "app.err_job_place": "Bitte geben Sie die Stadt an, oder schreiben Sie Remote.",
   "app.err_job_contact": "Bitte geben Sie mindestens einen Weg zur Bewerbung an: einen Link, eine E-Mail oder eine Telefonnummer.",
   "app.job_sent": "Danke. Ihre Stelle erscheint nach kurzer Prüfung auf der Stellenseite, meist innerhalb von ein, zwei Tagen. Sie bleibt 90 Tage online.",
   "app.job_intro": "Stellen, Ausbildungsplätze und Ehrenämter in Waldorfschulen, auf Höfen, in Camphill, Kliniken und anderer anthroposophischer Arbeit.",
@@ -1606,5 +1606,6 @@
   "app.etype_study_group": "Studienkreis",
   "app.etype_festival": "Fest",
   "app.etype_retreat": "Retreat",
-  "app.etype_other": "Vortrag oder anderes"
+  "app.etype_other": "Vortrag oder anderes",
+  "app.f_region": "Bundesland oder Kanton"
 }

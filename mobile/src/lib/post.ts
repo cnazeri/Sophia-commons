@@ -30,7 +30,7 @@ export async function postPlace(p: PlaceIn): Promise<void> {
 export type EventIn = {
   title: string; event_type: string; description: string; start_date: string; start_time: string; end_date: string; end_time: string;
   is_all_day: boolean; attendance: 'place' | 'online' | 'both'; online_url: string; location_name: string; address: string;
-  city: string; country: string; organizer_name: string; organizer_url: string; price_text: string;
+  city: string; region: string; country: string; organizer_name: string; organizer_url: string; price_text: string;
 };
 export type EventOut = { status: string; id: string; link: string };
 export async function postEvent(e: EventIn, s: Session): Promise<EventOut> {
@@ -39,7 +39,7 @@ export async function postEvent(e: EventIn, s: Session): Promise<EventOut> {
   const event = {
     ...e, timezone: tz, repeat: 'none', repeat_count: 1, is_online: online, online_url: online ? e.online_url : '',
     location_name: inPlace ? e.location_name : '', address: inPlace ? e.address : '', city: inPlace ? e.city : '',
-    region: '', country: inPlace ? e.country : '', directory_entry_id: '', donation_url: '',
+    region: inPlace ? e.region : '', country: inPlace ? e.country : '', directory_entry_id: '', donation_url: '',
     signup_enabled: false, signup_questions: [], signup_capacity: '', signup_close_hours: '', is_public: true,
   };
   const { data, error } = await supabase.functions.invoke('event-save', {
@@ -56,11 +56,11 @@ export async function postEvent(e: EventIn, s: Session): Promise<EventOut> {
   return { status: out.status || 'upcoming', id: first?.id || '', link: first?.event || '' };
 }
 
-export type JobIn = { title: string; description: string; location: string; country: string; url: string; email: string; phone: string };
+export type JobIn = { title: string; description: string; location: string; region: string; country: string; url: string; email: string; phone: string };
 export async function postJob(j: JobIn, s: Session): Promise<void> {
   const { error } = await supabase.from('listings').insert({
     user_id: s.user.id, category_id: JOBS_CAT_ID, listing_type: 'offering', status: 'draft',
-    title: j.title.slice(0, 200), description: j.description.slice(0, 10000), location: j.location || null,
+    title: j.title.slice(0, 200), description: j.description.slice(0, 10000), location: j.location || null, region: j.region || null,
     country: j.country || null, website_url: j.url || null, contact_email: j.email || null, contact_phone: j.phone || null, tags: ['member'], source: 'app',
   });
   if (error) throw new Error(error.message);
@@ -81,11 +81,11 @@ export async function postCommunity(p: CommunityIn, author: string): Promise<voi
 }
 
 // Owner only: jobs waiting for review, and approve or decline them
-export type PendingJob = { id: string; title: string; description: string; location: string | null; country: string | null;
+export type PendingJob = { id: string; title: string; description: string; location: string | null; region: string | null; country: string | null;
   website_url: string | null; contact_email: string | null; contact_phone: string | null; created_at: string };
 export async function pendingJobs(): Promise<PendingJob[]> {
   const { data, error } = await supabase.from('listings')
-    .select('id,title,description,location,country,website_url,contact_email,contact_phone,created_at')
+    .select('id,title,description,location,region,country,website_url,contact_email,contact_phone,created_at')
     .eq('status', 'draft').eq('category_id', JOBS_CAT_ID).order('created_at', { ascending: true }).limit(100);
   if (error) throw new Error(error.message);
   return (data || []) as PendingJob[];

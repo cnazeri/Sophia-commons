@@ -24,7 +24,7 @@ export default function PostPlace() {
     if (f.name.trim().length < 2) e.name = t('app.err_name', 'Please give the name.');
     if (!f.category) e.category = t('app.err_category', 'Please choose a category.');
     if (url === null) e.url = t('app.err_url', 'Please enter a web address, for example example.org');
-    if (!f.location.trim()) e.location = t('app.err_location', 'Please give the town and country.');
+    if (!f.location.trim()) e.location = t('app.err_location', 'Please give the city, state and country.');
     if (f.email && !isEmail(f.email.trim())) e.email = t('app.err_email', 'Please enter a valid email address.');
     setErr(e);
     if (Object.keys(e).length) { setMsg({ text: t('app.err_check', 'Please check the fields marked in red.'), error: true }); return; }
@@ -46,7 +46,7 @@ export default function PostPlace() {
       <Label>{t('app.f_category', 'Category')}</Label>
       <Chips value={f.category} onChange={set('category')} items={CATEGORIES.map((x) => ({ key: x.key, label: t('app.cat_' + x.key, x.label) }))} />
       {err.category ? <Body style={{ color: '#B3261E' }}>{err.category}</Body> : null}
-      <Field label={t('app.f_location', 'Town and country')} value={f.location} onChange={set('location')} error={err.location} placeholder="Chestnut Ridge, USA" maxLength={200} />
+      <Field label={t('app.f_location', 'City, state and country')} value={f.location} onChange={set('location')} error={err.location} placeholder="Chestnut Ridge, NY, USA" maxLength={200} />
       <Field label={t('app.f_website', 'Website')} value={f.url} onChange={set('url')} error={err.url} placeholder="example.org"
         autoCapitalize="none" autoCorrect={false} keyboardType="url" maxLength={500} />
       <Field label={t('app.f_description', 'Description')} value={f.description} onChange={set('description')} multiline maxLength={5000}

@@ -23,7 +23,7 @@ export default function PostEvent() {
   const { session } = useAuth();
   const today = isoDay(new Date());
   const [f, setF] = useState<EventIn>({ title: '', event_type: 'workshop', description: '', start_date: '', start_time: '', end_date: '',
-    end_time: '', is_all_day: false, attendance: 'place', online_url: '', location_name: '', address: '', city: '', country: '',
+    end_time: '', is_all_day: false, attendance: 'place', online_url: '', location_name: '', address: '', city: '', region: '', country: '',
     organizer_name: '', organizer_url: '', price_text: '' });
   const [err, setErr] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState<{ text: string; error?: boolean } | null>(null);
@@ -50,7 +50,7 @@ export default function PostEvent() {
     if (f.end_date && f.end_date < f.start_date) e.end_date = t('app.err_end_date', 'The end date is before the start date.');
     if (!f.is_all_day && st && et && (!f.end_date || f.end_date === f.start_date) && et <= st) e.end_time = t('app.err_end_time', 'The end time is before the start time.');
     if (f.attendance !== 'place' && !online) e.online_url = t('app.err_online_url', 'Please give the full link to join, like https://zoom.us/j/...');
-    if (f.attendance !== 'online' && !f.city.trim() && !f.location_name.trim()) e.city = t('app.err_place', 'Please give the venue or the town.');
+    if (f.attendance !== 'online' && !f.city.trim() && !f.location_name.trim()) e.city = t('app.err_place', 'Please give the venue or the city.');
     if (org === null) e.organizer_url = t('app.err_url', 'Please enter a web address, for example example.org');
     if (f.description.trim().length < 20) e.description = t('app.err_description', 'Please describe the event in a sentence or two.');
     setErr(e);
@@ -96,9 +96,10 @@ export default function PostEvent() {
           <Field label={t('app.f_venue', 'Venue')} value={f.location_name} onChange={set('location_name')} maxLength={200} />
           <Field label={t('app.f_address', 'Street address')} value={f.address} onChange={set('address')} maxLength={300} />
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            <View style={{ flex: 1 }}><Field label={t('app.f_city', 'Town')} value={f.city} onChange={set('city')} error={err.city} maxLength={120} /></View>
-            <View style={{ flex: 1 }}><Field label={t('app.f_country', 'Country')} value={f.country} onChange={set('country')} maxLength={120} /></View>
+            <View style={{ flex: 1 }}><Field label={t('app.f_city', 'City')} value={f.city} onChange={set('city')} error={err.city} maxLength={120} /></View>
+            <View style={{ flex: 1 }}><Field label={t('app.f_region', 'State or province')} value={f.region} onChange={set('region')} maxLength={120} /></View>
           </View>
+          <Field label={t('app.f_country', 'Country')} value={f.country} onChange={set('country')} maxLength={120} />
         </>
       ) : null}
       {f.attendance !== 'place' ? (

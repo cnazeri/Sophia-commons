@@ -6464,14 +6464,14 @@ async function loadAdminJobs() {
   var el = document.getElementById('admin-jobs-list');
   if (!el || !sbReady()) return;
   el.innerHTML = '<div class="admin-empty">Loading...</div>';
-  var r = await _sb.from('listings').select('id, title, description, location, country, website_url, contact_email, contact_phone, created_at, source')
+  var r = await _sb.from('listings').select('id, title, description, location, region, country, website_url, contact_email, contact_phone, created_at, source')
     .eq('status', 'draft').eq('category_id', 11).order('created_at', { ascending: true }).limit(100);
   if (r.error) { el.innerHTML = '<div class="admin-empty">Error: ' + esc(r.error.message) + '</div>'; return; }
   var rows = r.data || [];
   if (!rows.length) { el.innerHTML = '<div class="admin-empty">No jobs waiting. New job posts from the app show here.</div>'; return; }
   el.innerHTML = rows.map(function (d) {
     var when = d.created_at ? localDate(d.created_at, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
-    var place = [d.location, d.country].filter(Boolean).join(', ');
+    var place = [d.location, d.region, d.country].filter(Boolean).join(', ');
     return '<div class="admin-card" id="admin-job-' + d.id + '">'
       + '<div style="display:flex;justify-content:space-between;align-items:start;">'
       + '<h4 style="margin:0;">' + adminEsc(d.title) + adminSourceTag(d.source) + '</h4>'

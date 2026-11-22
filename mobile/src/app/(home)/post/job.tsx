@@ -14,7 +14,7 @@ import { type JobIn, isEmail, postJob, webUrl } from '@/lib/post';
 
 export default function PostJob() {
   const { session } = useAuth();
-  const [f, setF] = useState<JobIn>({ title: '', description: '', location: '', country: '', url: '', email: '', phone: '' });
+  const [f, setF] = useState<JobIn>({ title: '', description: '', location: '', region: '', country: '', url: '', email: '', phone: '' });
   const [err, setErr] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState<{ text: string; error?: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -35,7 +35,7 @@ export default function PostJob() {
     const e: Record<string, string> = {};
     if (f.title.trim().length < 3) e.title = t('app.err_job_title', 'Please give the job title.');
     if (f.description.trim().length < 40) e.description = t('app.err_job_desc', 'Please describe the job in a few sentences.');
-    if (!f.location.trim()) e.location = t('app.err_job_place', 'Please give the town, or write Remote.');
+    if (!f.location.trim()) e.location = t('app.err_job_place', 'Please give the city, or write Remote.');
     if (url === null) e.url = t('app.err_url', 'Please enter a web address, for example example.org');
     if (f.email && !isEmail(f.email.trim())) e.email = t('app.err_email', 'Please enter a valid email address.');
     if (!url && !f.email.trim() && !f.phone.trim()) e.email = t('app.err_job_contact', 'Please give at least one way to apply: a link, an email or a phone number.');
@@ -43,7 +43,7 @@ export default function PostJob() {
     if (Object.keys(e).length) { setMsg({ text: t('app.err_check', 'Please check the fields marked in red.'), error: true }); return; }
     setBusy(true); setMsg(null);
     try {
-      await postJob({ ...f, title: f.title.trim(), description: f.description.trim(), location: f.location.trim(), country: f.country.trim(),
+      await postJob({ ...f, title: f.title.trim(), description: f.description.trim(), location: f.location.trim(), region: f.region.trim(), country: f.country.trim(),
         url: url || '', email: f.email.trim(), phone: f.phone.trim() }, session);
       setDone(true);
       setMsg({ text: t('app.job_sent', 'Thank you. Your job will appear on the Jobs page after a quick review, usually within a day or two. It stays up for 90 days.') });
@@ -59,9 +59,10 @@ export default function PostJob() {
       <Field label={t('app.f_description', 'Description')} value={f.description} onChange={set('description')} error={err.description} multiline maxLength={10000}
         hint={t('app.f_job_desc_hint', 'Who you are, the role, hours, start date, and what you are looking for.')} />
       <View style={{ flexDirection: 'row', gap: 12 }}>
-        <View style={{ flex: 1 }}><Field label={t('app.f_city', 'Town')} value={f.location} onChange={set('location')} error={err.location} maxLength={200} /></View>
-        <View style={{ flex: 1 }}><Field label={t('app.f_country', 'Country')} value={f.country} onChange={set('country')} maxLength={120} /></View>
+        <View style={{ flex: 1 }}><Field label={t('app.f_city', 'City')} value={f.location} onChange={set('location')} error={err.location} maxLength={200} /></View>
+        <View style={{ flex: 1 }}><Field label={t('app.f_region', 'State or province')} value={f.region} onChange={set('region')} maxLength={120} /></View>
       </View>
+      <Field label={t('app.f_country', 'Country')} value={f.country} onChange={set('country')} maxLength={120} />
       <Label>{t('app.f_how_apply', 'How to apply (at least one)')}</Label>
       <Field label={t('app.f_apply_link', 'Link to the job page')} value={f.url} onChange={set('url')} error={err.url} placeholder="example.org/jobs"
         autoCapitalize="none" autoCorrect={false} keyboardType="url" maxLength={500} />

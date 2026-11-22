@@ -5,7 +5,7 @@ import { type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, type TextProps, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import { Fonts, MaxContentWidth, Radius, Spacing, isIOS } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { t } from '@/lib/i18n';
 
@@ -21,7 +21,12 @@ export function Screen({ children, title, scroll = true, underHeader = false, po
   );
   return (
     <SafeAreaView edges={underHeader ? [] : ['top']} style={{ flex: 1, backgroundColor: c.background }}>
-      {scroll ? <ScrollView contentContainerStyle={styles.scroll}>{inner}</ScrollView> : <View style={[styles.scroll, { flex: 1 }]}>{inner}</View>}
+      {/* Forms: the page scrolls above the keyboard (iOS insets), taps on buttons work while it is open, and dragging
+          the page down closes it (the number pad has no Done key) */}
+      {scroll ? (
+        <ScrollView contentContainerStyle={styles.scroll} automaticallyAdjustKeyboardInsets keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={isIOS ? 'interactive' : 'on-drag'}>{inner}</ScrollView>
+      ) : <View style={[styles.scroll, { flex: 1 }]}>{inner}</View>}
     </SafeAreaView>
   );
 }

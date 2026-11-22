@@ -1518,7 +1518,7 @@
   "app.err_name": "Indica el nombre.",
   "app.err_category": "Elige una categoría.",
   "app.err_url": "Escribe una dirección web, por ejemplo example.org",
-  "app.err_location": "Indica la ciudad y el país.",
+  "app.err_location": "Indica la ciudad, el estado y el país.",
   "app.err_email": "Escribe un correo electrónico válido.",
   "app.err_check": "Revisa los campos marcados en rojo.",
   "app.place_sent": "Gracias. Revisaremos el lugar y lo añadiremos al directorio, normalmente en pocos días.",
@@ -1526,7 +1526,7 @@
   "app.place_intro": "Una escuela Waldorf, granja, Camphill, clínica, grupo o iniciativa que falta en el directorio.",
   "app.f_name": "Nombre",
   "app.f_category": "Categoría",
-  "app.f_location": "Ciudad y país",
+  "app.f_location": "Ciudad, estado y país",
   "app.f_website": "Sitio web",
   "app.f_description": "Descripción",
   "app.f_description_hint": "Qué es y qué ofrece, en pocas frases.",
@@ -1606,5 +1606,6 @@
   "app.etype_study_group": "Grupo de estudio",
   "app.etype_festival": "Festival",
   "app.etype_retreat": "Retiro",
-  "app.etype_other": "Charla u otro"
+  "app.etype_other": "Charla u otro",
+  "app.f_region": "Estado o provincia"
 }

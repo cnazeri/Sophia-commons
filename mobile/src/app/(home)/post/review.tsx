@@ -31,7 +31,7 @@ export default function ReviewJobs() {
       {rows && !rows.length ? <Body muted>{t('app.review_none', 'Nothing waiting. New job posts will show here.')}</Body> : null}
       {(rows || []).map((j) => (
         <Card key={j.id} style={{ gap: 8 }}>
-          <Kicker>{new Date(j.created_at).toLocaleDateString()} {[j.location, j.country].filter(Boolean).join(', ')}</Kicker>
+          <Kicker>{new Date(j.created_at).toLocaleDateString()} {[j.location, j.region, j.country].filter(Boolean).join(', ')}</Kicker>
           <H2>{j.title}</H2>
           <Body>{j.description}</Body>
           <Body muted>{[j.website_url, j.contact_email, j.contact_phone].filter(Boolean).join('  |  ')}</Body>
