@@ -53,6 +53,11 @@
               "scheme": "https",
               "host": "sophiacommons.org",
               "pathPrefix": "/article/"
+            },
+            {
+              "scheme": "https",
+              "host": "sophiacommons.org",
+              "pathPrefix": "/classified/"
             }
           ],
           "category": [

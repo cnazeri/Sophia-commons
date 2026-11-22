@@ -34,7 +34,7 @@ export default function JobScreen() {
       </View>
     );
   }
-  const url = SITE + '/listing/' + j.id;
+  const url = SITE + '/classified/' + j.id;
   return (
     <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={styles.wrap}>
       <Kicker>{[jobPlace(j), localDate(j.created_at, { month: 'long', day: 'numeric', year: 'numeric' })].filter(Boolean).join(' · ')}</Kicker>

@@ -1,10 +1,12 @@
 // Translates sophiacommons.org links into app pages, so a tapped website link opens the right screen:
 //   /event/<id>   -> Events page      /listing/<id or slug> -> Directory page
-//   /article/<id> -> news article     anything else         -> the path as given
+//   /article/<id> -> news article     /classified/<id>      -> job page
+//   anything else -> the path as given
 const MAP: [RegExp, string][] = [
   [/^\/event\/([^/?#]+)/, '/events/'],
   [/^\/listing\/([^/?#]+)/, '/directory/'],
   [/^\/article\/([^/?#]+)/, '/article/'],
+  [/^\/classified\/([^/?#]+)/, '/jobs/'],
 ];
 
 export function redirectSystemPath({ path }: { path: string; initial: boolean }): string {
