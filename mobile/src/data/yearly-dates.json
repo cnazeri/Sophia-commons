@@ -1,0 +1,386 @@
+{
+ "fixed": [
+  {
+   "key": "epiphany",
+   "month": 1,
+   "day": 6,
+   "title": "12 Holy Nights End (Epiphany)",
+   "desc": "Epiphany closes the Twelve Holy Nights and opens the season of Epiphany: the light of Christmas carried out into the year.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/epiphany.jpg",
+    "alt": "Adoration of the Magi, Gentile da Fabriano (1423)"
+   }
+  },
+  {
+   "key": "candlemas",
+   "month": 2,
+   "day": 2,
+   "title": "Candlemas",
+   "desc": "Forty days after Christmas: the midpoint between winter solstice and spring equinox, traditionally a festival of candles and returning light.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/candlemas.jpg",
+    "alt": "Presentation of Christ in the Temple, Giotto, Scrovegni Chapel (c. 1305)"
+   }
+  },
+  {
+   "key": "johanni",
+   "month": 6,
+   "day": 24,
+   "title": "St. John's Tide (Johanni)",
+   "desc": "Festival of John the Baptist near midsummer. Steiner described it as the time when the Earth breathes out most fully into the cosmos; often celebrated with a bonfire.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/johanni.jpg",
+    "alt": "St. John's fire (Johannisfeuer) burning at night"
+   }
+  },
+  {
+   "key": "michaelmas",
+   "month": 9,
+   "day": 29,
+   "title": "Michaelmas - Festival of Courage",
+   "desc": "Festival of the Archangel Michael at the turn to autumn. Steiner hoped it would become a festival of courage and inner strength as nature dies back.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/michaelmas.jpg",
+    "alt": "St. Michael and the Dragon, Raphael (c. 1505)"
+   }
+  },
+  {
+   "key": "martinmas",
+   "month": 11,
+   "day": 11,
+   "title": "Martinmas (Lantern Walk)",
+   "desc": "Feast of St. Martin, who shared his cloak with a beggar. In Waldorf communities children carry lanterns: carrying an inner light into the darkening season.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/martinmas.jpg",
+    "alt": "Glowing paper sun lantern for St. Martin's lantern walk"
+   }
+  },
+  {
+   "key": "nicholas",
+   "month": 12,
+   "day": 6,
+   "title": "St. Nicholas Day",
+   "desc": "Feast of St. Nicholas of Myra, patron of children; small gifts are left in shoes the night before.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/nicholas.jpg",
+    "alt": "Icon of St. Nicholas of Myra (1294)"
+   }
+  },
+  {
+   "key": "holynights",
+   "month": 12,
+   "day": 24,
+   "title": "12 Holy Nights Begin",
+   "desc": "Christmas Eve. The Twelve Holy Nights begin: a time for inner quiet, review of the past year and preparing the year ahead. Traditions differ on whether the first night is that of 24 or 25 December.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/holynights.jpg",
+    "alt": "Rudolf Steiner's apocalyptic seal: the woman clothed with the sun, moon at her feet"
+   }
+  },
+  {
+   "key": "christmas",
+   "month": 12,
+   "day": 25,
+   "title": "Christmas - Birth of Light",
+   "desc": "The festival of the birth of Christ and of the light reborn at the darkest time of the year.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/christmas.jpg",
+    "alt": "The Nativity, Giotto, Scrovegni Chapel (c. 1305)"
+   }
+  }
+ ],
+ "easter": [
+  {
+   "key": "ashwed",
+   "offset": -46,
+   "title": "Ash Wednesday",
+   "desc": "Beginning of Lent, the forty days of preparation for Easter.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/ashwed.jpg",
+    "alt": "Ash Wednesday (Aschermittwoch), Carl Spitzweg (c. 1860)"
+   }
+  },
+  {
+   "key": "palmsun",
+   "offset": -7,
+   "title": "Palm Sunday",
+   "desc": "Entry into Jerusalem; the beginning of Holy Week.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/palmsun.jpg",
+    "alt": "Entry into Jerusalem, Giotto, Scrovegni Chapel (c. 1305)"
+   }
+  },
+  {
+   "key": "maundy",
+   "offset": -3,
+   "title": "Maundy Thursday",
+   "desc": "The Last Supper and the washing of the feet.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/maundy.jpg",
+    "alt": "The Last Supper, Leonardo da Vinci (1495-1498)"
+   }
+  },
+  {
+   "key": "goodfri",
+   "offset": -2,
+   "title": "Good Friday",
+   "desc": "The Crucifixion. In the Parzival saga, the day the Grail is renewed.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/goodfri.jpg",
+    "alt": "The Crucifixion, Isenheim Altarpiece, Matthias Grünewald (1512-1516)"
+   }
+  },
+  {
+   "key": "holysat",
+   "offset": -1,
+   "title": "Holy Saturday",
+   "desc": "The day in the grave: the descent into the depths of the Earth.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/holysat.jpg",
+    "alt": "The Body of the Dead Christ in the Tomb, Hans Holbein the Younger (1521-1522)"
+   }
+  },
+  {
+   "key": "easter",
+   "offset": 0,
+   "title": "Easter - Festival of Resurrection",
+   "desc": "First Sunday after the first full moon after the spring equinox. Its date is set by sun and moon together, which Steiner discussed in his 1924 Easter lectures.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/easter.jpg",
+    "alt": "The Resurrection, Isenheim Altarpiece, Matthias Grünewald (1512-1516)"
+   }
+  },
+  {
+   "key": "ascension",
+   "offset": 39,
+   "title": "Ascension",
+   "desc": "Forty days after Easter: the Ascension of Christ.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/ascension.jpg",
+    "alt": "The Ascension, Giotto, Scrovegni Chapel (c. 1305)"
+   }
+  },
+  {
+   "key": "pentecost",
+   "offset": 49,
+   "title": "Pentecost (Whitsun) - Awakening of Spirit",
+   "desc": "Fifty days after Easter. Steiner called Whitsun the festival of the free individuality.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/pentecost.jpg",
+    "alt": "Rudolf Steiner, apocalyptic seal 7: the dove above the Grail cup"
+   }
+  },
+  {
+   "key": "trinity",
+   "offset": 56,
+   "title": "Trinity Sunday",
+   "desc": "The Sunday after Pentecost, closing the Easter season.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/trinity.jpg",
+    "alt": "The Holy Trinity icon, Andrei Rublev (c. 1411-1425)"
+   }
+  }
+ ],
+ "anniversaries": [
+  {
+   "key": "waldorf1919",
+   "month": 9,
+   "day": 7,
+   "year": 1919,
+   "title": "First Waldorf School opened (Stuttgart)",
+   "desc": "The Free Waldorf School on the Uhlandshoehe in Stuttgart opened for the children of Waldorf-Astoria factory workers, founded by Emil Molt with Rudolf Steiner.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/waldorf1919.jpg",
+    "alt": "Freie Waldorfschule Uhlandshöhe, Stuttgart, the first Waldorf school"
+   }
+  },
+  {
+   "key": "goetheanum_fire",
+   "month": 12,
+   "day": 31,
+   "year": 1922,
+   "title": "First Goetheanum destroyed by fire",
+   "desc": "The First Goetheanum, the double-domed wooden headquarters of the Anthroposophical Society in Dornach, Switzerland, was destroyed by fire on New Year's Eve, 31 December 1922. It burned through the night into 1 January 1923.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/goetheanum_fire.jpg",
+    "alt": "Smouldering ruins of the First Goetheanum after the fire, 1923"
+   }
+  },
+  {
+   "key": "christmas_conference_open",
+   "month": 12,
+   "day": 24,
+   "year": 1923,
+   "title": "Christmas Conference opens (Dornach)",
+   "desc": "The Christmas Conference (24 December 1923 to 1 January 1924) was the foundational gathering led by Rudolf Steiner in Dornach, Switzerland, to refound the General Anthroposophical Society. It met beside the ruins of the First Goetheanum, lost to fire a year earlier.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/christmas_conference.jpg",
+    "alt": "Rudolf Steiner's blackboard drawing of the second Goetheanum motif, 1 January 1924 (Christmas Conference)"
+   }
+  },
+  {
+   "key": "christmas_conference",
+   "month": 12,
+   "day": 25,
+   "year": 1923,
+   "title": "Foundation Stone laid (Christmas Conference)",
+   "desc": "At the Christmas Conference in Dornach (24 December 1923 to 1 January 1924) Steiner refounded the General Anthroposophical Society and laid the Foundation Stone meditation on 25 December.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/christmas_conference.jpg",
+    "alt": "Rudolf Steiner's blackboard drawing of the second Goetheanum motif, 1 January 1924 (Christmas Conference)"
+   }
+  },
+  {
+   "key": "koberwitz",
+   "month": 6,
+   "day": 7,
+   "year": 1924,
+   "title": "Agriculture Course begins (Koberwitz)",
+   "desc": "Steiner gave the eight lectures of the Agriculture Course at Koberwitz, 7 to 16 June 1924: the beginning of biodynamic farming.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/koberwitz.jpg",
+    "alt": "Koberwitz manor (Kobierzyce palace), site of the 1924 Agriculture Course"
+   }
+  },
+  {
+   "key": "montsegur",
+   "month": 3,
+   "day": 16,
+   "year": 1244,
+   "title": "Last Stand of the Cathars at Montsegur",
+   "desc": "The Chateau de Montsegur, a mountain fortress in the French Pyrenees, surrendered after a nine-month siege. On 16 March 1244 about 210 Cathars were burned at the foot of the mountain.",
+   "img": null
+  },
+  {
+   "key": "templars",
+   "month": 10,
+   "day": 13,
+   "year": 1307,
+   "title": "Last Stand of the Knights Templar",
+   "desc": "On 13 October 1307 King Philip IV of France orchestrated the simultaneous, surprise arrest of hundreds of Knights Templar across France. Pope Clement V dissolved the order at the Council of Vienne in 1312.",
+   "img": null
+  },
+  {
+   "key": "michael_age",
+   "month": 11,
+   "day": 9,
+   "year": 1879,
+   "title": "Fall of the Spirits of Darkness and Beginning of the Michael Age",
+   "desc": "According to Rudolf Steiner's spiritual research, the Michael Age began in November 1879, after the Archangel Michael cast down the Spirits of Darkness.",
+   "img": null
+  }
+ ],
+ "memorials": [
+  {
+   "month": 2,
+   "day": 27,
+   "year": 1861,
+   "name": "Rudolf Steiner",
+   "type": "birth",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 3,
+   "day": 30,
+   "year": 1925,
+   "name": "Rudolf Steiner",
+   "type": "death",
+   "desc": "Rudolf Steiner died in Dornach, Switzerland, on 30 March 1925, at the age of 64, in his studio beside the building site of the second Goetheanum.",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/steiner_death.jpg",
+    "alt": "Rudolf Steiner in Dornach, 1914"
+   }
+  },
+  {
+   "month": 3,
+   "day": 14,
+   "year": 1867,
+   "name": "Marie Steiner-von Sivers",
+   "type": "birth",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 12,
+   "day": 27,
+   "year": 1948,
+   "name": "Marie Steiner-von Sivers",
+   "type": "death",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 2,
+   "day": 22,
+   "year": 1876,
+   "name": "Ita Wegman",
+   "type": "birth",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 3,
+   "day": 4,
+   "year": 1943,
+   "name": "Ita Wegman",
+   "type": "death",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 2,
+   "day": 19,
+   "year": 1899,
+   "name": "Ehrenfried Pfeiffer",
+   "type": "birth",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 11,
+   "day": 30,
+   "year": 1961,
+   "name": "Ehrenfried Pfeiffer",
+   "type": "death",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 9,
+   "day": 25,
+   "year": 1902,
+   "name": "Karl Konig",
+   "type": "birth",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 3,
+   "day": 27,
+   "year": 1966,
+   "name": "Karl Konig",
+   "type": "death",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 12,
+   "day": 10,
+   "year": 1884,
+   "name": "Albert Steffen",
+   "type": "birth",
+   "desc": "",
+   "img": null
+  },
+  {
+   "month": 7,
+   "day": 13,
+   "year": 1963,
+   "name": "Albert Steffen",
+   "type": "death",
+   "desc": "",
+   "img": null
+  }
+ ]
+}

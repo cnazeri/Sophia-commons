@@ -1,0 +1,40 @@
+{
+  "cli": {
+    "version": ">= 27.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "credentialsSource": "local"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "channel": "preview"
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle",
+        "credentialsSource": "local"
+      },
+      "channel": "production"
+    },
+    "simulator": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk",
+        "credentialsSource": "local"
+      },
+      "channel": "preview"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

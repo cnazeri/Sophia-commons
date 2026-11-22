@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.sophiacommons.app",
+      "sha256_cert_fingerprints": [
+        "06:71:2F:B6:6C:78:05:71:91:FA:B0:65:EC:31:22:4C:26:3D:A4:F4:EB:1A:4B:DF:B2:43:E4:9D:AB:06:FD:65"
+      ]
+    }
+  }
+]

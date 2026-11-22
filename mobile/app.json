@@ -1,0 +1,116 @@
+{
+  "expo": {
+    "name": "Sophia Commons",
+    "slug": "sophia-commons",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "sophiacommons",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#FDFBF7",
+    "ios": {
+      "bundleIdentifier": "org.sophiacommons.app",
+      "buildNumber": "1",
+      "supportsTablet": true,
+      "icon": "./assets/images/icon.png",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Sophia Commons uses your location only to show events and places near you. It is never stored or shared."
+      }
+    },
+    "android": {
+      "package": "org.sophiacommons.app",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "backgroundColor": "#FDFBF7",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "predictiveBackGestureEnabled": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "sophiacommons.org",
+              "pathPrefix": "/event/"
+            },
+            {
+              "scheme": "https",
+              "host": "sophiacommons.org",
+              "pathPrefix": "/listing/"
+            },
+            {
+              "scheme": "https",
+              "host": "sophiacommons.org",
+              "pathPrefix": "/article/"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FDFBF7",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120,
+          "dark": {
+            "backgroundColor": "#1E1810",
+            "image": "./assets/images/splash-icon.png"
+          }
+        }
+      ],
+      "expo-localization",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/SophiaCommonsDisplay.ttf"
+          ]
+        }
+      ],
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "owner": "reform-industries-spiritual-science",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "a5f9f082-fd2a-49da-843e-14dc2847b57e"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a5f9f082-fd2a-49da-843e-14dc2847b57e"
+    }
+  }
+}

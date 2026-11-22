@@ -1,0 +1,7 @@
+node_modules/
+.expo/
+_template_unused/
+dist/
+web-build/
+*.log
+credentials.json
