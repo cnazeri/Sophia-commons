@@ -18,7 +18,8 @@ export default function AppTabs() {
     { name: 'events', label: cap(t('nav.events', 'Events')), sf: 'calendar', md: 'event' },
     { name: 'directory', label: cap(t('nav.directory', 'Directory')), sf: 'map', md: 'map' },
     { name: 'chat', label: cap(t('app.tab_chat', 'Chat')), sf: 'bubble.left.and.bubble.right', md: 'forum' },
-    { name: 'saved', label: cap(t('app.tab_saved', 'Saved')), sf: 'bookmark', md: 'bookmark' },
+    // The bottom-right tab is Settings (Saved, My posts, Change password, Account); its folder stays 'saved' so links keep working
+    { name: 'saved', label: cap(t('app.tab_settings', 'Settings')), sf: 'gearshape', md: 'settings' },
   ];
   return (
     <NativeTabs

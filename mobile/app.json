@@ -22,7 +22,7 @@
     },
     "android": {
       "package": "org.sophiacommons.app",
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "backgroundColor": "#FDFBF7",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

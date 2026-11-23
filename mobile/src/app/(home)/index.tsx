@@ -20,6 +20,7 @@ import { fetchVideos, type Video } from '@/lib/media';
 import { type Article, fetchNewsList } from '@/lib/news';
 import { type CommunityPost, fetchCommunityPosts } from '@/lib/post';
 import cotsDe from '@/data/cots-de.json';
+import cotsEn from '@/data/cots-en.json';
 import { cotsWeek, upcomingYearDays } from '@/lib/year';
 
 export default function Home() {
@@ -70,8 +71,20 @@ export default function Home() {
           ))}
         </View>
         <Text style={[styles.verseBy, { color: c.textMuted }]}>Rudolf Steiner, Anthroposophischer Seelenkalender (1912)</Text>
+        {/* English in the same card (owner, 2026-11-22): Sophia Commons' own rendering, as in the weekly newsletter */}
+        {(cotsEn as Record<string, string[]>)[String(w.week)] ? (
+          <>
+            <View style={[styles.rule, { backgroundColor: c.border }]} />
+            <View style={styles.verse} accessible accessibilityLabel={(cotsEn as Record<string, string[]>)[String(w.week)].join(' ')}>
+              {(cotsEn as Record<string, string[]>)[String(w.week)].map((ln, i) => (
+                <Text key={i} style={[styles.verseLineEn, { color: c.textSecondary }]} selectable>{ln}</Text>
+              ))}
+            </View>
+            <Text style={[styles.verseBy, { color: c.textMuted }]}>{t('app.cots_english_by', 'English rendering: Sophia Commons')}</Text>
+          </>
+        ) : null}
         <Body muted>{t('cots.mirror', 'Mirror verse')}: {t('cots.week', 'Week')} {w.mirror} · {t('cots.southern', 'Southern Hemisphere')}: {t('cots.week', 'Week')} {w.southern}</Body>
-        <Button kind="secondary" label={t('app.cots_translations', 'English and other translations')} onPress={() => WebBrowser.openBrowserAsync(w.url(w.week))} />
+        <Button kind="secondary" label={t('app.cots_other_translations', 'Other translations')} onPress={() => WebBrowser.openBrowserAsync(w.url(w.week))} />
       </Card>
 
       {events.length ? (
@@ -126,5 +139,7 @@ const styles = StyleSheet.create({
   section: { gap: Spacing.sm, marginTop: Spacing.sm },
   verse: { gap: 2, paddingVertical: Spacing.xs },
   verseLine: { fontFamily: Fonts.heading, fontStyle: 'italic', fontSize: 17, lineHeight: 25 },
+  verseLineEn: { fontFamily: Fonts.body, fontSize: 16, lineHeight: 25 },
+  rule: { height: 1, marginVertical: Spacing.xs },
   verseBy: { fontFamily: Fonts.body, fontSize: 12.5 },
 });

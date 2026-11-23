@@ -13,7 +13,7 @@ const TABS = [
   { name: 'events', href: '/events', key: 'nav.events', fb: 'Events', icon: 'event' },
   { name: 'directory', href: '/directory', key: 'nav.directory', fb: 'Directory', icon: 'map' },
   { name: 'chat', href: '/chat', key: 'app.tab_chat', fb: 'Chat', icon: 'forum' },
-  { name: 'saved', href: '/saved', key: 'app.tab_saved', fb: 'Saved', icon: 'bookmark' },
+  { name: 'saved', href: '/saved', key: 'app.tab_settings', fb: 'Settings', icon: 'settings' },
 ] as const;
 
 function TabButton({ isFocused, label, icon, ref: _ref, ...props }: TabTriggerSlotProps & { label: string; icon: keyof typeof MaterialIcons.glyphMap }) {

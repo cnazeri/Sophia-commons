@@ -11,6 +11,10 @@ export default function StackLayout() {
       headerTitleStyle: { fontFamily: Fonts.bodyBold, color: c.text }, contentStyle: { backgroundColor: c.background },
     }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="list" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="mine" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="password" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="account" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="article/[id]" options={{ title: '', headerBackTitle: '' }} />
     </Stack>
   );

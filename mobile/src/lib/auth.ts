@@ -3,6 +3,7 @@
 import type { Session } from '@supabase/supabase-js';
 import { useSyncExternalStore } from 'react';
 
+import { t } from '@/lib/i18n';
 import { SITE, supabase } from '@/lib/supabase';
 
 let session: Session | null = null;
@@ -44,6 +45,14 @@ export async function signUp(email: string, password: string, newsletter: boolea
 
 export async function resetPassword(email: string): Promise<void> {
   const { error } = await supabase.auth.resetPasswordForEmail(clean(email), { redirectTo: SITE });
+  if (error) throw error;
+}
+
+/** Checks the current password (a fresh sign-in), then sets the new one. Same account as sophiacommons.org. */
+export async function changePassword(email: string, current: string, next: string): Promise<void> {
+  const check = await supabase.auth.signInWithPassword({ email: clean(email), password: current });
+  if (check.error) throw new Error(t('app.pw_err_wrong', 'The current password is not right.'));
+  const { error } = await supabase.auth.updateUser({ password: next });
   if (error) throw error;
 }
 
