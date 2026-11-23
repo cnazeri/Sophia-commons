@@ -1695,5 +1695,19 @@
   "app.media_saved_yes": "Guardado. Lo encontrarás en Ajustes > Guardados.",
   "app.media_saved_hint": "Toca el marcador para guardarlo en Ajustes > Guardados.",
   "app.intro_tagline": "Antroposofía en todo el mundo",
-  "app.intro_skip": "Toca para continuar"
+  "app.intro_skip": "Toca para continuar",
+  "app.home_show_days": "Fiestas y días especiales",
+  "app.home_show_days_desc": "El Adviento y las demás fiestas, aniversarios y días de recuerdo",
+  "app.home_show_cots_desc": "El verso de esta semana",
+  "app.home_show_title": "Mostrar en la página de inicio",
+  "app.home_page": "Página de inicio",
+  "app.home_page_intro": "Elija qué aparece arriba en la página de inicio. Puede volver a activarlo aquí cuando quiera.",
+  "app.settings_home_desc": "Mostrar u ocultar la tarjeta de fiestas y el Calendario del Alma",
+  "app.day_missing": "No se encontró este día.",
+  "app.day_next": "Próximamente",
+  "app.day_open": "Abrir",
+  "app.day_more": "Más sobre este día",
+  "app.media_in_lang": "En {lang}",
+  "app.media_language": "Idioma",
+  "app.media_original_title": "Título original"
 }

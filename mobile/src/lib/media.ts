@@ -2,7 +2,10 @@
 import { SITE, supabase } from '@/lib/supabase';
 
 export type NewsItem = { id: string; title: string; excerpt?: string | null; source_name?: string | null; published_at: string };
-export type Video = { video_id: string; channel_slug: string; title: string; url?: string | null; thumbnail_url?: string | null; published_at: string; channel?: string };
+export type Video = { video_id: string; channel_slug: string; title: string; url?: string | null; thumbnail_url?: string | null; published_at: string; channel?: string;
+  lang?: string | null; title_en?: string | null };
+// lang and title_en come from automation/translate_videos.py (owner, 2026-11-22); lang is null until a video is checked
+const VIDEO_COLS = 'video_id,channel_slug,title,url,thumbnail_url,published_at,lang,title_en';
 export type Blog = { url: string; name: string; author: string; desc: string; image: string; latest: { title: string; url: string; date: string } | null };
 
 export async function fetchNews(limit = 5): Promise<NewsItem[]> {
@@ -13,15 +16,31 @@ export async function fetchNews(limit = 5): Promise<NewsItem[]> {
   return ((data || []) as (NewsItem & { tags?: string[] })[]).filter((n) => !(n.tags || []).includes('weekly-digest')).slice(0, limit);
 }
 
-export async function fetchVideos(limit = 12): Promise<Video[]> {
-  const [{ data: vids, error }, { data: chans }] = await Promise.all([
-    supabase.from('youtube_videos').select('video_id,channel_slug,title,url,thumbnail_url,published_at')
-      .not('title', 'ilike', '%#shorts%').order('published_at', { ascending: false }).limit(limit),
+/** The newest talks, English first (owner, 2026-11-22): up to `limit` newest English videos, then up to `others`
+ *  newest in other languages (0 for English only, as on Home). */
+export async function fetchVideos(limit = 12, others = limit): Promise<Video[]> {
+  const base = () => supabase.from('youtube_videos').select(VIDEO_COLS).not('title', 'ilike', '%#shorts%')
+    .order('published_at', { ascending: false }).limit(limit);
+  const [{ data: en, error }, { data: other }, { data: chans }] = await Promise.all([
+    base().eq('lang', 'en'),
+    others > 0 ? base().or('lang.is.null,lang.neq.en').limit(others) : Promise.resolve({ data: [] as Video[] }),
     supabase.from('youtube_channels').select('slug,name').eq('active', true),
   ]);
   if (error) throw new Error(error.message);
   const names = new Map((chans || []).map((c: { slug: string; name: string }) => [c.slug, c.name]));
-  return ((vids || []) as Video[]).map((v) => ({ ...v, channel: names.get(v.channel_slug) || '' }));
+  return [...((en || []) as Video[]), ...((other || []) as Video[])]
+    .map((v) => ({ ...v, channel: names.get(v.channel_slug) || '' }));
+}
+
+// The language's name in English ("German"), for a talk's page and its card
+const LANGS: Record<string, string> = { de: 'German', fr: 'French', es: 'Spanish', pt: 'Portuguese', it: 'Italian', nl: 'Dutch',
+  ru: 'Russian', zh: 'Chinese', ja: 'Japanese', ko: 'Korean', sv: 'Swedish', no: 'Norwegian', nb: 'Norwegian', da: 'Danish',
+  fi: 'Finnish', pl: 'Polish', cs: 'Czech', hu: 'Hungarian', ro: 'Romanian', el: 'Greek', he: 'Hebrew', tr: 'Turkish',
+  uk: 'Ukrainian', ka: 'Georgian', et: 'Estonian', lv: 'Latvian', lt: 'Lithuanian', sk: 'Slovak', sl: 'Slovenian', hr: 'Croatian',
+  sr: 'Serbian', bg: 'Bulgarian', ar: 'Arabic', hi: 'Hindi', th: 'Thai', vi: 'Vietnamese', id: 'Indonesian', en: 'English' };
+export function languageName(code?: string | null): string {
+  const c = (code || '').toLowerCase();
+  return c ? LANGS[c] || c.toUpperCase() : '';
 }
 
 export async function fetchBlogs(): Promise<Blog[]> {
@@ -42,13 +61,16 @@ export const PODCASTS: { name: string; meta: string; url: string }[] = [
 // One shape for a single talk, blog or podcast, so each has its own page and can be saved (owner, 2026-11-22)
 export type MediaKind = 'video' | 'blog' | 'podcast';
 // url: what the main button opens (the video, the latest blog post, the podcast); home: a blog's front page
-export type MediaItem = { kind: MediaKind; id: string; title: string; url: string; home?: string; image?: string | null; meta?: string; body?: string; date?: string | null };
+// title is in English when a translation exists; original keeps the title as published; lang is the video's language
+export type MediaItem = { kind: MediaKind; id: string; title: string; url: string; home?: string; image?: string | null; meta?: string; body?: string; date?: string | null;
+  lang?: string | null; original?: string | null };
 
 const slug = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 export const mediaKey = (m: { kind: MediaKind; id: string }) => m.kind + ':' + m.id;
 
 export function videoItem(v: Video): MediaItem {
-  return { kind: 'video', id: v.video_id, title: v.title, url: v.url || 'https://www.youtube.com/watch?v=' + v.video_id,
+  return { kind: 'video', id: v.video_id, title: v.title_en || v.title, original: v.title_en ? v.title : null, lang: v.lang || null,
+    url: v.url || 'https://www.youtube.com/watch?v=' + v.video_id,
     image: v.thumbnail_url || 'https://i.ytimg.com/vi/' + v.video_id + '/hqdefault.jpg', meta: v.channel || '', date: v.published_at };
 }
 export function blogItem(b: Blog): MediaItem {
@@ -63,7 +85,7 @@ export function podcastItem(p: { name: string; meta: string; url: string }): Med
 /** Loads one item for its own page (opened from a list, from Saved, or from a shared link). */
 export async function fetchMediaItem(kind: string, id: string): Promise<MediaItem | null> {
   if (kind === 'video') {
-    const { data } = await supabase.from('youtube_videos').select('video_id,channel_slug,title,url,thumbnail_url,published_at').eq('video_id', id).maybeSingle();
+    const { data } = await supabase.from('youtube_videos').select(VIDEO_COLS).eq('video_id', id).maybeSingle();
     if (!data) return null;
     const { data: ch } = await supabase.from('youtube_channels').select('name').eq('slug', (data as Video).channel_slug).maybeSingle();
     return videoItem({ ...(data as Video), channel: (ch as { name: string } | null)?.name || '' });

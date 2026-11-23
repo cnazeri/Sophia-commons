@@ -15,6 +15,7 @@ export default function StackLayout() {
       <Stack.Screen name="mine" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="password" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="account" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="home" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="article/[id]" options={{ title: '', headerBackTitle: '' }} />
     </Stack>
   );

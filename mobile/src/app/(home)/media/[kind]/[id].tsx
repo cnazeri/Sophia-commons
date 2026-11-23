@@ -12,7 +12,7 @@ import { Body, H1, Kicker, Screen } from '@/components/ui';
 import { Radius } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { localDate, t } from '@/lib/i18n';
-import { type MediaItem, fetchMediaItem, mediaKey } from '@/lib/media';
+import { type MediaItem, fetchMediaItem, languageName, mediaKey } from '@/lib/media';
 import { useSaved } from '@/lib/saved';
 
 export default function MediaItemScreen() {
@@ -40,6 +40,10 @@ export default function MediaItemScreen() {
         <BookmarkButton media={m} />
       </View>
       <H1 style={{ marginTop: 0 }}>{m.title}</H1>
+      {m.kind === 'video' && m.lang ? (
+        <Body muted style={{ fontSize: 14 }}>{t('app.media_language', 'Language')}: {languageName(m.lang)}
+          {m.lang !== 'en' && m.original ? '\n' + t('app.media_original_title', 'Original title') + ': ' + m.original : ''}</Body>
+      ) : null}
       {m.body ? <Body>{m.kind === 'blog' ? t('podcasts.substack_latest', 'Latest:') + ' ' + m.body : m.body}</Body> : null}
       <Button label={open} onPress={() => WebBrowser.openBrowserAsync(m.url)} />
       {m.kind === 'blog' && m.home && m.home !== m.url ? <Button kind="secondary" label={t('app.media_open_blog', 'Open the blog')} onPress={() => WebBrowser.openBrowserAsync(m.home!)} /> : null}

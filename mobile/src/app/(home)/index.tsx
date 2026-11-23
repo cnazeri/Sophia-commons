@@ -22,7 +22,8 @@ import { type Article, fetchNewsList } from '@/lib/news';
 import { type CommunityPost, fetchCommunityPosts } from '@/lib/post';
 import cotsDe from '@/data/cots-de.json';
 import cotsEn from '@/data/cots-en.json';
-import { cotsWeek, upcomingYearDays } from '@/lib/year';
+import { useHomePrefs } from '@/lib/home-prefs';
+import { cotsWeek, dayParam, upcomingYearDays, type YearDay } from '@/lib/year';
 
 export default function Home() {
   const c = useTheme();
@@ -32,12 +33,13 @@ export default function Home() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [showDe, setShowDe] = useState(false);
+  const prefs = useHomePrefs();
   useEffect(() => {
     let alive = true;
     fetchUpcoming().then((r) => { if (alive) setEvents([...r].sort((a, b) => a.start_date.localeCompare(b.start_date)).slice(0, 4)); }).catch(() => {});
     fetchNewsList(4).then((r) => { if (alive) setNews(r); }).catch(() => {});
     fetchJobs('', 40).then((r) => { if (alive) setJobs(r.slice(0, 3)); }).catch(() => {});
-    fetchVideos(2).then((r) => { if (alive) setVideos(r); }).catch(() => {});
+    fetchVideos(2, 0).then((r) => { if (alive) setVideos(r); }).catch(() => {});
     fetchCommunityPosts(3).then((r) => { if (alive) setPosts(r); }).catch(() => {});
     return () => { alive = false; };
   }, []);
@@ -49,23 +51,33 @@ export default function Home() {
   const enVerse = (cotsEn as Record<string, string[]>)[String(w.week)] || [];
   const deVerse = (cotsDe as Record<string, string[]>)[String(w.week)] || [];
   const short = { month: 'short', day: 'numeric' } as const;
+  // Each festival or special day opens its own page (owner, 2026-11-22)
+  const openDay = (d: YearDay) => router.push({ pathname: '/day/[key]', params: { key: d.key, day: dayParam(d.date) } });
 
   return (
     <Screen post>
-      {first ? (
+      {first && prefs.days ? (
         <Card>
+          <Pressable onPress={() => openDay(first)} accessibilityRole="button" accessibilityLabel={first.title + '. ' + t('app.day_open', 'Open')}
+            style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1, gap: Spacing.xs })}>
           {first.img ? <Image source={sizedImage(first.img.src, 800)} style={styles.festImg} contentFit="cover" accessibilityLabel={first.img.alt} /> : null}
           <Kicker>{isToday ? t('app.today', 'Today') : localDate(first.date.toISOString(), { weekday: 'long', month: 'long', day: 'numeric' })}</Kicker>
           <H2>{first.title}</H2>
           {first.desc ? <Body>{first.desc}</Body> : null}
+          <Text style={[styles.more, { color: c.goldText }]}>{t('app.day_more', 'More about this day')} &rsaquo;</Text>
+          </Pressable>
           {days.slice(1).map((d) => (
-            <Text key={d.key + d.date.toISOString()} style={[styles.next, { color: c.textSecondary }]}>
-              <Text style={{ color: c.goldText, fontFamily: Fonts.bodyBold }}>{localDate(d.date.toISOString(), short)}  </Text>{d.title}
-            </Text>
+            <Pressable key={d.key + d.date.toISOString()} onPress={() => openDay(d)} accessibilityRole="button" hitSlop={4}
+              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
+              <Text style={[styles.next, { color: c.textSecondary }]}>
+                <Text style={{ color: c.goldText, fontFamily: Fonts.bodyBold }}>{localDate(d.date.toISOString(), short)}  </Text>{d.title}
+              </Text>
+            </Pressable>
           ))}
         </Card>
       ) : null}
 
+      {prefs.cots ? (
       <Card>
         <Kicker>{t('cots.title', 'Calendar of the Soul')}</Kicker>
         <H2>{t('cots.week', 'Week')} {w.week} · {localDate(w.from.toISOString(), short)} - {localDate(w.to.toISOString(), short)}</H2>
@@ -100,6 +112,7 @@ export default function Home() {
         <Body muted>{t('cots.mirror', 'Mirror verse')}: {t('cots.week', 'Week')} {w.mirror} · {t('cots.southern', 'Southern Hemisphere')}: {t('cots.week', 'Week')} {w.southern}</Body>
         <Button kind="secondary" label={t('app.cots_other_translations', 'Other translations')} onPress={() => WebBrowser.openBrowserAsync(w.url(w.week))} />
       </Card>
+      ) : null}
 
       {events.length ? (
         <View style={styles.section}>
@@ -146,7 +159,8 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   festImg: { width: '100%', aspectRatio: 16 / 9, borderRadius: 10, marginBottom: Spacing.xs },
-  next: { fontFamily: Fonts.body, fontSize: 14, lineHeight: 20 },
+  next: { fontFamily: Fonts.body, fontSize: 14, lineHeight: 20, paddingVertical: 3 },
+  more: { fontFamily: Fonts.bodyBold, fontSize: 14 },
   section: { gap: Spacing.sm, marginTop: Spacing.sm },
   verse: { gap: 2, paddingVertical: Spacing.xs },
   verseLine: { fontFamily: Fonts.heading, fontStyle: 'italic', fontSize: 17, lineHeight: 25 },

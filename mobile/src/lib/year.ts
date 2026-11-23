@@ -32,6 +32,18 @@ function forYear(y: number): YearDay[] {
   return out;
 }
 
+/** One yearly day for its own page: the key plus the day it falls on (yyyy-mm-dd, local). */
+export function findYearDay(key: string, day: string): YearDay | null {
+  const [y, m, d] = day.split('-').map(Number);
+  if (!y || !m || !d) return null;
+  return forYear(y).find((x) => x.key === key && x.date.getMonth() === m - 1 && x.date.getDate() === d) || null;
+}
+
+/** yyyy-mm-dd in local time, for links to a day's page */
+export function dayParam(d: Date): string {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
 // Today's and the next few yearly days
 export function upcomingYearDays(n = 4, from = new Date()): YearDay[] {
   const today = new Date(from.getFullYear(), from.getMonth(), from.getDate());

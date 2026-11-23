@@ -12,7 +12,7 @@ export default function Talks() {
   const c = useTheme();
   const [rows, setRows] = useState<MediaItem[] | null>(null);
   const [error, setError] = useState(false);
-  useEffect(() => { fetchVideos(40).then((r) => setRows(r.map(videoItem))).catch(() => setError(true)); }, []);
+  useEffect(() => { fetchVideos(30, 30).then((r) => setRows(r.map(videoItem))).catch(() => setError(true)); }, []);
   return (
     <Screen underHeader title={t('app.media_talks', 'Talks')}>
       {error ? <Body muted>{t('app.load_error', 'Could not load. Try again in a moment.')}</Body> : null}

@@ -1634,5 +1634,19 @@
   "app.media_saved_yes": "Saved. Find it in Settings > Saved.",
   "app.media_saved_hint": "Tap the bookmark to keep this in Settings > Saved.",
   "app.intro_tagline": "Worldwide Anthroposophy",
-  "app.intro_skip": "Tap to continue"
+  "app.intro_skip": "Tap to continue",
+  "app.home_show_days": "Festivals and special days",
+  "app.home_show_days_desc": "Advent and the other festivals, anniversaries and memorial days",
+  "app.home_show_cots_desc": "This week's verse",
+  "app.home_show_title": "Show on the Home page",
+  "app.home_page": "Home page",
+  "app.home_page_intro": "Choose what shows at the top of the Home page. You can turn them back on here at any time.",
+  "app.settings_home_desc": "Show or hide the festival card and the Calendar of the Soul",
+  "app.day_missing": "This day could not be found.",
+  "app.day_next": "Coming up",
+  "app.day_open": "Open",
+  "app.day_more": "More about this day",
+  "app.media_in_lang": "In {lang}",
+  "app.media_language": "Language",
+  "app.media_original_title": "Original title"
 }

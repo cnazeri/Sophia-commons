@@ -6,12 +6,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Fonts, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { localDate } from '@/lib/i18n';
-import type { MediaItem } from '@/lib/media';
+import { localDate, t } from '@/lib/i18n';
+import { type MediaItem, languageName } from '@/lib/media';
 
 export function MediaCard({ m, wide = false }: { m: MediaItem; wide?: boolean }) {
   const c = useTheme();
-  const meta = [m.meta, m.date ? localDate(m.date, { month: 'short', day: 'numeric' }) : ''].filter(Boolean).join(' · ');
+  const foreign = m.lang && m.lang !== 'en' ? t('app.media_in_lang', 'In {lang}').replace('{lang}', languageName(m.lang)) : '';
+  const meta = [foreign, m.meta, m.date ? localDate(m.date, { month: 'short', day: 'numeric' }) : ''].filter(Boolean).join(' · ');
   return (
     <Pressable onPress={() => router.push({ pathname: '/media/[kind]/[id]', params: { kind: m.kind, id: m.id } })}
       accessibilityRole="button" accessibilityLabel={m.title}

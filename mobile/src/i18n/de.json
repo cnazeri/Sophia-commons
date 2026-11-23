@@ -1695,5 +1695,19 @@
   "app.media_saved_yes": "Gespeichert. Sie finden es unter Einstellungen > Gespeichert.",
   "app.media_saved_hint": "Mit dem Lesezeichen merken Sie es unter Einstellungen > Gespeichert.",
   "app.intro_tagline": "Anthroposophie weltweit",
-  "app.intro_skip": "Tippen zum Fortfahren"
+  "app.intro_skip": "Tippen zum Fortfahren",
+  "app.home_show_days": "Feste und besondere Tage",
+  "app.home_show_days_desc": "Advent und die anderen Feste, Jahrestage und Gedenktage",
+  "app.home_show_cots_desc": "Der Spruch dieser Woche",
+  "app.home_show_title": "Auf der Startseite zeigen",
+  "app.home_page": "Startseite",
+  "app.home_page_intro": "Wählen Sie, was oben auf der Startseite erscheint. Hier können Sie es jederzeit wieder einschalten.",
+  "app.settings_home_desc": "Festkarte und Seelenkalender zeigen oder ausblenden",
+  "app.day_missing": "Dieser Tag wurde nicht gefunden.",
+  "app.day_next": "Demnächst",
+  "app.day_open": "Öffnen",
+  "app.day_more": "Mehr zu diesem Tag",
+  "app.media_in_lang": "Auf {lang}",
+  "app.media_language": "Sprache",
+  "app.media_original_title": "Originaltitel"
 }

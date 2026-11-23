@@ -42,6 +42,14 @@ jobs:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}   # optional: enables new-channel discovery
         run: python3 automation/youtube_sync.py
 
+      - name: Language and English title for new videos (the app lists English talks first)
+        continue-on-error: true      # owner 2026-11-22
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 automation/translate_videos.py
+
       - name: Give new listings a map pin and a picture from their website
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

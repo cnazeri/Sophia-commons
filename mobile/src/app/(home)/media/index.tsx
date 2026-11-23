@@ -18,7 +18,7 @@ export default function MediaHub() {
   const [blogCount, setBlogCount] = useState<number | null>(null);
   useEffect(() => {
     let alive = true;
-    fetchVideos(1).then((r) => { if (alive && r[0]) setLatest(videoItem(r[0])); }).catch(() => {});
+    fetchVideos(1, 0).then((r) => { if (alive && r[0]) setLatest(videoItem(r[0])); }).catch(() => {});
     fetchBlogs().then((r) => { if (alive) setBlogCount(r.length); }).catch(() => {});
     return () => { alive = false; };
   }, []);

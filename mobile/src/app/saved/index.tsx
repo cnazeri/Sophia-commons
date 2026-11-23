@@ -24,6 +24,8 @@ export default function SettingsScreen() {
     { href: '/saved/list', icon: 'bookmark', title: t('app.saved_title', 'Saved'),
       desc: n ? t('app.settings_saved_n', '{n} saved events, places and articles').replace('{n}', String(n))
         : t('app.settings_saved_none', 'Events, places and articles you bookmark') },
+    { href: '/saved/home', icon: 'home', title: t('app.home_page', 'Home page'),
+      desc: t('app.settings_home_desc', 'Show or hide the festival card and the Calendar of the Soul') },
   ];
   if (session) {
     rows.push(
