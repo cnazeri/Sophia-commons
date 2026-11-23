@@ -43,3 +43,14 @@ jobs:
             -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{"action":"remind"}')
           cat out.json; echo
           [ "$code" = "200" ] || { echo "job-renew returned HTTP $code"; exit 1; }
+
+      - name: Email members about events they saved on the website that start in the next 6 to 30 hours (owner, 2026-11-22)
+        if: always()
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.DIGEST_CRON_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          code=$(curl -s -o out.json -w "%{http_code}" -X POST "$URL/functions/v1/saved-remind" \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{"action":"remind"}')
+          cat out.json; echo
+          [ "$code" = "200" ] || { echo "saved-remind returned HTTP $code"; exit 1; }
