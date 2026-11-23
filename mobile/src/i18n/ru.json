@@ -1482,7 +1482,7 @@
   "app.event_missing": "Событие не найдено. Возможно, его удалили.",
   "app.in_person": "Очно",
   "app.local_time": "Местное время там",
-  "app.saved_reminder": "Сохранено, напоминание накануне",
+  "app.saved_reminder": "Сохранено: напоминания накануне и за час",
   "app.save": "Сохранить и напомнить",
   "app.add_to_calendar": "Добавить в календарь",
   "app.tab_saved": "Сохранённое",
@@ -1670,5 +1670,10 @@
   "app.img_place_hint": "Фото места или его логотип.",
   "app.img_place_signin": "Участники, вошедшие в систему, могут добавить и фото.",
   "app.cots_show_german": "Показать немецкий оригинал",
-  "app.cots_hide_german": "Скрыть немецкий оригинал"
+  "app.cots_hide_german": "Скрыть немецкий оригинал",
+  "app.cal_apple": "Календарь Apple",
+  "app.cal_google": "Google Календарь",
+  "app.cal_outlook": "Outlook (Windows)",
+  "app.cal_phone": "Календарь телефона",
+  "app.reminder_hour_title": "Через час"
 }

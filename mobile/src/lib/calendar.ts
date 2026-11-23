@@ -1,41 +1,73 @@
-// "Add to calendar": the phone's own add-event form; a Google Calendar link if that is not available.
+// "Add to calendar" (owner, 2026-11-22: "save on their Google/Apple/Windows calendar"). A short menu:
+//   iPhone:  Apple Calendar (the phone's own add-event form), Google Calendar, Outlook (Windows)
+//   Android: Phone calendar (the phone's own form, which is usually Google Calendar), Outlook (Windows)
+// Google and Outlook open their own "new event" page, filled in, in the browser or their app.
 import * as Calendar from 'expo-calendar';
-import { Linking, Platform } from 'react-native';
+import { ActionSheetIOS, Alert, Linking, Platform } from 'react-native';
 
 import { type EventRow, eventPlace, eventTitle } from '@/lib/events';
+import { t } from '@/lib/i18n';
 import { SITE } from '@/lib/supabase';
 
-function googleLink(e: EventRow) {
-  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+function times(e: EventRow) {
   const start = new Date(e.start_date);
   const end = e.end_date ? new Date(e.end_date) : new Date(start.getTime() + 2 * 3600e3);
-  const q = new URLSearchParams({
-    action: 'TEMPLATE', text: eventTitle(e), dates: fmt(start) + '/' + fmt(end),
-    details: SITE + '/event/' + e.id, location: e.is_online ? 'Online' : [e.location_name, e.address, eventPlace(e)].filter(Boolean).join(', '),
-  });
+  return { start, end };
+}
+const place = (e: EventRow) => (e.is_online ? 'Online' : [e.location_name, e.address, eventPlace(e)].filter(Boolean).join(', '));
+const link = (e: EventRow) => SITE + '/event/' + e.id;
+const ymd = (d: Date) => d.toISOString().slice(0, 10);
+
+function googleLink(e: EventRow) {
+  const { start, end } = times(e);
+  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const day = (d: Date) => ymd(d).replace(/-/g, '');
+  const dates = e.is_all_day ? day(start) + '/' + day(new Date(end.getTime() + 864e5)) : fmt(start) + '/' + fmt(end);
+  const q = new URLSearchParams({ action: 'TEMPLATE', text: eventTitle(e), dates, details: link(e), location: place(e) });
   return 'https://calendar.google.com/calendar/render?' + q.toString();
 }
 
-export async function addToCalendar(e: EventRow) {
-  const start = new Date(e.start_date);
-  const end = e.end_date ? new Date(e.end_date) : new Date(start.getTime() + 2 * 3600e3);
-  const details = {
-    title: eventTitle(e), startDate: start, endDate: end, allDay: !!e.is_all_day,
-    location: e.is_online ? 'Online' : [e.location_name, e.address, eventPlace(e)].filter(Boolean).join(', '),
-    notes: SITE + '/event/' + e.id, url: SITE + '/event/' + e.id,
-  };
+// Outlook on the web (outlook.live.com for personal accounts; it hands work accounts over to Microsoft 365)
+function outlookLink(e: EventRow) {
+  const { start, end } = times(e);
+  const q = new URLSearchParams({
+    path: '/calendar/action/compose', rru: 'addevent', subject: eventTitle(e), body: link(e), location: place(e),
+    startdt: e.is_all_day ? ymd(start) : start.toISOString(), enddt: e.is_all_day ? ymd(end) : end.toISOString(),
+    allday: e.is_all_day ? 'true' : 'false',
+  });
+  return 'https://outlook.live.com/calendar/0/deeplink/compose?' + q.toString();
+}
+
+async function phoneCalendar(e: EventRow): Promise<boolean> {
+  const { start, end } = times(e);
+  const details = { title: eventTitle(e), startDate: start, endDate: end, allDay: !!e.is_all_day, location: place(e), notes: link(e), url: link(e) };
   try {
-    if (Platform.OS === 'ios') {
-      await Calendar.getDefaultCalendarSync().addEventWithForm(details);
-      return;
-    }
+    if (Platform.OS === 'ios') { await Calendar.getDefaultCalendarSync().addEventWithForm(details); return true; }
     if (Platform.OS === 'android') {
       const cals = await Calendar.getCalendars();
       const cal = cals.find((c) => c.isPrimary && c.allowsModifications) || cals.find((c) => c.allowsModifications);
-      if (cal) { await cal.addEventWithForm(details); return; }
+      if (cal) { await cal.addEventWithForm(details); return true; }
     }
-  } catch {
-    // fall through to the link
+  } catch { /* no calendar access or no calendar: the caller falls back to Google */ }
+  return false;
+}
+
+export function addToCalendar(e: EventRow) {
+  const google = () => Linking.openURL(googleLink(e));
+  const outlook = () => Linking.openURL(outlookLink(e));
+  const phone = async () => { if (!(await phoneCalendar(e))) await google(); };
+  const title = t('app.add_to_calendar', 'Add to calendar');
+  if (Platform.OS === 'ios') {
+    const opts = [t('app.cal_apple', 'Apple Calendar'), t('app.cal_google', 'Google Calendar'), t('app.cal_outlook', 'Outlook (Windows)'), t('app.cancel', 'Cancel')];
+    ActionSheetIOS.showActionSheetWithOptions({ title, options: opts, cancelButtonIndex: 3 }, (i) => {
+      if (i === 0) phone(); else if (i === 1) google(); else if (i === 2) outlook();
+    });
+    return;
   }
-  await Linking.openURL(googleLink(e));
+  // Android shows at most three buttons in an alert
+  Alert.alert(title, undefined, [
+    { text: t('app.cancel', 'Cancel'), style: 'cancel' },
+    { text: t('app.cal_outlook', 'Outlook (Windows)'), onPress: outlook },
+    { text: t('app.cal_phone', 'Phone calendar'), onPress: phone },
+  ]);
 }

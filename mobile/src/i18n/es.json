@@ -1482,7 +1482,7 @@
   "app.event_missing": "No se encontró este evento. Puede que se haya eliminado.",
   "app.in_person": "Presencial",
   "app.local_time": "Hora local allí",
-  "app.saved_reminder": "Guardado, aviso el día anterior",
+  "app.saved_reminder": "Guardado: aviso el día antes y una hora antes",
   "app.save": "Guardar y avisarme",
   "app.add_to_calendar": "Añadir al calendario",
   "app.tab_saved": "Guardado",
@@ -1670,5 +1670,10 @@
   "app.img_place_hint": "Una foto del lugar o su logotipo.",
   "app.img_place_signin": "Los miembros con sesión iniciada también pueden añadir una foto.",
   "app.cots_show_german": "Mostrar el original en alemán",
-  "app.cots_hide_german": "Ocultar el original en alemán"
+  "app.cots_hide_german": "Ocultar el original en alemán",
+  "app.cal_apple": "Calendario de Apple",
+  "app.cal_google": "Google Calendar",
+  "app.cal_outlook": "Outlook (Windows)",
+  "app.cal_phone": "Calendario del teléfono",
+  "app.reminder_hour_title": "En una hora"
 }

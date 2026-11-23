@@ -1421,7 +1421,7 @@
   "app.event_missing": "This event could not be found. It may have been removed.",
   "app.in_person": "In person",
   "app.local_time": "Local time there",
-  "app.saved_reminder": "Saved, reminder the day before",
+  "app.saved_reminder": "Saved: reminders the day before and an hour before",
   "app.save": "Save and remind me",
   "app.add_to_calendar": "Add to calendar",
   "app.tab_saved": "Saved",
@@ -1609,5 +1609,10 @@
   "app.img_place_hint": "A photo of the place, or its logo.",
   "app.img_place_signin": "Signed-in members can add a photo too.",
   "app.cots_show_german": "Show the German original",
-  "app.cots_hide_german": "Hide the German original"
+  "app.cots_hide_german": "Hide the German original",
+  "app.cal_apple": "Apple Calendar",
+  "app.cal_google": "Google Calendar",
+  "app.cal_outlook": "Outlook (Windows)",
+  "app.cal_phone": "Phone calendar",
+  "app.reminder_hour_title": "In one hour"
 }

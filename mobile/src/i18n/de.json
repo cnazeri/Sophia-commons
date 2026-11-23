@@ -1482,7 +1482,7 @@
   "app.event_missing": "Diese Veranstaltung wurde nicht gefunden. Vielleicht wurde sie entfernt.",
   "app.in_person": "Vor Ort",
   "app.local_time": "Ortszeit dort",
-  "app.saved_reminder": "Gemerkt, Erinnerung am Vortag",
+  "app.saved_reminder": "Gespeichert: Erinnerung am Vortag und eine Stunde vorher",
   "app.save": "Merken und erinnern",
   "app.add_to_calendar": "Zum Kalender hinzufügen",
   "app.tab_saved": "Gemerkt",
@@ -1670,5 +1670,10 @@
   "app.img_place_hint": "Ein Foto des Ortes oder sein Logo.",
   "app.img_place_signin": "Angemeldete Mitglieder können auch ein Foto hinzufügen.",
   "app.cots_show_german": "Deutsches Original zeigen",
-  "app.cots_hide_german": "Deutsches Original ausblenden"
+  "app.cots_hide_german": "Deutsches Original ausblenden",
+  "app.cal_apple": "Apple Kalender",
+  "app.cal_google": "Google Kalender",
+  "app.cal_outlook": "Outlook (Windows)",
+  "app.cal_phone": "Telefonkalender",
+  "app.reminder_hour_title": "In einer Stunde"
 }
