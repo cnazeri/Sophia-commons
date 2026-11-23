@@ -4537,3 +4537,43 @@ a.adm-btn, a.adm-btn:visited { color: var(--text-primary); }
 .yt-fav.is-fav svg { fill: currentColor; }
 .yt-fav:disabled { opacity: .5; cursor: wait; }
 .yt-favs h4 { color: #C0392B; }
+
+/* One heart for saved items (owner, 2026-11-23): on event and news cards, members only */
+.sc-heart { flex: 0 0 auto; align-self: center; margin-left: auto; display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; color: var(--text-muted); }
+.sc-heart svg, .btn-save .sc-heart-ico { fill: none; stroke: currentColor; stroke-width: 2; }
+.sc-heart:hover, .sc-heart:focus-visible { color: #C0392B; background: rgba(192, 57, 43, .08); }
+.sc-heart.is-saved { color: #C0392B; }
+.sc-heart.is-saved svg, .btn-save.is-saved .sc-heart-ico { fill: currentColor; }
+.sc-heart:disabled { opacity: .5; cursor: wait; }
+.lrow .sc-heart { width: 30px; height: 30px; }
+
+/* "Hosted by" card on an event page (owner, 2026-11-23) */
+.ev-host { display: flex; align-items: center; gap: 10px; margin: 8px 0 12px; padding: 10px; border: 1px solid var(--border-subtle);
+  border-radius: 10px; background: var(--card-bg, #fff); color: inherit; text-decoration: none; }
+.ev-host:hover, .ev-host:focus-visible { border-color: var(--gold); }
+.ev-host img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex: 0 0 48px; }
+.ev-host > span { display: flex; flex-direction: column; min-width: 0; }
+.ev-host-k { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+.ev-host strong { font-size: 14px; line-height: 1.3; }
+.ev-host-m { font-size: 12px; color: var(--text-muted); }
+.saved-host { display: block; font-size: 12px; color: var(--text-muted); }
+
+/* Channel pages, one per broadcaster (owner, 2026-11-23) */
+.ch-page .ch-back { display: inline-block; font-size: 13px; margin-bottom: 10px; }
+.ch-page .ch-head { display: flex; gap: 16px; align-items: center; }
+.ch-page .ch-head img { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; flex: 0 0 88px; }
+.ch-page h1 { margin: 0 0 4px; }
+.ch-desc { white-space: pre-line; margin: 14px 0; }
+.ch-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.ch-link { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 14px; border: 1px solid var(--border-subtle);
+  border-radius: 50px; font-size: 13px; text-decoration: none; color: inherit; background: var(--card-bg, #fff); }
+.ch-link:hover, .ch-link:focus-visible { border-color: var(--gold); }
+.ch-link-yt { border-color: #c4302b; color: #c4302b; }
+.ch-vids { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.ch-vid { display: flex; flex-direction: column; gap: 4px; color: inherit; text-decoration: none; }
+.ch-vid img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; background: var(--muted-bg); }
+.ch-vid-t { font-size: 13px; font-weight: 600; line-height: 1.35; }
+.ch-vid-m { font-size: 11.5px; color: var(--text-muted); }
+.ch-vid:hover .ch-vid-t { text-decoration: underline; }
+@media (max-width: 520px) { .ch-page .ch-head img { width: 64px; height: 64px; flex-basis: 64px; } }

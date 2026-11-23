@@ -61,9 +61,11 @@ export default function MediaItemScreen() {
           }} />
       ) : null}
       <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: m.title + '\n' + m.url })} />
-      <Body muted style={{ fontSize: 13 }}>{saved.media?.[mediaKey(m)]
-        ? t('app.media_saved_yes', 'Saved. Find it in Settings > Saved.')
-        : t('app.media_saved_hint', 'Tap the bookmark to keep this in Settings > Saved.')}</Body>
+      <Body muted style={{ fontSize: 13 }}>{!fav.userId
+        ? t('app.media_saved_signin', 'Sign in to save this with the heart.')
+        : saved.media?.[mediaKey(m)]
+          ? t('app.media_saved_yes', 'Saved. Find it in Settings > Saved.')
+          : t('app.media_saved_hint', 'Tap the heart to keep this in Settings > Saved.')}</Body>
     </Screen>
   );
 }

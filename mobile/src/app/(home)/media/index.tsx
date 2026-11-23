@@ -31,7 +31,7 @@ export default function MediaHub() {
 
   return (
     <Screen underHeader title={t('app.media_title', 'Talks, blogs and podcasts')}>
-      <Body muted>{t('app.media_hub_intro', 'Open a talk, blog or podcast to see it on its own page. Tap the bookmark to keep it in Settings > Saved.')}</Body>
+      <Body muted>{t('app.media_hub_intro', 'Open a talk, blog or podcast to see it on its own page. Signed-in members can tap the heart to keep it in Settings > Saved.')}</Body>
       {sections.map((s) => (
         <Pressable key={s.title} onPress={() => router.push(s.href)} accessibilityRole="button" accessibilityLabel={s.title + '. ' + s.desc}
           style={({ pressed }) => [styles.row, { backgroundColor: c.elevated, borderColor: c.border, opacity: pressed ? 0.85 : 1 }]}>

@@ -50,7 +50,7 @@ async function showDetail(type, id, skipPush) {
 
   // Push SEO-friendly detail URL
   if (!skipPush) {
-    var detailPaths = { directory: '/listing/', event: '/event/', news: '/article/', listing: '/classified/' };
+    var detailPaths = { directory: '/listing/', event: '/event/', news: '/article/', listing: '/classified/', channel: '/channel/' };
     var prefix = detailPaths[type];
     if (prefix) {
       var path = prefix + id;
@@ -66,6 +66,10 @@ async function showDetail(type, id, skipPush) {
   }
 
   try {
+    if (type === 'channel') {
+      await renderChannelPage(container, id);
+      return;
+    }
     if (type === 'directory') {
       // Opened by its readable address (/listing/waldorf-school-of-lexington) or by its id (owner, 2026-11-05)
       var byId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
@@ -81,6 +85,7 @@ async function showDetail(type, id, skipPush) {
       _injectDirectorySEO(data);
       loadRelatedDirectory(data.category, data.id);
       if (typeof loadListingEvents === 'function') loadListingEvents(data);
+      _loadListingChannels(data);
       // Use the listing's id, not the readable address: comments and views are stored by id (fixed 2026-11-20)
       loadComments('directory', data.id);
       _trackView('directory', data.id);
@@ -98,6 +103,7 @@ async function showDetail(type, id, skipPush) {
       _injectEventSEO(data);
       loadRelatedEvents(data.category_id, data.id);
       _loadNextFromOrganizer(data);
+      _loadEventHost(data);
       loadComments('event', id);
       _trackView('event', id);
       if (typeof scSaveMount === 'function') scSaveMount('event', data.id);
@@ -446,6 +452,7 @@ function renderEventDetail(ev) {
     + '<p><strong>' + esc(t('event_detail.attendance', 'Attendance')) + ':</strong> ' + esc(_eventModeLabel(mode)) + '</p>'
     + (placeText ? '<p><strong>' + esc(t('event_detail.where', 'Where')) + ':</strong> ' + esc(placeText) + '</p>' : '')
     + (ev.organizer_name ? '<p><strong>' + t('event_detail.organizer') + ':</strong> ' + esc(ev.organizer_name) + '</p>' : '')
+    + '<div id="ev-host"></div>'
     + price
     + _calButtonsHtml(ev)
     + '<p class="ev-nl-link"><a href="#nl-card" onclick="var c=document.getElementById(\'nl-card\');if(c){c.scrollIntoView({behavior:\'smooth\',block:\'center\'});var i=document.getElementById(\'dt-nl-email\');if(i)i.focus({preventScroll:true});}return false;">&#9993; ' + esc(t('newsletter.event_link', 'Get events like this by email')) + '</a></p>'
@@ -483,6 +490,45 @@ async function _loadNextFromOrganizer(ev) {
         : '<p><a href="/events" onclick="showSec(\'events\');return false;">' + esc(t('event_detail.see_upcoming', 'See upcoming events on the calendar')) + ' &rarr;</a></p>')
       + '</div>';
   } catch (e) { /* the note is extra; the page works without it */ }
+}
+
+// A listing's own YouTube channel(s), linking to their channel pages (owner, 2026-11-23: a branch's place and its
+// channel are connected to each other)
+async function _loadListingChannels(d) {
+  var anchor = document.getElementById('listing-events');
+  if (!anchor || !d || !sbReady()) return;
+  try {
+    var r = await _sb.from('youtube_channels').select('slug, name').eq('directory_entry_id', d.id).eq('active', true);
+    var rows = (r && !r.error && r.data) || [];
+    if (!rows.length) return;
+    var all = await _ytFetchLatest();
+    var html = rows.map(function (c) {
+      var ch = all.filter(function (x) { return x.slug === c.slug; })[0] || c;
+      return '<a class="ev-host" href="/channel/' + encodeURIComponent(c.slug) + '" onclick="showDetail(\'channel\',\'' + escJs(c.slug) + '\');return false;">'
+        + (ch.avatar_url ? '<img src="' + escUrl(ch.avatar_url) + '" alt="" loading="lazy" style="border-radius:50%">' : '')
+        + '<span><span class="ev-host-k">' + esc(t('listing.youtube_channel', 'YouTube channel')) + '</span><strong>' + esc(ch.name || c.name) + '</strong>'
+        + (ch.published_at ? '<span class="ev-host-m">' + esc(t('channel.latest', 'Latest') + ': ' + ytAgo(ch.published_at)) + '</span>' : '') + '</span></a>';
+    }).join('');
+    anchor.insertAdjacentHTML('beforebegin', '<div class="listing-channels">' + html + '</div>');
+  } catch (e) { /* the card is extra; the page works without it */ }
+}
+
+// "Hosted by": the directory place this event belongs to, as a card that opens its listing (owner, 2026-11-23)
+async function _loadEventHost(ev) {
+  var box = document.getElementById('ev-host');
+  if (!box || !ev || !ev.directory_entry_id || !sbReady()) return;
+  try {
+    var r = await _sb.from('directory_entries').select('id, slug, organization_name, city, country, photo_url')
+      .eq('id', ev.directory_entry_id).eq('status', 'approved').maybeSingle();
+    var d = r && r.data;
+    if (!d) return;
+    var path = '/listing/' + encodeURIComponent(d.slug || d.id);
+    box.innerHTML = '<a class="ev-host" href="' + path + '" onclick="showDetail(\'directory\',\'' + escJs(d.slug || d.id) + '\');return false;">'
+      + (d.photo_url && /^https:\/\//.test(d.photo_url) ? '<img src="' + escUrl(_imgSized(d.photo_url, 120)) + '" alt="" loading="lazy">' : '')
+      + '<span><span class="ev-host-k">' + esc(t('event_detail.hosted_by', 'Hosted by')) + '</span>'
+      + '<strong>' + esc(d.organization_name) + '</strong>'
+      + '<span class="ev-host-m">' + esc([d.city, d.country].filter(Boolean).join(', ')) + '</span></span></a>';
+  } catch (e) { /* the card is extra; the page works without it */ }
 }
 
 // ── EVENT SIGN-UPS (owner, 2026-10-31) ──
@@ -2104,9 +2150,9 @@ function routeFromPath(pathname, isPopstate) {
   }
 
   // Detail routes: /listing/:id, /event/:id, /article/:id, /classified/:id
-  var detailMatch = p.match(/^\/(listing|event|article|classified)\/([^\/]+)$/);
+  var detailMatch = p.match(/^\/(listing|event|article|classified|channel)\/([^\/]+)$/);
   if (detailMatch) {
-    var typeMap = { listing: 'directory', event: 'event', article: 'news', classified: 'listing' };
+    var typeMap = { listing: 'directory', event: 'event', article: 'news', classified: 'listing', channel: 'channel' };
     showDetail(typeMap[detailMatch[1]], detailMatch[2], skip);
     return;
   }
@@ -4164,6 +4210,7 @@ async function loadNewsFromSupabase() {
               <a class="ltitle" href="#" onclick="showDetail('news','${n.id}');return false;">${esc(n.title)}</a>
               ${tag ? '<span class="ltag">' + esc(tag) + '</span>' : ''}
               <span class="lmeta">${_storyMeta(n)}</span>
+              ${typeof scHeart === 'function' ? scHeart('news', n.id) : ''}
             </div>`;
           }), 'news-more-rows', _newsListOpen, t('news.show_n_more', 'Show {n} more stories'), '_newsListOpen')}
         </div>
@@ -5034,7 +5081,7 @@ function _evRowHtml(ev, seriesInfo) {
   if (seriesInfo && seriesInfo.later.length) {
     html += '<div class="emeta">' + esc(t('events.series_later', 'Later sessions')) + ': ' + seriesInfo.later.map(function(x) { return esc(localDate(x.date, { month: 'short', day: 'numeric' })); }).join(', ') + '</div>';
   }
-  return html + '</div></div>';
+  return html + '</div>' + (ev.id && typeof scHeart === 'function' ? scHeart('event', ev.id) : '') + '</div>';
 }
 
 // ── Events near me: same lookups as the directory's find-near-me ──
@@ -5592,7 +5639,8 @@ function _homeEvRow(ev, isNow) {
   return '<div class="evrow">'
     + '<div class="evdate"><div class="mo">' + esc(localDate(ev.date, { month: 'short' })) + '</div><div class="dy">' + d.getDate() + '</div></div>'
     + '<div class="evinfo"><div class="etag">' + (isNow ? '<span class="live-dot" aria-hidden="true"></span>' + esc(t('home.happening_now', 'Happening now')) : esc(cat.charAt(0).toUpperCase() + cat.slice(1))) + '</div><h5 aria-level="3">' + titleHtml + _evLangTag(ev) + '</h5>'
-    + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div></div>';
+    + (meta ? '<div class="emeta">' + meta + '</div>' : '') + '</div>'
+    + (ev.id && typeof scHeart === 'function' ? scHeart('event', ev.id) : '') + '</div>';
 }
 
 // ── HEADER CALENDAR WIDGET ──
@@ -9172,7 +9220,7 @@ function _ytRowHtml(r, rt, isWeek, isFav) {
   var meta = [esc(r.language || ''), esc(_subsText(r)), r.published_at ? esc(ytAgo(r.published_at)) : ''].filter(Boolean).join(' &middot; ');
   return '<div class="yt-row' + (isWeek ? ' is-week' : '') + '">'
     + (r.avatar_url ? '<img class="yt-ava" src="' + escUrl(r.avatar_url) + '" alt="" width="32" height="32" loading="lazy">' : '<span class="yt-ava" aria-hidden="true"></span>')
-    + '<div class="yt-main"><div><a class="ltitle" href="' + escUrl(r.channel_url) + '" target="_blank" rel="noopener" title="' + esc(r.description || '') + '">' + esc(r.name) + '</a>'
+    + '<div class="yt-main"><div><a class="ltitle" href="/channel/' + encodeURIComponent(r.slug) + '" onclick="showDetail(\'channel\',\'' + escJs(r.slug) + '\');return false;" title="' + esc(r.description || '') + '">' + esc(r.name) + '</a>'
     + (r.verified ? '<span class="lv">&#10003;</span>' : '')
     + (signedIn && window._supabaseUser ? '<button type="button" class="yt-fav' + (isFav ? ' is-fav' : '') + '" aria-pressed="' + (isFav ? 'true' : 'false') + '"'
       + ' aria-label="' + esc(r.name + ': ' + (isFav ? t('podcasts.unfavorite', 'remove from favorites') : t('podcasts.favorite', 'add to favorites'))) + '"'
@@ -9247,7 +9295,74 @@ function _subsText(r) {
   return r.subscriber_text ? r.subscriber_text + ' ' + t('channel.subscribers', 'subscribers') : '';
 }
 
-async function openChannel(slug, trigger) {
+// Each broadcaster has its own page (owner, 2026-11-23): /channel/<slug>. Everything that opened the old
+// pop-up opens the page now.
+function openChannel(slug) { closeDayPopup(false); showDetail('channel', slug); }
+
+// Platforms a broadcaster can have besides YouTube, in the order shown, with a plain label
+var CH_PLATFORMS = { website: 'Website', substack: 'Substack', reddit: 'Reddit', x: 'X', twitter: 'X', facebook: 'Facebook',
+  instagram: 'Instagram', patreon: 'Patreon', telegram: 'Telegram', spotify: 'Spotify', apple_podcasts: 'Apple Podcasts',
+  podcast: 'Podcast', tiktok: 'TikTok', linkedin: 'LinkedIn', bluesky: 'Bluesky', rumble: 'Rumble', odysee: 'Odysee',
+  vimeo: 'Vimeo', soundcloud: 'SoundCloud', donate: 'Donate', shop: 'Shop', other: 'Link' };
+
+async function renderChannelPage(container, slug) {
+  var rows = await _ytFetchLatest();
+  var ch = rows.filter(function (r) { return r.slug === slug; })[0];
+  if (!ch) { container.innerHTML = renderNotFound(); return; }
+  var res = await Promise.all([
+    _sb.from('youtube_channels').select('links, description, subscriber_text, total_videos, category, directory_entry_id').eq('slug', slug).maybeSingle(),
+    _sb.from('youtube_videos').select('video_id, title, title_en, url, thumbnail_url, published_at').eq('channel_slug', slug)
+      .not('title', 'ilike', '%#shorts%').order('published_at', { ascending: false }).limit(12),
+    _loadChannelRatings(), _ytFavsLoad()
+  ]);
+  var extra = (res[0] && res[0].data) || {}, vids = (res[1] && res[1].data) || [], rt = res[2][slug], favs = res[3];
+  var links = (Array.isArray(extra.links) ? extra.links : []).filter(function (l) { return l && /^https:\/\//.test(l.url || ''); });
+  var desc = extra.description || ch.description || '';
+  var meta = [_subsText(ch), ch.total_videos || extra.total_videos ? (ch.total_videos || extra.total_videos) + ' ' + t('channel.videos', 'videos') : '',
+    ch.language, YT_CATEGORIES[ch.category] || ''].filter(Boolean).join(' &middot; ');
+  var isFav = favs.has(slug);
+  var heart = signedIn && window._supabaseUser
+    ? '<button type="button" class="btn-save ch-fav' + (isFav ? ' is-saved' : '') + '" aria-pressed="' + isFav + '" onclick="ytToggleFav(\'' + escJs(slug) + '\', this).then(function(ok){ if (ok) showDetail(\'channel\',\'' + escJs(slug) + '\', true); })">'
+      + '<svg class="sc-heart-ico" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px;margin-right:5px">' + SC_HEART_PATH + '</svg>'
+      + esc(isFav ? t('channel.fav_on', 'Favorite') : t('channel.fav_add', 'Add to favorites')) + '</button>' : '';
+  var linkBtns = '<a class="ch-link ch-link-yt" href="' + escUrl(ch.channel_url) + '" target="_blank" rel="noopener">YouTube &#8599;</a>'
+    + links.map(function (l) {
+      return '<a class="ch-link" href="' + escUrl(l.url) + '" target="_blank" rel="noopener">' + esc(CH_PLATFORMS[l.platform] || l.label || 'Link') + ' &#8599;</a>';
+    }).join('');
+  var vidHtml = vids.length ? '<div class="ch-vids">' + vids.map(function (v) {
+    var url = v.url || 'https://www.youtube.com/watch?v=' + v.video_id, title = v.title_en || v.title;
+    return '<a class="ch-vid" href="' + escUrl(url) + '" target="_blank" rel="noopener">'
+      + '<img src="' + escUrl(v.thumbnail_url || 'https://i.ytimg.com/vi/' + v.video_id + '/mqdefault.jpg') + '" alt="" loading="lazy">'
+      + '<span class="ch-vid-t">' + esc(title) + '</span><span class="ch-vid-m">' + esc(ytAgo(v.published_at)) + '</span></a>';
+  }).join('') + '</div>' : '<p class="lmeta">' + esc(t('channel.no_videos', 'No videos found yet.')) + '</p>';
+  // The place this channel belongs to, e.g. a branch's own listing (owner, 2026-11-23)
+  var place = null;
+  if (extra.directory_entry_id) {
+    var pr = await _sb.from('directory_entries').select('id, slug, organization_name, city, country, photo_url')
+      .eq('id', extra.directory_entry_id).eq('status', 'approved').maybeSingle();
+    place = pr && pr.data;
+  }
+  var placeCard = place ? '<a class="ev-host" href="/listing/' + encodeURIComponent(place.slug || place.id) + '" onclick="showDetail(\'directory\',\'' + escJs(place.slug || place.id) + '\');return false;">'
+    + (place.photo_url && /^https:\/\//.test(place.photo_url) ? '<img src="' + escUrl(_imgSized(place.photo_url, 120)) + '" alt="" loading="lazy">' : '')
+    + '<span><span class="ev-host-k">' + esc(t('channel.place', 'In the directory')) + '</span><strong>' + esc(place.organization_name) + '</strong>'
+    + '<span class="ev-host-m">' + esc([place.city, place.country].filter(Boolean).join(', ')) + '</span></span></a>' : '';
+  container.innerHTML = '<div class="detail-hero ch-page">'
+    + '<div class="ch-head">' + (ch.avatar_url ? '<img src="' + escUrl(ch.avatar_url) + '" alt="" width="88" height="88">' : '')
+    + '<div><h1>' + esc(ch.name) + (ch.verified ? ' <span class="lv" title="' + esc(t('common.verified', 'Verified')) + '">&#10003;</span>' : '') + '</h1>'
+    + '<div class="dp-meta">' + meta + '</div><div class="ch-rating">' + _ratingSummary(rt) + '</div></div></div>'
+    + (desc ? '<p class="ch-desc">' + esc(desc) + '</p>' : '')
+    + '<div class="ch-links">' + linkBtns + '</div>'
+    + placeCard
+    + (heart ? '<div class="detail-actions">' + heart + '</div>' : '')
+    + '</div>'
+    + '<div class="detail-hero"><h2>' + esc(t('channel.newest_videos', 'Newest videos')) + '</h2>' + vidHtml + '</div>'
+    + '<div class="detail-hero ch-reviews-box"><h2>' + esc(t('channel.reviews', 'Reviews')) + '</h2>'
+    + '<div id="ch-form"></div><div id="ch-reviews" aria-live="polite">' + esc(t('common.loading', 'Loading...')) + '</div></div>';
+  updateSEOMeta(ch.name + ' | Sophia Commons', (desc || ch.name + ' on YouTube').substring(0, 160), '/channel/' + slug);
+  _loadChannelReviews(slug);
+}
+
+async function _openChannelPopupOld(slug, trigger) {
   var rows = await _ytFetchLatest();
   var ch = rows.filter(function (r) { return r.slug === slug; })[0];
   if (!ch) return;

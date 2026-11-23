@@ -8,16 +8,38 @@
 var _savedKeys = null;   // Set of 'type:id' for the signed-in member, loaded once per sign-in
 var SAVED_TYPES = ['event', 'directory', 'news', 'listing'];
 var SAVED_PATH = { directory: '/listing/', event: '/event/', news: '/article/', listing: '/classified/' };
-var SAVED_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-2px;margin-right:5px">'
-  + '<path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4.5L5 21V4a1 1 0 0 1 1-1z" fill="currentColor"/></svg>';
+// One heart means "saved" everywhere: cards, detail pages, channels (owner, 2026-11-23). Members only.
+var SC_HEART_PATH = '<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.1 1.8-1.9 3.3-3.1 5.4-3.1 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>';
+var SAVED_ICON = '<svg class="sc-heart-ico" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px;margin-right:5px">' + SC_HEART_PATH + '</svg>';
 
 function _savedUser() { return window._supabaseUser || null; }
+
+// A heart for a card in a list (events, news). Drawn only for signed-in members; filled from the loaded keys.
+function scHeart(type, id) {
+  if (!signedIn || !_savedUser() || !id || SAVED_TYPES.indexOf(type) < 0) return '';
+  var on = !!(_savedKeys && _savedKeys.has(type + ':' + id));
+  var label = on ? t('saved.unsave', 'Remove from saved') : t('saved.save', 'Save');
+  return '<button type="button" class="sc-heart' + (on ? ' is-saved' : '') + '" aria-pressed="' + on + '" aria-label="' + esc(label) + '" title="' + esc(label) + '"'
+    + ' data-type="' + esc(type) + '" data-id="' + esc(id) + '" onclick="event.stopPropagation();scToggleSave(this)">'
+    + '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">' + SC_HEART_PATH + '</svg></button>';
+}
+// Updates every heart and Save button on the page to match what the member has saved
+function scHeartsRefresh() {
+  var keys = _savedKeys || new Set();
+  document.querySelectorAll('.sc-heart, .btn-save').forEach(function (b) {
+    var on = keys.has(b.getAttribute('data-type') + ':' + b.getAttribute('data-id'));
+    b.classList.toggle('is-saved', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (b.classList.contains('btn-save')) b.innerHTML = SAVED_ICON + esc(on ? t('saved.saved', 'Saved') : t('saved.save', 'Save'));
+  });
+}
 
 async function _savedLoad(force) {
   if (!signedIn || !sbReady() || !_savedUser()) { _savedKeys = null; return new Set(); }
   if (_savedKeys && !force) return _savedKeys;
   var r = await _sb.from('saved_items').select('item_type, item_id');
   _savedKeys = new Set((r.data || []).map(function (x) { return x.item_type + ':' + x.item_id; }));
+  scHeartsRefresh();
   return _savedKeys;
 }
 
@@ -31,6 +53,10 @@ function savedAuthChanged() {
   if (l) l.style.display = signedIn ? 'inline' : 'none';
   var sec = document.getElementById('sec-saved');
   if (sec && sec.classList.contains('active')) renderSaved();
+  // Hearts on event and news cards appear or disappear with sign-in: redraw those lists
+  if (typeof renderEventList === 'function' && document.getElementById('sec-events')) { try { renderEventList(); } catch (e) { /* list draws on its next visit */ } }
+  if (typeof loadNewsFromSupabase === 'function' && document.getElementById('sb-news-list')) loadNewsFromSupabase();
+  if (signedIn) _savedLoad();
 }
 
 function _saveBtnHtml(type, id, on) {
@@ -65,7 +91,7 @@ async function scToggleSave(btn) {
   btn.disabled = false;
   if (r.error && !/duplicate/i.test(r.error.message)) { scNotify(t('saved.error', 'Could not save. Please try again.')); return; }
   if (on) keys.delete(key); else keys.add(key);
-  btn.outerHTML = _saveBtnHtml(type, id, !on);
+  scHeartsRefresh();
 }
 
 // The /saved page
@@ -86,15 +112,27 @@ async function renderSaved() {
 
   var q = function (table, cols, list) { return list.length ? _sb.from(table).select(cols).in('id', list) : Promise.resolve({ data: [] }); };
   var res = await Promise.all([
-    q('events', 'id, title, start_date, is_online, city, country, location_name', ids.event),
+    q('events', 'id, title, start_date, is_online, city, country, location_name, directory_entry_id', ids.event),
     q('directory_entries', 'id, slug, organization_name, location, city, country', ids.directory),
     q('news', 'id, title, published_at', ids.news),
     q('listings', 'id, title, location, country', ids.listing),
   ]);
   var now = Date.now() - 864e5;
   var events = (res[0].data || []).sort(function (a, b) { return a.start_date.localeCompare(b.start_date); });
+  // Each saved event shows the directory place it belongs to, with a link (owner, 2026-11-23)
+  var hostIds = events.map(function (e) { return e.directory_entry_id; }).filter(Boolean);
+  var hosts = {};
+  if (hostIds.length) {
+    var hr = await _sb.from('directory_entries').select('id, slug, organization_name').in('id', hostIds);
+    (hr.data || []).forEach(function (h) { hosts[h.id] = h; });
+  }
+  var hostLink = function (e) {
+    var h = e.directory_entry_id && hosts[e.directory_entry_id];
+    if (!h) return '';
+    return '<span class="saved-host">' + esc(t('saved.at', 'at')) + ' <a href="/listing/' + encodeURIComponent(h.slug || h.id) + '" onclick="showDetail(\'directory\',\'' + escJs(h.slug || h.id) + '\');return false;">' + esc(h.organization_name) + '</a></span>';
+  };
   var groups = [
-    { type: 'event', label: t('saved.events', 'Events'), rows: events.filter(function (e) { return Date.parse(e.start_date) >= now; }),
+    { type: 'event', label: t('saved.events', 'Events'), extra: hostLink, rows: events.filter(function (e) { return Date.parse(e.start_date) >= now; }),
       title: function (e) { return e.title; }, meta: function (e) { return [localDate(e.start_date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }), e.is_online ? t('event_detail.online', 'Online') : [e.city, e.country].filter(Boolean).join(', ')].filter(Boolean).join(' · '); } },
     { type: 'directory', label: t('saved.places', 'Places and resources'), rows: (res[1].data || []).sort(function (a, b) { return a.organization_name.localeCompare(b.organization_name); }),
       title: function (d) { return d.organization_name; }, meta: function (d) { return [d.city || d.location, d.country].filter(Boolean).join(', '); }, path: function (d) { return d.slug || d.id; } },
@@ -110,11 +148,11 @@ async function renderSaved() {
       var link = SAVED_PATH[g.type] + encodeURIComponent(g.path ? g.path(x) : x.id);
       return '<div class="saved-row" id="saved-' + esc(g.type) + '-' + esc(x.id) + '">'
         + '<div class="saved-main"><a href="' + link + '" onclick="showDetail(\'' + g.type + '\',\'' + escJs(g.path ? g.path(x) : x.id) + '\');return false;">' + esc(g.title(x)) + '</a>'
-        + (g.meta(x) ? '<span class="saved-meta">' + esc(g.meta(x)) + '</span>' : '') + '</div>'
+        + (g.meta(x) ? '<span class="saved-meta">' + esc(g.meta(x)) + '</span>' : '') + (g.extra ? g.extra(x) : '') + '</div>'
         + '<button type="button" class="btn-unsave" onclick="scRemoveSaved(\'' + g.type + '\',\'' + escJs(x.id) + '\')">' + esc(t('saved.remove', 'Remove')) + '</button></div>';
     }).join('') + '</div>';
   }).join('');
-  html = (await _savedChannelsHtml()) + html;
+  html = (await _savedChannelsHtml()) + html + (await _savedMediaHtml());
   root.innerHTML = html || '<p class="org-empty">' + esc(t('saved.empty', 'Nothing saved yet. Open an event, a place, an article or a job and press Save.')) + '</p>';
 }
 
@@ -135,6 +173,30 @@ async function _savedChannelsHtml() {
       + '<button type="button" class="btn-unsave" onclick="scRemoveFavChannel(\'' + escJs(c.slug) + '\')">' + esc(t('saved.remove', 'Remove')) + '</button></div>';
   }).join('') + '</div>';
 }
+// Talks, blogs and podcasts saved in the app (saved_media, owner 2026-11-23): one Saved list per account
+var SAVED_MEDIA_LABEL = { video: 'Talk', blog: 'Blog', podcast: 'Podcast' };
+async function _savedMediaHtml() {
+  var r = await _sb.from('saved_media').select('kind, item_id, data, created_at').order('created_at', { ascending: false });
+  if (r.error || !r.data || !r.data.length) return '';
+  return '<div class="saved-group"><h3>' + esc(t('saved.media', 'Talks, blogs and podcasts')) + '</h3>' + r.data.map(function (m) {
+    var d = m.data || {}, url = d.url || '';
+    var meta = [t('saved.media_' + m.kind, SAVED_MEDIA_LABEL[m.kind] || m.kind), d.meta].filter(Boolean).join(' · ');
+    var rid = 'saved-media-' + m.kind + '-' + String(m.item_id).replace(/[^A-Za-z0-9_-]/g, '');
+    return '<div class="saved-row" id="' + esc(rid) + '"><div class="saved-main">'
+      + (/^https?:\/\//.test(url) ? '<a href="' + escUrl(url) + '" target="_blank" rel="noopener">' + esc(d.title || m.item_id) + '</a>' : esc(d.title || m.item_id))
+      + '<span class="saved-meta">' + esc(meta) + '</span></div>'
+      + '<button type="button" class="btn-unsave" onclick="scRemoveSavedMedia(\'' + escJs(m.kind) + '\',\'' + escJs(m.item_id) + '\',\'' + escJs(rid) + '\')">' + esc(t('saved.remove', 'Remove')) + '</button></div>';
+  }).join('') + '</div>';
+}
+async function scRemoveSavedMedia(kind, id, rid) {
+  var r = await _sb.from('saved_media').delete().eq('kind', kind).eq('item_id', id);
+  if (r.error) { scNotify(t('saved.error', 'Could not save. Please try again.')); return; }
+  var row = document.getElementById(rid);
+  if (row) row.remove();
+  document.querySelectorAll('#saved-root .saved-group').forEach(function (g) { if (!g.querySelector('.saved-row')) g.remove(); });
+  if (!document.querySelector('#saved-root .saved-row')) renderSaved();
+}
+
 async function scRemoveFavChannel(slug) {
   if (!(await ytToggleFav(slug))) return;
   var row = document.getElementById('saved-channel-' + slug);
@@ -147,6 +209,7 @@ async function scRemoveSaved(type, id) {
   var r = await _sb.from('saved_items').delete().eq('item_type', type).eq('item_id', id);
   if (r.error) { scNotify(t('saved.error', 'Could not save. Please try again.')); return; }
   if (_savedKeys) _savedKeys.delete(type + ':' + id);
+  scHeartsRefresh();
   var row = document.getElementById('saved-' + type + '-' + id);
   if (row) row.remove();
   document.querySelectorAll('#saved-root .saved-group').forEach(function (g) { if (!g.querySelector('.saved-row')) g.remove(); });

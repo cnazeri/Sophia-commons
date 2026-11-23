@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
@@ -68,8 +68,14 @@ export default function EventDetail() {
       <View style={styles.actions}>
         {e.online_url ? <Button label={t('event_detail.join_online', 'Join online')} onPress={() => WebBrowser.openBrowserAsync(e.online_url!)} /> : null}
         {e.ticket_url ? <Button label={t('event_detail.get_tickets', 'Get tickets')} onPress={() => WebBrowser.openBrowserAsync(e.ticket_url!)} /> : null}
-        <Button kind="secondary" label={saved.events[e.id] ? t('app.saved_reminder', 'Saved, reminder the day before') : t('app.save', 'Save and remind me')}
-          onPress={async () => { if (toggleEvent(e)) await remindEvent(e); else await cancelReminder(e); }} />
+        {/* Saving is for signed-in members (owner, 2026-11-23) */}
+        {session ? (
+          <Button kind="secondary" label={saved.events[e.id] ? t('app.saved_reminder', 'Saved, reminder the day before') : t('app.save', 'Save and remind me')}
+            onPress={async () => {
+              try { if (await toggleEvent(e)) await remindEvent(e); else await cancelReminder(e); }
+              catch { Alert.alert(t('saved.error', 'Could not save. Please try again.')); }
+            }} />
+        ) : null}
         <Button kind="secondary" label={t('app.add_to_calendar', 'Add to calendar')} onPress={() => addToCalendar(e)} />
         {place && !e.is_online ? <Button kind="secondary" label={t('app.directions', 'Directions')} onPress={directions} /> : null}
         <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: eventTitle(e) + '\n' + url, url })} />

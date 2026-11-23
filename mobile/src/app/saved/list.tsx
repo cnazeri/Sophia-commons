@@ -1,8 +1,10 @@
-// Settings > Saved: bookmarked events, places and news articles kept on the phone, so they open without a connection.
+// Settings > Saved: the member's saved events, places, articles, talks and favorite channels (members only, owner
+// 2026-11-23). Same list as on sophiacommons.org; a copy stays on the phone so they open without a connection.
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { AuthForm } from '@/components/auth-form';
 import { EventCard } from '@/components/event-card';
 import { LinkRow } from '@/components/link-row';
 import { ListingCard } from '@/components/listing-card';
@@ -10,13 +12,16 @@ import { MediaCard } from '@/components/media-card';
 import { NewsCard } from '@/components/news-card';
 import { Body, H2, Screen } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
+import { useAuth } from '@/lib/auth';
 import { type FavChannel, fetchFavChannelRows, useFavChannels } from '@/lib/fav-channels';
 import { t } from '@/lib/i18n';
-import { useSaved } from '@/lib/saved';
+import { refreshSaved, useSaved } from '@/lib/saved';
 
 export default function SavedScreen() {
   const saved = useSaved();
+  const { session } = useAuth();
   const [now] = useState(() => Date.now());
+  useEffect(() => { refreshSaved(); }, []);   // pick up anything saved on the website since
   const events = Object.values(saved.events).sort((a, b) => a.start_date.localeCompare(b.start_date));
   const upcoming = events.filter((e) => Date.parse(e.end_date || e.start_date) > now - 864e5);
   const news = Object.values(saved.news || {}).sort((a, b) => b.published_at.localeCompare(a.published_at));
@@ -31,10 +36,18 @@ export default function SavedScreen() {
     fetchFavChannelRows(favKey ? favKey.split(',') : []).then((r) => { if (alive) setChannels(r); }).catch(() => {});
     return () => { alive = false; };
   }, [favKey]);
+  if (!session) {
+    return (
+      <Screen title={t('app.saved_title', 'Saved')} underHeader>
+        <Body muted>{t('app.saved_sign_in', 'Sign in to save events, places, articles and talks with the heart. Your saved list is the same in the app and on sophiacommons.org.')}</Body>
+        <AuthForm chatIntro={false} />
+      </Screen>
+    );
+  }
   return (
     <Screen title={t('app.saved_title', 'Saved')} underHeader>
       {!upcoming.length && !listings.length && !news.length && !media.length && !channels.length ? (
-        <Body muted>{t('app.saved_empty', 'Tap the bookmark on an event, a place or a news article and it appears here, even without a connection. Bookmarked events get a reminder the day before.')}</Body>
+        <Body muted>{t('app.saved_empty', 'Tap the heart on an event, a place, an article or a talk and it appears here and on sophiacommons.org, even without a connection. Saved events get a reminder the day before.')}</Body>
       ) : null}
       {upcoming.length ? (
         <View style={styles.section}>

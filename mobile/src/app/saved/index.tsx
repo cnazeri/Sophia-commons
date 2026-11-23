@@ -1,5 +1,6 @@
 // Settings (the bottom-right tab, owner 2026-11-22): Saved items, My posts, Change password and Account.
-// Saved works without an account; the rest ask the member to sign in (same account as sophiacommons.org).
+// Saved, My posts and the rest need a signed-in account (owner, 2026-11-23: saving is for members only).
+// Home page settings work without one.
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { type Href, router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -21,9 +22,9 @@ export default function SettingsScreen() {
   const n = Object.keys(saved.events).length + Object.keys(saved.listings).length + Object.keys(saved.news || {}).length;
 
   const rows: Row[] = [
-    { href: '/saved/list', icon: 'bookmark', title: t('app.saved_title', 'Saved'),
+    { href: '/saved/list', icon: 'favorite', title: t('app.saved_title', 'Saved'),
       desc: n ? t('app.settings_saved_n', '{n} saved events, places and articles').replace('{n}', String(n))
-        : t('app.settings_saved_none', 'Events, places and articles you bookmark') },
+        : t('app.settings_saved_none', 'Events, places and articles you save with the heart') },
     { href: '/saved/home', icon: 'home', title: t('app.home_page', 'Home page'),
       desc: t('app.settings_home_desc', 'Show or hide the festival card and the Calendar of the Soul') },
   ];
