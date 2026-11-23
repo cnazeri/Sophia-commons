@@ -56,6 +56,8 @@ function savedAuthChanged() {
   // Hearts on event and news cards appear or disappear with sign-in: redraw those lists
   if (typeof renderEventList === 'function' && document.getElementById('sec-events')) { try { renderEventList(); } catch (e) { /* list draws on its next visit */ } }
   if (typeof loadNewsFromSupabase === 'function' && document.getElementById('sb-news-list')) loadNewsFromSupabase();
+  try { if (typeof renderHomeUpcoming === 'function') renderHomeUpcoming(); } catch (e) { /* drawn on the next visit */ }
+  try { if (typeof renderHomeNews === 'function') renderHomeNews(); } catch (e) { /* drawn on the next visit */ }
   if (signedIn) _savedLoad();
 }
 
@@ -215,3 +217,8 @@ async function scRemoveSaved(type, id) {
   document.querySelectorAll('#saved-root .saved-group').forEach(function (g) { if (!g.querySelector('.saved-row')) g.remove(); });
   if (!document.querySelector('#saved-root .saved-row')) renderSaved();
 }
+
+// The stored sign-in can be restored before this file has loaded; then the lists were drawn without hearts.
+// Redraw them once now (owner, 2026-11-23: "I dont see any of the hearts").
+if (typeof signedIn !== 'undefined' && signedIn) savedAuthChanged();
+window.addEventListener('supabase-auth-ready', function () { setTimeout(function () { if (signedIn) savedAuthChanged(); }, 0); });

@@ -5626,6 +5626,7 @@ function _featBannerHtml(feat) {
     + '<div class="emeta">' + esc(localDate(feat.date, { weekday: 'short', month: 'short', day: 'numeric' })) + (feat.time ? ' &middot; ' + esc(feat.time) : '') + '</div>'
     + '<div class="feat-ev-where">' + _featWhere(feat) + '</div>'
     + '<a class="feat-ev-more" href="/event/' + esc(feat.id) + '" onclick="showDetail(\'event\',\'' + escJs(feat.id) + '\');return false;">' + esc(t('home.read_more', 'Read more')) + ' &rarr;</a>'
+    + (typeof scHeart === 'function' ? scHeart('event', feat.id) : '')
     + '</div></div>';
 }
 
@@ -9832,6 +9833,7 @@ function _homeNewsSlide(n, i) {
     + '<div class="emeta">' + _storyMeta(n) + '</div>'
     + (blurb ? '<p class="feat-ev-desc">' + esc(_shortText(blurb, 160)) + '</p>' : '')
     + '<a class="news-ev-read" href="' + href + '" onclick="' + open + '">' + esc(t('home.read_story', 'Read the story')) + ' &rarr;</a>'
+    + (typeof scHeart === 'function' ? scHeart('news', n.id) : '')
     + '</div></div>';
 }
 
