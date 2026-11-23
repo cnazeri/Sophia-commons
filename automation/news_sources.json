@@ -1,5 +1,5 @@
 {
-  "note": "RSS feeds read by automation/news_roundup.py. New articles arrive as pending news for the admin to publish. English only (owner choice, 2026-10-10). Google News searches (kind gnews) add recent press coverage; headlines must match \"must\" and pass the NOISE filter in the script (2026-10-24).",
+  "note": "RSS feeds read by automation/news_roundup.py. New articles arrive as pending news for the admin to publish. English only (owner choice, 2026-10-10). Google News searches (kind gnews) add recent press coverage; headlines must match \"must\" and pass the NOISE filter in the script (2026-10-24). Added 2026-11-22 (owner: keep the news most current): Das Goetheanum weekly, The Christian Community (UK and North America), Camphill Village Trust, Demeter USA, Biodynamic Agriculture Australia, IVAA, Center for Anthroposophy, Google News: Goetheanum.",
   "sources": [
     {
       "name": "Goetheanum",
@@ -90,6 +90,62 @@
       "must": "\\beurythm",
       "lang": "EN",
       "topic": "arts"
+    },
+    {
+      "name": "Das Goetheanum (weekly)",
+      "feed": "https://dasgoetheanum.com/en/feed/",
+      "lang": "EN",
+      "topic": "goetheanum"
+    },
+    {
+      "name": "The Christian Community in Great Britain and Ireland",
+      "feed": "https://www.thechristiancommunity.co.uk/feed/",
+      "lang": "EN",
+      "topic": "christian-community"
+    },
+    {
+      "name": "The Christian Community in North America",
+      "feed": "https://www.thechristiancommunity.org/feed/",
+      "lang": "EN",
+      "topic": "christian-community"
+    },
+    {
+      "name": "Camphill Village Trust",
+      "feed": "https://www.cvt.org.uk/feed/",
+      "lang": "EN",
+      "topic": "camphill"
+    },
+    {
+      "name": "Demeter USA",
+      "feed": "https://www.demeter-usa.org/feed/",
+      "lang": "EN",
+      "topic": "biodynamic"
+    },
+    {
+      "name": "Biodynamic Agriculture Australia",
+      "feed": "https://www.biodynamics.net.au/feed/",
+      "lang": "EN",
+      "topic": "biodynamic"
+    },
+    {
+      "name": "IVAA (anthroposophic medicine)",
+      "feed": "https://www.ivaa.info/feed/",
+      "lang": "EN",
+      "topic": "health"
+    },
+    {
+      "name": "Center for Anthroposophy",
+      "feed": "https://centerforanthroposophy.org/feed/",
+      "lang": "EN",
+      "topic": "waldorf"
+    },
+    {
+      "name": "Google News: Goetheanum",
+      "kind": "gnews",
+      "query": "Goetheanum",
+      "must": "\\bGoetheanum\\b",
+      "lang": "EN",
+      "topic": "goetheanum"
     }
   ]
 }

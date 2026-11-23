@@ -78,6 +78,15 @@ def parse_date(s):
     return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
 
 
+# Some feeds carry stray control characters (the Biodynamic Association UK feed had a \x02 in a job ad, 2026-11-22),
+# which the XML parser rejects, so the whole feed was lost. Drop them before parsing.
+_BAD_XML = re.compile(rb'[\x00-\x08\x0b\x0c\x0e-\x1f]')
+
+
+def parse_xml(raw):
+    return ET.fromstring(_BAD_XML.sub(b'', raw))
+
+
 def read_gnews(src):
     from urllib.parse import urlencode
     url = GNEWS + '?' + urlencode({'q': src['query'] + ' when:30d', 'hl': 'en-US', 'gl': 'US', 'ceid': 'US:en'})
@@ -85,7 +94,7 @@ def read_gnews(src):
     r.raise_for_status()
     must = re.compile(src['must'], re.I)
     items = []
-    for it in ET.fromstring(r.content).iter('item'):
+    for it in parse_xml(r.content).iter('item'):
         title, pub = it.findtext('title') or '', (it.findtext('source') or '').strip()
         if pub and title.endswith(' - ' + pub):
             title = title[:-len(pub) - 3]
@@ -101,7 +110,7 @@ def read_feed(src):
         return read_gnews(src)
     r = requests.get(src['feed'], headers=UA, timeout=25)
     r.raise_for_status()
-    root = ET.fromstring(r.content)
+    root = parse_xml(r.content)
     items = []
     for it in root.iter('item'):
         items.append({'title': it.findtext('title'), 'link': (it.findtext('link') or '').strip(),

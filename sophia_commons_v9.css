@@ -3573,8 +3573,10 @@ footer li a { display: inline-block; padding: 10px 0; }
 /* ══════════════════ v1.60: featured events slider ══════════════════ */
 .feat-slider { border-bottom: 1px solid var(--border-subtle); margin-bottom: 4px; }
 .feat-view { overflow: hidden; }
-.feat-track { display: flex; transition: transform 0.55s cubic-bezier(.22,.61,.36,1); will-change: transform; }
+.feat-track { display: flex; transition: transform 0.85s cubic-bezier(.22,.61,.36,1); will-change: transform; }
 .feat-track > .feat-ev { flex: 0 0 100%; min-width: 0; border-bottom: 0; margin-bottom: 0; }
+/* Two events side by side on wider screens (owner, 2026-11-22) */
+@media (min-width: 900px) { .feat-track > .feat-ev { flex-basis: 50%; padding-right: 16px; box-sizing: border-box; } }
 .feat-ctrl { display: flex; align-items: center; gap: 4px; padding: 0 0 6px; }
 .feat-dots { display: flex; align-items: center; }
 .feat-dot { width: 44px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }

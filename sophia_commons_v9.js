@@ -5338,7 +5338,10 @@ function setNearPlace(v) {
 // Moves every FEAT_INTERVAL_MS; stops on hover, keyboard focus, the pause button, or when the
 // visitor prefers reduced motion. Swipe works on touch screens.
 var FEAT_MAX = 10;
-var FEAT_INTERVAL_MS = 6500;
+var FEAT_INTERVAL_MS = 9000;   // slower (owner, 2026-11-22; was 6500)
+// Two events side by side on wider screens, one on phones (owner, 2026-11-22). Each move shifts one event.
+var FEAT_TWO_UP = '(min-width: 900px)';
+function _featPer() { return window.matchMedia && window.matchMedia(FEAT_TWO_UP).matches ? 2 : 1; }
 var _featTimer = null;
 
 function _featSlides(live) {
@@ -5380,7 +5383,7 @@ function _mountFeatSlider(first, slides) {
     el.setAttribute('aria-label', label(i));
   });
   var dots = slides.map(function(ev, i) {
-    return '<button type="button" class="feat-dot" aria-label="' + esc(label(i) + ': ' + _homeTitle(ev)) + '" onclick="featGo(' + i + ', true)"></button>';
+    return '<button type="button" class="feat-dot" aria-label="' + esc(label(i) + ': ' + _homeTitle(ev)) + '" onclick="featDot(' + i + ')"></button>';
   }).join('');
   slider.insertAdjacentHTML('beforeend', '<div class="feat-ctrl">'
     + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.previous', 'Previous')) + '" onclick="featGo(_featIdx - 1, true)">&#8249;</button>'
@@ -5404,6 +5407,11 @@ function _mountFeatSlider(first, slides) {
     x0 = null;
     if (Math.abs(dx) > 40) featGo(_featIdx + (dx < 0 ? 1 : -1), true);
   }, { passive: true });
+  if (window.matchMedia) {
+    var mq = window.matchMedia(FEAT_TWO_UP);
+    var refit = function() { featGo(_featIdx, false); };
+    if (mq.addEventListener) mq.addEventListener('change', refit); else if (mq.addListener) mq.addListener(refit);
+  }
   clearInterval(_featTimer);
   _featTimer = setInterval(function() {
     if (!_featPaused && !_featHold && !document.hidden && document.body.contains(slider)) featGo(_featIdx + 1, false);
@@ -5417,19 +5425,27 @@ function featGo(i, byUser) {
   if (!slider) return;
   var slides = slider.querySelectorAll('.feat-track > .feat-ev');
   var n = slides.length;
-  _featIdx = ((i % n) + n) % n;
-  slider.querySelector('.feat-track').style.transform = 'translateX(' + (-100 * _featIdx) + '%)';
+  var per = Math.min(_featPer(), n);
+  var stops = Math.max(1, n - per + 1);   // two-up: the last stop shows the last two events
+  _featIdx = ((i % stops) + stops) % stops;
+  slider.querySelector('.feat-track').style.transform = 'translateX(' + (-100 / per * _featIdx) + '%)';
   Array.prototype.forEach.call(slides, function(el, k) {
-    var on = k === _featIdx;
+    var on = k >= _featIdx && k < _featIdx + per;
     el.setAttribute('aria-hidden', on ? 'false' : 'true');
     Array.prototype.forEach.call(el.querySelectorAll('a, button'), function(a) { a.tabIndex = on ? 0 : -1; });
   });
   Array.prototype.forEach.call(slider.querySelectorAll('.feat-dot'), function(d, k) {
-    d.setAttribute('aria-current', k === _featIdx ? 'true' : 'false');
+    d.setAttribute('aria-current', k >= _featIdx && k < _featIdx + per ? 'true' : 'false');
   });
   var count = slider.querySelector('.feat-count');
-  if (count) count.textContent = (_featIdx + 1) + ' / ' + n;
+  if (count) count.textContent = (per > 1 ? (_featIdx + 1) + '-' + (_featIdx + per) : (_featIdx + 1)) + ' / ' + n;
   if (byUser) { _featPaused = true; _featSyncPause(); }
+}
+
+// A dot opens that event; on two-up screens the last dot shows the last two events
+function featDot(i) {
+  var n = document.querySelectorAll('.feat-slider:not(.news-slider) .feat-track > .feat-ev').length;
+  featGo(Math.min(i, Math.max(0, n - Math.min(_featPer(), n))), true);
 }
 
 function featTogglePause() {
