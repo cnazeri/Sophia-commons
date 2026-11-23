@@ -1632,5 +1632,7 @@
   "app.media_listen": "Listen",
   "app.media_open_blog": "Open the blog",
   "app.media_saved_yes": "Saved. Find it in Settings > Saved.",
-  "app.media_saved_hint": "Tap the bookmark to keep this in Settings > Saved."
+  "app.media_saved_hint": "Tap the bookmark to keep this in Settings > Saved.",
+  "app.intro_tagline": "Worldwide Anthroposophy",
+  "app.intro_skip": "Tap to continue"
 }

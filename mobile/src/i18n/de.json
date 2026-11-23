@@ -1693,5 +1693,7 @@
   "app.media_listen": "Anhören",
   "app.media_open_blog": "Blog öffnen",
   "app.media_saved_yes": "Gespeichert. Sie finden es unter Einstellungen > Gespeichert.",
-  "app.media_saved_hint": "Mit dem Lesezeichen merken Sie es unter Einstellungen > Gespeichert."
+  "app.media_saved_hint": "Mit dem Lesezeichen merken Sie es unter Einstellungen > Gespeichert.",
+  "app.intro_tagline": "Anthroposophie weltweit",
+  "app.intro_skip": "Tippen zum Fortfahren"
 }

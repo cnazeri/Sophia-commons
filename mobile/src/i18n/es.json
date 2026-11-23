@@ -1693,5 +1693,7 @@
   "app.media_listen": "Escuchar",
   "app.media_open_blog": "Abrir el blog",
   "app.media_saved_yes": "Guardado. Lo encontrarás en Ajustes > Guardados.",
-  "app.media_saved_hint": "Toca el marcador para guardarlo en Ajustes > Guardados."
+  "app.media_saved_hint": "Toca el marcador para guardarlo en Ajustes > Guardados.",
+  "app.intro_tagline": "Antroposofía en todo el mundo",
+  "app.intro_skip": "Toca para continuar"
 }
