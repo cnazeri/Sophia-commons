@@ -30,7 +30,7 @@ export async function fetchBlogs(): Promise<Blog[]> {
   return ((await r.json()).blogs || []) as Blog[];
 }
 
-export const PODCASTS = [
+export const PODCASTS: { name: string; meta: string; url: string }[] = [
   { name: 'ASA Official Podcast', meta: 'Spotify / RSS', url: 'https://anthroposophy.org/podcast/' },
   { name: 'Goetheanum Podcast', meta: 'Transistor', url: 'https://goetheanum.transistor.fm/' },
   { name: 'Inner Work Path: Lisa Romero', meta: 'Australia', url: 'https://www.innerworkpath.com/category/podcast/' },
@@ -38,3 +38,40 @@ export const PODCASTS = [
   { name: 'New Thinking Allowed', meta: 'Video', url: 'https://newthinkingallowed.org/rudolf-steiner-anthroposophy/' },
   { name: 'I Think Speech: Hazel Archer-Ginsberg', meta: 'Spotify', url: 'https://open.spotify.com/show/2LfsfjQpa5vCDTnpOsfdX7' },
 ];
+
+// One shape for a single talk, blog or podcast, so each has its own page and can be saved (owner, 2026-11-22)
+export type MediaKind = 'video' | 'blog' | 'podcast';
+// url: what the main button opens (the video, the latest blog post, the podcast); home: a blog's front page
+export type MediaItem = { kind: MediaKind; id: string; title: string; url: string; home?: string; image?: string | null; meta?: string; body?: string; date?: string | null };
+
+const slug = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+export const mediaKey = (m: { kind: MediaKind; id: string }) => m.kind + ':' + m.id;
+
+export function videoItem(v: Video): MediaItem {
+  return { kind: 'video', id: v.video_id, title: v.title, url: v.url || 'https://www.youtube.com/watch?v=' + v.video_id,
+    image: v.thumbnail_url || 'https://i.ytimg.com/vi/' + v.video_id + '/hqdefault.jpg', meta: v.channel || '', date: v.published_at };
+}
+export function blogItem(b: Blog): MediaItem {
+  const sub = (b.url.match(/^https?:\/\/([^./]+)\.substack\.com/) || [])[1] || slug(b.name);
+  return { kind: 'blog', id: sub, title: b.name, url: b.latest?.url || b.url, home: b.url, image: b.image || null, meta: b.author !== b.name ? b.author : '',
+    body: b.latest ? b.latest.title : b.desc, date: b.latest?.date || null };
+}
+export function podcastItem(p: { name: string; meta: string; url: string }): MediaItem {
+  return { kind: 'podcast', id: slug(p.name), title: p.name, url: p.url, meta: p.meta };
+}
+
+/** Loads one item for its own page (opened from a list, from Saved, or from a shared link). */
+export async function fetchMediaItem(kind: string, id: string): Promise<MediaItem | null> {
+  if (kind === 'video') {
+    const { data } = await supabase.from('youtube_videos').select('video_id,channel_slug,title,url,thumbnail_url,published_at').eq('video_id', id).maybeSingle();
+    if (!data) return null;
+    const { data: ch } = await supabase.from('youtube_channels').select('name').eq('slug', (data as Video).channel_slug).maybeSingle();
+    return videoItem({ ...(data as Video), channel: (ch as { name: string } | null)?.name || '' });
+  }
+  if (kind === 'blog') {
+    const b = (await fetchBlogs()).map(blogItem).find((x) => x.id === id);
+    return b || null;
+  }
+  if (kind === 'podcast') return PODCASTS.map(podcastItem).find((x) => x.id === id) || null;
+  return null;
+}

@@ -9,6 +9,7 @@ import { Button } from '@/components/button';
 import { EventCard } from '@/components/event-card';
 import { JobCard } from '@/components/job-card';
 import { LinkRow } from '@/components/link-row';
+import { MediaCard } from '@/components/media-card';
 import { NewsCard } from '@/components/news-card';
 import { Body, Card, H2, Kicker, Screen } from '@/components/ui';
 import { Fonts, Spacing } from '@/constants/theme';
@@ -16,7 +17,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { type EventRow, fetchUpcoming, sizedImage } from '@/lib/events';
 import { localDate, t } from '@/lib/i18n';
 import { fetchJobs, type Job } from '@/lib/jobs';
-import { fetchVideos, type Video } from '@/lib/media';
+import { fetchVideos, type Video, videoItem } from '@/lib/media';
 import { type Article, fetchNewsList } from '@/lib/news';
 import { type CommunityPost, fetchCommunityPosts } from '@/lib/post';
 import cotsDe from '@/data/cots-de.json';
@@ -136,10 +137,7 @@ export default function Home() {
       ) : null}
       <View style={styles.section}>
         <H2>{t('app.media_title', 'Talks, blogs and podcasts')}</H2>
-        {videos.map((v) => (
-          <LinkRow key={v.video_id} wide title={v.title} image={v.thumbnail_url} url={v.url || 'https://www.youtube.com/watch?v=' + v.video_id}
-            meta={[v.channel, localDate(v.published_at, short)].filter(Boolean).join(' · ')} />
-        ))}
+        {videos.map((v) => <MediaCard key={v.video_id} m={videoItem(v)} wide />)}
         <Button kind="secondary" label={t('app.media_more', 'More talks, blogs and podcasts')} onPress={() => router.push('/media')} />
       </View>
     </Screen>
