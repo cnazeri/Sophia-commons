@@ -329,6 +329,7 @@
     <a href="#" data-i18n="topbar.post_listing_link" onclick="showSubmitForm();return false;">post a listing</a>
     <a href="#" id="adminlink" onclick="showSec('admin');return false;" style="display:none;color:#c0392b;font-weight:600;">admin</a>
     <a href="/my-events" id="myevents-link" style="display:none" data-i18n="org.my_events_link" onclick="showSec('my-events');return false;">my events</a>
+    <a href="/saved" id="saved-link" style="display:none" data-i18n="saved.topbar_link" onclick="showSec('saved');return false;">saved</a>
     <a href="/account" id="account-link" style="display:none" data-i18n="acc.topbar_link" onclick="showSec('account');return false;">settings</a>
     <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
     <a href="#" class="signinbtn" id="signin-link" data-i18n="topbar.sign_in" onclick="openModal();return false;">sign in</a>
@@ -1571,6 +1572,11 @@
   <div id="myev-root"><p class="org-empty" data-i18n="common.loading">Loading...</p></div>
 </div>
 <!-- ═══ ACCOUNT: password and everything I have posted (account.js, 2026-11-01) ═══ -->
+<!-- ═══ SAVED: links a signed-in member saved (saved.js, owner 2026-11-22) ═══ -->
+<div class="pagesec" id="sec-saved">
+  <div class="seclabel" data-i18n="saved.label">Saved</div>
+  <div id="saved-root"><p class="org-empty" data-i18n="common.loading">Loading...</p></div>
+</div>
 <div class="pagesec" id="sec-account">
   <div class="seclabel" data-i18n="acc.label">Account settings</div>
   <div id="acc-root"><p class="org-empty" data-i18n="common.loading">Loading...</p></div>
@@ -2148,6 +2154,7 @@
 <script defer src="/events_organizer.js?v=1.126.1"></script>
 <script defer src="/advent.js?v=1.126.1"></script>
 <script defer src="/account.js?v=1.126.1"></script>
+<script defer src="/saved.js?v=1.126.1"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { EventCard } from '@/components/event-card';
@@ -30,6 +30,7 @@ export default function Home() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [showDe, setShowDe] = useState(false);
   useEffect(() => {
     let alive = true;
     fetchUpcoming().then((r) => { if (alive) setEvents([...r].sort((a, b) => a.start_date.localeCompare(b.start_date)).slice(0, 4)); }).catch(() => {});
@@ -44,6 +45,8 @@ export default function Home() {
   const first = days[0];
   const isToday = first && first.date.toDateString() === new Date().toDateString();
   const w = cotsWeek();
+  const enVerse = (cotsEn as Record<string, string[]>)[String(w.week)] || [];
+  const deVerse = (cotsDe as Record<string, string[]>)[String(w.week)] || [];
   const short = { month: 'short', day: 'numeric' } as const;
 
   return (
@@ -65,22 +68,32 @@ export default function Home() {
       <Card>
         <Kicker>{t('cots.title', 'Calendar of the Soul')}</Kicker>
         <H2>{t('cots.week', 'Week')} {w.week} · {localDate(w.from.toISOString(), short)} - {localDate(w.to.toISOString(), short)}</H2>
-        <View style={styles.verse} accessible accessibilityLabel={(cotsDe as Record<string, string[]>)[String(w.week)]?.join(' ')}>
-          {((cotsDe as Record<string, string[]>)[String(w.week)] || []).map((ln, i) => (
+        {/* English first (owner, 2026-11-22: "make the German version optional, just show the English for now").
+            Sophia Commons' own rendering, as in the weekly newsletter; the German original opens with one tap. */}
+        <View style={styles.verse} accessible accessibilityLabel={(enVerse.length ? enVerse : deVerse).join(' ')}>
+          {(enVerse.length ? enVerse : deVerse).map((ln, i) => (
             <Text key={i} style={[styles.verseLine, { color: c.text }]} selectable>{ln}</Text>
           ))}
         </View>
-        <Text style={[styles.verseBy, { color: c.textMuted }]}>Rudolf Steiner, Anthroposophischer Seelenkalender (1912)</Text>
-        {/* English in the same card (owner, 2026-11-22): Sophia Commons' own rendering, as in the weekly newsletter */}
-        {(cotsEn as Record<string, string[]>)[String(w.week)] ? (
+        <Text style={[styles.verseBy, { color: c.textMuted }]}>
+          {enVerse.length ? 'Rudolf Steiner, Calendar of the Soul (1912). ' + t('app.cots_english_by', 'English rendering: Sophia Commons') : 'Rudolf Steiner, Anthroposophischer Seelenkalender (1912)'}
+        </Text>
+        {enVerse.length && deVerse.length ? (
           <>
-            <View style={[styles.rule, { backgroundColor: c.border }]} />
-            <View style={styles.verse} accessible accessibilityLabel={(cotsEn as Record<string, string[]>)[String(w.week)].join(' ')}>
-              {(cotsEn as Record<string, string[]>)[String(w.week)].map((ln, i) => (
-                <Text key={i} style={[styles.verseLineEn, { color: c.textSecondary }]} selectable>{ln}</Text>
-              ))}
-            </View>
-            <Text style={[styles.verseBy, { color: c.textMuted }]}>{t('app.cots_english_by', 'English rendering: Sophia Commons')}</Text>
+            <Pressable onPress={() => setShowDe(!showDe)} accessibilityRole="button" accessibilityState={{ expanded: showDe }} hitSlop={8}>
+              <Text style={[styles.deToggle, { color: c.goldText }]}>{showDe ? t('app.cots_hide_german', 'Hide the German original') : t('app.cots_show_german', 'Show the German original')}</Text>
+            </Pressable>
+            {showDe ? (
+              <>
+                <View style={[styles.rule, { backgroundColor: c.border }]} />
+                <View style={styles.verse} accessible accessibilityLabel={deVerse.join(' ')}>
+                  {deVerse.map((ln, i) => (
+                    <Text key={i} style={[styles.verseLineEn, { color: c.textSecondary }]} selectable>{ln}</Text>
+                  ))}
+                </View>
+                <Text style={[styles.verseBy, { color: c.textMuted }]}>Rudolf Steiner, Anthroposophischer Seelenkalender (1912)</Text>
+              </>
+            ) : null}
           </>
         ) : null}
         <Body muted>{t('cots.mirror', 'Mirror verse')}: {t('cots.week', 'Week')} {w.mirror} · {t('cots.southern', 'Southern Hemisphere')}: {t('cots.week', 'Week')} {w.southern}</Body>
@@ -141,5 +154,6 @@ const styles = StyleSheet.create({
   verseLine: { fontFamily: Fonts.heading, fontStyle: 'italic', fontSize: 17, lineHeight: 25 },
   verseLineEn: { fontFamily: Fonts.body, fontSize: 16, lineHeight: 25 },
   rule: { height: 1, marginVertical: Spacing.xs },
+  deToggle: { fontFamily: Fonts.bodyBold, fontSize: 14, paddingVertical: 4 },
   verseBy: { fontFamily: Fonts.body, fontSize: 12.5 },
 });

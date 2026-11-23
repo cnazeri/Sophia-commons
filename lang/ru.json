@@ -1394,5 +1394,19 @@
   "event_detail.translated_from": "Перевод, язык оригинала: {lang}. Оригинальное название:",
   "event_detail.original_text": "Оригинальный текст ({lang})",
   "podcasts.substack_heading": "На Substack",
-  "podcasts.substack_latest": "Новое:"
+  "podcasts.substack_latest": "Новое:",
+  "saved.topbar_link": "сохранённое",
+  "saved.label": "Сохранённое",
+  "saved.save": "Сохранить",
+  "saved.saved": "Сохранено",
+  "saved.remove": "Удалить",
+  "saved.events": "Мероприятия",
+  "saved.past_events": "Прошедшие мероприятия",
+  "saved.places": "Места и ресурсы",
+  "saved.articles": "Статьи",
+  "saved.jobs": "Вакансии",
+  "saved.empty": "Пока ничего не сохранено. Откройте мероприятие, место, статью или вакансию и нажмите \"Сохранить\".",
+  "saved.sign_in": "Войдите, чтобы сохранять мероприятия, места, статьи и вакансии и находить их здесь на любом устройстве.",
+  "saved.error": "Не удалось сохранить. Попробуйте ещё раз.",
+  "saved.error_load": "Не удалось загрузить сохранённое."
 }

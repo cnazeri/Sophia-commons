@@ -1668,5 +1668,7 @@
   "app.img_cover_hint": "Wird oben über Ihrem Beitrag gezeigt.",
   "app.img_place": "Foto (freiwillig)",
   "app.img_place_hint": "Ein Foto des Ortes oder sein Logo.",
-  "app.img_place_signin": "Angemeldete Mitglieder können auch ein Foto hinzufügen."
+  "app.img_place_signin": "Angemeldete Mitglieder können auch ein Foto hinzufügen.",
+  "app.cots_show_german": "Deutsches Original zeigen",
+  "app.cots_hide_german": "Deutsches Original ausblenden"
 }

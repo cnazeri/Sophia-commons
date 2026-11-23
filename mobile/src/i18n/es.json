@@ -1668,5 +1668,7 @@
   "app.img_cover_hint": "Se muestra arriba en tu publicación.",
   "app.img_place": "Foto (opcional)",
   "app.img_place_hint": "Una foto del lugar o su logotipo.",
-  "app.img_place_signin": "Los miembros con sesión iniciada también pueden añadir una foto."
+  "app.img_place_signin": "Los miembros con sesión iniciada también pueden añadir una foto.",
+  "app.cots_show_german": "Mostrar el original en alemán",
+  "app.cots_hide_german": "Ocultar el original en alemán"
 }

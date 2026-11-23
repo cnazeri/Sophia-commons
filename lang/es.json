@@ -1394,5 +1394,19 @@
   "event_detail.translated_from": "Traducido (idioma original: {lang}). Título original:",
   "event_detail.original_text": "Texto original ({lang})",
   "podcasts.substack_heading": "En Substack",
-  "podcasts.substack_latest": "Lo último:"
+  "podcasts.substack_latest": "Lo último:",
+  "saved.topbar_link": "guardados",
+  "saved.label": "Guardados",
+  "saved.save": "Guardar",
+  "saved.saved": "Guardado",
+  "saved.remove": "Quitar",
+  "saved.events": "Eventos",
+  "saved.past_events": "Eventos pasados",
+  "saved.places": "Lugares y recursos",
+  "saved.articles": "Artículos",
+  "saved.jobs": "Empleos",
+  "saved.empty": "Todavía no has guardado nada. Abre un evento, un lugar, un artículo o un empleo y pulsa Guardar.",
+  "saved.sign_in": "Inicia sesión para guardar eventos, lugares, artículos y empleos, y encontrarlos aquí en cualquier dispositivo.",
+  "saved.error": "No se pudo guardar. Inténtalo de nuevo.",
+  "saved.error_load": "No se pudieron cargar tus guardados."
 }

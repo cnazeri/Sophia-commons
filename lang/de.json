@@ -1394,5 +1394,19 @@
   "event_detail.translated_from": "Übersetzt (Originalsprache: {lang}). Originaltitel:",
   "event_detail.original_text": "Originaltext ({lang})",
   "podcasts.substack_heading": "Auf Substack",
-  "podcasts.substack_latest": "Neu:"
+  "podcasts.substack_latest": "Neu:",
+  "saved.topbar_link": "gespeichert",
+  "saved.label": "Gespeichert",
+  "saved.save": "Speichern",
+  "saved.saved": "Gespeichert",
+  "saved.remove": "Entfernen",
+  "saved.events": "Veranstaltungen",
+  "saved.past_events": "Vergangene Veranstaltungen",
+  "saved.places": "Orte und Ressourcen",
+  "saved.articles": "Artikel",
+  "saved.jobs": "Stellen",
+  "saved.empty": "Noch nichts gespeichert. Öffnen Sie eine Veranstaltung, einen Ort, einen Artikel oder eine Stelle und drücken Sie Speichern.",
+  "saved.sign_in": "Melden Sie sich an, um Veranstaltungen, Orte, Artikel und Stellen zu speichern und sie hier auf jedem Gerät zu finden.",
+  "saved.error": "Speichern nicht möglich. Bitte versuchen Sie es erneut.",
+  "saved.error_load": "Ihre gespeicherten Einträge konnten nicht geladen werden."
 }

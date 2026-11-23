@@ -4505,3 +4505,18 @@ a.adm-btn, a.adm-btn:visited { color: var(--text-primary); }
 #submit-box p { font-size: 15px; }
 #submit-box textarea { min-height: 220px; font-size: 15px; line-height: 1.6; }
 #submit-box .submit-close-btn { position: fixed; top: 14px; right: 18px; z-index: 2; width: 44px; height: 44px; font-size: 26px; }
+
+/* Saved links (saved.js, 2026-11-22) */
+.btn-save { background: none; border: 1px solid var(--gold); color: var(--gold-text); border-radius: 50px; padding: 8px 16px;
+  font-family: 'Nunito Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-save:hover { background: var(--gold-light, #f6eed8); }
+.btn-save.is-saved { background: var(--gold); border-color: var(--gold); color: #1E1810; }
+.saved-group { margin: 18px 0 26px; }
+.saved-group h3 { font-family: 'Lora', serif; font-size: 18px; margin: 0 0 8px; }
+.saved-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.saved-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.saved-main a { color: var(--text); font-weight: 700; text-decoration: none; }
+.saved-main a:hover { color: var(--gold-text); text-decoration: underline; }
+.saved-meta { color: var(--text-muted); font-size: 13px; }
+.btn-unsave { background: none; border: 1px solid var(--border); border-radius: 50px; padding: 5px 12px; font-size: 12px; color: var(--text-secondary); cursor: pointer; flex-shrink: 0; }
+.btn-unsave:hover { border-color: #b3261e; color: #b3261e; }

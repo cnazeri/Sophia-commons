@@ -84,6 +84,7 @@ async function showDetail(type, id, skipPush) {
       // Use the listing's id, not the readable address: comments and views are stored by id (fixed 2026-11-20)
       loadComments('directory', data.id);
       _trackView('directory', data.id);
+      if (typeof scSaveMount === 'function') scSaveMount('directory', data.id);
     } else if (type === 'event') {
       var { data, error } = await _sb.from('events')
         .select('*').eq('id', id).maybeSingle();
@@ -99,6 +100,7 @@ async function showDetail(type, id, skipPush) {
       _loadNextFromOrganizer(data);
       loadComments('event', id);
       _trackView('event', id);
+      if (typeof scSaveMount === 'function') scSaveMount('event', data.id);
     } else if (type === 'news') {
       var { data, error } = await _sb.from('news')
         .select('*').eq('id', id).single();
@@ -108,6 +110,7 @@ async function showDetail(type, id, skipPush) {
       _injectNewsSEO(data);
       loadComments('news', id);
       _trackView('news', id);
+      if (typeof scSaveMount === 'function') scSaveMount('news', data.id);
     } else if (type === 'listing') {
       var { data, error } = await _sb.from('listings')
         .select('*, profiles(username), categories(name,slug)')
@@ -118,6 +121,7 @@ async function showDetail(type, id, skipPush) {
       _injectListingSEO(data);
       loadComments('listing', id);
       _trackView('listing', id);
+      if (typeof scSaveMount === 'function') scSaveMount('listing', data.id);
     } else {
       container.innerHTML = renderNotFound();
     }
@@ -1822,7 +1826,7 @@ const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
   directory: '/directory', books: '/books', podcasts: '/podcasts',
   memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', chat: '/chat', privacy: '/privacy', terms: '/terms', about: '/about', digest: '/digest',
-  'event-new': '/events/new', 'my-events': '/my-events', account: '/account', advent: '/advent'
+  'event-new': '/events/new', 'my-events': '/my-events', account: '/account', advent: '/advent', saved: '/saved'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
@@ -1907,7 +1911,8 @@ function showSec(id, skipPush) {
   if (id === 'home') renderHomeExtras();
   if (id === 'digest') renderDigestArchive();
   // Organizer pages are private: not for search engines (the robots tag goes back to normal elsewhere)
-  _setRobots(id === 'event-new' || id === 'my-events' || id === 'account' ? 'noindex, nofollow' : null);
+  _setRobots(id === 'event-new' || id === 'my-events' || id === 'account' || id === 'saved' ? 'noindex, nofollow' : null);
+  if (id === 'saved' && typeof renderSaved === 'function') renderSaved();
   if (id === 'account' && typeof renderAccount === 'function') renderAccount();
   if (id === 'event-new' && typeof renderEventForm === 'function') renderEventForm();
   if (id === 'my-events' && typeof renderMyEvents === 'function') renderMyEvents();
@@ -2318,6 +2323,7 @@ function applySignedInState() {
   if (document.getElementById('sec-account') && document.getElementById('sec-account').classList.contains('active') && typeof renderAccount === 'function') renderAccount();
   if (typeof organizerAuthChanged === 'function') organizerAuthChanged();
   if (typeof claimAuthChanged === 'function') claimAuthChanged();
+  if (typeof savedAuthChanged === 'function') savedAuthChanged();
 }
 
 async function doSignOut() {
@@ -2332,6 +2338,7 @@ async function doSignOut() {
   updateAdminVisibility();
   var me = document.getElementById('myevents-link'); if (me) me.style.display = 'none';
   var ac = document.getElementById('account-link'); if (ac) ac.style.display = 'none';
+  if (typeof savedAuthChanged === 'function') savedAuthChanged();
   showSec('home');
 }
 

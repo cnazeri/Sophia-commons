@@ -1333,5 +1333,19 @@
   "event_detail.translated_from": "Translated from {lang}. Original title:",
   "event_detail.original_text": "Original text ({lang})",
   "podcasts.substack_heading": "On Substack",
-  "podcasts.substack_latest": "Latest:"
+  "podcasts.substack_latest": "Latest:",
+  "saved.topbar_link": "saved",
+  "saved.label": "Saved",
+  "saved.save": "Save",
+  "saved.saved": "Saved",
+  "saved.remove": "Remove",
+  "saved.events": "Events",
+  "saved.past_events": "Past events",
+  "saved.places": "Places and resources",
+  "saved.articles": "Articles",
+  "saved.jobs": "Jobs",
+  "saved.empty": "Nothing saved yet. Open an event, a place, an article or a job and press Save.",
+  "saved.sign_in": "Sign in to save events, places, articles and jobs, and find them here on any device.",
+  "saved.error": "Could not save. Please try again.",
+  "saved.error_load": "Could not load your saved items."
 }
