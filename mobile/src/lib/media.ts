@@ -32,6 +32,19 @@ export async function fetchVideos(limit = 12, others = limit): Promise<Video[]> 
     .map((v) => ({ ...v, channel: names.get(v.channel_slug) || '' }));
 }
 
+/** The newest talks from a member's favorite channels (owner, 2026-11-23), shown first in Talks. */
+export async function fetchFavVideos(slugs: string[], limit = 10): Promise<Video[]> {
+  if (!slugs.length) return [];
+  const [{ data, error }, { data: chans }] = await Promise.all([
+    supabase.from('youtube_videos').select(VIDEO_COLS).in('channel_slug', slugs).not('title', 'ilike', '%#shorts%')
+      .order('published_at', { ascending: false }).limit(limit),
+    supabase.from('youtube_channels').select('slug,name').in('slug', slugs),
+  ]);
+  if (error) throw new Error(error.message);
+  const names = new Map((chans || []).map((c: { slug: string; name: string }) => [c.slug, c.name]));
+  return ((data || []) as Video[]).map((v) => ({ ...v, channel: names.get(v.channel_slug) || '' }));
+}
+
 // The language's name in English ("German"), for a talk's page and its card
 const LANGS: Record<string, string> = { de: 'German', fr: 'French', es: 'Spanish', pt: 'Portuguese', it: 'Italian', nl: 'Dutch',
   ru: 'Russian', zh: 'Chinese', ja: 'Japanese', ko: 'Korean', sv: 'Swedish', no: 'Norwegian', nb: 'Norwegian', da: 'Danish',
@@ -63,7 +76,7 @@ export type MediaKind = 'video' | 'blog' | 'podcast';
 // url: what the main button opens (the video, the latest blog post, the podcast); home: a blog's front page
 // title is in English when a translation exists; original keeps the title as published; lang is the video's language
 export type MediaItem = { kind: MediaKind; id: string; title: string; url: string; home?: string; image?: string | null; meta?: string; body?: string; date?: string | null;
-  lang?: string | null; original?: string | null };
+  lang?: string | null; original?: string | null; channel?: string | null };
 
 const slug = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 export const mediaKey = (m: { kind: MediaKind; id: string }) => m.kind + ':' + m.id;
@@ -71,7 +84,8 @@ export const mediaKey = (m: { kind: MediaKind; id: string }) => m.kind + ':' + m
 export function videoItem(v: Video): MediaItem {
   return { kind: 'video', id: v.video_id, title: v.title_en || v.title, original: v.title_en ? v.title : null, lang: v.lang || null,
     url: v.url || 'https://www.youtube.com/watch?v=' + v.video_id,
-    image: v.thumbnail_url || 'https://i.ytimg.com/vi/' + v.video_id + '/hqdefault.jpg', meta: v.channel || '', date: v.published_at };
+    image: v.thumbnail_url || 'https://i.ytimg.com/vi/' + v.video_id + '/hqdefault.jpg', meta: v.channel || '', date: v.published_at,
+    channel: v.channel_slug };
 }
 export function blogItem(b: Blog): MediaItem {
   const sub = (b.url.match(/^https?:\/\/([^./]+)\.substack\.com/) || [])[1] || slug(b.name);

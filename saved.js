@@ -24,6 +24,9 @@ async function _savedLoad(force) {
 // Called on sign-in and sign-out (sophia_commons_v9.js)
 function savedAuthChanged() {
   _savedKeys = null;
+  // Favorite YouTube channels belong to the member too: reload them and redraw the list if it is open
+  if (typeof _ytFavs !== 'undefined') _ytFavs = null;
+  if (document.getElementById('yt-list') && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
   var l = document.getElementById('saved-link');
   if (l) l.style.display = signedIn ? 'inline' : 'none';
   var sec = document.getElementById('sec-saved');
@@ -111,7 +114,33 @@ async function renderSaved() {
         + '<button type="button" class="btn-unsave" onclick="scRemoveSaved(\'' + g.type + '\',\'' + escJs(x.id) + '\')">' + esc(t('saved.remove', 'Remove')) + '</button></div>';
     }).join('') + '</div>';
   }).join('');
+  html = (await _savedChannelsHtml()) + html;
   root.innerHTML = html || '<p class="org-empty">' + esc(t('saved.empty', 'Nothing saved yet. Open an event, a place, an article or a job and press Save.')) + '</p>';
+}
+
+// Favorite YouTube channels on the Saved page (owner, 2026-11-23), first because they are used most often
+async function _savedChannelsHtml() {
+  if (typeof _ytFavsLoad !== 'function') return '';
+  _ytFavs = null;
+  var favs = await _ytFavsLoad();
+  if (!favs.size) return '';
+  var rows = (await _ytFetchLatest()).filter(function (c) { return favs.has(c.slug); })
+    .sort(function (a, b) { return a.name.localeCompare(b.name); });
+  if (!rows.length) return '';
+  return '<div class="saved-group"><h3>' + esc(t('saved.channels', 'Favorite YouTube channels')) + '</h3>' + rows.map(function (c) {
+    var meta = [c.language, c.published_at && typeof ytAgo === 'function' ? t('saved.newest_video', 'newest video') + ' ' + ytAgo(c.published_at) : ''].filter(Boolean).join(' · ');
+    return '<div class="saved-row" id="saved-channel-' + esc(c.slug) + '">'
+      + '<div class="saved-main"><a href="' + escUrl(c.channel_url) + '" target="_blank" rel="noopener">' + esc(c.name) + '</a>'
+      + (meta ? '<span class="saved-meta">' + esc(meta) + '</span>' : '') + '</div>'
+      + '<button type="button" class="btn-unsave" onclick="scRemoveFavChannel(\'' + escJs(c.slug) + '\')">' + esc(t('saved.remove', 'Remove')) + '</button></div>';
+  }).join('') + '</div>';
+}
+async function scRemoveFavChannel(slug) {
+  if (!(await ytToggleFav(slug))) return;
+  var row = document.getElementById('saved-channel-' + slug);
+  if (row) row.remove();
+  document.querySelectorAll('#saved-root .saved-group').forEach(function (g) { if (!g.querySelector('.saved-row')) g.remove(); });
+  if (!document.querySelector('#saved-root .saved-row')) renderSaved();
 }
 
 async function scRemoveSaved(type, id) {

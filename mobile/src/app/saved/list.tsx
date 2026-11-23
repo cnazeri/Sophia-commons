@@ -1,13 +1,16 @@
 // Settings > Saved: bookmarked events, places and news articles kept on the phone, so they open without a connection.
-import { useState } from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { EventCard } from '@/components/event-card';
+import { LinkRow } from '@/components/link-row';
 import { ListingCard } from '@/components/listing-card';
 import { MediaCard } from '@/components/media-card';
 import { NewsCard } from '@/components/news-card';
 import { Body, H2, Screen } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
+import { type FavChannel, fetchFavChannelRows, useFavChannels } from '@/lib/fav-channels';
 import { t } from '@/lib/i18n';
 import { useSaved } from '@/lib/saved';
 
@@ -19,9 +22,18 @@ export default function SavedScreen() {
   const news = Object.values(saved.news || {}).sort((a, b) => b.published_at.localeCompare(a.published_at));
   const listings = Object.values(saved.listings).sort((a, b) => a.organization_name.localeCompare(b.organization_name));
   const media = Object.values(saved.media || {}).sort((a, b) => a.title.localeCompare(b.title));
+  // Favorite YouTube channels of a signed-in member (owner, 2026-11-23), kept with the account, not on the phone
+  const { favs } = useFavChannels();
+  const favKey = [...favs].sort().join(',');
+  const [channels, setChannels] = useState<FavChannel[]>([]);
+  useEffect(() => {
+    let alive = true;
+    fetchFavChannelRows(favKey ? favKey.split(',') : []).then((r) => { if (alive) setChannels(r); }).catch(() => {});
+    return () => { alive = false; };
+  }, [favKey]);
   return (
     <Screen title={t('app.saved_title', 'Saved')} underHeader>
-      {!upcoming.length && !listings.length && !news.length && !media.length ? (
+      {!upcoming.length && !listings.length && !news.length && !media.length && !channels.length ? (
         <Body muted>{t('app.saved_empty', 'Tap the bookmark on an event, a place or a news article and it appears here, even without a connection. Bookmarked events get a reminder the day before.')}</Body>
       ) : null}
       {upcoming.length ? (
@@ -46,6 +58,14 @@ export default function SavedScreen() {
         <View style={styles.section}>
           <H2>{t('app.media_title', 'Talks, blogs and podcasts')}</H2>
           {media.map((m) => <MediaCard key={m.kind + m.id} m={m} />)}
+        </View>
+      ) : null}
+      {channels.length ? (
+        <View style={styles.section}>
+          <H2>{t('app.fav_channels', 'Favorite YouTube channels')}</H2>
+          {channels.map((ch) => (
+            <LinkRow key={ch.slug} title={ch.name} meta={ch.language || undefined} onPress={() => WebBrowser.openBrowserAsync(ch.url)} />
+          ))}
         </View>
       ) : null}
     </Screen>

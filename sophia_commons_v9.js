@@ -3502,30 +3502,84 @@ async function _loadDirectoryMapLocs() {
     });
     if (!rows.length) return;
     var known = {};
-    mapLocs.forEach(function(l) { known[l.name.toLowerCase()] = true; });
+    mapLocs.forEach(function(l) { known[l.name.toLowerCase()] = l; });
+    // Hand-picked pins get their directory id too, so their events can make them pulse
+    rows.forEach(function(e) { var l = known[e.organization_name.toLowerCase()]; if (l && !l.id) l.id = e.id; });
     _mapDbLocs = rows.filter(function(e) { return !known[e.organization_name.toLowerCase()]; }).map(function(e) {
-      return { name: e.organization_name, cat: _mapCatFor(e), lat: e.latitude, lng: e.longitude,
+      return { id: e.id, name: e.organization_name, cat: _mapCatFor(e), lat: e.latitude, lng: e.longitude,
         city: [e.city, e.country].filter(Boolean).join(', '), url: e.website_url || '' };
     });
+    await _loadMapActiveEvents();
     var f = document.getElementById('map-filter');
     renderMarkers(f ? f.value : 'all');
   } catch (e) { console.warn('map: directory locations unavailable', e); }
+}
+
+// Places with an in-person event in the next 7 days or happening now get a pulsing pin (owner, 2026-11-23):
+// the pulse starts up to a week before the event and stops when it is over. Online-only events don't count.
+var _mapActive = {};   // directory entry id -> its next event { id, title, start }
+var MAP_PULSE_DAYS = 7;
+async function _loadMapActiveEvents() {
+  _mapActive = {};
+  try {
+    var now = Date.now();
+    var r = await _sb.from('events').select('id, title, start_date, end_date, is_online, address, directory_entry_id')
+      .not('directory_entry_id', 'is', null)
+      .lte('start_date', new Date(now + MAP_PULSE_DAYS * 864e5).toISOString())
+      .gte('start_date', new Date(now - 60 * 864e5).toISOString())
+      .neq('status', 'cancelled');
+    (r.data || []).forEach(function (e) {
+      if (e.is_online && !e.address) return;              // online only: no place to pulse
+      var start = Date.parse(e.start_date);
+      // Over at its end time; with no end time, at the end of the day it starts
+      var end = e.end_date ? Date.parse(e.end_date) : new Date(start).setHours(23, 59, 59, 999);
+      if (!(end >= now)) return;
+      var cur = _mapActive[e.directory_entry_id];
+      if (!cur || start < Date.parse(cur.start)) _mapActive[e.directory_entry_id] = { id: e.id, title: e.title, start: e.start_date };
+    });
+  } catch (e) { console.warn('map: event pulse unavailable', e); }
+}
+
+// The pulse: a ring in the pin's colour that grows and fades, about every 1.6 s. Only the few active pins animate.
+var _pulseMarkers = [], _pulseTimer = null;
+var _pulseReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+function _pulseIcon(color, phase) {
+  if (_pulseReduced) return { path: google.maps.SymbolPath.CIRCLE, fillColor: color, fillOpacity: 1, strokeColor: color, strokeOpacity: 0.35, strokeWeight: 8, scale: 8 };
+  return { path: google.maps.SymbolPath.CIRCLE, fillColor: color, fillOpacity: 1, strokeColor: color,
+    strokeOpacity: 0.55 * (1 - phase), strokeWeight: 3 + 16 * phase, scale: 8 };
+}
+function _startPulse() {
+  if (_pulseTimer) { clearInterval(_pulseTimer); _pulseTimer = null; }
+  if (!_pulseMarkers.length || _pulseReduced) return;
+  var t0 = Date.now();
+  _pulseTimer = setInterval(function () {
+    var el = document.getElementById('dir-map');
+    if (document.hidden || !el || !el.offsetParent) return;   // map not on screen: skip the work
+    var phase = ((Date.now() - t0) % 1600) / 1600;
+    _pulseMarkers.forEach(function (p) { p.m.setIcon(_pulseIcon(p.color, phase)); });
+  }, 70);
 }
 
 function renderMarkers(filter) {
   if (_clusterer) { _clusterer.clearMarkers(); _clusterer = null; }
   markers.forEach(function(m) { m.setMap(null); });
   markers = [];
+  _pulseMarkers = [];
   var useClusters = !!(window.markerClusterer && window.markerClusterer.MarkerClusterer);
   var all = mapLocs.concat(_mapDbLocs);
   var locs = filter === 'all' ? all : all.filter(function(l) { return l.cat === filter; });
+  var clustered = [];
   locs.forEach(function(loc) {
     var color = catColors[loc.cat] || '#888';
+    var ev = loc.id ? _mapActive[loc.id] : null;
     var m = new google.maps.Marker({
       position: { lat: loc.lat, lng: loc.lng },
-      map: useClusters ? null : map,
-      title: loc.name + ' (' + ((document.querySelector('#map-filter option[value="' + loc.cat + '"]') || {}).textContent || loc.cat) + ')',
-      icon: {
+      // Pulsing pins stay out of the clusters so they show at every zoom level
+      map: useClusters && !ev ? null : map,
+      zIndex: ev ? 1000 : undefined,
+      title: loc.name + ' (' + ((document.querySelector('#map-filter option[value="' + loc.cat + '"]') || {}).textContent || loc.cat) + ')'
+        + (ev ? ': ' + t('directory.map_event_soon', 'event this week') : ''),
+      icon: ev ? _pulseIcon(color, 0) : {
         path: google.maps.SymbolPath.CIRCLE,
         fillColor: color,
         fillOpacity: 1,
@@ -3539,14 +3593,19 @@ function renderMarkers(filter) {
         '<div style="font-family:Nunito Sans,sans-serif;padding:6px;max-width:220px;">' +
         '<div style="font-weight:700;font-size:13px;margin-bottom:3px;color:#2C2418;">' + esc(loc.name) + '</div>' +
         '<div style="font-size:12px;color:#6B5E50;">' + esc(loc.city) + '</div>' +
+        (ev ? '<div style="font-size:12px;margin:5px 0 3px;"><span style="font-weight:700;color:#2C2418;">'
+          + esc(Date.parse(ev.start) <= Date.now() ? t('directory.map_event_now', 'Happening now') : localDate(ev.start, { weekday: 'short', month: 'short', day: 'numeric' }))
+          + ':</span> <a href="/event/' + encodeURIComponent(ev.id) + '" onclick="showDetail(\'event\',\'' + escJs(ev.id) + '\');return false;">' + esc(ev.title) + '</a></div>' : '') +
         (loc.url && /^https?:\/\//.test(loc.url) ? '<a href="' + esc(loc.url) + '" target="_blank" rel="noopener" style="font-size:12px;">Website</a>' : '') +
         '</div>'
       );
       infoWin.open(map, m);
     });
     markers.push(m);
+    if (ev) _pulseMarkers.push({ m: m, color: color }); else clustered.push(m);
   });
-  if (useClusters) _clusterer = new window.markerClusterer.MarkerClusterer({ map: map, markers: markers });
+  if (useClusters) _clusterer = new window.markerClusterer.MarkerClusterer({ map: map, markers: clustered });
+  _startPulse();
 }
 function filterMap() { renderMarkers(document.getElementById('map-filter').value); }
 
@@ -9055,8 +9114,8 @@ async function renderFeaturedTalk(channels) {
 async function renderYouTubeChannels() {
   var el = document.getElementById('yt-channels-block');
   if (!el) return;
-  var both = await Promise.all([_ytFetchLatest(), _loadChannelRatings()]);
-  var rows = both[0], ratings = both[1];
+  var both = await Promise.all([_ytFetchLatest(), _loadChannelRatings(), _ytFavsLoad()]);
+  var rows = both[0], ratings = both[1], favs = both[2];
   renderFeaturedTalk(rows);
   var week = weeklyChannel(rows, 0);
   var groups = {};
@@ -9068,16 +9127,20 @@ async function renderYouTubeChannels() {
     + '<a href="#" aria-expanded="false" onclick="openSuggest(\'youtube\', this);return false;">+ ' + t('video.suggest', 'suggest a channel') + '</a></div>'
   ;
   var byNewest = function (a, b) { return (b.published_at || '').localeCompare(a.published_at || '') || a.name.localeCompare(b.name); };
+  var row = function (r) { return _ytRowHtml(r, ratings[r.slug], week && r.slug === week.slug, favs.has(r.slug)); };
+  var mine = rows.filter(function (r) { return favs.has(r.slug); }).sort(byNewest);
   var full = '<div class="yt-grid">';
+  // A signed-in member's favorites first (owner, 2026-11-23); they also stay in their own category
+  if (mine.length) full += '<div class="yt-cat yt-favs"><h4>' + esc(t('podcasts.my_favorites', 'My favorites')) + ' <span>' + mine.length + '</span></h4>' + mine.map(row).join('') + '</div>';
   order.forEach(function (cat) {
     full += '<div class="yt-cat"><h4>' + esc(YT_CATEGORIES[cat] || cat) + ' <span>' + groups[cat].length + '</span></h4>';
     groups[cat].sort(byNewest);
-    groups[cat].forEach(function (r) { full += _ytRowHtml(r, ratings[r.slug], week && r.slug === week.slug); });
+    groups[cat].forEach(function (r) { full += row(r); });
     full += '</div>';
   });
   full += '</div>';
-  // Short list: the channels with the newest videos
-  var top = rows.slice().sort(byNewest).slice(0, MEDIA_FIRST).map(function (r) { return _ytRowHtml(r, ratings[r.slug], week && r.slug === week.slug); });
+  // Short list: the member's favorites, then the channels with the newest videos
+  var top = mine.concat(rows.filter(function (r) { return !favs.has(r.slug); }).sort(byNewest)).slice(0, MEDIA_FIRST).map(row);
   html += _mediaListHtml('yt', top, full, rows.length, _ytOpen, '_ytOpen', t('podcasts.show_all_channels', 'Show all {n} channels'), t('podcasts.newest_videos', 'Newest videos'))
     + '</div></div>';
   el.innerHTML = html;
@@ -9086,7 +9149,7 @@ async function renderYouTubeChannels() {
 
 // Media lists (YouTube, social media): the first MEDIA_FIRST entries as a short list; "Show all n"
 // swaps it for the full list grouped by category. stateVar remembers the choice across re-renders.
-var MEDIA_FIRST = 10;
+var MEDIA_FIRST = 9;   // three rows of three (owner, 2026-11-23)
 function _mediaListHtml(id, topRows, fullHtml, total, open, stateVar, allLabel, topHeading) {
   if (total <= MEDIA_FIRST) return fullHtml;
   var more = allLabel.replace('{n}', total), less = t('common.show_fewer', 'Show fewer');
@@ -9105,16 +9168,50 @@ function _mediaToggle(btn, id) {
 }
 var _ytOpen = false, _fbListOpen = false;
 
-function _ytRowHtml(r, rt, isWeek) {
+function _ytRowHtml(r, rt, isWeek, isFav) {
   var meta = [esc(r.language || ''), esc(_subsText(r)), r.published_at ? esc(ytAgo(r.published_at)) : ''].filter(Boolean).join(' &middot; ');
   return '<div class="yt-row' + (isWeek ? ' is-week' : '') + '">'
     + (r.avatar_url ? '<img class="yt-ava" src="' + escUrl(r.avatar_url) + '" alt="" width="32" height="32" loading="lazy">' : '<span class="yt-ava" aria-hidden="true"></span>')
     + '<div class="yt-main"><div><a class="ltitle" href="' + escUrl(r.channel_url) + '" target="_blank" rel="noopener" title="' + esc(r.description || '') + '">' + esc(r.name) + '</a>'
-    + (r.verified ? '<span class="lv">&#10003;</span>' : '') + '</div>'
+    + (r.verified ? '<span class="lv">&#10003;</span>' : '')
+    + (signedIn && window._supabaseUser ? '<button type="button" class="yt-fav' + (isFav ? ' is-fav' : '') + '" aria-pressed="' + (isFav ? 'true' : 'false') + '"'
+      + ' aria-label="' + esc(r.name + ': ' + (isFav ? t('podcasts.unfavorite', 'remove from favorites') : t('podcasts.favorite', 'add to favorites'))) + '"'
+      + ' title="' + esc(isFav ? t('podcasts.unfavorite', 'remove from favorites') : t('podcasts.favorite', 'add to favorites')) + '"'
+      + ' onclick="ytToggleFav(\'' + escJs(r.slug) + '\', this)">' + YT_HEART + '</button>' : '')
+    + '</div>'
     + '<span class="lmeta">' + meta + '</span>'
     + '<button type="button" class="yt-rate" onclick="openChannel(\'' + escJs(r.slug) + '\', this)" aria-label="' + esc(r.name + ': ' + t('channel.details', 'details, ratings and reviews')) + '">'
     + (rt && rt.count ? _stars(rt.avg) + ' <span>' + rt.count + '</span>' : '<span class="stars off-all" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span>' + t('channel.rate_short', 'Rate') + '</span>')
     + '</button></div></div>';
+}
+
+// ── Favorite channels (owner, 2026-11-23) ──
+// A signed-in member taps the heart on a channel; favorites show first in the short list, in a "My favorites"
+// group at the top of the full list, and on the Saved page. Stored in favorite_channels (own rows only).
+var YT_HEART = '<svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.1 1.8-1.9 3.3-3.1 5.4-3.1 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+var _ytFavs = null, _ytFavsUser = null;
+async function _ytFavsLoad() {
+  var u = window._supabaseUser;
+  if (!signedIn || !u || !sbReady()) { _ytFavs = null; return new Set(); }
+  if (_ytFavs && _ytFavsUser === u.id) return _ytFavs;
+  var r = await _sb.from('favorite_channels').select('channel_slug');
+  if (r.error) { console.warn('favorite channels unavailable', r.error.message); return new Set(); }
+  _ytFavs = new Set((r.data || []).map(function (x) { return x.channel_slug; }));
+  _ytFavsUser = u.id;
+  return _ytFavs;
+}
+async function ytToggleFav(slug, btn) {
+  if (!signedIn || !window._supabaseUser) { openModal(); return false; }
+  var favs = await _ytFavsLoad(), on = favs.has(slug);
+  if (btn) btn.disabled = true;
+  var r = on
+    ? await _sb.from('favorite_channels').delete().eq('channel_slug', slug)
+    : await _sb.from('favorite_channels').insert({ user_id: window._supabaseUser.id, channel_slug: slug });
+  if (btn) btn.disabled = false;
+  if (r.error && !/duplicate/i.test(r.error.message)) { scNotify(t('saved.error', 'Could not save. Please try again.')); return false; }
+  if (on) favs.delete(slug); else favs.add(slug);
+  if (document.getElementById('yt-list')) renderYouTubeChannels();
+  return true;
 }
 
 // ── Channel details, star ratings and reviews ──

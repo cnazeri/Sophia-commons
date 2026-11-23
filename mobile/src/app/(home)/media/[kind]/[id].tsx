@@ -4,13 +4,14 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Share, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Share, StyleSheet, View } from 'react-native';
 
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
 import { Body, H1, Kicker, Screen } from '@/components/ui';
 import { Radius } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { toggleFavChannel, useFavChannels } from '@/lib/fav-channels';
 import { localDate, t } from '@/lib/i18n';
 import { type MediaItem, fetchMediaItem, languageName, mediaKey } from '@/lib/media';
 import { useSaved } from '@/lib/saved';
@@ -19,6 +20,8 @@ export default function MediaItemScreen() {
   const c = useTheme();
   const { kind, id } = useLocalSearchParams<{ kind: string; id: string }>();
   const saved = useSaved();
+  const fav = useFavChannels();
+  const [busy, setBusy] = useState(false);
   // A saved copy opens at once (and offline); the live copy replaces it when it loads
   const [m, setM] = useState<MediaItem | null | undefined>(() => (saved.media || {})[String(kind) + ':' + String(id)]);
   useEffect(() => {
@@ -47,6 +50,16 @@ export default function MediaItemScreen() {
       {m.body ? <Body>{m.kind === 'blog' ? t('podcasts.substack_latest', 'Latest:') + ' ' + m.body : m.body}</Body> : null}
       <Button label={open} onPress={() => WebBrowser.openBrowserAsync(m.url)} />
       {m.kind === 'blog' && m.home && m.home !== m.url ? <Button kind="secondary" label={t('app.media_open_blog', 'Open the blog')} onPress={() => WebBrowser.openBrowserAsync(m.home!)} /> : null}
+      {m.kind === 'video' && m.channel && fav.userId ? (
+        // Favorite channels (owner, 2026-11-23): their talks show first in Talks, same list as on the website
+        <Button kind="secondary" disabled={busy}
+          label={(fav.favs.has(m.channel) ? t('app.fav_channel_remove', 'Remove from favorite channels') : t('app.fav_channel_add', 'Add channel to favorites')) + (m.meta ? ': ' + m.meta : '')}
+          onPress={async () => {
+            setBusy(true);
+            try { await toggleFavChannel(m.channel!, fav.userId!); } catch { Alert.alert(t('saved.error', 'Could not save. Please try again.')); }
+            setBusy(false);
+          }} />
+      ) : null}
       <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: m.title + '\n' + m.url })} />
       <Body muted style={{ fontSize: 13 }}>{saved.media?.[mediaKey(m)]
         ? t('app.media_saved_yes', 'Saved. Find it in Settings > Saved.')

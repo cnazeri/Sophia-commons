@@ -4527,3 +4527,13 @@ a.adm-btn, a.adm-btn:visited { color: var(--text-primary); }
 .saved-meta { color: var(--text-muted); font-size: 13px; }
 .btn-unsave { background: none; border: 1px solid var(--border); border-radius: 50px; padding: 5px 12px; font-size: 12px; color: var(--text-secondary); cursor: pointer; flex-shrink: 0; }
 .btn-unsave:hover { border-color: #b3261e; color: #b3261e; }
+
+/* Favorite YouTube channels (owner, 2026-11-23): a heart next to the name, filled when it's a favorite */
+.yt-fav { display: inline-flex; align-items: center; justify-content: center; vertical-align: -3px; margin-left: 6px;
+  width: 28px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; color: var(--text-muted); }
+.yt-fav svg { fill: none; stroke: currentColor; stroke-width: 2; }
+.yt-fav:hover, .yt-fav:focus-visible { color: #C0392B; }
+.yt-fav.is-fav { color: #C0392B; }
+.yt-fav.is-fav svg { fill: currentColor; }
+.yt-fav:disabled { opacity: .5; cursor: wait; }
+.yt-favs h4 { color: #C0392B; }
