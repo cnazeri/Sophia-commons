@@ -4,11 +4,11 @@ import { supabase } from '@/lib/supabase';
 export type Job = {
   id: string; title: string; description?: string | null; location?: string | null; region?: string | null; country?: string | null;
   website_url?: string | null; contact_email?: string | null; contact_phone?: string | null;
-  tags?: string[] | null; created_at: string; expires_at?: string | null;
+  tags?: string[] | null; created_at: string; expires_at?: string | null; image_url?: string | null;
 };
 
 const JOBS_CAT_ID = 11;
-const FIELDS = 'id,title,description,location,region,country,website_url,contact_email,contact_phone,tags,created_at,expires_at';
+const FIELDS = 'id,title,description,location,region,country,website_url,contact_email,contact_phone,tags,created_at,expires_at,image_url';
 const live = (j: Job) => !j.expires_at || Date.parse(j.expires_at) > Date.now();
 const featured = (j: Job) => (j.tags || []).includes('featured');
 

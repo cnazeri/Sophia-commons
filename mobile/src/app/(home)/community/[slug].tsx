@@ -1,4 +1,5 @@
 // A published community post (blog_posts), read in the app. Members write them from Post > Write a community post.
+import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, Share, Text } from 'react-native';
@@ -25,6 +26,7 @@ export default function CommunityPostScreen() {
   const link = `${SITE}/blog/${p.slug}`;
   return (
     <Screen underHeader>
+      {p.cover_url ? <Image source={{ uri: p.cover_url }} style={{ width: '100%', aspectRatio: 4 / 3, borderRadius: 12 }} contentFit="cover" transition={200} accessibilityLabel={p.title} /> : null}
       <Kicker>{[p.author_name, p.published_at ? localDate(p.published_at, { day: 'numeric', month: 'long', year: 'numeric' }) : ''].filter(Boolean).join(' · ')}</Kicker>
       <H1>{p.title}</H1>
       {paragraphs(p.body).map((para, i) => <Body key={i} style={{ fontSize: 17, lineHeight: 27 }}>{para}</Body>)}

@@ -5,6 +5,7 @@
 //   community  -> blog_posts         (account; 'pending' until the owner publishes it in Admin > Blog)
 import type { Session } from '@supabase/supabase-js';
 
+import { type Picked, dataUrl, uploadPostImage } from '@/lib/images';
 import { supabase } from '@/lib/supabase';
 
 const JOBS_CAT_ID = 11;
@@ -19,10 +20,11 @@ export function webUrl(v: string): string | null {
 }
 
 export type PlaceIn = { name: string; category: string; url: string; location: string; description: string; email: string };
-export async function postPlace(p: PlaceIn): Promise<void> {
+export async function postPlace(p: PlaceIn, img?: Picked | null, s?: Session | null): Promise<void> {
+  const photo = img && s ? await uploadPostImage(img, s) : null;
   const { error } = await supabase.from('listings_pending').insert({
     name: p.name.slice(0, 200), category: p.category, url: p.url || null, location: p.location.slice(0, 200) || null,
-    description: p.description.slice(0, 5000) || null, contact_email: p.email || null, status: 'pending', source: 'app',
+    description: p.description.slice(0, 5000) || null, contact_email: p.email || null, status: 'pending', source: 'app', photo_url: photo,
   });
   if (error) throw new Error(error.message);
 }
@@ -33,7 +35,7 @@ export type EventIn = {
   city: string; region: string; country: string; organizer_name: string; organizer_url: string; price_text: string;
 };
 export type EventOut = { status: string; id: string; link: string };
-export async function postEvent(e: EventIn, s: Session): Promise<EventOut> {
+export async function postEvent(e: EventIn, s: Session, img?: Picked | null): Promise<EventOut> {
   const online = e.attendance !== 'place', inPlace = e.attendance !== 'online';
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   const event = {
@@ -43,7 +45,7 @@ export async function postEvent(e: EventIn, s: Session): Promise<EventOut> {
     signup_enabled: false, signup_questions: [], signup_capacity: '', signup_close_hours: '', is_public: true,
   };
   const { data, error } = await supabase.functions.invoke('event-save', {
-    body: { event, source: 'app' }, headers: { Authorization: `Bearer ${s.access_token}` },
+    body: { event, source: 'app', ...(img ? { image: dataUrl(img) } : {}) }, headers: { Authorization: `Bearer ${s.access_token}` },
   });
   // On a refusal the function says why (for example "Please give the start date"); show that to the member
   let out = data as { ok?: boolean; status?: string; events?: { id: string; event: string }[]; error?: string; msg?: string } | null;
@@ -57,11 +59,12 @@ export async function postEvent(e: EventIn, s: Session): Promise<EventOut> {
 }
 
 export type JobIn = { title: string; description: string; location: string; region: string; country: string; url: string; email: string; phone: string };
-export async function postJob(j: JobIn, s: Session): Promise<void> {
+export async function postJob(j: JobIn, s: Session, img?: Picked | null): Promise<void> {
+  const image = img ? await uploadPostImage(img, s) : null;
   const { error } = await supabase.from('listings').insert({
     user_id: s.user.id, category_id: JOBS_CAT_ID, listing_type: 'offering', status: 'draft',
     title: j.title.slice(0, 200), description: j.description.slice(0, 10000), location: j.location || null, region: j.region || null,
-    country: j.country || null, website_url: j.url || null, contact_email: j.email || null, contact_phone: j.phone || null, tags: ['member'], source: 'app',
+    country: j.country || null, website_url: j.url || null, contact_email: j.email || null, contact_phone: j.phone || null, tags: ['member'], source: 'app', image_url: image,
   });
   if (error) throw new Error(error.message);
 }
@@ -71,21 +74,22 @@ const slugify = (title: string) => {
   const base = title.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'post';
   return base + '-' + Math.random().toString(36).slice(2, 8); // unique without asking the server
 };
-export async function postCommunity(p: CommunityIn, author: string): Promise<void> {
+export async function postCommunity(p: CommunityIn, author: string, s: Session, img?: Picked | null): Promise<void> {
+  const cover = img ? await uploadPostImage(img, s) : null;
   const tags = p.tags.split(',').map((x) => x.trim().toLowerCase()).filter(Boolean).slice(0, 8);
   const { error } = await supabase.from('blog_posts').insert({
     author_name: author.slice(0, 80) || 'Member', title: p.title.slice(0, 200), slug: slugify(p.title),
-    body: p.body.slice(0, 60000), tags, source: 'app',
+    body: p.body.slice(0, 60000), tags, source: 'app', cover_url: cover,
   });
   if (error) throw new Error(error.message);
 }
 
 // Owner only: jobs waiting for review, and approve or decline them
 export type PendingJob = { id: string; title: string; description: string; location: string | null; region: string | null; country: string | null;
-  website_url: string | null; contact_email: string | null; contact_phone: string | null; created_at: string };
+  website_url: string | null; contact_email: string | null; contact_phone: string | null; created_at: string; image_url?: string | null };
 export async function pendingJobs(): Promise<PendingJob[]> {
   const { data, error } = await supabase.from('listings')
-    .select('id,title,description,location,region,country,website_url,contact_email,contact_phone,created_at')
+    .select('id,title,description,location,region,country,website_url,contact_email,contact_phone,created_at,image_url')
     .eq('status', 'draft').eq('category_id', JOBS_CAT_ID).order('created_at', { ascending: true }).limit(100);
   if (error) throw new Error(error.message);
   return (data || []) as PendingJob[];
@@ -98,7 +102,7 @@ export async function reviewJob(id: string, approve: boolean): Promise<void> {
 }
 
 // Published community posts (newest first), for the Home screen and the reader
-export type CommunityPost = { id: string; slug: string; title: string; author_name: string; excerpt: string | null; body: string; published_at: string | null };
+export type CommunityPost = { id: string; slug: string; title: string; author_name: string; excerpt: string | null; body: string; published_at: string | null; cover_url?: string | null };
 export async function fetchCommunityPosts(limit = 20): Promise<CommunityPost[]> {
   const { data, error } = await supabase.from('blog_posts').select('id,slug,title,author_name,excerpt,body,published_at')
     .eq('status', 'published').order('published_at', { ascending: false }).limit(limit);
@@ -106,7 +110,7 @@ export async function fetchCommunityPosts(limit = 20): Promise<CommunityPost[]> 
   return (data || []) as CommunityPost[];
 }
 export async function fetchCommunityPost(slug: string): Promise<CommunityPost | null> {
-  const { data, error } = await supabase.from('blog_posts').select('id,slug,title,author_name,excerpt,body,published_at')
+  const { data, error } = await supabase.from('blog_posts').select('id,slug,title,author_name,excerpt,body,published_at,cover_url')
     .eq('slug', slug).eq('status', 'published').maybeSingle();
   if (error) throw new Error(error.message);
   return (data as CommunityPost) || null;

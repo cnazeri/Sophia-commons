@@ -1,4 +1,5 @@
 // One job: place, posted date, full description, and how to apply (website, email or phone).
+import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
@@ -37,6 +38,7 @@ export default function JobScreen() {
   const url = SITE + '/classified/' + j.id;
   return (
     <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={styles.wrap}>
+      {j.image_url ? <Image source={{ uri: j.image_url }} style={{ width: '100%', aspectRatio: 4 / 3, borderRadius: 12 }} contentFit="contain" transition={200} accessibilityLabel={j.title} /> : null}
       <Kicker>{[jobPlace(j), localDate(j.created_at, { month: 'long', day: 'numeric', year: 'numeric' })].filter(Boolean).join(' · ')}</Kicker>
       <Text style={[styles.title, { color: c.text }]} selectable>{j.title}</Text>
       <View style={styles.actions}>

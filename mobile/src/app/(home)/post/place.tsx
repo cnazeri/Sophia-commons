@@ -5,8 +5,11 @@ import { useState } from 'react';
 import { Button } from '@/components/button';
 import { Chips } from '@/components/chips';
 import { Field, FormMessage, Label } from '@/components/form';
+import { ImageField } from '@/components/image-field';
 import { Body, Screen } from '@/components/ui';
+import { useAuth } from '@/lib/auth';
 import { CATEGORIES } from '@/lib/directory';
+import type { Picked } from '@/lib/images';
 import { t } from '@/lib/i18n';
 import { isEmail, postPlace, webUrl } from '@/lib/post';
 
@@ -16,6 +19,8 @@ export default function PostPlace() {
   const [msg, setMsg] = useState<{ text: string; error?: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const { session } = useAuth();
+  const [img, setImg] = useState<Picked | null>(null);
   const set = (k: keyof typeof f) => (v: string) => setF({ ...f, [k]: v });
 
   const send = async () => {
@@ -31,7 +36,7 @@ export default function PostPlace() {
     setBusy(true); setMsg(null);
     try {
       const label = CATEGORIES.find((x) => x.key === f.category)?.label || f.category;
-      await postPlace({ ...f, name: f.name.trim(), category: label, url: url || '', location: f.location.trim(), email: f.email.trim() });
+      await postPlace({ ...f, name: f.name.trim(), category: label, url: url || '', location: f.location.trim(), email: f.email.trim() }, img, session);
       setDone(true);
       setMsg({ text: t('app.place_sent', 'Thank you. We will check the place and add it to the directory, usually within a few days.') });
     } catch (x) {
@@ -51,6 +56,9 @@ export default function PostPlace() {
         autoCapitalize="none" autoCorrect={false} keyboardType="url" maxLength={500} />
       <Field label={t('app.f_description', 'Description')} value={f.description} onChange={set('description')} multiline maxLength={5000}
         hint={t('app.f_description_hint', 'What it is and what it offers, in a few sentences.')} />
+      {session
+        ? <ImageField label={t('app.img_place', 'Photo (optional)')} hint={t('app.img_place_hint', 'A photo of the place, or its logo.')} value={img} onChange={setImg} />
+        : <Body muted>{t('app.img_place_signin', 'Signed-in members can add a photo too.')}</Body>}
       <Field label={t('app.f_your_email', 'Your email (optional)')} value={f.email} onChange={set('email')} error={err.email}
         hint={t('app.f_your_email_hint', 'Only so we can ask you a question. It is not shown.')}
         autoCapitalize="none" autoCorrect={false} keyboardType="email-address" maxLength={254} />

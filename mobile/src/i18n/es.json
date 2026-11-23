@@ -1652,5 +1652,21 @@
   "app.pw_save": "Cambiar contraseña",
   "app.pw_forgot": "¿La olvidaste? Envíame un enlace",
   "app.cots_english_by": "Versión en inglés: Sophia Commons",
-  "app.cots_other_translations": "Otras traducciones"
+  "app.cots_other_translations": "Otras traducciones",
+  "app.img_add": "Añadir una imagen",
+  "app.img_change": "Cambiar",
+  "app.img_remove": "Quitar",
+  "app.img_chosen": "Imagen elegida",
+  "app.img_err_read": "No se pudo leer esta imagen. Prueba con otra.",
+  "app.img_err_big": "Esta imagen pesa más de 5 MB. Elige una más pequeña.",
+  "app.img_err_upload": "No se pudo subir la imagen. Inténtalo de nuevo.",
+  "app.img_event": "Cartel o imagen (opcional)",
+  "app.img_event_hint": "Se muestra arriba en la página del evento.",
+  "app.img_job": "Imagen (opcional)",
+  "app.img_job_hint": "Tu logotipo, la escuela o granja, o un folleto.",
+  "app.img_cover": "Imagen de portada (opcional)",
+  "app.img_cover_hint": "Se muestra arriba en tu publicación.",
+  "app.img_place": "Foto (opcional)",
+  "app.img_place_hint": "Una foto del lugar o su logotipo.",
+  "app.img_place_signin": "Los miembros con sesión iniciada también pueden añadir una foto."
 }

@@ -1652,5 +1652,21 @@
   "app.pw_save": "Passwort ändern",
   "app.pw_forgot": "Vergessen? Link zum Zurücksetzen senden",
   "app.cots_english_by": "Englische Fassung: Sophia Commons",
-  "app.cots_other_translations": "Weitere Übersetzungen"
+  "app.cots_other_translations": "Weitere Übersetzungen",
+  "app.img_add": "Bild hinzufügen",
+  "app.img_change": "Ändern",
+  "app.img_remove": "Entfernen",
+  "app.img_chosen": "Gewähltes Bild",
+  "app.img_err_read": "Dieses Bild konnte nicht gelesen werden. Bitte wählen Sie ein anderes.",
+  "app.img_err_big": "Dieses Bild ist größer als 5 MB. Bitte wählen Sie ein kleineres.",
+  "app.img_err_upload": "Das Bild konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.",
+  "app.img_event": "Plakat oder Bild (freiwillig)",
+  "app.img_event_hint": "Wird oben auf der Veranstaltungsseite gezeigt.",
+  "app.img_job": "Bild (freiwillig)",
+  "app.img_job_hint": "Ihr Logo, die Schule oder der Hof, oder ein Flyer.",
+  "app.img_cover": "Titelbild (freiwillig)",
+  "app.img_cover_hint": "Wird oben über Ihrem Beitrag gezeigt.",
+  "app.img_place": "Foto (freiwillig)",
+  "app.img_place_hint": "Ein Foto des Ortes oder sein Logo.",
+  "app.img_place_signin": "Angemeldete Mitglieder können auch ein Foto hinzufügen."
 }

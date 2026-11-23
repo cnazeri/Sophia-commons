@@ -1591,5 +1591,21 @@
   "app.pw_save": "Change password",
   "app.pw_forgot": "Forgot it? Email me a reset link",
   "app.cots_english_by": "English rendering: Sophia Commons",
-  "app.cots_other_translations": "Other translations"
+  "app.cots_other_translations": "Other translations",
+  "app.img_add": "Add a picture",
+  "app.img_change": "Change",
+  "app.img_remove": "Remove",
+  "app.img_chosen": "Chosen picture",
+  "app.img_err_read": "This picture could not be read. Please try another one.",
+  "app.img_err_big": "This picture is larger than 5 MB. Please choose a smaller one.",
+  "app.img_err_upload": "The picture could not be uploaded. Please try again.",
+  "app.img_event": "Poster or picture (optional)",
+  "app.img_event_hint": "Shown at the top of the event page.",
+  "app.img_job": "Picture (optional)",
+  "app.img_job_hint": "Your logo, the school or farm, or a flyer.",
+  "app.img_cover": "Cover picture (optional)",
+  "app.img_cover_hint": "Shown at the top of your post.",
+  "app.img_place": "Photo (optional)",
+  "app.img_place_hint": "A photo of the place, or its logo.",
+  "app.img_place_signin": "Signed-in members can add a photo too."
 }

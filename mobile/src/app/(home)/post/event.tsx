@@ -8,9 +8,11 @@ import { AuthForm } from '@/components/auth-form';
 import { Button } from '@/components/button';
 import { Chips } from '@/components/chips';
 import { DateField, Field, FormMessage, Label, isoDay, normTime } from '@/components/form';
+import { ImageField } from '@/components/image-field';
 import { Body, Screen } from '@/components/ui';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth';
+import type { Picked } from '@/lib/images';
 import { t } from '@/lib/i18n';
 import { type EventIn, type EventOut, postEvent, webUrl } from '@/lib/post';
 
@@ -29,6 +31,7 @@ export default function PostEvent() {
   const [msg, setMsg] = useState<{ text: string; error?: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<EventOut | null>(null);
+  const [img, setImg] = useState<Picked | null>(null);
   const set = <K extends keyof EventIn>(k: K) => (v: EventIn[K]) => setF((p) => ({ ...p, [k]: v }));
 
   if (!session) {
@@ -58,7 +61,7 @@ export default function PostEvent() {
     setBusy(true); setMsg(null);
     try {
       const out = await postEvent({ ...f, title: f.title.trim(), description: f.description.trim(), start_time: f.is_all_day ? '' : st || '',
-        end_time: f.is_all_day ? '' : et || '', online_url: online || '', organizer_url: org || '' }, session);
+        end_time: f.is_all_day ? '' : et || '', online_url: online || '', organizer_url: org || '' }, session, img);
       setDone(out);
       setMsg({ text: t('app.event_sent', 'Thank you. Your event is on the calendar now. We also emailed you its link.') });
     } catch (x) {
@@ -107,6 +110,7 @@ export default function PostEvent() {
           placeholder="https://" autoCapitalize="none" autoCorrect={false} keyboardType="url" maxLength={500} />
       ) : null}
       <Field label={t('app.f_description', 'Description')} value={f.description} onChange={set('description')} error={err.description} multiline maxLength={10000} />
+      <ImageField label={t('app.img_event', 'Poster or picture (optional)')} hint={t('app.img_event_hint', 'Shown at the top of the event page.')} value={img} onChange={setImg} />
       <Field label={t('app.f_price', 'Price (optional)')} value={f.price_text} onChange={set('price_text')} placeholder={t('app.f_price_ph', 'Free, or $20')} maxLength={100} />
       <Field label={t('app.f_organizer', 'Organizer (optional)')} value={f.organizer_name} onChange={set('organizer_name')} maxLength={200} />
       <Field label={t('app.f_organizer_url', 'Website for more information (optional)')} value={f.organizer_url} onChange={set('organizer_url')}

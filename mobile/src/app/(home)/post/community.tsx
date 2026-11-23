@@ -6,8 +6,10 @@ import { useState } from 'react';
 import { AuthForm } from '@/components/auth-form';
 import { Button } from '@/components/button';
 import { Field, FormMessage } from '@/components/form';
+import { ImageField } from '@/components/image-field';
 import { Body, Screen } from '@/components/ui';
 import { displayName, useAuth } from '@/lib/auth';
+import type { Picked } from '@/lib/images';
 import { t } from '@/lib/i18n';
 import { type CommunityIn, postCommunity } from '@/lib/post';
 
@@ -19,6 +21,7 @@ export default function PostCommunity() {
   const [msg, setMsg] = useState<{ text: string; error?: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [img, setImg] = useState<Picked | null>(null);
   const set = (k: keyof CommunityIn) => (v: string) => setF((p) => ({ ...p, [k]: v }));
 
   if (!session) {
@@ -39,7 +42,7 @@ export default function PostCommunity() {
     if (Object.keys(e).length) { setMsg({ text: t('app.err_check', 'Please check the fields marked in red.'), error: true }); return; }
     setBusy(true); setMsg(null);
     try {
-      await postCommunity({ ...f, title: f.title.trim(), body: f.body.trim() }, author.trim());
+      await postCommunity({ ...f, title: f.title.trim(), body: f.body.trim() }, author.trim(), session, img);
       setDone(true);
       setMsg({ text: t('app.community_sent', 'Thank you. Your post will appear after the editor reviews it, usually within a few days.') });
     } catch (x) {
@@ -53,6 +56,7 @@ export default function PostCommunity() {
       <Field label={t('app.f_author', 'Your name, as shown with the post')} value={author} onChange={setAuthor} error={err.author}
         placeholder={displayName(session)} maxLength={80} />
       <Field label={t('app.f_title', 'Title')} value={f.title} onChange={set('title')} error={err.title} maxLength={200} />
+      <ImageField label={t('app.img_cover', 'Cover picture (optional)')} hint={t('app.img_cover_hint', 'Shown at the top of your post.')} value={img} onChange={setImg} />
       <Field label={t('app.f_post_body', 'Your post')} value={f.body} onChange={set('body')} error={err.body} multiline maxLength={60000} />
       <Field label={t('app.f_tags', 'Topics (optional)')} value={f.tags} onChange={set('tags')} hint={t('app.f_tags_hint', 'Separated by commas, like: waldorf, festivals')}
         autoCapitalize="none" maxLength={200} />

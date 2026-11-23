@@ -1,5 +1,6 @@
 // Owner only: jobs members posted, waiting for review. Approve puts a job on the Jobs page; Decline takes it away.
 // (Events, places and community posts are reviewed on the website's Admin page, as before.)
+import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { Alert, View } from 'react-native';
 
@@ -31,6 +32,7 @@ export default function ReviewJobs() {
       {rows && !rows.length ? <Body muted>{t('app.review_none', 'Nothing waiting. New job posts will show here.')}</Body> : null}
       {(rows || []).map((j) => (
         <Card key={j.id} style={{ gap: 8 }}>
+          {j.image_url ? <Image source={{ uri: j.image_url }} style={{ width: '100%', aspectRatio: 4 / 3, borderRadius: 12 }} contentFit="contain" accessibilityLabel={j.title} /> : null}
           <Kicker>{new Date(j.created_at).toLocaleDateString()} {[j.location, j.region, j.country].filter(Boolean).join(', ')}</Kicker>
           <H2>{j.title}</H2>
           <Body>{j.description}</Body>

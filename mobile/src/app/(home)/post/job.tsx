@@ -7,8 +7,10 @@ import { View } from 'react-native';
 import { AuthForm } from '@/components/auth-form';
 import { Button } from '@/components/button';
 import { Field, FormMessage, Label } from '@/components/form';
+import { ImageField } from '@/components/image-field';
 import { Body, Screen } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
+import type { Picked } from '@/lib/images';
 import { t } from '@/lib/i18n';
 import { type JobIn, isEmail, postJob, webUrl } from '@/lib/post';
 
@@ -19,6 +21,7 @@ export default function PostJob() {
   const [msg, setMsg] = useState<{ text: string; error?: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [img, setImg] = useState<Picked | null>(null);
   const set = (k: keyof JobIn) => (v: string) => setF((p) => ({ ...p, [k]: v }));
 
   if (!session) {
@@ -44,7 +47,7 @@ export default function PostJob() {
     setBusy(true); setMsg(null);
     try {
       await postJob({ ...f, title: f.title.trim(), description: f.description.trim(), location: f.location.trim(), region: f.region.trim(), country: f.country.trim(),
-        url: url || '', email: f.email.trim(), phone: f.phone.trim() }, session);
+        url: url || '', email: f.email.trim(), phone: f.phone.trim() }, session, img);
       setDone(true);
       setMsg({ text: t('app.job_sent', 'Thank you. Your job will appear on the Jobs page after a quick review, usually within a day or two. It stays up for 90 days; we email you a week before it ends so you can renew it under Post > My posts.') });
     } catch (x) {
@@ -58,6 +61,7 @@ export default function PostJob() {
       <Field label={t('app.f_job_title', 'Job title')} value={f.title} onChange={set('title')} error={err.title} placeholder={t('app.f_job_title_ph', 'Class teacher, grade 1')} maxLength={200} />
       <Field label={t('app.f_description', 'Description')} value={f.description} onChange={set('description')} error={err.description} multiline maxLength={10000}
         hint={t('app.f_job_desc_hint', 'Who you are, the role, hours, start date, and what you are looking for.')} />
+      <ImageField label={t('app.img_job', 'Picture (optional)')} hint={t('app.img_job_hint', 'Your logo, the school or farm, or a flyer.')} value={img} onChange={setImg} />
       <View style={{ flexDirection: 'row', gap: 12 }}>
         <View style={{ flex: 1 }}><Field label={t('app.f_city', 'City')} value={f.location} onChange={set('location')} error={err.location} maxLength={200} /></View>
         <View style={{ flex: 1 }}><Field label={t('app.f_region', 'State or province')} value={f.region} onChange={set('region')} maxLength={120} /></View>
