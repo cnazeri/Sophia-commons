@@ -1,14 +1,16 @@
-name: Weekly backup (encrypted)
+name: Nightly backup (encrypted)
 
 # Owner, 2026-11-18: a weekly copy of everything needed to bring the site back: every database table, the
 # member accounts, every uploaded picture, and (when SUPABASE_DB_URL is set) the database structure itself
 # (tables, rules, functions). The code is already in git. The repository is public, so the backup is
 # encrypted with BACKUP_PASSPHRASE before it is stored; without that secret the job stops and stores nothing.
-# Each backup is kept 90 days under Actions > this workflow > the run > Artifacts. How to open one: BACKUPS.md.
+# Owner, 2026-11-23: also every night, data and member accounts only (no pictures), kept 14 days, instead of
+# paying $100/mo for point-in-time recovery. Sunday's run and any button run stay full and are kept 90 days.
+# Each backup is kept under Actions > this workflow > the run > Artifacts. How to open one: BACKUPS.md.
 
 on:
   schedule:
-    - cron: "41 9 * * 0"         # Sundays 09:41 UTC (01:41 Pacific)
+    - cron: "41 9 * * *"         # every night 09:41 UTC (01:41 Pacific); Sundays are the full backup
   workflow_dispatch:             # "Run workflow" button in the Actions tab
 
 permissions:
@@ -33,6 +35,16 @@ jobs:
 
       - run: pip install --quiet requests
 
+      - name: Full backup on Sundays and button runs, data only on other nights
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$(date -u +%u)" = 7 ] || [ "$EVENT" = workflow_dispatch ]; then
+            echo "KIND=full" >> "$GITHUB_ENV"; echo "KEEP=90" >> "$GITHUB_ENV"
+          else
+            echo "KIND=data" >> "$GITHUB_ENV"; echo "KEEP=14" >> "$GITHUB_ENV"
+          fi
+
       - name: Copy every table, member account and uploaded picture
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -40,7 +52,8 @@ jobs:
         run: |
           mkdir -p out
           # a partial backup is still stored, and the run is marked failed at the end so it gets looked at
-          python3 automation/backup_db.py out/data.json.gz --files out/storage || echo "PARTIAL=1" >> "$GITHUB_ENV"
+          files=""; [ "$KIND" = full ] && files="--files out/storage"
+          python3 automation/backup_db.py out/data.json.gz $files || echo "PARTIAL=1" >> "$GITHUB_ENV"
           [ -s out/data.json.gz ] || { echo "No data file was written."; exit 1; }
 
       - name: Database structure (tables, security rules, functions), when SUPABASE_DB_URL is set
@@ -56,20 +69,20 @@ jobs:
           PASS: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
           day=$(date -u +%F)
-          tar -czf - -C out . | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass env:PASS -out "sophia-commons-backup-$day.tar.gz.enc"
+          tar -czf - -C out . | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass env:PASS -out "sophia-commons-backup-$day-$KIND.tar.gz.enc"
           rm -rf out
           echo "DAY=$day" >> "$GITHUB_ENV"
           ls -lh sophia-commons-backup-*.enc
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: sophia-commons-backup-${{ env.DAY }}
+          name: sophia-commons-backup-${{ env.DAY }}-${{ env.KIND }}
           path: sophia-commons-backup-*.enc
-          retention-days: 90
+          retention-days: ${{ env.KEEP }}
           compression-level: 0     # already compressed and encrypted
 
       - name: Mark the run failed if anything was left out (the backup above is still kept)
         if: env.PARTIAL == '1'
         run: |
-          echo "Some tables or pictures were not backed up this week; see the 'Copy every table' step log."
+          echo "Some tables or pictures were not backed up this time; see the 'Copy every table' step log."
           exit 1
