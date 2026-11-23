@@ -6,6 +6,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 
+import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
 import { Body, Card, H1, Kicker } from '@/components/ui';
 import { Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
@@ -47,7 +48,11 @@ export default function EventDetail() {
     <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={styles.wrap}>
       <Stack.Screen options={{ title: '' }} />
       {img ? <Image source={img} style={styles.poster} contentFit="contain" transition={200} accessibilityLabel={eventTitle(e)} /> : null}
-      <Kicker>{e.is_online ? t('event_detail.online', 'Online') : t('app.in_person', 'In person')}{e.is_free ? ' · ' + t('event_detail.free', 'Free') : ''}</Kicker>
+      {/* Bookmark at the top, as on talk and blog pages (owner, 2026-11-22); same saved list as "Save and remind me" */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View style={{ flex: 1 }}><Kicker>{e.is_online ? t('event_detail.online', 'Online') : t('app.in_person', 'In person')}{e.is_free ? ' · ' + t('event_detail.free', 'Free') : ''}</Kicker></View>
+        <BookmarkButton event={e} />
+      </View>
       <H1 style={{ marginTop: 0 }}>{eventTitle(e)}</H1>
 
       <Card>
