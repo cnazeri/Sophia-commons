@@ -4712,6 +4712,7 @@ function _yearlyFirst(list) {
   return list.filter(function(e) { return !e.id; }).concat(list.filter(function(e) { return e.id; }));
 }
 
+var CAL_DAY_MAX = 4;   // event names shown per calendar day; "+N more" opens the full day
 function renderCalendar() {
   var grid = document.getElementById('cal-grid');
   var label = document.getElementById('cal-month-label');
@@ -4749,9 +4750,11 @@ function renderCalendar() {
     }
     html += '<div class="cal-day' + (isToday ? ' today' : '') + (hasFestival ? ' festival-day' : '') + (hasMemorial ? ' memorial-day' : '') + (dayEvents.length ? ' has-events' : '') + '"' + dayAttrs + '>';
     html += '<div class="d-num">' + d + '</div>';
-    dayEvents.forEach(function(ev) {
+    // Larger text, so at most CAL_DAY_MAX names per day; the rest open with the day (owner, 2026-11-22)
+    dayEvents.slice(0, CAL_DAY_MAX).forEach(function(ev) {
       html += '<div class="cal-ev ' + esc(ev.cat) + '" title="' + esc(_homeTitle(ev) + (_evForeign(ev) ? ' (' + _evLangText(ev) + ')' : '')) + '">' + esc(_homeTitle(ev)) + '</div>';
     });
+    if (dayEvents.length > CAL_DAY_MAX) html += '<div class="cal-more">+' + (dayEvents.length - CAL_DAY_MAX) + '<span class="cal-more-w"> ' + esc(t('cal.more', 'more')) + '</span></div>';
     html += '</div>';
   }
 

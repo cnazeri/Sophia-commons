@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "suscribirse",
   "footer.newsletter_success": "estas suscrito!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.127.0",
+  "footer.version": "v1.127.1",
   "footer.privacy": "privacidad",
   "footer.terms": "términos",
   "footer.contact": "contacto",
@@ -1408,5 +1408,6 @@
   "saved.empty": "Todavía no has guardado nada. Abre un evento, un lugar, un artículo o un empleo y pulsa Guardar.",
   "saved.sign_in": "Inicia sesión para guardar eventos, lugares, artículos y empleos, y encontrarlos aquí en cualquier dispositivo.",
   "saved.error": "No se pudo guardar. Inténtalo de nuevo.",
-  "saved.error_load": "No se pudieron cargar tus guardados."
+  "saved.error_load": "No se pudieron cargar tus guardados.",
+  "cal.more": "más"
 }

@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.127.0",
+  "footer.version": "v1.127.1",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1408,5 +1408,6 @@
   "saved.empty": "Noch nichts gespeichert. Öffnen Sie eine Veranstaltung, einen Ort, einen Artikel oder eine Stelle und drücken Sie Speichern.",
   "saved.sign_in": "Melden Sie sich an, um Veranstaltungen, Orte, Artikel und Stellen zu speichern und sie hier auf jedem Gerät zu finden.",
   "saved.error": "Speichern nicht möglich. Bitte versuchen Sie es erneut.",
-  "saved.error_load": "Ihre gespeicherten Einträge konnten nicht geladen werden."
+  "saved.error_load": "Ihre gespeicherten Einträge konnten nicht geladen werden.",
+  "cal.more": "weitere"
 }

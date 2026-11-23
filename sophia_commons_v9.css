@@ -1854,7 +1854,7 @@ footer {
 }
 .cal-grid .day-label {
   text-align: center;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .08em;
@@ -1862,8 +1862,8 @@ footer {
   padding: 4px 0 8px;
 }
 .cal-day {
-  min-height: 60px;
-  padding: 4px;
+  min-height: 84px;
+  padding: 6px 5px;
   border: 1px solid var(--border-subtle);
   border-radius: 6px;
   cursor: pointer;
@@ -1875,7 +1875,7 @@ footer {
   border-color: var(--gold);
 }
 .cal-day .d-num {
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 2px;
@@ -1883,24 +1883,25 @@ footer {
 .cal-day.today .d-num {
   background: var(--gold);
   color: var(--on-gold);
-  width: 20px; height: 20px;
+  width: 26px; height: 26px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px;
+  font-size: 13px;
 }
 .cal-day.other-month .d-num { color: var(--text-muted); opacity: .4; }
 .cal-ev {
   display: block;
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 1px 4px;
-  border-radius: 3px;
-  margin-top: 2px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-top: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.4;
 }
+.cal-more { font-size: 12.5px; font-weight: 700; color: var(--gold-text); margin-top: 4px; padding: 0 5px; }
 .cal-ev.study { background: var(--gold-light); color: var(--gold-text); }
 .cal-ev.conference { background: var(--sage-light); color: var(--sage); }
 .cal-ev.community { background: var(--rose-light); color: var(--rose-text); }
@@ -2383,7 +2384,7 @@ footer {
   body { font-size: 15px; }
   #dir-map { height: 280px; }
   .cal-grid { font-size: 9px; }
-  .cal-ev { font-size: 11px; }
+  .cal-ev { font-size: 12px; }
   .cal-day { min-height: 40px; }
   .sem-tag { font-size: 11px; }
   .mc-grid .mc-lbl { font-size: 10px; }
@@ -2810,7 +2811,7 @@ footer {
   color: var(--rose-text);
   border-left: 2px solid var(--rose);
   font-style: italic;
-  font-size: 9px;
+  font-size: 13px;
 }
 .cal-day.memorial-day {
   background: var(--rose-light) !important;
@@ -2820,7 +2821,7 @@ footer {
   color: var(--gold-text);
   border-left: 2px solid var(--gold);
   font-weight: 700;
-  font-size: 9px;
+  font-size: 13px;
 }
 .cal-day.festival-day {
   background: var(--gold-light) !important;
@@ -2871,7 +2872,9 @@ button[style*="background:var(--gold)"], a[style*="background:var(--gold)"] { co
 /* ── Event calendar: equal columns, no overflow (nowrap titles widened columns) ── */
 .cal-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .cal-day { min-width: 0; overflow: hidden; }
-.cal-ev { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+/* Event names wrap onto at most two lines instead of being cut after a few letters (owner, 2026-11-22) */
+.cal-ev { overflow: hidden; max-width: 100%; white-space: normal; overflow-wrap: anywhere; line-height: 1.25;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
 .evinfo h5 a { color: inherit; }
 .evinfo h5 a:hover { color: var(--gold-text); }
 .dp-event h5 a { color: var(--text-primary); }
@@ -2940,6 +2943,8 @@ footer { color: rgba(250,247,242,0.78); }
   .cal-grid .day-label { font-size: 9px; letter-spacing: 0; }
   .cal-day { min-height: 44px; padding: 3px 2px; }
   .cal-ev { font-size: 0 !important; height: 6px; width: 6px; padding: 0; border-radius: 50%; display: inline-block; margin: 2px 1px 0; }
+  .cal-more { font-size: 10px; padding: 0 1px; margin-top: 1px; }
+  .cal-more-w { display: none; }
   .cal-ev { background: var(--gold) !important; border: 0 !important; }
   .cal-ev.memorial { background: var(--rose) !important; }
   .cal-ev.conference { background: var(--sage) !important; }

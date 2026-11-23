@@ -12,6 +12,18 @@
       "page": "https://www.anthroposophynyc.org/events",
       "directory_entry_id": "76ecf1e1-b96c-4ffe-929c-f80a460d7492",
       "timezone": "America/New_York"
+    },
+    {
+      "name": "Sophia Foundation (other events, international)",
+      "page": "https://sophiafoundation.org/upcoming-events-non-sponsored-events/",
+      "directory_entry_id": "8bcf3968-80a5-4353-a687-5478f65ede65",
+      "timezone": "Europe/Berlin"
+    },
+    {
+      "name": "Sophia Foundation (sponsored events, North America)",
+      "page": "https://sophiafoundation.org/upcoming-events-sponsored-events/",
+      "directory_entry_id": "8bcf3968-80a5-4353-a687-5478f65ede65",
+      "timezone": "America/Los_Angeles"
     }
   ]
 }
