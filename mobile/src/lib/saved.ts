@@ -65,7 +65,8 @@ async function pull() {
     }
   }
   for (const m of (media || []) as { kind: string; item_id: string; data: MediaItem }[]) {
-    if (m.data && m.data.id) next.media[mediaKey(m.data)] = m.data;
+    // Books are saved on the website only; the app shows talks, blogs and podcasts
+    if (m.data && m.data.id && ['video', 'blog', 'podcast'].includes(m.kind)) next.media[mediaKey(m.data)] = m.data;
   }
   await Promise.all(jobs);
   // Events saved on the website get the same phone reminders as events saved here

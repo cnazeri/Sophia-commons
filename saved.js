@@ -15,18 +15,56 @@ var SAVED_ICON = '<svg class="sc-heart-ico" width="15" height="15" viewBox="0 0 
 function _savedUser() { return window._supabaseUser || null; }
 
 // A heart for a card in a list (events, news). Drawn only for signed-in members; filled from the loaded keys.
+// Hearts are always drawn and only shown to members (body.sc-member, set at sign-in), so lists drawn before the
+// sign-in was restored still get them without being redrawn.
 function scHeart(type, id) {
-  if (!signedIn || !_savedUser() || !id || SAVED_TYPES.indexOf(type) < 0) return '';
+  if (!id || SAVED_TYPES.indexOf(type) < 0) return '';
   var on = !!(_savedKeys && _savedKeys.has(type + ':' + id));
   var label = on ? t('saved.unsave', 'Remove from saved') : t('saved.save', 'Save');
   return '<button type="button" class="sc-heart' + (on ? ' is-saved' : '') + '" aria-pressed="' + on + '" aria-label="' + esc(label) + '" title="' + esc(label) + '"'
     + ' data-type="' + esc(type) + '" data-id="' + esc(id) + '" onclick="event.stopPropagation();scToggleSave(this)">'
     + '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">' + SC_HEART_PATH + '</svg></button>';
 }
+// Books, talks, blogs and podcasts have no database id, so they are saved in saved_media with a copy of what
+// to show (owner, 2026-11-23: "All events news Jobs books of the week, ect should have hearts").
+var SAVED_MEDIA_KINDS = ['video', 'blog', 'podcast', 'book'];
+var _savedMediaKeys = null, _scMediaData = {};
+function scMediaHeart(kind, id, data) {
+  if (!id || SAVED_MEDIA_KINDS.indexOf(kind) < 0) return '';
+  var key = kind + ':' + id;
+  _scMediaData[key] = Object.assign({ kind: kind, id: String(id) }, data || {});
+  var on = !!(_savedMediaKeys && _savedMediaKeys.has(key));
+  var label = on ? t('saved.unsave', 'Remove from saved') : t('saved.save', 'Save');
+  return '<button type="button" class="sc-heart' + (on ? ' is-saved' : '') + '" aria-pressed="' + on + '" aria-label="' + esc(label) + '" title="' + esc(label) + '"'
+    + ' data-mkind="' + esc(kind) + '" data-mid="' + esc(id) + '" onclick="event.stopPropagation();event.preventDefault();scToggleMedia(this)">'
+    + '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">' + SC_HEART_PATH + '</svg></button>';
+}
+async function scToggleMedia(btn) {
+  if (!signedIn || !_savedUser()) { openModal(); return; }
+  var kind = btn.getAttribute('data-mkind'), id = btn.getAttribute('data-mid'), key = kind + ':' + id;
+  await _savedLoad();
+  var keys = _savedMediaKeys || (_savedMediaKeys = new Set()), on = keys.has(key);
+  btn.disabled = true;
+  var r = on
+    ? await _sb.from('saved_media').delete().eq('kind', kind).eq('item_id', id)
+    : await _sb.from('saved_media').upsert({ user_id: _savedUser().id, kind: kind, item_id: id, data: _scMediaData[key] || { kind: kind, id: id } }, { onConflict: 'user_id,kind,item_id' });
+  btn.disabled = false;
+  if (r.error) { scNotify(t('saved.error', 'Could not save. Please try again.')); return; }
+  if (on) keys.delete(key); else keys.add(key);
+  scHeartsRefresh();
+}
+
 // Updates every heart and Save button on the page to match what the member has saved
 function scHeartsRefresh() {
-  var keys = _savedKeys || new Set();
+  var keys = _savedKeys || new Set(), mkeys = _savedMediaKeys || new Set();
   document.querySelectorAll('.sc-heart, .btn-save').forEach(function (b) {
+    if (b.hasAttribute('data-mkind')) {
+      var mon = mkeys.has(b.getAttribute('data-mkind') + ':' + b.getAttribute('data-mid'));
+      b.classList.toggle('is-saved', mon);
+      b.setAttribute('aria-pressed', mon ? 'true' : 'false');
+      return;
+    }
+    if (!b.hasAttribute('data-type')) return;
     var on = keys.has(b.getAttribute('data-type') + ':' + b.getAttribute('data-id'));
     b.classList.toggle('is-saved', on);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -37,15 +75,18 @@ function scHeartsRefresh() {
 async function _savedLoad(force) {
   if (!signedIn || !sbReady() || !_savedUser()) { _savedKeys = null; return new Set(); }
   if (_savedKeys && !force) return _savedKeys;
-  var r = await _sb.from('saved_items').select('item_type, item_id');
+  var both = await Promise.all([_sb.from('saved_items').select('item_type, item_id'), _sb.from('saved_media').select('kind, item_id')]);
+  var r = both[0];
   _savedKeys = new Set((r.data || []).map(function (x) { return x.item_type + ':' + x.item_id; }));
+  _savedMediaKeys = new Set(((both[1] && both[1].data) || []).map(function (x) { return x.kind + ':' + x.item_id; }));
   scHeartsRefresh();
   return _savedKeys;
 }
 
 // Called on sign-in and sign-out (sophia_commons_v9.js)
 function savedAuthChanged() {
-  _savedKeys = null;
+  _savedKeys = null; _savedMediaKeys = null;
+  document.body.classList.toggle('sc-member', !!signedIn);
   // Favorite YouTube channels belong to the member too: reload them and redraw the list if it is open
   if (typeof _ytFavs !== 'undefined') _ytFavs = null;
   if (document.getElementById('yt-list') && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
@@ -176,11 +217,11 @@ async function _savedChannelsHtml() {
   }).join('') + '</div>';
 }
 // Talks, blogs and podcasts saved in the app (saved_media, owner 2026-11-23): one Saved list per account
-var SAVED_MEDIA_LABEL = { video: 'Talk', blog: 'Blog', podcast: 'Podcast' };
+var SAVED_MEDIA_LABEL = { video: 'Talk', blog: 'Blog', podcast: 'Podcast', book: 'Book' };
 async function _savedMediaHtml() {
   var r = await _sb.from('saved_media').select('kind, item_id, data, created_at').order('created_at', { ascending: false });
   if (r.error || !r.data || !r.data.length) return '';
-  return '<div class="saved-group"><h3>' + esc(t('saved.media', 'Talks, blogs and podcasts')) + '</h3>' + r.data.map(function (m) {
+  return '<div class="saved-group"><h3>' + esc(t('saved.media', 'Books, talks, blogs and podcasts')) + '</h3>' + r.data.map(function (m) {
     var d = m.data || {}, url = d.url || '';
     var meta = [t('saved.media_' + m.kind, SAVED_MEDIA_LABEL[m.kind] || m.kind), d.meta].filter(Boolean).join(' · ');
     var rid = 'saved-media-' + m.kind + '-' + String(m.item_id).replace(/[^A-Za-z0-9_-]/g, '');
@@ -193,6 +234,7 @@ async function _savedMediaHtml() {
 async function scRemoveSavedMedia(kind, id, rid) {
   var r = await _sb.from('saved_media').delete().eq('kind', kind).eq('item_id', id);
   if (r.error) { scNotify(t('saved.error', 'Could not save. Please try again.')); return; }
+  if (_savedMediaKeys) _savedMediaKeys.delete(kind + ':' + id);
   var row = document.getElementById(rid);
   if (row) row.remove();
   document.querySelectorAll('#saved-root .saved-group').forEach(function (g) { if (!g.querySelector('.saved-row')) g.remove(); });

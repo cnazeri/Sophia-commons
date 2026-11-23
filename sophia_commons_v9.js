@@ -1168,7 +1168,7 @@ async function _classifiedBlock(catId) {
             + '<span class="lmeta">' + esc(meta) + '</span></div>'
             + (a.description ? '<div class="dir-row-desc">' + esc(_shortText(a.description, 200)) + '</div>' : '')
             + (a.website_url ? '<a class="dir-tag" href="' + escUrl(a.website_url) + '" target="_blank" rel="noopener">' + esc(t('classifieds.original', 'see the original post')) + ' &rarr;</a>' : '')
-            + '</div></div>';
+            + '</div>' + (typeof scHeart === 'function' ? scHeart('listing', a.id) : '') + '</div>';
         }).join('')
       + (ads.length > FIRST ? '<button type="button" class="ev-more more-toggle cat-more" onclick="this.parentNode.querySelectorAll(\'.dir-row[hidden]\').forEach(function(x){x.hidden=false;});this.remove();">'
           + esc(t('podcasts.show_all_social', 'Show all {n}').replace('{n}', ads.length)) + '</button>' : '')
@@ -7722,7 +7722,7 @@ function renderPodcastSection() {
   var totalCount = podcastData.podcasts.length + podcastData.video.length + podcastData.x.length + podcastData.archives.length;
   document.getElementById('podcasts-count').textContent = totalCount + ' ' + t('podcasts.shows_label');
 
-  function renderBlock(items, heading) {
+  function renderBlock(items, heading, kind) {
     var html = '<div class="listblock reveal"><div class="listblock-head"><h3>' + heading + '</h3><span class="podcast-count">' + items.length + ' ' + t('podcasts.items') + '</span></div><div class="listblock-body">';
     items.forEach(function(p) {
       html += '<div class="lrow podcast-row">'
@@ -7731,14 +7731,14 @@ function renderPodcastSection() {
         + (p.verified ? '<span class="lv">&#10003;</span>' : '')
         + '<span class="lmeta">' + esc(p.platform) + (p.lang ? ' &middot; ' + esc(p.lang) : '') + '</span>'
         + '<div class="podcast-desc">' + esc(p.desc) + '</div>'
-        + '</div></div>';
+        + '</div>' + (kind ? (typeof scMediaHeart === 'function' ? scMediaHeart(kind, _scSlug(p.title), { title: p.title, url: p.url, meta: p.platform }) : '') : '') + '</div>';
     });
     html += '</div></div>';
     return html;
   }
 
   container.innerHTML = '<div class="twocol">'
-    + renderBlock(podcastData.podcasts, t('podcasts.podcasts_heading'))
+    + renderBlock(podcastData.podcasts, t('podcasts.podcasts_heading'), 'podcast')
     + renderBlock(podcastData.video, t('podcasts.video_social_heading'))
     + '</div>'
     + renderBlock(podcastData.x, t('podcasts.x_heading', 'On X (Twitter)'))
@@ -9091,6 +9091,7 @@ function renderNewVideoCard(v, count, kicker, rating) {
     + '<div class="video-actions"><a href="' + escUrl(v.video_url) + '" target="_blank" rel="noopener">' + esc(t('video.watch', 'Watch')) + ' &rarr;</a>'
     + '<a href="/podcasts" onclick="showSec(\'podcasts\');openChannel(\'' + escJs(v.slug) + '\');return false;">' + esc(t('channel.details', 'details, ratings and reviews')) + '</a>'
     + (count > 1 ? '<a href="#" class="quiet" onclick="_newVidOffset++;renderVideoSpotlight();return false;">' + esc(t('video.next_new', 'next new video')) + ' (' + count + ') &#8635;</a>' : '')
+    + (typeof scMediaHeart === 'function' ? scMediaHeart('video', v.video_id, { title: v.video_title, url: v.video_url, image: v.video_thumbnail, meta: v.name, date: v.published_at }) : '')
     + '</div></div></div>';
 }
 var _newVidOffset = 0;
@@ -9154,6 +9155,7 @@ async function renderFeaturedTalk(channels) {
         + '<a class="video-title" href="' + escUrl(url) + '" target="_blank" rel="noopener">' + esc(v.title) + '</a>'
         + (ch.name ? '<div class="video-channel"><b>' + esc(ch.name) + '</b></div>' : '')
         + (v.published_at ? '<div class="video-meta">' + esc(ytAgo(v.published_at)) + '</div>' : '')
+        + (typeof scMediaHeart === 'function' ? scMediaHeart('video', v.video_id, { title: v.title, url: url, image: thumb, meta: ch.name || '', date: v.published_at }) : '')
         + '</div></div>';
     }).join('') + '</div>';
     _talkDone = true;
@@ -9233,6 +9235,9 @@ function _ytRowHtml(r, rt, isWeek, isFav) {
     + (rt && rt.count ? _stars(rt.avg) + ' <span>' + rt.count + '</span>' : '<span class="stars off-all" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span>' + t('channel.rate_short', 'Rate') + '</span>')
     + '</button></div></div>';
 }
+
+// A short id for things without a database id (books, podcasts): lower-case words joined by hyphens
+function _scSlug(s) { return String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80); }
 
 // ── Favorite channels (owner, 2026-11-23) ──
 // A signed-in member taps the heart on a channel; favorites show first in the short list, in a "My favorites"
@@ -9729,7 +9734,9 @@ async function renderSubstack() {
       return '<div class="ss-row">' + ava + '<div class="ss-main">'
         + '<a class="ltitle" href="' + escUrl(b.url) + '" target="_blank" rel="noopener">' + esc(b.name) + '</a>'
         + (b.author && b.author !== b.name ? '<span class="lmeta">' + esc(b.author) + '</span>' : '')
-        + (b.desc ? '<div class="ss-desc">' + esc(b.desc) + '</div>' : '') + latest + '</div></div>';
+        + (b.desc ? '<div class="ss-desc">' + esc(b.desc) + '</div>' : '') + latest + '</div>'
+        + (typeof scMediaHeart === 'function' ? scMediaHeart('blog', (b.url.match(/^https?:\/\/([^./]+)\.substack\.com/) || [])[1] || _scSlug(b.name), { title: b.name, url: (b.latest && b.latest.url) || b.url, home: b.url, image: b.image || null, meta: b.author !== b.name ? b.author : '' }) : '')
+        + '</div>';
     };
     // The 3 with the newest posts first, the rest behind a button (owner, 2026-11-21)
     var SS_FIRST = 3, more = t('podcasts.show_all_social', 'Show all {n}').replace('{n}', blogs.length);
@@ -9934,6 +9941,7 @@ async function renderHomeBook() {
     + (b.price ? '<div class="emeta">' + esc(b.price) + '</div>' : '')
     + (b.blurb ? '<p class="feat-ev-desc">' + esc(b.blurb) + '</p>' : '')
     + link(esc(t('home.book_buy', 'See it at the Rudolf Steiner Bookstore')) + ' &rarr;', 'book-day-buy')
+    + (typeof scMediaHeart === 'function' ? scMediaHeart('book', _scSlug(b.name), { title: b.name, url: b.url, image: b.image || null, meta: b.price || '' }) : '')
     + '</div></div>';
   block.hidden = false;
 }
@@ -9977,6 +9985,7 @@ function _homeJobSlide(j) {
     + '<div class="emeta">' + esc([place, localDate(j.created_at, { month: 'short', day: 'numeric' })].filter(Boolean).join(' \u00b7 ')) + '</div>'
     + (j.description ? '<p class="feat-ev-desc">' + esc(_shortText(j.description, 160)) + '</p>' : '')
     + '<a class="news-ev-read" href="' + href + '" onclick="' + open + '">' + esc(t('home.see_job', 'See the job')) + ' &rarr;</a>'
+    + (typeof scHeart === 'function' ? scHeart('listing', j.id) : '')
     + '</div></div>';
 }
 
@@ -10219,7 +10228,9 @@ function renderTop50Books() {
       + '<div class="top50-links"><a class="top50-amz" href="' + escUrl(amazonSearchUrl(q)) + '" target="_blank" rel="sponsored noopener">' + t('books.buy_amazon', 'Amazon') + ' &rarr;</a>'
       + (b.free_online_url ? '<a href="' + escUrl(b.free_online_url) + '" target="_blank" rel="noopener">' + t('books.free_online', 'free online') + '</a>' : '')
       + (b.guide_url ? '<a href="' + escUrl(b.guide_url) + '" target="_blank" rel="noopener">' + esc(b.guide_label || 'study guide') + '</a>' : '')
-      + '<span class="ltag">' + esc(b.category) + '</span></div>'
+      + '<span class="ltag">' + esc(b.category) + '</span>'
+      + (typeof scMediaHeart === 'function' ? scMediaHeart('book', _scSlug(b.title.replace(/:.*$/, '')), { title: b.title, url: amazonSearchUrl(q), image: b.cover || null, meta: b.author }) : '')
+      + '</div>'
       + '</div></div>';
     items.push(item);
   });

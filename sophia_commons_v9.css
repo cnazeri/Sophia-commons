@@ -4578,3 +4578,4 @@ a.adm-btn, a.adm-btn:visited { color: var(--text-primary); }
 .ch-vid:hover .ch-vid-t { text-decoration: underline; }
 @media (max-width: 520px) { .ch-page .ch-head img { width: 64px; height: 64px; flex-basis: 64px; } }
 .feat-ev-body .sc-heart, .news-ev .sc-heart { margin-left: 8px; vertical-align: middle; }
+body:not(.sc-member) .sc-heart { display: none !important; }
