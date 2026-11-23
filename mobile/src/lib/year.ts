@@ -17,10 +17,14 @@ function forYear(y: number): YearDay[] {
   for (const f of dates.fixed) out.push({ key: f.key, date: new Date(y, f.month - 1, f.day), title: f.title, desc: f.desc, img: f.img, kind: 'festival' });
   // The four Advent Sundays (the Sundays before 25 December), as on the website
   const xmas = new Date(y, 11, 25), back = xmas.getDay() === 0 ? 7 : xmas.getDay();
-  const advent = { img: { src: 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/advent.jpg', alt: 'Advent wreath with violet and rose candles' } };
+  // Each Sunday its own picture: the same wreath with one more candle lit each week, the rose candle on the third
+  // (owner, 2026-11-22; PHILIP Janos, CC0, Wikimedia Commons)
+  const lit = ['', 'one violet candle lit', 'two violet candles lit', 'two violet candles and the rose candle lit', 'all four candles lit'];
   for (let i = 0; i < 4; i++) {
-    out.push({ key: 'advent' + (4 - i), date: new Date(y, 11, 25 - back - 7 * i), title: 'Advent Sunday ' + (4 - i), kind: 'festival',
-      desc: 'The four Sundays before Christmas: a season of waiting and preparation. Many Waldorf communities hold an Advent Spiral.', img: advent.img });
+    const n = 4 - i;
+    out.push({ key: 'advent' + n, date: new Date(y, 11, 25 - back - 7 * i), title: 'Advent Sunday ' + n, kind: 'festival',
+      desc: 'The four Sundays before Christmas: a season of waiting and preparation. Many Waldorf communities hold an Advent Spiral.',
+      img: { src: 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/advent' + n + '.jpg', alt: 'Advent wreath with violet and rose candles, ' + lit[n] } });
   }
   const e = easter(y);
   for (const f of dates.easter) out.push({ key: f.key, date: new Date(y, e.getMonth(), e.getDate() + f.offset), title: f.title, desc: f.desc, img: f.img, kind: 'festival' });

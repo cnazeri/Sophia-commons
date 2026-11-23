@@ -4437,6 +4437,14 @@ var FESTIVAL_IMAGES = {
 };
 // The Christmas Conference opening day shares the Foundation Stone picture
 FESTIVAL_IMAGES.christmas_conference_open = FESTIVAL_IMAGES.christmas_conference;
+// Each Advent Sunday its own picture: the same wreath with one more candle lit each week, the rose candle on the
+// third Sunday (owner, 2026-11-22). Advent Sunday 1 is the photo 'advent' already used.
+[1, 2, 3, 4].forEach(function(n) {
+  var lit = ['', 'one violet candle lit', 'two violet candles lit', 'two violet candles and the rose candle lit', 'all four candles lit'][n];
+  FESTIVAL_IMAGES['advent' + n] = { src: 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/advent' + n + '.jpg',
+    alt: 'Advent wreath with violet and rose candles, ' + lit,
+    page: 'https://commons.wikimedia.org/wiki/File:Advent_wreath_with_violet_and_rose_candles_' + n + '.jpg', credit: 'PHILIP J\u00e1nos, CC0, via Wikimedia Commons' };
+});
 
 // Standard picture for an event that has none: the matching festival by title, else one per event type
 var EVENT_FALLBACK_IMG = [
@@ -4643,7 +4651,7 @@ function _injectAnthroHolidaysYear(yr) {
   var xmasDay = xmas.getDay();
   var advent4 = _addDays(xmas, -(xmasDay === 0 ? 7 : xmasDay)); // Sunday before Christmas
   for (var a = 0; a < 4; a++) {
-    _addFestival('advent', _dateStr(_addDays(advent4, -7 * a)), 'Advent Sunday ' + (4 - a), 'festival',
+    _addFestival('advent' + (4 - a), _dateStr(_addDays(advent4, -7 * a)), 'Advent Sunday ' + (4 - a), 'festival',
       'The four Sundays before Christmas: a season of waiting and preparation. Many Waldorf communities hold an Advent Spiral.',
       [_SRC.wiki('Advent', 'Advent')]);
   }
