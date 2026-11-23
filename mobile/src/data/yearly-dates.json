@@ -12,6 +12,21 @@
    }
   },
   {
+   "key": "joan_of_arc",
+   "month": 1,
+   "day": 6,
+   "title": "Birth of Joan of Arc (The Maid of Orleans)",
+   "desc": "Joan of Arc, the Maid of Orleans, was born in Domrémy, France, traditionally on 6 January 1412, the feast of Epiphany at the close of the Twelve Holy Nights. Rudolf Steiner spoke of this timing: she was carried through the Holy Nights before her birth. Watch Nancy Jewel Poer's talk \"Joan of Arc: Her Gifts for Our Time\".",
+   "img": {
+    "src": "https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/joan_of_arc.jpg",
+    "alt": "Joan of Arc at the Coronation of Charles VII, Jean-Auguste-Dominique Ingres (1854)"
+   },
+   "link": {
+    "label": "Watch the talk: Joan of Arc, Her Gifts for Our Time",
+    "url": "https://vimeo.com/1183119072"
+   }
+  },
+  {
    "key": "candlemas",
    "month": 2,
    "day": 2,

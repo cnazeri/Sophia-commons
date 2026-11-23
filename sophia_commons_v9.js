@@ -4445,6 +4445,9 @@ FESTIVAL_IMAGES.christmas_conference_open = FESTIVAL_IMAGES.christmas_conference
     alt: 'Advent wreath with violet and rose candles, ' + lit,
     page: 'https://commons.wikimedia.org/wiki/File:Advent_wreath_with_violet_and_rose_candles_' + n + '.jpg', credit: 'PHILIP J\u00e1nos, CC0, via Wikimedia Commons' };
 });
+FESTIVAL_IMAGES.joan_of_arc = { src: 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/joan_of_arc.jpg',
+  alt: 'Joan of Arc at the Coronation of Charles VII, Jean-Auguste-Dominique Ingres (1854)',
+  page: 'https://commons.wikimedia.org/wiki/File:Ingres_coronation_charles_vii.jpg', credit: 'Jean-Auguste-Dominique Ingres, Public domain, via Wikimedia Commons' };
 
 // Standard picture for an event that has none: the matching festival by title, else one per event type
 var EVENT_FALLBACK_IMG = [
@@ -4467,6 +4470,10 @@ var ANTHRO_HOLIDAYS = [
   { key: 'epiphany', month: 1, day: 6, title: '12 Holy Nights End (Epiphany)', cat: 'festival',
     desc: 'Epiphany closes the Twelve Holy Nights and opens the season of Epiphany: the light of Christmas carried out into the year.',
     src: [_SRC.holyNights, _SRC.wiki('Epiphany', 'Epiphany_(holiday)')] },
+  // Owner, 2026-11-23: a yearly day, with Nancy Jewel Poer's talk
+  { key: 'joan_of_arc', month: 1, day: 6, title: 'Birth of Joan of Arc (The Maid of Orleans)', cat: 'festival',
+    desc: 'Joan of Arc, the Maid of Orleans, was born in Domrémy, France, traditionally on 6 January 1412, the feast of Epiphany at the close of the Twelve Holy Nights. Rudolf Steiner spoke of this timing: she was carried through the Holy Nights before her birth. Watch Nancy Jewel Poer\'s talk "Joan of Arc: Her Gifts for Our Time".',
+    src: [['Video: Joan of Arc, Her Gifts for Our Time (Nancy Jewel Poer, Vimeo)', 'https://vimeo.com/1183119072'], _SRC.wiki('Joan of Arc', 'Joan_of_Arc')] },
   { key: 'candlemas', month: 2, day: 2, title: 'Candlemas', cat: 'festival',
     desc: 'Forty days after Christmas: the midpoint between winter solstice and spring equinox, traditionally a festival of candles and returning light.',
     src: [_SRC.wiki('Candlemas', 'Candlemas')] },

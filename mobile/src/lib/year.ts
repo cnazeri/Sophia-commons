@@ -2,7 +2,8 @@
 // and the Calendar of the Soul week (same calculation as sophiacommons.org and rsarchive.org).
 import dates from '@/data/yearly-dates.json';
 
-export type YearDay = { key: string; date: Date; title: string; desc: string; img?: { src: string; alt: string } | null; kind: 'festival' | 'anniversary' | 'memorial' };
+export type YearDay = { key: string; date: Date; title: string; desc: string; img?: { src: string; alt: string } | null; kind: 'festival' | 'anniversary' | 'memorial';
+  link?: { label: string; url: string } | null };
 
 export function easter(y: number): Date {
   const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
@@ -14,7 +15,10 @@ export function easter(y: number): Date {
 
 function forYear(y: number): YearDay[] {
   const out: YearDay[] = [];
-  for (const f of dates.fixed) out.push({ key: f.key, date: new Date(y, f.month - 1, f.day), title: f.title, desc: f.desc, img: f.img, kind: 'festival' });
+  for (const f of dates.fixed) {
+    const link = 'link' in f ? (f as { link?: { label: string; url: string } }).link : null;
+    out.push({ key: f.key, date: new Date(y, f.month - 1, f.day), title: f.title, desc: f.desc, img: f.img, kind: 'festival', link });
+  }
   // The four Advent Sundays (the Sundays before 25 December), as on the website
   const xmas = new Date(y, 11, 25), back = xmas.getDay() === 0 ? 7 : xmas.getDay();
   // Each Sunday its own picture: the same wreath with one more candle lit each week, the rose candle on the third

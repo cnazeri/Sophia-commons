@@ -2,8 +2,10 @@
 // next few days and the switches to take this card or the Calendar of the Soul off the Home page.
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import { StyleSheet, View } from 'react-native';
 
+import { Button } from '@/components/button';
 import { HomeToggles } from '@/components/home-toggles';
 import { LinkRow } from '@/components/link-row';
 import { Body, H1, H2, Kicker, Screen } from '@/components/ui';
@@ -24,6 +26,7 @@ export default function DayScreen() {
       <Kicker>{(isToday ? t('app.today', 'Today') + ' · ' : '') + localDate(d.date.toISOString(), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</Kicker>
       <H1 style={{ marginTop: 0 }}>{d.title}</H1>
       {d.desc ? <Body>{d.desc}</Body> : null}
+      {d.link ? <Button label={d.link.label} onPress={() => WebBrowser.openBrowserAsync(d.link!.url)} /> : null}
       {next.length ? (
         <>
           <H2>{t('app.day_next', 'Coming up')}</H2>
