@@ -6,6 +6,7 @@ import { JobCard } from '@/components/job-card';
 import { Body } from '@/components/ui';
 import { Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { trackSearch } from '@/lib/analytics';
 import { t } from '@/lib/i18n';
 import { fetchJobs, type Job } from '@/lib/jobs';
 
@@ -24,6 +25,7 @@ export default function JobsScreen() {
     }, q ? 300 : 0);
     return () => { alive = false; clearTimeout(timer); };
   }, [q]);
+  useEffect(() => { trackSearch('jobs', q); }, [q]);
 
   return (
     <FlatList

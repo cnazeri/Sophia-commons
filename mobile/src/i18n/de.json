@@ -1711,5 +1711,19 @@
   "app.day_more": "Mehr zu diesem Tag",
   "app.media_in_lang": "Auf {lang}",
   "app.media_language": "Sprache",
-  "app.media_original_title": "Originaltitel"
+  "app.media_original_title": "Originaltitel",
+  "app.privacy_title": "Datenschutz",
+  "app.privacy_share": "Anonyme Nutzungsdaten teilen",
+  "app.privacy_intro": "Um zu sehen, welche Teile der App genutzt werden, zählt Sophia Commons geöffnete Seiten und Aktionen wie Speichern oder Suchen. Diese Zählung ist anonym: Es werden kein Name, keine E-Mail, kein Konto und keine Suchbegriffe gesendet. PostHog, der Dienst, der zählt, ermittelt aus Ihrer Verbindung nur ungefähr Land und Stadt.",
+  "app.privacy_share_desc": "Hilft uns, die App zu verbessern. Sie können es jederzeit ausschalten.",
+  "app.settings_privacy_desc": "Anonyme Nutzungsstatistik",
+  "app.feedback_title": "Feedback senden",
+  "app.settings_feedback_desc": "Sagen Sie uns, was besser sein könnte",
+  "app.feedback_intro": "Was könnte besser sein, was fehlt, was gefällt Ihnen? Ihre Nachricht geht direkt an die Menschen, die Sophia Commons machen.",
+  "app.feedback_label": "Ihre Nachricht",
+  "app.feedback_email": "Ihre E-Mail (freiwillig, falls Sie eine Antwort möchten)",
+  "app.feedback_err_empty": "Bitte schreiben Sie ein paar Worte.",
+  "app.feedback_thanks": "Vielen Dank. Jede Nachricht wird gelesen.",
+  "app.rate_app": "Sophia Commons bewerten",
+  "app.settings_rate_desc": "Eine Bewertung im Store hilft anderen, die App zu finden"
 }

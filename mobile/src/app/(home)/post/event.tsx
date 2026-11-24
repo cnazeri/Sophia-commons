@@ -2,7 +2,7 @@
 // event is listed on the calendar at once and the owner reviews it afterwards (Admin > Events).
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Share, Switch, View } from 'react-native';
+import { Switch, View } from 'react-native';
 
 import { AuthForm } from '@/components/auth-form';
 import { Button } from '@/components/button';
@@ -15,6 +15,7 @@ import { useAuth } from '@/lib/auth';
 import type { Picked } from '@/lib/images';
 import { t } from '@/lib/i18n';
 import { type EventIn, type EventOut, postEvent, webUrl } from '@/lib/post';
+import { shareItem } from '@/lib/share';
 
 const TYPES = ['workshop', 'conference', 'study_group', 'festival', 'retreat', 'other'] as const;
 const TYPE_LABEL: Record<string, string> = { workshop: 'Workshop or course', conference: 'Conference', study_group: 'Study group',
@@ -118,7 +119,7 @@ export default function PostEvent() {
       {msg ? <FormMessage text={msg.text} error={msg.error} /> : null}
       {done ? (
         <>
-          {done.link ? <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: f.title + '\n' + done.link })} /> : null}
+          {done.link ? <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => shareItem('event', { message: f.title + '\n' + done.link })} /> : null}
           {done.id ? <Button kind="secondary" label={t('app.view_event', 'See the event')} onPress={() => router.push({ pathname: '/events/[id]', params: { id: done.id } })} /> : null}
           <Button label={t('app.done', 'Done')} onPress={() => router.back()} />
         </>

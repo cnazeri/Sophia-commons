@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "Abonnieren",
   "footer.newsletter_success": "Sie sind abonniert!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.129.1",
+  "footer.version": "v1.129.3",
   "footer.privacy": "Datenschutz",
   "footer.terms": "Nutzungsbedingungen",
   "footer.contact": "Kontakt",
@@ -1031,7 +1031,7 @@
   "modal.newsletter_opt_in": "Schicken Sie mir den wöchentlichen Sophia Commons Newsletter per E-Mail. Abbestellen ist in jeder Ausgabe möglich.",
   "home.news_heading": "Nachrichten",
   "home.all_news_link": "alle Nachrichten →",
-  "home.social_heading": "Aus der Gemeinschaft",
+  "home.social_heading": "Sophia Commons folgen",
   "home.reddit_heading": "Von Reddit",
   "channel.saved": "Gespeichert. Danke!",
   "home.x_intro": "Freitags der Wochen-Newsletter, montags die Veranstaltungen der Woche.",
@@ -1409,5 +1409,7 @@
   "saved.sign_in": "Melden Sie sich an, um Veranstaltungen, Orte, Artikel und Stellen zu speichern und sie hier auf jedem Gerät zu finden.",
   "saved.error": "Speichern nicht möglich. Bitte versuchen Sie es erneut.",
   "saved.error_load": "Ihre gespeicherten Einträge konnten nicht geladen werden.",
-  "cal.more": "weitere"
+  "cal.more": "weitere",
+  "home.ig_follow_btn": "Instagram",
+  "home.x_btn": "X"
 }

@@ -10026,6 +10026,8 @@ var X_HANDLE = 'SophiaCommons7';
 var X_LATEST_POST = null;
 function renderHomeX(fromDb) {
   var block = document.getElementById('side-x-block'), el = document.getElementById('side-x');
+  // The side panel now shows a plain follow card for X and Instagram, no posts (owner, 2026-11-23)
+  if (!block || !el) return;
   var p = fromDb || X_LATEST_POST;
   // Newest sent post from the database (owner, 2026-11-20: Admin can post, so no redeploy is needed)
   if (!fromDb && typeof sbReady === 'function') {

@@ -78,3 +78,4 @@ android/.gradle/
 android/*.apk
 android/*.aab
 android/*.idsig
+automation/ig_preview/

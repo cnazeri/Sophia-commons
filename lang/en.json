@@ -594,7 +594,7 @@
   "footer.newsletter_btn": "subscribe",
   "footer.newsletter_success": "you're subscribed!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.129.1",
+  "footer.version": "v1.129.3",
   "footer.privacy": "privacy",
   "footer.terms": "terms",
   "footer.contact": "contact",
@@ -970,7 +970,7 @@
   "modal.newsletter_opt_in": "Send me the weekly Sophia Commons digest by email. You can unsubscribe from any issue.",
   "home.news_heading": "News",
   "home.all_news_link": "all news →",
-  "home.social_heading": "From the community",
+  "home.social_heading": "Follow Sophia Commons",
   "home.reddit_heading": "From Reddit",
   "channel.saved": "Saved. Thank you!",
   "home.x_intro": "The weekly newsletter on Fridays and this week's events on Mondays.",
@@ -1348,5 +1348,7 @@
   "saved.sign_in": "Sign in to save events, places, articles and jobs, and find them here on any device.",
   "saved.error": "Could not save. Please try again.",
   "saved.error_load": "Could not load your saved items.",
-  "cal.more": "more"
+  "cal.more": "more",
+  "home.ig_follow_btn": "Instagram",
+  "home.x_btn": "X"
 }

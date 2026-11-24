@@ -1,0 +1,41 @@
+name: Weekly Instagram Reels (Monday events, Friday newsletter)
+
+# Owner, 2026-11-23: every Monday a Reel of this week's event pictures, set to a track from automation/ig_music/,
+# goes to Instagram on its own, like the Monday X post. automation/instagram_post.py claims the week in instagram_posts first, so the backup runs
+# never post twice; a failed run is retried at the next backup time.
+# Owner, 2026-11-23: on Fridays the weekly newsletter also goes out as a Reel, once it has been sent (same times as the X post).
+# Secrets: IG_USER_ID (Instagram Business account id), IG_ACCESS_TOKEN (long-lived or System User token).
+
+on:
+  schedule:
+    - cron: "17 14,18,21 * * 1"     # Monday 6:17 am, backups 10:17 am and 1:17 pm Pacific
+    - cron: "17 17,20,23 * * 5"     # Friday 9:17 am, 12:17 pm, 3:17 pm Pacific: the newsletter, once sent
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: pip install --quiet requests==2.32.3 Pillow==11.0.0
+      - name: Post this week's Reel to Instagram (events on Monday, newsletter on Friday)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ "$(date -u +%u)" = "5" ]; then
+            python3 automation/instagram_post.py post --newsletter
+          else
+            python3 automation/instagram_post.py post
+          fi

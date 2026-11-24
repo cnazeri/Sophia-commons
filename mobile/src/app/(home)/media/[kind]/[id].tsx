@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Share, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
 
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
@@ -15,6 +15,7 @@ import { toggleFavChannel, useFavChannels } from '@/lib/fav-channels';
 import { localDate, t } from '@/lib/i18n';
 import { type MediaItem, fetchMediaItem, languageName, mediaKey } from '@/lib/media';
 import { useSaved } from '@/lib/saved';
+import { shareItem } from '@/lib/share';
 
 export default function MediaItemScreen() {
   const c = useTheme();
@@ -60,7 +61,7 @@ export default function MediaItemScreen() {
             setBusy(false);
           }} />
       ) : null}
-      <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: m.title + '\n' + m.url })} />
+      <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => shareItem('media', { message: m.title + '\n' + m.url })} />
       <Body muted style={{ fontSize: 13 }}>{!fav.userId
         ? t('app.media_saved_signin', 'Sign in to save this with the heart.')
         : saved.media?.[mediaKey(m)]

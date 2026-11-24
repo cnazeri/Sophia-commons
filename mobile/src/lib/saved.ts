@@ -5,12 +5,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
 
+import { track } from '@/lib/analytics';
 import { type Listing, fetchListing } from '@/lib/directory';
 import { type EventRow, fetchEvent } from '@/lib/events';
 import { fetchJob, type Job } from '@/lib/jobs';
 import { type MediaItem, mediaKey } from '@/lib/media';
 import { type Article, fetchArticle } from '@/lib/news';
 import { cancelReminder, remindEvent } from '@/lib/reminders';
+import { maybeAskForReview } from '@/lib/review';
 import { supabase } from '@/lib/supabase';
 
 const KEY = 'sc_saved_v1';
@@ -106,6 +108,13 @@ supabase.auth.onAuthStateChange((_e, s) => { onAccount(s?.user?.id || null); });
 export function refreshSaved() { if (userId) pull().catch(() => {}); }
 
 // ── Saving (signed-in members only) ──
+/** A save is a happy moment: count it, and maybe show the store's rating card (see review.ts). */
+function onSaved(kind: string, on: boolean) {
+  if (!on) return;
+  track('item_saved', { kind });
+  maybeAskForReview('save');
+}
+
 async function setRow(type: string, id: string, on: boolean) {
   if (!userId) throw new Error('signed out');
   if (!isUuid(id)) return;
@@ -129,24 +138,28 @@ export async function toggleEvent(e: EventRow): Promise<boolean> {
   if (!userId) throw new Error('signed out');
   const on = toggleIn('events', e.id, e);
   try { await setRow('event', e.id, on); } catch (err) { toggleIn('events', e.id, e); throw err; }
+  onSaved('event', on);
   return on;
 }
 export async function toggleListing(l: Listing): Promise<boolean> {
   if (!userId) throw new Error('signed out');
   const on = toggleIn('listings', l.id, l);
   try { await setRow('directory', l.id, on); } catch (err) { toggleIn('listings', l.id, l); throw err; }
+  onSaved('place', on);
   return on;
 }
 export async function toggleNews(a: Article): Promise<boolean> {
   if (!userId) throw new Error('signed out');
   const on = toggleIn('news', a.id, a);
   try { await setRow('news', a.id, on); } catch (err) { toggleIn('news', a.id, a); throw err; }
+  onSaved('article', on);
   return on;
 }
 export async function toggleJob(j: Job): Promise<boolean> {
   if (!userId) throw new Error('signed out');
   const on = toggleIn('jobs', j.id, j);
   try { await setRow('listing', j.id, on); } catch (err) { toggleIn('jobs', j.id, j); throw err; }
+  onSaved('job', on);
   return on;
 }
 export async function toggleMedia(m: MediaItem): Promise<boolean> {
@@ -164,5 +177,6 @@ export async function toggleMedia(m: MediaItem): Promise<boolean> {
     ? await supabase.from('saved_media').upsert({ user_id: userId, kind: m.kind, item_id: m.id, data: m }, { onConflict: 'user_id,kind,item_id' })
     : await supabase.from('saved_media').delete().eq('kind', m.kind).eq('item_id', m.id);
   if (r.error) { flip(); throw new Error(r.error.message); }
+  onSaved(m.kind, on);
   return on;
 }

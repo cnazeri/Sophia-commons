@@ -5,8 +5,10 @@
 import * as Calendar from 'expo-calendar';
 import { ActionSheetIOS, Alert, Linking, Platform } from 'react-native';
 
+import { track } from '@/lib/analytics';
 import { type EventRow, eventPlace, eventTitle } from '@/lib/events';
 import { t } from '@/lib/i18n';
+import { maybeAskForReview } from '@/lib/review';
 import { SITE } from '@/lib/supabase';
 
 function times(e: EventRow) {
@@ -38,24 +40,34 @@ function outlookLink(e: EventRow) {
   return 'https://outlook.live.com/calendar/0/deeplink/compose?' + q.toString();
 }
 
-async function phoneCalendar(e: EventRow): Promise<boolean> {
+// 'added' also covers Android, which always answers 'done' (it cannot tell a save from a cancel)
+async function phoneCalendar(e: EventRow): Promise<'added' | 'cancelled' | false> {
   const { start, end } = times(e);
   const details = { title: eventTitle(e), startDate: start, endDate: end, allDay: !!e.is_all_day, location: place(e), notes: link(e), url: link(e) };
   try {
-    if (Platform.OS === 'ios') { await Calendar.getDefaultCalendarSync().addEventWithForm(details); return true; }
+    if (Platform.OS === 'ios') {
+      const r = await Calendar.getDefaultCalendarSync().addEventWithForm(details);
+      return r.action === 'canceled' || r.action === 'deleted' ? 'cancelled' : 'added';
+    }
     if (Platform.OS === 'android') {
       const cals = await Calendar.getCalendars();
       const cal = cals.find((c) => c.isPrimary && c.allowsModifications) || cals.find((c) => c.allowsModifications);
-      if (cal) { await cal.addEventWithForm(details); return true; }
+      if (cal) { await cal.addEventWithForm(details); return 'added'; }
     }
   } catch { /* no calendar access or no calendar: the caller falls back to Google */ }
   return false;
 }
 
 export function addToCalendar(e: EventRow) {
-  const google = () => Linking.openURL(googleLink(e));
-  const outlook = () => Linking.openURL(outlookLink(e));
-  const phone = async () => { if (!(await phoneCalendar(e))) await google(); };
+  // Adding an event to a calendar is a happy moment. The rating card is only asked for when the member stays in the
+  // app (the phone calendar); Google and Outlook open the browser, which would hide the card.
+  const added = (where: string) => { track('calendar_added', { where }); if (where === 'phone') maybeAskForReview('calendar'); };
+  const google = () => { added('google'); return Linking.openURL(googleLink(e)); };
+  const outlook = () => { added('outlook'); return Linking.openURL(outlookLink(e)); };
+  const phone = async () => {
+    const r = await phoneCalendar(e);
+    if (r === 'added') added('phone'); else if (r === false) await google();
+  };
   const title = t('app.add_to_calendar', 'Add to calendar');
   if (Platform.OS === 'ios') {
     const opts = [t('app.cal_apple', 'Apple Calendar'), t('app.cal_google', 'Google Calendar'), t('app.cal_outlook', 'Outlook (Windows)'), t('app.cancel', 'Cancel')];

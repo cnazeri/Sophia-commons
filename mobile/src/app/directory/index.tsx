@@ -13,6 +13,7 @@ import { Body, H1, Wordmark } from '@/components/ui';
 import { Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { CATEGORIES, type Listing, nearListings, searchListings } from '@/lib/directory';
+import { track, trackSearch } from '@/lib/analytics';
 import { t } from '@/lib/i18n';
 
 export default function DirectoryScreen() {
@@ -35,6 +36,7 @@ export default function DirectoryScreen() {
     }, q ? 300 : 0);
     return () => { alive = false; clearTimeout(timer); };
   }, [q, cat, near]);
+  useEffect(() => { trackSearch('directory', q); }, [q]);
 
   // Location is asked for only when "Near me" is tapped, and never stored
   const findNear = async () => {
@@ -49,6 +51,7 @@ export default function DirectoryScreen() {
     if (!pos) { setLocMsg(t('app.location_unavailable', 'Your location is not available right now. You can still search by town.')); return; }
     setQ(''); setRows(null);
     setNear({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+    track('near_me');
   };
 
   return (

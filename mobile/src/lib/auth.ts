@@ -3,6 +3,7 @@
 import type { Session } from '@supabase/supabase-js';
 import { useSyncExternalStore } from 'react';
 
+import { track } from '@/lib/analytics';
 import { t } from '@/lib/i18n';
 import { SITE, supabase } from '@/lib/supabase';
 
@@ -32,6 +33,7 @@ const clean = (email: string) => email.trim().toLowerCase();
 export async function signIn(email: string, password: string): Promise<void> {
   const { error } = await supabase.auth.signInWithPassword({ email: clean(email), password });
   if (error) throw error;
+  track('signed_in');
 }
 
 /** Returns true when the member must confirm their email before signing in (email confirmation is on). */
@@ -40,6 +42,7 @@ export async function signUp(email: string, password: string, newsletter: boolea
     email: clean(email), password, options: { emailRedirectTo: SITE + '/', data: { newsletter } },
   });
   if (error) throw error;
+  track('signed_up');
   return !data.session;
 }
 

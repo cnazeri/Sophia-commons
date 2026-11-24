@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
@@ -14,6 +14,7 @@ import { localDate, t } from '@/lib/i18n';
 import { fetchJob, type Job, jobPlace } from '@/lib/jobs';
 import { paragraphs } from '@/lib/news';
 import { SITE } from '@/lib/supabase';
+import { shareItem } from '@/lib/share';
 
 export default function JobScreen() {
   const c = useTheme();
@@ -51,7 +52,7 @@ export default function JobScreen() {
         {j.contact_phone ? <Button kind="secondary" label={t('app.call', 'Call') + ': ' + j.contact_phone} onPress={() => Linking.openURL('tel:' + String(j.contact_phone).replace(/[^+\d]/g, ''))} /> : null}
       </View>
       {paragraphs(j.description).map((p, i) => <Text key={i} style={[styles.para, { color: c.text }]} selectable>{p}</Text>)}
-      <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: j.title + '\n' + url, url })} />
+      <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => shareItem('job', { message: j.title + '\n' + url, url })} />
     </ScrollView>
   );
 }

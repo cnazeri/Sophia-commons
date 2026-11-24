@@ -4,7 +4,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as WebBrowser from 'expo-web-browser';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
@@ -15,6 +15,7 @@ import { localDate, t } from '@/lib/i18n';
 import { type Article, fetchArticle, paragraphs } from '@/lib/news';
 import { useSaved } from '@/lib/saved';
 import { SITE } from '@/lib/supabase';
+import { shareItem } from '@/lib/share';
 
 const hostOf = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
 
@@ -66,7 +67,7 @@ export function ArticleView() {
         {shown.source_url ? (
           <Button label={t('app.read_full', 'Read the full article at') + ' ' + (shown.source_name || hostOf(shown.source_url))} onPress={openSource} />
         ) : null}
-        <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: shown.title + '\n' + url, url })} />
+        <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => shareItem('article', { message: shown.title + '\n' + url, url })} />
       </View>
     </ScrollView>
   );

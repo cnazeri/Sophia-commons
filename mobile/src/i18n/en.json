@@ -1650,5 +1650,19 @@
   "app.day_more": "More about this day",
   "app.media_in_lang": "In {lang}",
   "app.media_language": "Language",
-  "app.media_original_title": "Original title"
+  "app.media_original_title": "Original title",
+  "app.privacy_title": "Privacy",
+  "app.privacy_share": "Share anonymous usage data",
+  "app.privacy_intro": "To see which parts of the app are used, Sophia Commons counts screens opened and actions like saving or searching. These counts are anonymous: no name, email, account or search words are sent. PostHog, the service that counts them, works out only your rough country and city from your connection.",
+  "app.privacy_share_desc": "Helps us improve the app. You can turn it off at any time.",
+  "app.settings_privacy_desc": "Anonymous usage statistics",
+  "app.feedback_title": "Send feedback",
+  "app.settings_feedback_desc": "Tell us what could be better",
+  "app.feedback_intro": "What could be better, what is missing, or what you like. It comes straight to the people who make Sophia Commons.",
+  "app.feedback_label": "Your note",
+  "app.feedback_email": "Your email (optional, if you would like a reply)",
+  "app.feedback_err_empty": "Please write a few words.",
+  "app.feedback_thanks": "Thank you. Every note is read.",
+  "app.rate_app": "Rate Sophia Commons",
+  "app.settings_rate_desc": "A review in the store helps others find the app"
 }

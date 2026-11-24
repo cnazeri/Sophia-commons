@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
@@ -19,6 +19,7 @@ import { useAuth } from '@/lib/auth';
 import { localDate, localTime, t } from '@/lib/i18n';
 import { reportItem } from '@/lib/report';
 import { SITE } from '@/lib/supabase';
+import { shareItem } from '@/lib/share';
 
 export default function EventDetail() {
   const c = useTheme();
@@ -78,7 +79,7 @@ export default function EventDetail() {
         ) : null}
         <Button kind="secondary" label={t('app.add_to_calendar', 'Add to calendar')} onPress={() => addToCalendar(e)} />
         {place && !e.is_online ? <Button kind="secondary" label={t('app.directions', 'Directions')} onPress={directions} /> : null}
-        <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: eventTitle(e) + '\n' + url, url })} />
+        <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => shareItem('event', { message: eventTitle(e) + '\n' + url, url })} />
         {e.organizer_url ? <Button kind="secondary" label={t('event_detail.organizer_website', 'Organizer website')} onPress={() => WebBrowser.openBrowserAsync(e.organizer_url!)} /> : null}
       </View>
 

@@ -590,7 +590,7 @@
   "footer.newsletter_btn": "подписаться",
   "footer.newsletter_success": "вы подписаны!",
   "footer.copyright": "2026 Sophia Commons",
-  "footer.version": "v1.129.1",
+  "footer.version": "v1.129.3",
   "footer.privacy": "конфиденциальность",
   "footer.terms": "условия",
   "footer.contact": "контакты",
@@ -1031,7 +1031,7 @@
   "modal.newsletter_opt_in": "Присылайте мне еженедельную рассылку Sophia Commons. Отписаться можно в любом письме.",
   "home.news_heading": "Новости",
   "home.all_news_link": "все новости →",
-  "home.social_heading": "Из сообщества",
+  "home.social_heading": "Sophia Commons в соцсетях",
   "home.reddit_heading": "С Reddit",
   "channel.saved": "Сохранено. Спасибо!",
   "home.x_intro": "По пятницам еженедельная рассылка, по понедельникам события недели.",
@@ -1409,5 +1409,7 @@
   "saved.sign_in": "Войдите, чтобы сохранять мероприятия, места, статьи и вакансии и находить их здесь на любом устройстве.",
   "saved.error": "Не удалось сохранить. Попробуйте ещё раз.",
   "saved.error_load": "Не удалось загрузить сохранённое.",
-  "cal.more": "ещё"
+  "cal.more": "ещё",
+  "home.ig_follow_btn": "Instagram",
+  "home.x_btn": "X"
 }

@@ -94,6 +94,7 @@
     },
     "sameAs": [
       "https://x.com/SophiaCommons7",
+      "https://www.instagram.com/sophiacommons7/",
       "https://www.facebook.com/SophiaCommons"
     ]
   }
@@ -224,7 +225,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.129.1">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.129.3">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -432,11 +433,17 @@
     <li><a href="https://biodynamics.com" target="_blank" data-i18n="sidebar.quick_biodynamics">Biodynamics.com</a></li>
     <li><a href="mailto:hello@sophiacommons.org" data-i18n="sidebar.quick_suggest_correction">suggest correction</a></li>
   </ul>
-  <!-- Community Spotlight replaced by Sophia Commons on X (owner, 2026-11-18). Hidden until the first post
-       goes out: fill X_LATEST_POST in sophia_commons_v9.js. -->
-  <div id="side-x-block" hidden>
-  <h5 aria-level="2" data-i18n="home.x_heading">Sophia Commons on X</h5>
-  <div class="lb-spotlight" id="side-x"></div>
+  <!-- Follow Sophia Commons (owner, 2026-11-23): Instagram and X, just the logo, handle and a button; no posts shown -->
+  <div id="side-social">
+  <h5 aria-level="2" data-i18n="home.social_heading">Follow Sophia Commons</h5>
+  <a class="soc-card" href="https://www.instagram.com/sophiacommons7/" target="_blank" rel="noopener" aria-label="Sophia Commons on Instagram, @sophiacommons7">
+    <span class="soc-id"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg><span class="soc-handle">@sophiacommons7</span></span>
+    <span class="soc-btn" data-i18n="home.ig_follow_btn">Instagram</span>
+  </a>
+  <a class="soc-card" href="https://x.com/SophiaCommons7" target="_blank" rel="noopener" aria-label="Sophia Commons on X, @SophiaCommons7">
+    <span class="soc-id"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23 22h-6.3l-4.9-6.4L6.2 22H3l7.3-8.3L1 2h6.4l4.4 5.9L18.9 2zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20z"/></svg><span class="soc-handle">@SophiaCommons7</span></span>
+    <span class="soc-btn" data-i18n="home.x_btn">X</span>
+  </a>
   </div>
   <ul class="lb-site">
     <li><a href="/about" onclick="showSec('about');return false;" data-i18n="topbar.about">about</a></li>
@@ -1584,7 +1591,7 @@
 <div class="pagesec legal-page" id="sec-privacy">
   <div class="seclabel">Privacy</div>
   <h2 class="legal-title">Privacy at Sophia Commons</h2>
-  <p class="legal-lead">Sophia Commons is a free community directory. We collect as little as we can, never sell data, and use it only to run the site. Last updated September 27, 2026.</p>
+  <p class="legal-lead">Sophia Commons is a free community directory. We collect as little as we can, never sell data, and use it only to run the site and the Sophia Commons app. Last updated November 23, 2026.</p>
   <h2>What we collect</h2>
   <ul>
     <li><strong>Account details</strong> if you sign up: your email address and a password (stored securely by our database provider, Supabase). Your username is shown on chat messages and comments you post.</li>
@@ -1592,14 +1599,18 @@
     <li><strong>Newsletter</strong>: your email address, if you subscribe.</li>
     <li><strong>Usage statistics</strong>: pages viewed, a random session id, the referring page, browser, operating system, device type, screen size and language. We use this to see which parts of the site are useful. It does not include your name or email.</li>
     <li><strong>Google Analytics</strong> collects similar anonymous usage statistics. Google Maps loads on the Directory page to show the map.</li>
+    <li><strong>In the Sophia Commons app</strong>: anonymous usage statistics sent to PostHog, namely the screens opened and actions such as saving, searching, sharing or adding an event to a calendar, with the app version, phone model and operating system. No name, email, account or search words are sent. PostHog works out a rough country and city from your connection. You can turn this off in the app under Settings &gt; Privacy.</li>
+    <li><strong>App feedback</strong>: the note you write under Settings &gt; Send feedback, the app version, and your email only if you give it.</li>
+    <li><strong>Your location</strong> is used only when you tap "Near me", to show nearby places. It is never stored or sent to us.</li>
   </ul>
   <h2>Stored on your device</h2>
   <p>Your language choice and, if you sign in, a login token are kept in your browser's local storage. We do not use advertising cookies.</p>
   <h2>Who we share it with</h2>
-  <p>Only the services that run the site: Supabase (database and accounts), Netlify (hosting), Google (Analytics and Maps) and our email provider for the newsletter. We do not sell or rent personal data.</p>
+  <p>Only the services that run the site: Supabase (database and accounts), Netlify (hosting), Google (Analytics and Maps), PostHog (app usage statistics) and our email provider for the newsletter. We do not sell or rent personal data.</p>
   <h2>Your choices</h2>
   <ul>
     <li>Unsubscribe from the newsletter at any time.</li>
+    <li>Turn off app usage statistics in the app under Settings &gt; Privacy.</li>
     <li>Ask us to correct or delete your account, your submissions or your newsletter subscription by emailing <a href="mailto:hello@sophiacommons.org">hello@sophiacommons.org</a>.</li>
   </ul>
   <p class="legal-note">Questions? Write to <a href="mailto:hello@sophiacommons.org">hello@sophiacommons.org</a>.</p>
@@ -2139,22 +2150,22 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.129.1</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.129.3</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.129.1"></script>
-<script defer src="/i18n.js?v=1.129.1"></script>
-<script defer src="/sophia_commons_v9.js?v=1.129.1"></script>
-<script defer src="/blog.js?v=1.129.1"></script>
-<script defer src="/claims.js?v=1.129.1"></script>
-<script defer src="/events_organizer.js?v=1.129.1"></script>
-<script defer src="/advent.js?v=1.129.1"></script>
-<script defer src="/account.js?v=1.129.1"></script>
-<script defer src="/saved.js?v=1.129.1"></script>
+<script defer src="/sb-init.js?v=1.129.3"></script>
+<script defer src="/i18n.js?v=1.129.3"></script>
+<script defer src="/sophia_commons_v9.js?v=1.129.3"></script>
+<script defer src="/blog.js?v=1.129.3"></script>
+<script defer src="/claims.js?v=1.129.3"></script>
+<script defer src="/events_organizer.js?v=1.129.3"></script>
+<script defer src="/advent.js?v=1.129.3"></script>
+<script defer src="/account.js?v=1.129.3"></script>
+<script defer src="/saved.js?v=1.129.3"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

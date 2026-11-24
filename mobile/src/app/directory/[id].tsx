@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, Platform, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
@@ -14,6 +14,7 @@ import { CATEGORIES, fetchListing, type Listing, listingPlace } from '@/lib/dire
 import { sizedImage } from '@/lib/events';
 import { t } from '@/lib/i18n';
 import { SITE } from '@/lib/supabase';
+import { shareItem } from '@/lib/share';
 
 export default function ListingDetail() {
   const c = useTheme();
@@ -52,7 +53,7 @@ export default function ListingDetail() {
         {l.phone ? <Button kind="secondary" label={t('app.call', 'Call') + ' ' + l.phone} onPress={() => Linking.openURL('tel:' + l.phone!.replace(/[^\d+]/g, ''))} /> : null}
         {l.email ? <Button kind="secondary" label={t('app.email', 'Email')} onPress={() => Linking.openURL('mailto:' + l.email)} /> : null}
         {place ? <Button kind="secondary" label={t('app.directions', 'Directions')} onPress={directions} /> : null}
-        <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: l.organization_name + '\n' + url, url })} />
+        <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => shareItem('place', { message: l.organization_name + '\n' + url, url })} />
       </View>
     </ScrollView>
   );

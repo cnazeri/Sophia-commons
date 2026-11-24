@@ -5,6 +5,7 @@
 //   community  -> blog_posts         (account; 'pending' until the owner publishes it in Admin > Blog)
 import type { Session } from '@supabase/supabase-js';
 
+import { track } from '@/lib/analytics';
 import { type Picked, dataUrl, uploadPostImage } from '@/lib/images';
 import { supabase } from '@/lib/supabase';
 
@@ -27,6 +28,7 @@ export async function postPlace(p: PlaceIn, img?: Picked | null, s?: Session | n
     description: p.description.slice(0, 5000) || null, contact_email: p.email || null, status: 'pending', source: 'app', photo_url: photo,
   });
   if (error) throw new Error(error.message);
+  track('post_submitted', { kind: 'place' });
 }
 
 export type EventIn = {
@@ -55,6 +57,7 @@ export async function postEvent(e: EventIn, s: Session, img?: Picked | null): Pr
   }
   if (!out?.ok) throw new Error(out?.error || out?.msg || 'The event could not be saved. Please try again.');
   const first = (out.events || [])[0];
+  track('post_submitted', { kind: 'event' });
   return { status: out.status || 'upcoming', id: first?.id || '', link: first?.event || '' };
 }
 
@@ -67,6 +70,7 @@ export async function postJob(j: JobIn, s: Session, img?: Picked | null): Promis
     country: j.country || null, website_url: j.url || null, contact_email: j.email || null, contact_phone: j.phone || null, tags: ['member'], source: 'app', image_url: image,
   });
   if (error) throw new Error(error.message);
+  track('post_submitted', { kind: 'job' });
 }
 
 export type CommunityIn = { title: string; body: string; tags: string };
@@ -82,6 +86,7 @@ export async function postCommunity(p: CommunityIn, author: string, s: Session, 
     body: p.body.slice(0, 60000), tags, source: 'app', cover_url: cover,
   });
   if (error) throw new Error(error.message);
+  track('post_submitted', { kind: 'community' });
 }
 
 // Owner only: jobs waiting for review, and approve or decline them
