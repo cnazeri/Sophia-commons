@@ -281,28 +281,34 @@ def end_card():
     return buf.getvalue()
 
 
-def last_track():
-    """File name of the track the newest posted Reel used, or None (no posts yet, or table not created)."""
+MUSIC_GAP = timedelta(days=7)   # owner, 2026-11-23: never the same track twice in one week
+
+
+def recent_tracks():
+    """Tracks of the Reels posted (or being posted) in the last 7 days, newest first; [] if none or unreadable."""
     try:
         url, H = supabase()
+        since = (datetime.now(timezone.utc) - MUSIC_GAP).isoformat()
         rows = requests.get(url + '/rest/v1/instagram_posts', headers=H, timeout=30, params={
-            'select': 'music', 'status': 'eq.posted', 'music': 'not.is.null', 'order': 'posted_at.desc', 'limit': '1'}).json()
-        return rows[0]['music'] if isinstance(rows, list) and rows else None
+            'select': 'music', 'status': 'in.(posted,posting)', 'music': 'not.is.null',
+            'drafted_at': f'gte.{since}', 'order': 'drafted_at.desc'}).json()
+        return [r['music'] for r in rows] if isinstance(rows, list) else []
     except Exception:
-        return None
+        return []
 
 
-def next_track(tracks, last):
-    """Owner rule 2026-11-23: the music rotates, never the same track twice in a row.
-    Takes the track after the last one used (by file name), wrapping around; the first post starts at the top."""
+def next_track(tracks, recent):
+    """Owner rules 2026-11-23: the music rotates, and no track is used twice within a week.
+    Takes the next track after the newest one used (by file name, wrapping around) that has not been used
+    in the last 7 days; if every track has, the one used longest ago."""
     names = [os.path.basename(t) for t in tracks]
-    if last is None:
+    if not recent:
         return tracks[0]
-    later = [t for t, n in zip(tracks, names) if n > last]
-    pick = later[0] if later else tracks[0]
-    if os.path.basename(pick) == last and len(tracks) > 1:   # only possible when the last track is the sole one left
-        pick = tracks[1]
-    return pick
+    start = next((i for i, n in enumerate(names) if n > recent[0]), 0)
+    order = names[start:] + names[:start]
+    fresh = [n for n in order if n not in recent]
+    pick = fresh[0] if fresh else max(order, key=lambda n: recent.index(n) if n in recent else len(recent))
+    return tracks[names.index(pick)]
 
 
 def pick_music():
@@ -310,7 +316,7 @@ def pick_music():
     tracks = sorted(glob.glob(os.path.join(MUSIC, '*.mp3')) + glob.glob(os.path.join(MUSIC, '*.m4a')))
     if not tracks:
         sys.exit(f'No music in {MUSIC}: add at least one royalty-free mp3; nothing posted.')
-    return next_track(tracks, last_track())
+    return next_track(tracks, recent_tracks())
 
 
 def build_reel(frames, music, out_path):

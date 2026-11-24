@@ -235,34 +235,58 @@ def map_card(new, points):
     out = Image.new('RGB', (W, H), BG)
     draw = ImageDraw.Draw(out)
     countries = {r['country'] for r in new if r.get('country')}
-    centered(draw, 240, 'New this week', anthro(96, True), INK)
+    centered(draw, 330, 'New this week', anthro(96, True), INK)
     count = f'{len(new)} new listings' + (f' in {len(countries)} countries' if len(countries) > 1 else '')
-    centered(draw, 390, count, anthro(58, True), GOLD)
-    # Equirectangular map, 60N to 50S shown (where the listings are), drawn 4x then scaled down for smooth dots
-    mx, my, mw, mh, top, bottom, west, east = 30, 520, W - 60, 600, 70.0, -48.0, -165.0, 180.0
-    draw.rounded_rectangle((mx, my, mx + mw, my + mh), radius=28, fill='#EFE8DC')   # the map's panel
+    centered(draw, 480, count, anthro(58, True), GOLD)
+    my = 600
+    my = _draw_map(out, my, new, points)
+    draw.text((W // 2, my + 30), 'Gold: new this week.  Grey: every listing on Sophia Commons.',
+              font=anthro(32), fill=SOFT, anchor='mt')
+    names = [clean(r['organization_name']) for r in new][:6]
+    y0 = my + 130
+    for i, n in enumerate(names):
+        centered(draw, y0 + i * 66, n if len(n) <= 38 else n[:36].rstrip() + '...', anthro(44), SOFT)
+    if len(new) > len(names):
+        centered(draw, y0 + len(names) * 66, f'and {len(new) - len(names)} more', anthro(44), SOFT)
+    return jpeg(out)
+
+
+def _land():
+    """Coastlines: Natural Earth 1:110m land (public domain), in automation/ig_assets/."""
+    import json
+    shapes = []
+    for f in json.load(open(os.path.join(ASSETS, 'ne_110m_land.geojson')))['features']:
+        g = f['geometry']
+        polys = g['coordinates'] if g['type'] == 'MultiPolygon' else [g['coordinates']]
+        shapes += [p[0] for p in polys]   # outer rings only; the few lakes do not show at this size
+    return shapes
+
+
+def _draw_map(out, y, new, points):
+    """A world map, 75N to 50S, at true proportions (one degree as wide as tall): land in the site's sand
+    color, every listing as a small grey dot, this week's new ones in gold. Drawn 4x, then scaled down.
+    Returns the y below the map."""
+    west, east, top, bottom = -170.0, 180.0, 75.0, -50.0
+    mw = W - 40
+    mh = round(mw * (top - bottom) / (east - west))
     s = 4
     layer = Image.new('RGBA', (mw * s, mh * s), (0, 0, 0, 0))
     ld = ImageDraw.Draw(layer)
     xy = lambda lat, lng: ((lng - west) / (east - west) * mw * s, (top - lat) / (top - bottom) * mh * s)
+    for ring in _land():
+        ld.polygon([xy(lat, lng) for lng, lat in ring], fill=(226, 214, 192, 255), outline=(196, 182, 156, 255), width=4)
     for lat, lng in points:
         if bottom <= lat <= top and west <= lng <= east:
-            x, y = xy(lat, lng)
-            ld.ellipse((x - 9, y - 9, x + 9, y + 9), fill=(110, 96, 78, 170))
+            x, yy = xy(lat, lng)
+            ld.ellipse((x - 7, yy - 7, x + 7, yy + 7), fill=(98, 84, 66, 200))
     for r in new:
         if r.get('latitude') is not None and r.get('longitude') is not None:
-            x, y = xy(r['latitude'], r['longitude'])
-            ld.ellipse((x - 44, y - 44, x + 44, y + 44), fill=(201, 162, 39, 110))
-            ld.ellipse((x - 22, y - 22, x + 22, y + 22), fill=(166, 124, 0, 255), outline=(255, 255, 255, 255), width=5)
+            x, yy = xy(r['latitude'], r['longitude'])
+            ld.ellipse((x - 48, yy - 48, x + 48, yy + 48), fill=(201, 162, 39, 110))
+            ld.ellipse((x - 24, yy - 24, x + 24, yy + 24), fill=(166, 124, 0, 255), outline=(255, 255, 255, 255), width=6)
     layer = layer.resize((mw, mh), Image.LANCZOS)
-    out.paste(layer, (mx, my), layer)
-    centered(draw, my + mh + 24, 'Gold: new this week. Grey: every listing on Sophia Commons.', anthro(32), SOFT)
-    names = [clean(r['organization_name']) for r in new][:6]
-    for i, n in enumerate(names):
-        centered(draw, 1240 + i * 66, n if len(n) <= 38 else n[:36].rstrip() + '...', anthro(44), SOFT)
-    if len(new) > len(names):
-        centered(draw, 1240 + len(names) * 66, f'and {len(new) - len(names)} more', anthro(44), SOFT)
-    return jpeg(out)
+    out.paste(layer, (20, y), layer)
+    return y + mh
 
 
 def listing_frame(r):
@@ -310,7 +334,8 @@ def run_new(cmd):
     if len(new) < NEW_MIN:
         print(f'{len(new)} new listings this week (fewer than {NEW_MIN}); nothing posted.')
         return
-    frames = [map_card(new, world_points())]
+    card = map_card(new, world_points())
+    frames = [card, card]   # the map stays up twice as long (about 5.5 s)
     for r in new:
         if not r.get('photo_url'):
             continue

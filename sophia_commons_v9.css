@@ -3942,8 +3942,9 @@ p, .feat-ev-desc, .lmeta { text-wrap: pretty; }
 /* Resources list at the top of the Resources page (2026-10-24) */
 .res-block { margin-bottom: 18px; }
 .res-row { display: block; }
-.res-row .ltitle { display: block; }
-.res-desc { display: block; font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-top: 2px; }
+/* Larger, with the title a step above its description (owner, 2026-11-23) */
+.res-row .ltitle { display: block; font-size: 17px; font-weight: 600; line-height: 1.35; }
+.res-desc { display: block; font-size: 15px; color: var(--text-secondary); line-height: 1.55; margin-top: 4px; }
 
 /* Admin: book of the week */
 .bw-row { display: flex; gap: 14px; align-items: flex-start; }

@@ -1025,6 +1025,7 @@ function showCategory(name, skipPush, opts) {
   _clearPlaceFaq();
   name = _catKeyFromName(name);
   if (name.toLowerCase() === 'social media') { showSec('podcasts'); return; }   // has its own page, not a directory category (owner, 2026-11-09)
+  if (name.toLowerCase() === 'online resources') { showSec('books'); return; }  // listed on the Resources page (owner, 2026-11-23)
   opts = opts || {};
   captureCurrentSection('category');
 
@@ -1950,7 +1951,7 @@ function showSec(id, skipPush) {
   // Sections that are not built at startup render when first opened (and refresh on later opens)
   if (id === 'events') { renderCalendar(); renderEventList(); renderSeminars(); }
   if (id === 'books' && typeof renderTop50Books === 'function') renderTop50Books();
-  if (id === 'books') _ensureBooksLoaded();
+  if (id === 'books') { _ensureBooksLoaded(); _mergeOnlineListings(); }
   if (id === 'podcasts' && typeof renderYouTubeChannels === 'function') renderYouTubeChannels();
   if (id === 'podcasts' && typeof renderFacebookPages === 'function') renderFacebookPages();
   if (id === 'podcasts') { renderVideoSpotlight(); renderSocialReddit(); renderSubstack(); }
@@ -5938,7 +5939,7 @@ function _loadAllSupabaseData() {
     loadDirectoryFromSupabase(),
     loadMarketplace()
   ]).catch(function(e) { console.warn('Data load error:', e); });
-  if (_secVisible('books')) _ensureBooksLoaded();
+  if (_secVisible('books')) { _ensureBooksLoaded(); _mergeOnlineListings(); }
   renderPodcastSection();
   _applyLiveCounts().then(_markEmptyClassifieds);
 }
@@ -9646,6 +9647,59 @@ async function renderSocialDirectory(fbRows) {
   el.innerHTML = '<div class="listblock" style="margin-bottom:16px;"><div class="listblock-head"><h3>' + esc(t('podcasts.more_social', 'More Social Media')) + '</h3>'
     + '<span class="podcast-count">' + rows.length + '</span></div><div class="listblock-body">'
     + rows.slice(0, SOCIAL_FIRST).map(rowHtml).join('') + more + '</div></div>';
+}
+
+// Online Resources on the Resources page (owner, 2026-11-23): every website listing outside the directory's
+// categories (category 'online') belongs there. The hand-written list in index.html comes first; any
+// approved online listing it does not already have (same link, same site, or same name) is added A-Z.
+var _onlineMerged = false;
+var SHARED_HOSTS = /(^|\.)(spotify\.com|apple\.com|youtube\.com|youtu\.be|facebook\.com|instagram\.com|substack\.com|blogspot\.com|vercel\.app|wordpress\.com|transistor\.fm|google\.com)$/;
+function _resName(s) { return String(s || '').toLowerCase().replace(/\([^)]*\)/g, '').replace(/[^a-z0-9]+/g, ' ').trim(); }
+function _resHost(u) { var h = _bareUrl(u).split('/')[0]; return h && !SHARED_HOSTS.test(h) && h.indexOf('.') > 0 ? h : ''; }
+async function _mergeOnlineListings() {
+  var list = document.getElementById('resources-list'), more = document.getElementById('res-more');
+  if (_onlineMerged || !list || !more || !sbReady()) return;
+  _onlineMerged = true;
+  var r = await _sb.from('directory_entries').select('id, organization_name, website_url, description')
+    .eq('status', 'approved').eq('category', 'online').order('organization_name');
+  if (r.error) { _onlineMerged = false; console.warn('Online resources failed:', r.error); return; }
+  var urls = {}, hosts = {}, names = {};
+  list.querySelectorAll('a.ltitle').forEach(function (a) {
+    var href = a.getAttribute('href') || '';
+    urls[_bareUrl(href)] = true;
+    if (_resHost(href)) hosts[_resHost(href)] = true;
+    names[_resName(a.textContent)] = true;
+  });
+  var add = (r.data || []).filter(function (e) {
+    return !urls[_bareUrl('/listing/' + e.id)] && !names[_resName(e.organization_name)]
+      && !(e.website_url && (urls[_bareUrl(e.website_url)] || hosts[_resHost(e.website_url)]));
+  });
+  add.forEach(function (e) {
+    var desc = String(e.description || '').replace(/\s+/g, ' ').trim();
+    var cut = desc.search(/\.\s/);
+    if (cut > 40) desc = desc.slice(0, cut + 1);
+    if (desc.length > 220) desc = desc.slice(0, 217).replace(/\s+\S*$/, '') + '...';
+    var link = e.website_url
+      ? '<a class="ltitle" href="' + escUrl(e.website_url) + '" target="_blank" rel="noopener">'
+      : '<a class="ltitle" href="/listing/' + esc(e.id) + '" onclick="showDetail(\'directory\',\'' + esc(escJs(e.id)) + '\');return false;">';
+    var row = document.createElement('div');
+    row.className = 'lrow res-row';
+    row.innerHTML = link + esc(e.organization_name) + '</a>' + (desc ? '<span class="res-desc">' + esc(desc) + '</span>' : '');
+    var key = e.organization_name.toLowerCase();
+    var before = Array.prototype.find.call(more.querySelectorAll(':scope > .res-row'), function (x) {
+      return x.querySelector('a.ltitle').textContent.toLowerCase() > key;
+    });
+    more.insertBefore(row, before || null);
+  });
+  var n = list.querySelectorAll('.res-row').length;
+  var btn = list.querySelector('button[aria-controls="res-more"]');
+  if (btn) {
+    var label = btn.getAttribute('data-more').replace(/\d+/, n);
+    btn.setAttribute('data-more', label);
+    if (btn.getAttribute('aria-expanded') !== 'true') btn.textContent = label;
+  }
+  var badge = document.getElementById('online-res-count');
+  if (badge) badge.textContent = n;
 }
 
 // "Video & Social": hand-picked links on other platforms (Goetheanum TV, Instagram, ...), kept in the
