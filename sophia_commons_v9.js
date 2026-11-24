@@ -4261,8 +4261,8 @@ var DIR_CARDS = [
   ['The Christian Community', ['christian_community']],
   ['Societies & Organizations', ['societies']],
   ['Eldercare', ['eldercare']],
-  ['Science & Technology', ['science']],
-  ['Online Resources', ['online']]
+  ['Science & Technology', ['science']]
+  // Online Resources live on the Resources page now (owner, 2026-11-23)
 ];
 var DIR_CARD_NAMES = 5;
 
@@ -5463,7 +5463,6 @@ var FEAT_INTERVAL_MS = 9000;   // slower (owner, 2026-11-22; was 6500)
 // Two events side by side on wider screens, one on phones (owner, 2026-11-22). Each move shifts one event.
 var FEAT_TWO_UP = '(min-width: 900px)';
 function _featPer() { return window.matchMedia && window.matchMedia(FEAT_TWO_UP).matches ? 2 : 1; }
-var _featTimer = null;
 
 function _featSlides(live) {
   var today = _localDay(new Date());
@@ -5507,9 +5506,9 @@ function _mountFeatSlider(first, slides) {
     return '<button type="button" class="feat-dot" aria-label="' + esc(label(i) + ': ' + _homeTitle(ev)) + '" onclick="featDot(' + i + ')"></button>';
   }).join('');
   slider.insertAdjacentHTML('beforeend', '<div class="feat-ctrl">'
-    + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.previous', 'Previous')) + '" onclick="featGo(_featIdx - 1, true)">&#8249;</button>'
+    + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.previous', 'Previous')) + '" onclick="featGo(_featNext(-1), true)">&#8249;</button>'
     + '<div class="feat-dots">' + dots + '</div><span class="feat-count" aria-hidden="true"></span>'
-    + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.next', 'Next')) + '" onclick="featGo(_featIdx + 1, true)">&#8250;</button>'
+    + '<button type="button" class="feat-arrow" aria-label="' + esc(t('common.next', 'Next')) + '" onclick="featGo(_featNext(1), true)">&#8250;</button>'
     + '<button type="button" class="feat-pause" aria-pressed="false" onclick="featTogglePause()">' + esc(t('common.pause', 'Pause')) + '</button>'
     + '</div>');
   _featIdx = 0;
@@ -5526,17 +5525,50 @@ function _mountFeatSlider(first, slides) {
     if (x0 === null) return;
     var dx = e.changedTouches[0].clientX - x0;
     x0 = null;
-    if (Math.abs(dx) > 40) featGo(_featIdx + (dx < 0 ? 1 : -1), true);
+    if (Math.abs(dx) > 40) featGo(_featNext(dx < 0 ? 1 : -1), true);
   }, { passive: true });
   if (window.matchMedia) {
     var mq = window.matchMedia(FEAT_TWO_UP);
     var refit = function() { featGo(_featIdx, false); };
     if (mq.addEventListener) mq.addEventListener('change', refit); else if (mq.addListener) mq.addListener(refit);
   }
-  clearInterval(_featTimer);
-  _featTimer = setInterval(function() {
-    if (!_featPaused && !_featHold && !document.hidden && document.body.contains(slider)) featGo(_featIdx + 1, false);
+  _homeTick('events', function() {
+    if (!_featPaused && !_featHold && document.body.contains(slider)) featGo(_featNext(1), false);
+  });
+}
+
+// One clock for the home page's events, news and jobs boxes, so all three change together (owner, 2026-11-23)
+var _homeTickers = {}, _homeClock = null;
+function _homeTick(key, fn) {
+  _homeTickers[key] = fn;
+  if (_homeClock) return;
+  _homeClock = setInterval(function () {
+    if (document.hidden) return;
+    Object.keys(_homeTickers).forEach(function (k) { _homeTickers[k](); });
   }, FEAT_INTERVAL_MS);
+}
+
+// Show a slide by fading the box out, moving it while hidden, then fading back in
+function _fadeTrack(track, transform) {
+  if (track.style.transform === transform) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!track.style.transform || reduce) { track.style.transform = transform; return; }
+  clearTimeout(track._fadeT);
+  track.classList.add('fading');
+  track._fadeT = setTimeout(function () { track.style.transform = transform; track.classList.remove('fading'); }, 450);
+}
+
+// Next or previous page: two-up screens move two events at a time, ending on the last two
+function _pageNext(idx, n, per, dir) {
+  var last = Math.max(0, n - per);
+  if (dir > 0) return idx >= last ? 0 : Math.min(idx + per, last);
+  return idx <= 0 ? last : Math.max(idx - per, 0);
+}
+function _featNext(dir) {
+  var slider = document.querySelector('.feat-slider:not(.news-slider)');
+  if (!slider) return 0;
+  var n = slider.querySelectorAll('.feat-track > .feat-ev').length;
+  return _pageNext(_featIdx, n, Math.min(_featPer(), n), dir);
 }
 
 var _featIdx = 0, _featPaused = false, _featHold = false;
@@ -5549,7 +5581,7 @@ function featGo(i, byUser) {
   var per = Math.min(_featPer(), n);
   var stops = Math.max(1, n - per + 1);   // two-up: the last stop shows the last two events
   _featIdx = ((i % stops) + stops) % stops;
-  slider.querySelector('.feat-track').style.transform = 'translateX(' + (-100 / per * _featIdx) + '%)';
+  _fadeTrack(slider.querySelector('.feat-track'), 'translateX(' + (-100 / per * _featIdx) + '%)');
   Array.prototype.forEach.call(slides, function(el, k) {
     var on = k >= _featIdx && k < _featIdx + per;
     el.setAttribute('aria-hidden', on ? 'false' : 'true');
@@ -9858,8 +9890,7 @@ async function renderHomeNews() {
   if (slides.length > 1) _mountNewsSlider(box.querySelector('.news-slider'), slides);
 }
 
-var _sliderTimers = {};   // one auto-advance timer per home slider (news, jobs)
-function _mountNewsSlider(slider, slides, key, delay) {
+function _mountNewsSlider(slider, slides, key) {
   var n = slides.length, idx = 0, paused = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, hold = false;
   var track = slider.querySelector('.feat-track'), view = slider.querySelector('.feat-view');
   var label = function (i) { return (i + 1) + ' / ' + n; };
@@ -9874,26 +9905,31 @@ function _mountNewsSlider(slider, slides, key, delay) {
     pauseBtn.setAttribute('aria-pressed', paused ? 'true' : 'false');
     pauseBtn.textContent = paused ? t('common.play', 'Play') : t('common.pause', 'Pause');
   };
+  // Wide screens show two stories side by side, so each step moves two (owner, 2026-11-23: the
+  // second half of the slides used to come up empty)
   var go = function (i, byUser) {
-    idx = ((i % n) + n) % n;
-    track.style.transform = 'translateX(' + (-100 * idx) + '%)';
+    var per = Math.min(_featPer(), n), last = n - per;
+    idx = Math.max(0, Math.min(i, last));
+    _fadeTrack(track, 'translateX(' + (-100 / per * idx) + '%)');
+    var shown = function (k) { return k >= idx && k < idx + per; };
     Array.prototype.forEach.call(track.children, function (el, k) {
       el.setAttribute('role', 'group');
       el.setAttribute('aria-roledescription', 'slide');
       el.setAttribute('aria-label', label(k));
-      el.setAttribute('aria-hidden', k === idx ? 'false' : 'true');
-      Array.prototype.forEach.call(el.querySelectorAll('a, button'), function (a) { a.tabIndex = k === idx ? 0 : -1; });
+      el.setAttribute('aria-hidden', shown(k) ? 'false' : 'true');
+      Array.prototype.forEach.call(el.querySelectorAll('a, button'), function (a) { a.tabIndex = shown(k) ? 0 : -1; });
     });
-    Array.prototype.forEach.call(slider.querySelectorAll('.feat-dot'), function (d, k) { d.setAttribute('aria-current', k === idx ? 'true' : 'false'); });
+    Array.prototype.forEach.call(slider.querySelectorAll('.feat-dot'), function (d, k) { d.setAttribute('aria-current', shown(k) ? 'true' : 'false'); });
     count.textContent = (idx + 1) + ' / ' + n;
     if (byUser) { paused = true; syncPause(); }
   };
+  var step = function (dir) { return _pageNext(idx, n, Math.min(_featPer(), n), dir); };
   slider.querySelector('.feat-ctrl').addEventListener('click', function (e) {
     var b = e.target.closest('button');
     if (!b) return;
     if (b === pauseBtn) { paused = !paused; syncPause(); return; }
     if (b.hasAttribute('data-go')) go(Number(b.getAttribute('data-go')), true);
-    else go(idx + Number(b.getAttribute('data-step')), true);
+    else go(step(Number(b.getAttribute('data-step'))), true);
   });
   slider.addEventListener('mouseenter', function () { hold = true; });
   slider.addEventListener('mouseleave', function () { hold = false; });
@@ -9905,15 +9941,13 @@ function _mountNewsSlider(slider, slides, key, delay) {
     if (x0 === null) return;
     var dx = e.changedTouches[0].clientX - x0;
     x0 = null;
-    if (Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1), true);
+    if (Math.abs(dx) > 40) go(step(dx < 0 ? 1 : -1), true);
   }, { passive: true });
   syncPause();
   go(0, false);
-  key = key || 'news';
-  clearInterval(_sliderTimers[key]);
-  _sliderTimers[key] = setInterval(function () {
-    if (!paused && !hold && !document.hidden && document.body.contains(slider)) go(idx + 1, false);
-  }, delay || FEAT_INTERVAL_MS + 1500);   // out of step with the events slider, so the two do not move together
+  _homeTick(key || 'news', function () {   // same clock as the events box (owner, 2026-11-23)
+    if (!paused && !hold && document.body.contains(slider)) go(step(1), false);
+  });
 }
 
 // ── Book of the week: one book a week from the Anthroposophy section of the Rudolf Steiner Bookstore ──
@@ -9998,7 +10032,7 @@ async function renderHomeJobs() {
   if (!slides.length) return;
   box.innerHTML = '<div class="feat-slider news-slider" role="region" aria-roledescription="carousel" aria-label="' + esc(t('home.featured_jobs', 'Featured jobs')) + '">'
     + '<div class="feat-view"><div class="feat-track">' + slides.map(_homeJobSlide).join('') + '</div></div></div>';
-  if (slides.length > 1) _mountNewsSlider(box.querySelector('.news-slider'), slides, 'jobs', FEAT_INTERVAL_MS + 2700);
+  if (slides.length > 1) _mountNewsSlider(box.querySelector('.news-slider'), slides, 'jobs');
 }
 
 // Admin: put a job on (or take it off) the home page by toggling its 'featured' tag

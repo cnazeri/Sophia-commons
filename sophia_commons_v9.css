@@ -3573,7 +3573,9 @@ footer li a { display: inline-block; padding: 10px 0; }
 /* ══════════════════ v1.60: featured events slider ══════════════════ */
 .feat-slider { border-bottom: 1px solid var(--border-subtle); margin-bottom: 4px; }
 .feat-view { overflow: hidden; }
-.feat-track { display: flex; transition: transform 0.85s cubic-bezier(.22,.61,.36,1); will-change: transform; }
+/* Fades out and back in on the next slide instead of sliding sideways (owner, 2026-11-23) */
+.feat-track { display: flex; transition: opacity 0.45s ease; }
+.feat-track.fading { opacity: 0; }
 .feat-track > .feat-ev { flex: 0 0 100%; min-width: 0; border-bottom: 0; margin-bottom: 0; }
 /* Two events side by side on wider screens (owner, 2026-11-22) */
 @media (min-width: 900px) { .feat-track > .feat-ev { flex-basis: 50%; padding-right: 16px; box-sizing: border-box; } }
