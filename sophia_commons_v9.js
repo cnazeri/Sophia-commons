@@ -4544,13 +4544,15 @@ var FESTIVAL_IMAGES = {
 };
 // The Christmas Conference opening day shares the Foundation Stone picture
 FESTIVAL_IMAGES.christmas_conference_open = FESTIVAL_IMAGES.christmas_conference;
-// Each Advent Sunday its own picture: the same wreath with one more candle lit each week, the rose candle on the
-// third Sunday (owner, 2026-11-22). Advent Sunday 1 is the photo 'advent' already used.
+// Each Advent Sunday its own picture, after the Waldorf Advent verse (owner, 2026-11-23; was a wreath with one more
+// candle each week): the light of stones, of plants, of animals, of human beings. Old wreath photos: scripts/backups/.
+var ADVENT_LIGHTS = [null,
+  { alt: 'The light of stones: rock crystal (quartz) from Brazil', page: 'https://commons.wikimedia.org/wiki/File:Quartz_Br%C3%A9sil.jpg', credit: 'Didier Descouens, CC BY-SA 4.0, via Wikimedia Commons' },
+  { alt: 'The light of plants: The Large Piece of Turf, Albrecht D\u00fcrer (1503)', page: 'https://commons.wikimedia.org/wiki/File:Albrecht_D%C3%BCrer_-_The_Large_Piece_of_Turf,_1503_-_Google_Art_Project.jpg', credit: 'Albrecht D\u00fcrer, Public domain, via Wikimedia Commons' },
+  { alt: 'The light of animals: Young Hare, Albrecht D\u00fcrer (1502)', page: 'https://commons.wikimedia.org/wiki/File:Albrecht_D%C3%BCrer_-_Hare,_1502_-_Google_Art_Project.jpg', credit: 'Albrecht D\u00fcrer, Public domain, via Wikimedia Commons' },
+  { alt: 'The light of human beings: The Annunciation, Fra Angelico (c. 1434)', page: 'https://commons.wikimedia.org/wiki/File:Fra_Angelico_-_Annunciation_-_WGA0474.jpg', credit: 'Fra Angelico, Public domain, via Wikimedia Commons' }];
 [1, 2, 3, 4].forEach(function(n) {
-  var lit = ['', 'one violet candle lit', 'two violet candles lit', 'two violet candles and the rose candle lit', 'all four candles lit'][n];
-  FESTIVAL_IMAGES['advent' + n] = { src: 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/advent' + n + '.jpg',
-    alt: 'Advent wreath with violet and rose candles, ' + lit,
-    page: 'https://commons.wikimedia.org/wiki/File:Advent_wreath_with_violet_and_rose_candles_' + n + '.jpg', credit: 'PHILIP J\u00e1nos, CC0, via Wikimedia Commons' };
+  FESTIVAL_IMAGES['advent' + n] = Object.assign({ src: 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/advent' + n + '.jpg?v=2' }, ADVENT_LIGHTS[n]);
 });
 FESTIVAL_IMAGES.joan_of_arc = { src: 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/joan_of_arc.jpg',
   alt: 'Joan of Arc at the Coronation of Charles VII, Jean-Auguste-Dominique Ingres (1854)',
@@ -4766,7 +4768,7 @@ function _injectAnthroHolidaysYear(yr) {
   var advent4 = _addDays(xmas, -(xmasDay === 0 ? 7 : xmasDay)); // Sunday before Christmas
   for (var a = 0; a < 4; a++) {
     _addFestival('advent' + (4 - a), _dateStr(_addDays(advent4, -7 * a)), 'Advent Sunday ' + (4 - a), 'festival',
-      'The four Sundays before Christmas: a season of waiting and preparation. Many Waldorf communities hold an Advent Spiral.',
+      'The four Sundays before Christmas: a season of waiting and preparation. In Waldorf schools the Advent verse follows the light through the kingdoms of nature, one each week: stones, plants, animals, and human beings.',
       [_SRC.wiki('Advent', 'Advent')]);
   }
 

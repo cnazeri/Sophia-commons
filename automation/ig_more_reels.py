@@ -81,7 +81,7 @@ FESTIVALS = [
      'text': 'The festival of the Archangel Michael at the turn to autumn. Steiner hoped it would become a '
              'festival of courage and inner strength, just as nature dies back.'},
     {'key': 'advent', 'name': 'Advent', 'when': advent_sunday, 'tag': '#Advent',
-     'pics': [('advent-1-annunciation.jpg', 'The Annunciation, Fra Angelico (c. 1434)'), ('advent-2-sistine-madonna.jpg', 'The Sistine Madonna, Raphael (1512)'), ('advent-3-wreath.jpg', 'Advent wreath, Philip Janos, CC0')],
+     'pics': [('advent-1-annunciation.jpg', 'The Annunciation, Fra Angelico (c. 1434)'), ('advent-2-sistine-madonna.jpg', 'The Sistine Madonna, Raphael (1512)'), ('advent-3-light-of-stones.jpg', 'Rock crystal, the light of stones of the first Advent week, Didier Descouens, CC BY-SA 4.0')],
      'words': r'\badvent\b|advent garden|advent spiral', 'line': 'The first Sunday of Advent',
      'text': 'Four Sundays of waiting and preparing, with one more candle lit each week, as the light is carried '
              'toward Christmas through the darkest weeks of the year. In Waldorf schools, the Advent garden.',

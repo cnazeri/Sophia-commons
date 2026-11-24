@@ -21,14 +21,16 @@ function forYear(y: number): YearDay[] {
   }
   // The four Advent Sundays (the Sundays before 25 December), as on the website
   const xmas = new Date(y, 11, 25), back = xmas.getDay() === 0 ? 7 : xmas.getDay();
-  // Each Sunday its own picture: the same wreath with one more candle lit each week, the rose candle on the third
-  // (owner, 2026-11-22; PHILIP Janos, CC0, Wikimedia Commons)
-  const lit = ['', 'one violet candle lit', 'two violet candles lit', 'two violet candles and the rose candle lit', 'all four candles lit'];
+  // Each Sunday its own picture, after the Waldorf Advent verse (owner, 2026-11-23; was a wreath): the light of stones,
+  // plants, animals and human beings, as on the website (credits there)
+  const light = ['', 'The light of stones: rock crystal', 'The light of plants: The Large Piece of Turf, Albrecht Durer',
+    'The light of animals: Young Hare, Albrecht Durer', 'The light of human beings: The Annunciation, Fra Angelico'];
   for (let i = 0; i < 4; i++) {
     const n = 4 - i;
     out.push({ key: 'advent' + n, date: new Date(y, 11, 25 - back - 7 * i), title: 'Advent Sunday ' + n, kind: 'festival',
-      desc: 'The four Sundays before Christmas: a season of waiting and preparation. Many Waldorf communities hold an Advent Spiral.',
-      img: { src: 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/advent' + n + '.jpg', alt: 'Advent wreath with violet and rose candles, ' + lit[n] } });
+      desc: 'The four Sundays before Christmas: a season of waiting and preparation. In Waldorf schools the Advent verse '
+        + 'follows the light through the kingdoms of nature, one each week: stones, plants, animals, and human beings.',
+      img: { src: 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/advent' + n + '.jpg?v=2', alt: light[n] } });
   }
   const e = easter(y);
   for (const f of dates.easter) out.push({ key: f.key, date: new Date(y, e.getMonth(), e.getDate() + f.offset), title: f.title, desc: f.desc, img: f.img, kind: 'festival' });
