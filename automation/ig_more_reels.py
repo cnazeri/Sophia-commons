@@ -27,7 +27,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 from instagram_post import (ASSETS, BASE_TAG, BIO_LINE, CALENDAR_URL, CAPTION_MAX, H, MAX_SLIDES, SITE, W,
                             centered, claim_check, clean, event_line, frame_jpeg, hashtags, ship, supabase)
 
-IMG = 'https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/'
+FEST_PICS = os.path.join(ASSETS, 'festivals')   # classic and anthroposophical works, public domain or credited
 FESTIVAL_DAYS_AHEAD = (1, 3)   # post this many days before the festival
 FESTIVAL_EVENTS_MAX = 6        # gatherings shown after the painting
 NEW_DAYS = 7
@@ -58,30 +58,30 @@ def advent_sunday(year):
     return xmas - timedelta(days=(xmas.weekday() + 1) % 7 or 7) - timedelta(weeks=3)
 
 
-# The site's festival pictures (public domain or CC, credited in the caption) and a few lines for each
+# Each festival's pictures (owner, 2026-11-23: classic and anthroposophical works; all credited in the caption)
 FESTIVALS = [
     {'key': 'epiphany', 'name': 'Epiphany', 'when': lambda y: date(y, 1, 6), 'tag': '#Epiphany',
-     'img': 'epiphany.jpg', 'credit': 'Adoration of the Magi, Gentile da Fabriano (1423), public domain',
+     'pics': [('epiphany-1-magi-gentile.jpg', 'Adoration of the Magi, Gentile da Fabriano (1423)'), ('epiphany-2-magi-burne-jones.jpg', 'The Adoration of the Magi, Edward Burne-Jones (tapestry, 1894)'), ('epiphany-3-seal-sun-woman.jpg', "Rudolf Steiner's seal of the woman clothed with the sun, painted by Clara Rettich")],
      'words': r'epiphany|three kings|holy nights|dreik', 'line': 'The close of the Twelve Holy Nights',
      'text': 'Epiphany closes the Twelve Holy Nights. The light of Christmas is carried out into the new year, '
              'as the three kings carried their gifts home by another way.'},
     {'key': 'easter', 'name': 'Easter', 'when': easter, 'tag': '#Easter',
-     'img': 'easter.jpg', 'credit': 'The Resurrection, Isenheim Altarpiece, Matthias Grunewald (1512-1516), public domain',
+     'pics': [('easter-1-resurrection.jpg', 'The Resurrection, Isenheim Altarpiece, Matthias Grunewald (1512-1516)'), ('easter-2-seal-resurrection.jpg', "Rudolf Steiner's seal of the resurrection, painted by Clara Rettich")],
      'words': r'easter|oster|holy week|good friday|resurrection', 'line': 'The festival of the Resurrection',
      'text': 'Easter falls on the first Sunday after the first full moon of spring, a date set by sun and moon '
              'together, which Rudolf Steiner spoke about in his Easter lectures of 1924.'},
     {'key': 'johanni', 'name': "St. John's Tide", 'when': lambda y: date(y, 6, 24), 'tag': '#Midsummer',
-     'img': 'johanni.jpg', 'credit': 'Johannisfeuer, Walter J. Pilsak, CC BY-SA 3.0, via Wikimedia Commons',
+     'pics': [('johanni-1-leonardo.jpg', 'Saint John the Baptist, Leonardo da Vinci (c. 1513-1516)'), ('johanni-2-isenheim-john.jpg', 'John the Baptist, Isenheim Altarpiece, Matthias Grunewald'), ('johanni-3-fire.jpg', "St. John's fire, Walter J. Pilsak, CC BY-SA 3.0")],
      'words': r"st\.? john'?s|johanni|midsummer", 'line': 'Midsummer and John the Baptist',
      'text': "St. John's Tide, the festival of John the Baptist near midsummer. Steiner described it as the "
              'time when the Earth breathes out most fully into the cosmos. Many communities gather round a fire.'},
     {'key': 'michaelmas', 'name': 'Michaelmas', 'when': lambda y: date(y, 9, 29), 'tag': '#Michaelmas',
-     'img': 'michaelmas.jpg', 'credit': 'St. Michael and the Dragon, Raphael (c. 1505), public domain',
+     'pics': [('michaelmas-1-raphael.jpg', 'St. Michael and the Dragon, Raphael (c. 1505)'), ('michaelmas-2-reni.jpg', 'The Archangel Michael, Guido Reni (1635)'), ('michaelmas-3-goetheanum-red-window.jpg', 'The red window of the Goetheanum, designed by Rudolf Steiner. Photo: Taxiarchos228, Free Art License')],
      'words': r'michael(mas)?\b|michaeli', 'line': 'The festival of courage',
      'text': 'The festival of the Archangel Michael at the turn to autumn. Steiner hoped it would become a '
              'festival of courage and inner strength, just as nature dies back.'},
     {'key': 'advent', 'name': 'Advent', 'when': advent_sunday, 'tag': '#Advent',
-     'img': 'advent1.jpg', 'credit': 'Advent wreath, Philip Janos, CC0, via Wikimedia Commons',
+     'pics': [('advent-1-annunciation.jpg', 'The Annunciation, Fra Angelico (c. 1434)'), ('advent-2-sistine-madonna.jpg', 'The Sistine Madonna, Raphael (1512)'), ('advent-3-wreath.jpg', 'Advent wreath, Philip Janos, CC0')],
      'words': r'\badvent\b|advent garden|advent spiral', 'line': 'The first Sunday of Advent',
      'text': 'Four Sundays of waiting and preparing, with one more candle lit each week, as the light is carried '
              'toward Christmas through the darkest weeks of the year. In Waldorf schools, the Advent garden.'},
@@ -122,6 +122,15 @@ def nice_date(d):
 
 
 # ---------- Festival Reels ----------
+
+def picture_frame(im):
+    """A painting shown whole on a 1080x1920 frame, over a blurred, dimmed copy of itself (as frame_jpeg)."""
+    out = ImageOps.fit(im, (W, H), Image.LANCZOS).filter(ImageFilter.GaussianBlur(40))
+    out = Image.blend(out, Image.new('RGB', (W, H), 'black'), 0.35)
+    im = ImageOps.contain(im, (W, H), Image.LANCZOS)
+    out.paste(im, ((W - im.width) // 2, (H - im.height) // 2))
+    return jpeg(out)
+
 
 def next_festival(today, window=None):
     """The festival (with its date) that is next; with a window, only one that many days ahead."""
@@ -167,7 +176,8 @@ def festival_caption(fest, day, evs):
     blocks = [f"{event_line(e)}\nsophiacommons.org/event/{e['id']}" for e in sorted(evs, key=lambda e: e['start_date'])[:8]]
     gather = ['Gatherings on the calendar:', *blocks] if blocks else []
     tags = ' '.join(dict.fromkeys([BASE_TAG, fest['tag'], '#Festivals', '#RudolfSteiner', '#SophiaCommons']))
-    parts = [head, *gather, f'Find a festival near you: {CALENDAR_URL}', f"Picture: {fest['credit']}.", BIO_LINE, tags]
+    credits = 'Pictures: ' + '; '.join(c for _, c in fest['pics']) + '.'
+    parts = [head, *gather, f'Find a festival near you: {CALENDAR_URL}', credits, BIO_LINE, tags]
     text = '\n\n'.join(parts)
     while len(text) > CAPTION_MAX and len(gather) > 1:
         gather.pop()
@@ -184,8 +194,8 @@ def run_festival(cmd):
     post_id = f"festival-{fest['key']}-{day.year}"
     if cmd == 'post':
         claim_check(post_id)
-    painting = fetch_image(IMG + fest['img'])
-    frames = [festival_card(fest, day, painting), frame_jpeg(IMG + fest['img'])]
+    paintings = [Image.open(os.path.join(FEST_PICS, f)).convert('RGB') for f, _ in fest['pics']]
+    frames = [festival_card(fest, day, paintings[0])] + [picture_frame(im) for im in paintings]
     evs = festival_events(fest, day)
     seen = set()
     for e in evs:
@@ -197,7 +207,7 @@ def run_festival(cmd):
             frames.append(frame_jpeg(src))
         except Exception as err:
             print(f'skip picture for {e["id"][:8]}: {err}')
-        if len(frames) >= 2 + FESTIVAL_EVENTS_MAX:
+        if len(frames) >= 1 + len(paintings) + FESTIVAL_EVENTS_MAX:
             break
     row = {'id': post_id, 'kind': 'other', 'title': f"{fest['name']} {day.year}", 'event_ids': [e['id'] for e in evs][:20]}
     ship(cmd, row, frames, festival_caption(fest, day, evs), post_id)
