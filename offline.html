@@ -6,30 +6,52 @@
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#FDFBF7">
 <title>You're offline | Sophia Commons</title>
+<!-- Shown by sw.js when a page cannot load without a connection. Redesign (owner, 2026-11-23): the logo and
+     name font, and a list of the pages that do work offline (sw.js serves them from the saved app). -->
 <style>
-  :root { --bg: #FDFBF7; --ink: #2C2418; --muted: #6B5E4B; --gold: #C9A23A; --gold-text: #7A5C12; --border: #E6DCC8; }
+  @font-face { font-family: 'Sophia Commons Display'; src: url('/fonts/sophia-commons-display.woff2') format('woff2'); font-display: swap; }
+  :root { --bg: #FDFBF7; --ink: #1E1810; --muted: #5A4E42; --line: #ECE5D9; --gold: #C9A035; --gold-hover: #AB8628; --gold-text: #7F6116; }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;
-         background: var(--bg); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  main { max-width: 420px; text-align: center; }
-  img { width: 56px; height: auto; margin-bottom: 12px; }
-  h1 { font-size: 24px; margin: 0 0 8px; }
-  p { color: var(--muted); margin: 0 0 18px; }
-  button { min-height: 48px; padding: 0 28px; border: 0; border-radius: 50px; background: var(--gold); color: var(--ink);
+  body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; background: var(--bg); color: var(--ink);
+         font: 16px/1.55 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  main { width: 100%; max-width: 400px; }
+  .brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 28px; }
+  .brand img { width: 30px; height: auto; }
+  .brand span { font-family: 'Sophia Commons Display', Georgia, serif; font-size: 24px; letter-spacing: .02em; }
+  .status { text-align: center; }
+  h1 { font-family: Lora, Georgia, serif; font-size: 24px; margin: 0 0 6px; }
+  .status p { color: var(--muted); margin: 0 0 18px; }
+  .retry { display: block; width: 100%; min-height: 50px; border: 0; border-radius: 10px; background: var(--gold); color: var(--ink);
            font: inherit; font-weight: 700; cursor: pointer; }
-  button:focus-visible { outline: 3px solid var(--gold-text); outline-offset: 3px; }
-  a { color: var(--gold-text); font-weight: 600; }
-  .home { display: block; margin-top: 16px; font-size: 15px; }
+  .retry:hover { background: var(--gold-hover); }
+  .retry:focus-visible, a:focus-visible { outline: 3px solid var(--gold-text); outline-offset: 3px; }
+  .saved { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 18px; }
+  .saved h2 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .saved a { display: flex; justify-content: space-between; align-items: center; min-height: 52px; padding: 8px 4px;
+             border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 600; }
+  .saved a::after { content: '\203A'; color: var(--gold-text); font-size: 22px; }
+  .saved small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
 </style>
 </head>
 <body>
 <main>
-  <img src="/img/logo-mark-112.webp" alt="" width="73" height="112">
-  <h1>You're offline</h1>
-  <p>This page needs an internet connection. Pages you opened recently may still work. Everything else comes back as soon as you're online again.</p>
-  <button type="button" onclick="location.reload()">Try again</button>
-  <a class="home" href="/">Go to the home page</a>
+  <div class="brand"><img src="/img/logo-mark-112.webp" alt="" width="30" height="46"><span>Sophia Commons</span></div>
+  <div class="status">
+    <h1>You're offline</h1>
+    <p>This page needs a connection. It will load by itself as soon as you're back online.</p>
+    <button class="retry" type="button" onclick="location.reload()">Try again</button>
+  </div>
+  <nav class="saved" id="saved" aria-labelledby="saved-h" hidden>
+    <h2 id="saved-h">Still available on this device</h2>
+    <a href="/"><span>Home</span></a>
+    <a href="/events"><span>Events<small>The calendar as it was when you last opened it</small></span></a>
+    <a href="/books"><span>Resources<small>Online resources and the Steiner reading list</small></span></a>
+  </nav>
 </main>
-<script>window.addEventListener('online', function () { location.reload(); });</script>
+<script>
+  window.addEventListener('online', function () { location.reload(); });
+  // The list shows only when the app itself is saved on this device (sw.js keeps it under '/')
+  if (window.caches) caches.match('/').then(function (hit) { if (hit) document.getElementById('saved').hidden = false; });
+</script>
 </body>
 </html>

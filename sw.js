@@ -1,4 +1,4 @@
-var CACHE_NAME = 'sophia-commons-v1.129.5';
+var CACHE_NAME = 'sophia-commons-v1.129.6';
 var STATIC_ASSETS = [
   '/',
   '/sophia_commons_v9.css',
@@ -12,8 +12,10 @@ var STATIC_ASSETS = [
   '/lang/en.json',
   '/manifest.json',
   '/offline.html',
-  '/img/logo-mark-112.webp'
+  '/img/logo-mark-112.webp',
+  '/fonts/sophia-commons-display.woff2'
 ];
+var OFFLINE_ROUTES = /^\/(events|books)?\/?$/;
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
@@ -74,8 +76,10 @@ self.addEventListener('fetch', function(event) {
         if (cached) return cached;
         // Navigations: the home page works from cache; any other page gets a clear offline page
         // (the app shell alone would sit on "Loading..." without the database)
+        // Home, Events and Resources also open from the saved app: their content is in the page itself or
+        // kept on the device (owner, 2026-11-23; listed on offline.html)
         if (event.request.mode === 'navigate') {
-          return url.pathname === '/' ? caches.match('/') : caches.match('/offline.html');
+          return OFFLINE_ROUTES.test(url.pathname) ? caches.match('/') : caches.match('/offline.html');
         }
       });
     })

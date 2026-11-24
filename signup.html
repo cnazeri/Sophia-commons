@@ -5,30 +5,87 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://bnrvgitzbpocratvszgk.supabase.co; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#FDFBF7">
 <title>Sign up | Sophia Commons</title>
 <link rel="icon" href="/favicon.ico">
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.124.0">
 <!-- The sign-up form on its own page, with no site menu or other links, so organizers can share it like a
-     Google Form (owner, 2026-11-01). /signup/<event id> is served by this file (see _redirects). -->
+     Google Form (owner, 2026-11-01). /signup/<event id> is served by this file (see _redirects).
+     Redesign (owner, 2026-11-23): its own small stylesheet instead of the whole site's (which it loaded at an
+     old version), the logo, a date tile, a places-left bar, a shorter form, whole flyers, an add-to-calendar
+     link after signing up. -->
 <style>
-  body.su-page { margin: 0; min-height: 100vh; background: var(--bg); }
-  .su-wrap { max-width: 560px; margin: 0 auto; padding: 28px 16px 40px; }
-  .su-brand { font-family: 'Cormorant Garamond', Lora, serif; font-size: 20px; color: var(--text-muted); margin-bottom: 18px; }
-  .su-card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; }
-  .su-card img.su-img { display: block; width: 100%; max-height: 220px; object-fit: cover; }
-  .su-head { padding: 20px 22px 6px; }
-  .su-head h1 { font-family: Lora, serif; font-size: 24px; line-height: 1.25; margin: 0 0 8px; }
-  .su-meta { font-size: 14px; color: var(--text-secondary); margin: 0 0 4px; }
-  .su-card .ev-signup { margin: 8px 0 0; border: 0; border-top: 1px solid var(--border-subtle); border-radius: 0; background: transparent; padding: 18px 22px 22px; }
-  .su-back { display: inline-block; margin-top: 16px; font-size: 14px; color: var(--gold-text); }
-  .su-msg { padding: 22px; font-size: 15px; }
+  @font-face { font-family: 'Sophia Commons Display'; src: url('/fonts/sophia-commons-display.woff2') format('woff2'); font-display: swap; }
+  @font-face { font-family: 'Lora'; src: url('/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2') format('woff2'); font-weight: 400 700; font-display: swap; }
+  @font-face { font-family: 'Nunito Sans'; src: url('/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2') format('woff2'); font-weight: 200 1000; font-display: swap; }
+  :root { --bg: #FDFBF7; --surface: #FFFFFF; --soft: #FAF7F1; --ink: #1E1810; --ink-2: #5A4E42; --muted: #6F665B;
+          --line: #ECE5D9; --field: #D9CFBF; --gold: #C9A035; --gold-hover: #AB8628; --gold-text: #7F6116; --gold-light: #FBF3DE;
+          --sage: #3F7539; --sage-light: #E4F2E2; --rose: #A23B3B; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }   /* the grid and flex rules below would otherwise show hidden parts */
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 'Nunito Sans', -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 18px 16px 40px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; text-decoration: none; color: var(--ink); margin-bottom: 12px; }
+  .brand img { width: 26px; height: auto; }
+  .brand span { font-family: 'Sophia Commons Display', Georgia, serif; font-size: 22px; letter-spacing: .02em; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .pic { display: block; width: 100%; max-height: 340px; object-fit: contain; background: #F3EEE5; }   /* flyers carry words: show them whole */
+  .head { display: grid; grid-template-columns: 58px 1fr; gap: 14px; padding: 18px 20px 16px; }
+  .head.no-day { grid-template-columns: 1fr; }
+  .day { text-align: center; border: 1px solid var(--line); border-radius: 10px; padding: 6px 0; align-self: start; }
+  .day b { display: block; font-size: 24px; line-height: 1.1; }
+  .day small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--gold-text); text-transform: uppercase; }
+  h1 { font-family: Lora, Georgia, serif; font-size: 22px; line-height: 1.25; margin: 0 0 6px; overflow-wrap: anywhere; }
+  .meta { margin: 0; font-size: 14.5px; color: var(--ink-2); overflow-wrap: anywhere; }
+  .meta + .meta { margin-top: 2px; }
+  .spots { display: flex; align-items: center; gap: 10px; padding: 12px 20px; font-size: 14px; color: var(--ink-2); background: var(--soft); border-top: 1px solid var(--line); }
+  .spots:empty { display: none; }
+  .bar { flex: 1; min-width: 40px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--sage); }
+  .spots.full b { color: var(--rose); }
+  .donate { margin: 0; padding: 12px 20px; font-size: 14px; color: var(--ink-2); border-top: 1px solid var(--line); }
+  .donate a, .links a, .text a { color: var(--gold-text); font-weight: 600; }
+  form, .box { padding: 18px 20px 20px; display: grid; gap: 14px; border-top: 1px solid var(--line); }
+  label, legend { display: grid; gap: 6px; font-size: 14px; font-weight: 600; }
+  input, select, textarea { font: inherit; font-weight: 400; padding: 11px 12px; border: 1px solid var(--field); border-radius: 9px; background: #fff; color: var(--ink); min-height: 46px; width: 100%; }
+  textarea { resize: vertical; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid rgba(201,160,53,.45); outline-offset: 1px; }
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; }
+  .stepper { display: flex; border: 1px solid var(--field); border-radius: 9px; overflow: hidden; height: 46px; }
+  .stepper button { width: 44px; border: 0; background: #fff; font: inherit; font-size: 20px; color: var(--ink); cursor: pointer; }
+  .stepper button:disabled { color: #C8BFB2; cursor: default; }
+  .stepper input { width: 44px; min-height: 0; border: 0; border-inline: 1px solid var(--line); border-radius: 0; padding: 0; text-align: center; font-weight: 700; -moz-appearance: textfield; }
+  .stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+  legend { margin-bottom: 6px; padding: 0; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--field); border-radius: 9px; overflow: hidden; }
+  .seg label { display: block; position: relative; text-align: center; padding: 11px; min-height: 46px; cursor: pointer; }
+  .seg label + label { border-left: 1px solid var(--line); }
+  .seg input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .seg label:has(input:checked) { background: var(--gold-light); color: var(--gold-text); }
+  .seg label:has(input:focus-visible) { outline: 3px solid rgba(201,160,53,.45); outline-offset: -3px; }
+  .addnote { justify-self: start; border: 0; background: none; padding: 0; color: var(--gold-text); font: inherit; font-size: 14px; font-weight: 600; min-height: 44px; cursor: pointer; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; }
+  .go { min-height: 52px; border: 0; border-radius: 10px; background: var(--gold); color: var(--ink); font: inherit; font-size: 17px; font-weight: 700; cursor: pointer; }
+  .go:hover { background: var(--gold-hover); }
+  .go:disabled { opacity: .6; cursor: default; }
+  .msg { margin: 0; font-size: 14px; color: var(--rose); min-height: 0; }
+  .msg:empty { display: none; }
+  .fine { margin: 0; font-size: 13px; color: var(--muted); text-align: center; }
+  .wait { margin: 0; padding: 10px 12px; border-radius: 9px; background: var(--gold-light); font-size: 14px; color: var(--ink-2); }
+  .done { margin: 0; padding: 14px; border-radius: 10px; background: var(--sage-light); color: #24461F; font-weight: 600; }
+  .done.wl { background: var(--gold-light); color: var(--ink); }
+  .cal { justify-self: start; display: inline-flex; align-items: center; min-height: 44px; color: var(--gold-text); font-weight: 600; }
+  .text { margin: 0; padding: 20px; font-size: 15px; color: var(--ink-2); }
+  .links { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; font-size: 14px; }
+  .links a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+  @media (prefers-reduced-motion: no-preference) { .bar i { transition: width .4s ease; } }
 </style>
 </head>
-<body class="su-page">
-<main class="su-wrap">
-  <div class="su-brand">Sophia Commons</div>
-  <div class="su-card" id="su-card"><p class="su-msg">Loading...</p></div>
-  <a class="su-back" id="su-back" hidden>Event details</a>
+<body>
+<main class="wrap">
+  <a class="brand" href="/"><img src="/img/logo-mark-112.webp" alt="" width="26" height="40"><span>Sophia Commons</span></a>
+  <div class="card" id="su-card"><p class="text">Loading...</p></div>
+  <div class="links"><a id="su-back" hidden>Event details</a><a href="/">sophiacommons.org</a></div>
 </main>
 <script>
 (function () {
@@ -37,10 +94,13 @@
   var card = document.getElementById('su-card'), back = document.getElementById('su-back');
   var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
   var id = (location.pathname.match(/\/signup\/([0-9a-f-]{36})/) || [])[1];
-  var say = function (t) { card.innerHTML = '<p class="su-msg">' + esc(t) + '</p>'; };
+  var say = function (t) { card.innerHTML = '<p class="text">' + esc(t) + '</p>'; };
   var manage = function (body) {
     return fetch(SB + '/functions/v1/event-signup-manage', { method: 'POST', headers: H, body: JSON.stringify(body) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { if (!r.ok) throw new Error(b.error || ''); return b; }); });
+  };
+  var simpleHead = function (title, when) {
+    return '<div class="head no-day"><div><h1>' + esc(title) + '</h1><p class="meta">' + esc(when) + '</p></div></div>';
   };
 
   // Cancel page, /signup/cancel?t=<token> (2026-11-02): shows what will be cancelled and waits for a button
@@ -49,15 +109,15 @@
     document.title = 'Cancel sign-up | Sophia Commons';
     var tok = new URLSearchParams(location.search).get('t') || '';
     var showDone = function (b) {
-      card.innerHTML = '<div class="su-head"><h1>' + esc(b.title) + '</h1><p class="su-meta">' + esc(b.when) + '</p></div>'
-        + '<p class="su-msg">Your sign-up is cancelled. Thank you for letting the organizer know.</p>';
+      card.innerHTML = simpleHead(b.title, b.when)
+        + '<div class="box"><p class="done">Your sign-up is cancelled. Thank you for letting the organizer know.</p></div>';
       back.href = '/event/' + b.event_id; back.hidden = false;
     };
     manage({ action: 'lookup', token: tok }).then(function (b) {
       if (b.status === 'cancelled') { showDone(b); return; }
-      card.innerHTML = '<div class="su-head"><h1>' + esc(b.title) + '</h1><p class="su-meta">' + esc(b.when) + '</p></div>'
-        + '<div class="su-msg"><p>' + esc(b.name) + ', do you want to cancel your ' + (b.status === 'waitlist' ? 'place on the waitlist' : 'sign-up') + '?</p>'
-        + '<button type="button" class="ev-signup-btn" id="su-cancel">Yes, cancel it</button><p class="ev-signup-msg" role="status" id="su-cancel-msg"></p></div>';
+      card.innerHTML = simpleHead(b.title, b.when)
+        + '<div class="box"><p class="meta">' + esc(b.name) + ', do you want to cancel your ' + (b.status === 'waitlist' ? 'place on the waitlist' : 'sign-up') + '?</p>'
+        + '<button type="button" class="go" id="su-cancel">Yes, cancel it</button><p class="msg" role="status" id="su-cancel-msg"></p></div>';
       back.href = '/event/' + b.event_id; back.hidden = false;
       document.getElementById('su-cancel').addEventListener('click', function () {
         this.disabled = true;
@@ -72,82 +132,130 @@
   if (!id) { say('This sign-up link is not complete. Please check the link you were sent.'); return; }
   back.href = '/event/' + id; back.hidden = false;
 
-  function when(ev) {
-    var o = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-    if (ev.is_all_day) { o.timeZone = 'UTC'; return new Date(ev.start_date).toLocaleDateString(undefined, o); }
-    var d = new Date(ev.start_date).toLocaleDateString(undefined, o);
-    var t = { hour: 'numeric', minute: '2-digit' }, tz = { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' };
-    return d + ', ' + (ev.end_date ? new Date(ev.start_date).toLocaleTimeString(undefined, t) + ' - ' + new Date(ev.end_date).toLocaleTimeString(undefined, tz)
-      : new Date(ev.start_date).toLocaleTimeString(undefined, tz));
+  // The date tile and the time line. All-day dates are stored at midnight UTC, so they are read in UTC.
+  function parts(ev) {
+    var d = new Date(ev.start_date), tz = ev.is_all_day ? { timeZone: 'UTC' } : {};
+    var f = function (o) { return d.toLocaleDateString(undefined, Object.assign(o, tz)); };
+    var t = { hour: 'numeric', minute: '2-digit' }, tzn = { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' };
+    var time = ev.is_all_day ? 'All day'
+      : ev.end_date ? d.toLocaleTimeString(undefined, t) + ' - ' + new Date(ev.end_date).toLocaleTimeString(undefined, tzn)
+      : d.toLocaleTimeString(undefined, tzn);
+    return { mon: f({ month: 'short' }), day: f({ day: 'numeric' }), wk: f({ weekday: 'short' }),
+      long: f({ weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }), time: time };
+  }
+
+  // Google Calendar link for after signing up (times in UTC; all-day events as dates)
+  function calUrl(ev, place) {
+    var z = function (s) { return new Date(s).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); };
+    var day = function (s, add) { var d = new Date(s); d.setUTCDate(d.getUTCDate() + (add || 0)); return d.toISOString().slice(0, 10).replace(/-/g, ''); };
+    var dates = ev.is_all_day ? day(ev.start_date) + '/' + day(ev.end_date || ev.start_date, 1)
+      : z(ev.start_date) + '/' + z(ev.end_date || new Date(new Date(ev.start_date).getTime() + 36e5).toISOString());
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(ev.title)
+      + '&dates=' + dates + '&location=' + encodeURIComponent(place || '')
+      + '&details=' + encodeURIComponent('https://sophiacommons.org/event/' + ev.id);
+  }
+
+  function question(q, i) {
+    var f = 'q' + i;
+    if (q.type === 'yesno') return '<fieldset><legend>' + esc(q.label) + '</legend><div class="seg">'
+      + '<label><input type="radio" name="' + f + '" value="Yes">Yes</label><label><input type="radio" name="' + f + '" value="No">No</label></div></fieldset>';
+    if (q.type === 'choice') return '<label>' + esc(q.label) + '<select name="' + f + '"><option value="">Choose one</option>'
+      + (q.options || []).map(function (o) { return '<option>' + esc(o) + '</option>'; }).join('') + '</select></label>';
+    return '<label>' + esc(q.label) + '<input name="' + f + '" maxlength="500"></label>';
   }
 
   function form(ev) {
     var qs = (Array.isArray(ev.signup_questions) ? ev.signup_questions : []).slice(0, 3);
-    var donate = ev.donation_url && /^https?:\/\//i.test(ev.donation_url)
-      ? '<p class="ev-donate">' + (ev.price_text && !/^(free|kostenlos|gratis|frei)$/i.test(ev.price_text) ? 'Suggested donation: ' + esc(ev.price_text) + '.' : 'A donation is suggested.')
-        + ' <a href="' + esc(ev.donation_url) + '" target="_blank" rel="noopener">Donate here &#8599;</a></p>' : '';
-    return '<div class="ev-signup"><h3>Sign up <span class="ev-signup-count" id="su-count"></span></h3>' + donate + '<form id="su-form" novalidate>'
+    return '<form id="su-form" novalidate>'
       + '<label>Your name<input name="name" required maxlength="120" autocomplete="name"></label>'
-      + '<label>Email<input name="email" type="email" required maxlength="200" autocomplete="email"></label>'
-      + '<label>Number of people<input name="attending" type="number" min="1" max="20" value="1"></label>'
-      + qs.map(function (q, i) {
-        var f = 'q' + i;
-        if (q.type === 'yesno') return '<fieldset class="ev-signup-yn"><legend>' + esc(q.label) + '</legend>'
-          + '<label><input type="radio" name="' + f + '" value="Yes"> Yes</label><label><input type="radio" name="' + f + '" value="No"> No</label></fieldset>';
-        if (q.type === 'choice') return '<label><span>' + esc(q.label) + '</span><select name="' + f + '"><option value=""></option>'
-          + (q.options || []).map(function (o) { return '<option>' + esc(o) + '</option>'; }).join('') + '</select></label>';
-        return '<label><span>' + esc(q.label) + '</span><input name="' + f + '" maxlength="500"></label>';
-      }).join('')
-      + '<label>Note for the organizer (optional)<textarea name="note" rows="2" maxlength="1000"></textarea></label>'
-      + '<input name="website" class="ev-hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
-      + '<p class="ev-signup-privacy" id="su-wait-note" hidden>This event is full. Join the waitlist and you move up automatically, with an email, if a place opens.</p>'
-      + '<button type="submit" class="ev-signup-btn">Sign up</button>'
-      + '<p class="ev-signup-msg" role="status"></p>'
-      + '<p class="ev-signup-privacy">Only the organizer and Sophia Commons see your details. You will get a confirmation email.</p>'
-      + '</form></div>';
+      + '<div class="row"><label>Email<input name="email" type="email" required maxlength="200" autocomplete="email"></label>'
+      + '<label>People<div class="stepper"><button type="button" data-step="-1" aria-label="One fewer person">&minus;</button>'
+      + '<input name="attending" type="number" inputmode="numeric" min="1" max="20" value="1" aria-label="Number of people">'
+      + '<button type="button" data-step="1" aria-label="One more person">+</button></div></label></div>'
+      + qs.map(question).join('')
+      + '<button type="button" class="addnote" id="su-addnote" aria-expanded="false">+ Add a note for the organizer</button>'
+      + '<label id="su-note" hidden>Note for the organizer<textarea name="note" rows="3" maxlength="1000"></textarea></label>'
+      + '<input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
+      + '<p class="wait" id="su-wait-note" hidden>This event is full. Join the waitlist and you move up automatically, with an email, if a place opens.</p>'
+      + '<button type="submit" class="go">Sign up</button>'
+      + '<p class="msg" role="status"></p>'
+      + '<p class="fine">Only the organizer and Sophia Commons see your details. A confirmation comes by email.</p>'
+      + '</form>';
   }
 
-  // "12 signed up, 8 places left"; when full the button says it is the waitlist
+  function donateLine(ev) {
+    if (!ev.donation_url || !/^https?:\/\//i.test(ev.donation_url)) return '';
+    var paid = ev.price_text && !/^(free|kostenlos|gratis|frei)$/i.test(ev.price_text);
+    return '<p class="donate">' + (paid ? 'Suggested donation: ' + esc(ev.price_text) + '.' : 'A donation is suggested.')
+      + ' <a href="' + esc(ev.donation_url) + '" target="_blank" rel="noopener">Donate here &#8599;</a></p>';
+  }
+
+  // "12 signed up [bar] 8 places left"; when full the button says it is the waitlist
   function showSpots(sp) {
-    var c = document.getElementById('su-count'), b = document.querySelector('#su-form button[type=submit]');
-    if (!sp || !c) return;
-    if (sp.capacity && sp.left <= 0) {
-      c.textContent = 'Full';
-      if (b) b.textContent = 'Join the waitlist';
-      var n = document.getElementById('su-wait-note');
-      if (n) n.hidden = false;
+    var box = document.getElementById('su-spots'), b = document.querySelector('#su-form button[type=submit]');
+    if (!sp || !box) return;
+    var count = sp.count > 0 ? sp.count + ' signed up' : '';
+    if (sp.capacity) {
+      var full = sp.left <= 0, pct = Math.min(100, Math.round(100 * (sp.capacity - Math.max(0, sp.left)) / sp.capacity));
+      box.className = 'spots' + (full ? ' full' : '');
+      box.innerHTML = '<span>' + esc(count || 'No one yet') + '</span><span class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></span>'
+        + '<b>' + (full ? 'Full' : sp.left + (sp.left === 1 ? ' place left' : ' places left')) + '</b>';
+      if (full) { if (b) b.textContent = 'Join the waitlist'; var n = document.getElementById('su-wait-note'); if (n) n.hidden = false; }
+    } else if (count) {
+      box.innerHTML = '<span>' + esc(count) + '</span>';
+    }
+  }
+
+  function wire(f) {
+    var num = f.elements.attending, steps = f.querySelectorAll('.stepper button');
+    var sync = function () { steps[0].disabled = +num.value <= 1; steps[1].disabled = +num.value >= 20; };
+    f.querySelector('.stepper').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      num.value = Math.min(20, Math.max(1, (parseInt(num.value, 10) || 1) + Number(b.getAttribute('data-step')))); sync();
+    });
+    num.addEventListener('change', function () { num.value = Math.min(20, Math.max(1, parseInt(num.value, 10) || 1)); sync(); });
+    sync();
+    f.addEventListener('input', function () { f.querySelector('.msg').textContent = ''; });   // an old error goes once they type
+    document.getElementById('su-addnote').addEventListener('click', function () {
+      var box = document.getElementById('su-note');
+      box.hidden = false; this.hidden = true; this.setAttribute('aria-expanded', 'true'); box.querySelector('textarea').focus();
+    });
+  }
+
+  function send(e, ev, place) {
+    e.preventDefault();
+    var f = e.target, msg = f.querySelector('.msg'), btn = f.querySelector('button[type=submit]');
+    var val = function (n) { var x = f.elements[n]; return x ? (x.value || '').trim() : ''; };
+    if (!val('name') || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val('email'))) {
+      msg.textContent = 'Please give your name and a valid email address.';
+      (val('name') ? f.elements.email : f.elements.name).focus();
       return;
     }
-    c.textContent = [sp.count > 0 ? sp.count + ' signed up' : '', sp.capacity ? sp.left + ' places left' : ''].filter(Boolean).join(', ');
-  }
-
-  function send(e, ev) {
-    e.preventDefault();
-    var f = e.target, msg = f.querySelector('.ev-signup-msg'), btn = f.querySelector('button[type=submit]');
-    var val = function (n) { var x = f.elements[n]; return x ? (x.value || '').trim() : ''; };
-    if (!val('name') || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val('email'))) { msg.textContent = 'Please give your name and a valid email address.'; return; }
     var answers = [0, 1, 2].map(function (i) {
       var x = f.elements['q' + i]; if (!x) return null;
       if (x.length && x[0] && x[0].type === 'radio') { var c = f.querySelector('input[name=q' + i + ']:checked'); return c ? c.value : ''; }
       return (x.value || '').trim();
     }).filter(function (a) { return a !== null; });
-    btn.disabled = true; msg.textContent = 'Sending...';
+    btn.disabled = true; msg.textContent = ''; btn.textContent = 'Sending...';
     fetch(SB + '/functions/v1/event-signup', { method: 'POST', headers: H, body: JSON.stringify({
       event_id: ev.id, name: val('name'), email: val('email'), attending: val('attending'), note: val('note'), answers: answers,
       website: val('website'), tz: Intl.DateTimeFormat().resolvedOptions().timeZone }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { if (!r.ok) throw new Error(b.error || ''); return b; }); })
       .then(function (b) {
-        f.innerHTML = b.waitlist
-          ? '<p class="ev-signup-done">This event is full, so you are on the waitlist. If a place opens up you move up automatically and we email you.</p>'
-          : '<p class="ev-signup-done">Thank you, you are signed up. A confirmation is on its way to your email.</p>';
-        var c = document.getElementById('su-count');
-        if (c) c.textContent = [b.count > 0 ? b.count + ' signed up' : '', b.left != null ? b.left + ' places left' : ''].filter(Boolean).join(', ');
+        var box = document.createElement('div');
+        box.className = 'box';
+        box.setAttribute('role', 'status');
+        box.innerHTML = b.waitlist
+          ? '<p class="done wl">This event is full, so you are on the waitlist. If a place opens up you move up automatically and we email you.</p>'
+          : '<p class="done">Thank you, you are signed up. A confirmation is on its way to your email.</p>'
+            + '<a class="cal" href="' + esc(calUrl(ev, place)) + '" target="_blank" rel="noopener">Add to Google Calendar &#8599;</a>';
+        f.replaceWith(box);
+        showSpots({ count: b.count, capacity: b.left != null ? (b.count || 0) + b.left : null, left: b.left });
       })
-      .catch(function (err) { btn.disabled = false; msg.textContent = err.message || 'Your sign-up could not be sent. Please try again.'; });
+      .catch(function (err) { btn.disabled = false; btn.textContent = 'Sign up'; msg.textContent = err.message || 'Your sign-up could not be sent. Please try again.'; });
   }
 
   // Listed events come from the table; a pending one (shared by link before approval) from get_event().
-  // Before that function exists the second request fails and the page says the event was not found.
   var COLS = 'id,title,start_date,end_date,is_all_day,location_name,address,city,country,is_online,organizer_name,image_url,status,signup_enabled,signup_questions,signup_capacity,signup_close_hours,price_text,donation_url';
   var rows0 = function (r) { return r.ok ? r.json() : []; };
   fetch(SB + '/rest/v1/events?select=' + COLS + '&id=eq.' + id, { headers: H })
@@ -161,16 +269,21 @@
       if (!ev) { say('This event could not be found.'); return; }
       document.title = 'Sign up: ' + ev.title + ' | Sophia Commons';
       var place = ev.is_online ? 'Online' : [ev.location_name, ev.address || [ev.city, ev.country].filter(Boolean).join(', ')].filter(Boolean).join(', ');
-      var head = (ev.image_url && /^https:\/\//.test(ev.image_url) ? '<img class="su-img" src="' + esc(ev.image_url) + '" alt="">' : '')
-        + '<div class="su-head"><h1>' + esc(ev.title) + '</h1><p class="su-meta">' + esc(when(ev)) + '</p>'
-        + (place ? '<p class="su-meta">' + esc(place) + '</p>' : '')
-        + (ev.organizer_name ? '<p class="su-meta">Hosted by ' + esc(ev.organizer_name) + '</p>' : '') + '</div>';
+      var p = parts(ev);
+      var head = (ev.image_url && /^https:\/\//.test(ev.image_url) ? '<img class="pic" src="' + esc(ev.image_url) + '" alt="">' : '')
+        + '<div class="head"><div class="day" aria-label="' + esc(p.long) + '"><small>' + esc(p.mon) + '</small><b>' + esc(p.day) + '</b><small>' + esc(p.wk) + '</small></div>'
+        + '<div><h1>' + esc(ev.title) + '</h1><p class="meta">' + esc(p.time) + '</p>'
+        + (place ? '<p class="meta">' + esc(place) + '</p>' : '')
+        + (ev.organizer_name ? '<p class="meta">Hosted by ' + esc(ev.organizer_name) + '</p>' : '') + '</div></div>';
       var closesAt = ev.signup_close_hours == null ? new Date(ev.end_date || ev.start_date).getTime() + 864e5
         : new Date(ev.start_date).getTime() - ev.signup_close_hours * 36e5;
       var open = ev.signup_enabled && ['pending', 'upcoming', 'ongoing'].indexOf(ev.status) !== -1 && Date.now() < closesAt;
-      card.innerHTML = head + (open ? form(ev) : '<p class="su-msg">Sign-ups for this event are closed.</p>');
+      card.innerHTML = head + '<div class="spots" id="su-spots"></div>' + donateLine(ev)
+        + (open ? form(ev) : '<div class="box"><p class="meta">Sign-ups for this event are closed.</p></div>');
       if (!open) return;
-      document.getElementById('su-form').addEventListener('submit', function (e) { send(e, ev); });
+      var f = document.getElementById('su-form');
+      wire(f);
+      f.addEventListener('submit', function (e) { send(e, ev, place); });
       fetch(SB + '/rest/v1/rpc/event_signup_spots', { method: 'POST', headers: H, body: JSON.stringify({ p_event: ev.id }) })
         .then(function (r) { return r.json(); }).then(showSpots).catch(function () {});
     })
