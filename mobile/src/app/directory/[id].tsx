@@ -5,13 +5,13 @@ import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, Platform, ScrollView, Share, StyleSheet, View } from 'react-native';
 
+import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
 import { Body, Card, H1, Kicker } from '@/components/ui';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { CATEGORIES, fetchListing, type Listing, listingPlace } from '@/lib/directory';
 import { sizedImage } from '@/lib/events';
-import { toggleListing, useSaved } from '@/lib/saved';
 import { t } from '@/lib/i18n';
 import { SITE } from '@/lib/supabase';
 
@@ -19,7 +19,6 @@ export default function ListingDetail() {
   const c = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [l, setL] = useState<Listing | null | undefined>(undefined);
-  const saved = useSaved();
   useEffect(() => { fetchListing(String(id)).then(setL).catch(() => setL(null)); }, [id]);
 
   if (l === undefined) return <ActivityIndicator style={{ marginTop: 80 }} color={c.goldText} />;
@@ -41,7 +40,10 @@ export default function ListingDetail() {
   return (
     <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={styles.wrap}>
       {img ? <Image source={img} style={[styles.photo, { backgroundColor: c.surface }]} contentFit={logo ? 'contain' : 'cover'} transition={200} accessibilityLabel={l.organization_name} /> : null}
-      {cat ? <Kicker>{t('app.cat_' + cat.key, cat.label)}</Kicker> : null}
+      <View style={styles.head}>
+        <View style={{ flex: 1 }}>{cat ? <Kicker>{t('app.cat_' + cat.key, cat.label)}</Kicker> : null}</View>
+        <BookmarkButton listing={l} />
+      </View>
       <H1 style={{ marginTop: 0 }}>{l.organization_name}</H1>
       {place ? <Body muted selectable>{place}</Body> : null}
       {l.description ? <Card><Body selectable>{l.description}</Body></Card> : null}
@@ -50,7 +52,6 @@ export default function ListingDetail() {
         {l.phone ? <Button kind="secondary" label={t('app.call', 'Call') + ' ' + l.phone} onPress={() => Linking.openURL('tel:' + l.phone!.replace(/[^\d+]/g, ''))} /> : null}
         {l.email ? <Button kind="secondary" label={t('app.email', 'Email')} onPress={() => Linking.openURL('mailto:' + l.email)} /> : null}
         {place ? <Button kind="secondary" label={t('app.directions', 'Directions')} onPress={directions} /> : null}
-        <Button kind="secondary" label={saved.listings[l.id] ? t('app.saved', 'Saved') : t('app.save_place', 'Save')} onPress={() => toggleListing(l)} />
         <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => Share.share({ message: l.organization_name + '\n' + url, url })} />
       </View>
     </ScrollView>
@@ -61,4 +62,5 @@ const styles = StyleSheet.create({
   wrap: { padding: Spacing.lg, gap: Spacing.md, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center', paddingBottom: 48 },
   photo: { width: '100%', aspectRatio: 16 / 9, borderRadius: 14 },
   actions: { gap: Spacing.sm },
+  head: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 });

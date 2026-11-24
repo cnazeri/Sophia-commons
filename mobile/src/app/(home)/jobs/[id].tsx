@@ -5,6 +5,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 
+import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
 import { Body, Kicker } from '@/components/ui';
 import { Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
@@ -39,7 +40,10 @@ export default function JobScreen() {
   return (
     <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={styles.wrap}>
       {j.image_url ? <Image source={{ uri: j.image_url }} style={{ width: '100%', aspectRatio: 4 / 3, borderRadius: 12 }} contentFit="contain" transition={200} accessibilityLabel={j.title} /> : null}
-      <Kicker>{[jobPlace(j), localDate(j.created_at, { month: 'long', day: 'numeric', year: 'numeric' })].filter(Boolean).join(' · ')}</Kicker>
+      <View style={styles.head}>
+        <View style={{ flex: 1 }}><Kicker>{[jobPlace(j), localDate(j.created_at, { month: 'long', day: 'numeric', year: 'numeric' })].filter(Boolean).join(' · ')}</Kicker></View>
+        <BookmarkButton job={j} />
+      </View>
       <Text style={[styles.title, { color: c.text }]} selectable>{j.title}</Text>
       <View style={styles.actions}>
         {j.website_url ? <Button label={t('app.job_apply', 'Details and how to apply')} onPress={() => WebBrowser.openBrowserAsync(String(j.website_url))} /> : null}
@@ -55,6 +59,7 @@ export default function JobScreen() {
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   wrap: { padding: Spacing.lg, gap: Spacing.md, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center', paddingBottom: 120 },
+  head: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontFamily: Fonts.headingBold, fontSize: 26, lineHeight: 32 },
   para: { fontFamily: Fonts.body, fontSize: 16.5, lineHeight: 25 },
   actions: { gap: Spacing.sm },

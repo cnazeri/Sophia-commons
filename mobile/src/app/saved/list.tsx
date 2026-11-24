@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AuthForm } from '@/components/auth-form';
 import { EventCard } from '@/components/event-card';
+import { JobCard } from '@/components/job-card';
 import { LinkRow } from '@/components/link-row';
 import { ListingCard } from '@/components/listing-card';
 import { MediaCard } from '@/components/media-card';
@@ -26,6 +27,7 @@ export default function SavedScreen() {
   const upcoming = events.filter((e) => Date.parse(e.end_date || e.start_date) > now - 864e5);
   const news = Object.values(saved.news || {}).sort((a, b) => b.published_at.localeCompare(a.published_at));
   const listings = Object.values(saved.listings).sort((a, b) => a.organization_name.localeCompare(b.organization_name));
+  const jobs = Object.values(saved.jobs || {}).sort((a, b) => b.created_at.localeCompare(a.created_at));
   const media = Object.values(saved.media || {}).sort((a, b) => a.title.localeCompare(b.title));
   // Favorite YouTube channels of a signed-in member (owner, 2026-11-23), kept with the account, not on the phone
   const { favs } = useFavChannels();
@@ -46,7 +48,7 @@ export default function SavedScreen() {
   }
   return (
     <Screen title={t('app.saved_title', 'Saved')} underHeader>
-      {!upcoming.length && !listings.length && !news.length && !media.length && !channels.length ? (
+      {!upcoming.length && !listings.length && !news.length && !jobs.length && !media.length && !channels.length ? (
         <Body muted>{t('app.saved_empty', 'Tap the heart on an event, a place, an article or a talk and it appears here and on sophiacommons.org, even without a connection. Saved events get a reminder the day before.')}</Body>
       ) : null}
       {upcoming.length ? (
@@ -65,6 +67,12 @@ export default function SavedScreen() {
         <View style={styles.section}>
           <H2>{t('app.news', 'News')}</H2>
           {news.map((a) => <NewsCard key={a.id} a={a} from="saved" />)}
+        </View>
+      ) : null}
+      {jobs.length ? (
+        <View style={styles.section}>
+          <H2>{t('app.jobs', 'Jobs')}</H2>
+          {jobs.map((j) => <JobCard key={j.id} j={j} />)}
         </View>
       ) : null}
       {media.length ? (

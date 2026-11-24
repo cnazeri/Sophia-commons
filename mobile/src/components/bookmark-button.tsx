@@ -1,4 +1,4 @@
-// The heart: saves an event, a place, a news article, or a talk, blog or podcast to the member's account
+// The heart: saves an event, a place, a news article, a job, or a talk, blog or podcast to the member's account
 // (owner, 2026-11-23: one heart means "saved" everywhere, and saving is for signed-in members only, so the heart
 // is not shown to visitors who are signed out). Saved items appear in Settings > Saved and open offline.
 // Saving an event also sets its reminders; removing it cancels them.
@@ -10,17 +10,20 @@ import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth';
 import type { Listing } from '@/lib/directory';
 import { type EventRow, eventTitle } from '@/lib/events';
+import type { Job } from '@/lib/jobs';
 import { t } from '@/lib/i18n';
 import { type MediaItem, mediaKey } from '@/lib/media';
 import type { Article } from '@/lib/news';
 import { cancelReminder, remindEvent } from '@/lib/reminders';
-import { toggleEvent, toggleListing, toggleMedia, toggleNews, useSaved } from '@/lib/saved';
+import { toggleEvent, toggleJob, toggleListing, toggleMedia, toggleNews, useSaved } from '@/lib/saved';
 
+type None = { event?: undefined; listing?: undefined; article?: undefined; media?: undefined; job?: undefined };
 type Props =
-  | { event: EventRow; listing?: undefined; article?: undefined; media?: undefined }
-  | { listing: Listing; event?: undefined; article?: undefined; media?: undefined }
-  | { article: Article; event?: undefined; listing?: undefined; media?: undefined }
-  | { media: MediaItem; event?: undefined; listing?: undefined; article?: undefined };
+  | (Omit<None, 'event'> & { event: EventRow })
+  | (Omit<None, 'listing'> & { listing: Listing })
+  | (Omit<None, 'article'> & { article: Article })
+  | (Omit<None, 'media'> & { media: MediaItem })
+  | (Omit<None, 'job'> & { job: Job });
 
 const HEART = '#C0392B';
 
@@ -31,8 +34,9 @@ export function BookmarkButton(p: Props) {
   const [busy, setBusy] = useState(false);
   if (!session) return null;
   const on = p.event ? !!saved.events[p.event.id] : p.listing ? !!saved.listings[p.listing.id]
-    : p.media ? !!(saved.media || {})[mediaKey(p.media)] : !!saved.news[p.article.id];
-  const name = p.event ? eventTitle(p.event) : p.listing ? p.listing.organization_name : p.media ? p.media.title : p.article.title;
+    : p.media ? !!(saved.media || {})[mediaKey(p.media)] : p.job ? !!(saved.jobs || {})[p.job.id] : !!saved.news[p.article.id];
+  const name = p.event ? eventTitle(p.event) : p.listing ? p.listing.organization_name : p.media ? p.media.title
+    : p.job ? p.job.title : p.article.title;
 
   async function press() {
     if (busy) return;
@@ -45,6 +49,8 @@ export function BookmarkButton(p: Props) {
         await toggleListing(p.listing);
       } else if (p.media) {
         await toggleMedia(p.media);
+      } else if (p.job) {
+        await toggleJob(p.job);
       } else {
         await toggleNews(p.article);
       }

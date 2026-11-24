@@ -7,6 +7,7 @@ import { useSyncExternalStore } from 'react';
 
 import { type Listing, fetchListing } from '@/lib/directory';
 import { type EventRow, fetchEvent } from '@/lib/events';
+import { fetchJob, type Job } from '@/lib/jobs';
 import { type MediaItem, mediaKey } from '@/lib/media';
 import { type Article, fetchArticle } from '@/lib/news';
 import { cancelReminder, remindEvent } from '@/lib/reminders';
@@ -14,8 +15,8 @@ import { supabase } from '@/lib/supabase';
 
 const KEY = 'sc_saved_v1';
 const OWNER_KEY = 'sc_saved_owner';   // the account the phone copy belongs to ('' = saved before sign-in)
-export type Saved = { events: Record<string, EventRow>; listings: Record<string, Listing>; news: Record<string, Article>; media: Record<string, MediaItem> };
-const EMPTY: Saved = { events: {}, listings: {}, news: {}, media: {} };
+export type Saved = { events: Record<string, EventRow>; listings: Record<string, Listing>; news: Record<string, Article>; jobs: Record<string, Job>; media: Record<string, MediaItem> };
+const EMPTY: Saved = { events: {}, listings: {}, news: {}, jobs: {}, media: {} };
 let state: Saved = EMPTY;
 let userId: string | null = null;
 const subs = new Set<() => void>();
@@ -33,7 +34,7 @@ export function useSaved(): Saved {
 
 // ── Account sync ──
 type Row = { item_type: string; item_id: string };
-const TYPE = { events: 'event', listings: 'directory', news: 'news' } as const;
+const TYPE = { events: 'event', listings: 'directory', news: 'news', jobs: 'listing' } as const;   // jobs are 'listing' rows, as on the website
 
 async function upload(uid: string) {
   const items: (Row & { user_id: string })[] = [];
@@ -50,7 +51,7 @@ async function pull() {
     supabase.from('saved_media').select('kind, item_id, data'),
   ]);
   if (error) throw new Error(error.message);
-  const next: Saved = { events: {}, listings: {}, news: {}, media: mErr ? state.media : {} };
+  const next: Saved = { events: {}, listings: {}, news: {}, jobs: {}, media: mErr ? state.media : {} };
   const jobs: Promise<void>[] = [];
   for (const r of (rows || []) as Row[]) {
     if (r.item_type === 'event') {
@@ -62,6 +63,9 @@ async function pull() {
     } else if (r.item_type === 'news') {
       if (state.news[r.item_id]) next.news[r.item_id] = state.news[r.item_id];
       else jobs.push(fetchArticle(r.item_id).then((a) => { next.news[a.id] = a; }).catch(() => {}));
+    } else if (r.item_type === 'listing') {
+      if ((state.jobs || {})[r.item_id]) next.jobs[r.item_id] = state.jobs[r.item_id];
+      else jobs.push(fetchJob(r.item_id).then((j) => { if (j) next.jobs[j.id] = j; }).catch(() => {}));
     }
   }
   for (const m of (media || []) as { kind: string; item_id: string; data: MediaItem }[]) {
@@ -111,8 +115,8 @@ async function setRow(type: string, id: string, on: boolean) {
   if (r.error) throw new Error(r.error.message);
 }
 
-function toggleIn<K extends 'events' | 'listings' | 'news'>(k: K, id: string, item: Saved[K][string]): boolean {
-  const map = { ...state[k] } as Record<string, Saved[K][string]>;
+function toggleIn<K extends 'events' | 'listings' | 'news' | 'jobs'>(k: K, id: string, item: Saved[K][string]): boolean {
+  const map = { ...(state[k] || {}) } as Record<string, Saved[K][string]>;
   const on = !map[id];
   if (on) map[id] = item; else delete map[id];
   state = { ...state, [k]: map }; persist(); emit();
@@ -137,6 +141,12 @@ export async function toggleNews(a: Article): Promise<boolean> {
   if (!userId) throw new Error('signed out');
   const on = toggleIn('news', a.id, a);
   try { await setRow('news', a.id, on); } catch (err) { toggleIn('news', a.id, a); throw err; }
+  return on;
+}
+export async function toggleJob(j: Job): Promise<boolean> {
+  if (!userId) throw new Error('signed out');
+  const on = toggleIn('jobs', j.id, j);
+  try { await setRow('listing', j.id, on); } catch (err) { toggleIn('jobs', j.id, j); throw err; }
   return on;
 }
 export async function toggleMedia(m: MediaItem): Promise<boolean> {
