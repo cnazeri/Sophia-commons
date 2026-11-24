@@ -9,6 +9,7 @@ import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, Sty
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
 import { EventSignup } from '@/components/event-signup';
+import { Icon, type IconName } from '@/components/icon';
 import { Body, Card, H1, Kicker } from '@/components/ui';
 import { Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -57,14 +58,22 @@ export default function EventDetail() {
       </View>
       <H1 style={{ marginTop: 0 }}>{eventTitle(e)}</H1>
 
-      <Card>
-        <Row label={t('event_detail.date', 'Date')} value={localDate(e.start_date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
-          + (e.end_date && !sameDayEnd ? ' - ' + localDate(e.end_date, { month: 'long', day: 'numeric' }) : '')} />
-        <Row label={t('event_detail.time', 'Time')} value={time} />
-        {otherZone && !e.is_all_day ? <Row label={t('app.local_time', 'Local time there')} value={localTime(e.start_date, otherZone)} /> : null}
-        {place ? <Row label={t('event_detail.where', 'Where')} value={place} /> : null}
-        {e.organizer_name ? <Row label={t('event_detail.organizer', 'Organizer')} value={e.organizer_name} /> : null}
-        {e.price_text || e.ticket_price ? <Row label={t('org.price', 'Price')} value={String(e.price_text || e.ticket_price)} /> : null}
+      {/* One block: the date tile beside the time (yours and the local time there), place, host and price
+          (redesign, owner 2026-11-24) */}
+      <Card style={styles.facts}>
+        <View style={[styles.tile, { borderColor: c.border }]}>
+          <Text style={[styles.tileMon, { color: c.goldText }]}>{localDate(e.start_date, { month: 'short' }).toUpperCase()}</Text>
+          <Text style={[styles.tileDay, { color: c.text }]}>{localDate(e.start_date, { day: 'numeric' })}</Text>
+          <Text style={[styles.tileMon, { color: c.goldText }]}>{localDate(e.start_date, { weekday: 'short' }).toUpperCase()}</Text>
+        </View>
+        <View style={{ flex: 1, gap: 4 }}>
+          <Text style={[styles.big, { color: c.text }]} selectable>{otherZone && !e.is_all_day ? localTime(e.start_date, otherZone) + ' ' + t('app.time_there', 'there') : time}</Text>
+          {otherZone && !e.is_all_day ? <Text style={[styles.factText, { color: c.textSecondary }]}>{time} {t('app.your_time', 'your time')}</Text> : null}
+          {e.end_date && !sameDayEnd ? <Text style={[styles.factText, { color: c.textSecondary }]}>{t('app.until', 'Until')} {localDate(e.end_date, { month: 'long', day: 'numeric' })}</Text> : null}
+          {place ? <Fact icon="pin" text={place} /> : null}
+          {e.organizer_name ? <Fact icon="societies" text={t('app.hosted_by', 'Hosted by') + ' ' + e.organizer_name} /> : null}
+          {e.price_text || e.ticket_price ? <Fact icon="star" text={String(e.price_text || e.ticket_price)} /> : null}
+        </View>
       </Card>
 
       {/* Sign up in the app when the organizer has sign-ups on (owner, 2026-11-23) */}
@@ -81,9 +90,12 @@ export default function EventDetail() {
               catch { Alert.alert(t('saved.error', 'Could not save. Please try again.')); }
             }} />
         ) : null}
-        <Button kind="secondary" label={t('app.add_to_calendar', 'Add to calendar')} onPress={() => addToCalendar(e)} />
-        {place && !e.is_online ? <Button kind="secondary" label={t('app.directions', 'Directions')} onPress={directions} /> : null}
-        <Button kind="secondary" label={t('app.share', 'Share')} onPress={() => shareItem('event', { message: eventTitle(e) + '\n' + url, url })} />
+        {/* Calendar, Directions and Share as one row of icon buttons */}
+        <View style={styles.iconRow}>
+          <IconAction icon="calplus" label={t('app.calendar_short', 'Calendar')} onPress={() => addToCalendar(e)} />
+          {place && !e.is_online ? <IconAction icon="route" label={t('app.directions', 'Directions')} onPress={directions} /> : null}
+          <IconAction icon="share" label={t('app.share', 'Share')} onPress={() => shareItem('event', { message: eventTitle(e) + '\n' + url, url })} />
+        </View>
         {e.organizer_url ? <Button kind="secondary" label={t('event_detail.organizer_website', 'Organizer website')} onPress={() => WebBrowser.openBrowserAsync(e.organizer_url!)} /> : null}
       </View>
 
@@ -102,15 +114,27 @@ export default function EventDetail() {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Fact({ icon, text }: { icon: IconName; text: string }) {
   const c = useTheme();
   return (
-    <View style={styles.row}>
-      <Text style={[styles.rowLabel, { color: c.textMuted }]}>{label}</Text>
-      <Text style={[styles.rowValue, { color: c.text }]} selectable>{value}</Text>
+    <View style={styles.fact}>
+      <Icon name={icon} size={16} color={c.goldText} />
+      <Text style={[styles.factText, { color: c.textSecondary, flex: 1 }]} selectable>{text}</Text>
     </View>
   );
 }
+
+function IconAction({ icon, label, onPress }: { icon: IconName; label: string; onPress: () => void }) {
+  const c = useTheme();
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label}
+      style={({ pressed }) => [styles.iconBtn, { backgroundColor: c.elevated, borderColor: c.border, opacity: pressed ? 0.85 : 1 }]}>
+      <Icon name={icon} size={22} color={c.goldText} />
+      <Text style={[styles.iconLabel, { color: c.text }]}>{label}</Text>
+    </Pressable>
+  );
+}
+
 
 const styles = StyleSheet.create({
   report: { alignSelf: 'center', paddingVertical: Spacing.md },
@@ -118,8 +142,15 @@ const styles = StyleSheet.create({
   wrap: { padding: Spacing.lg, gap: Spacing.md, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center', paddingBottom: 48 },
   poster: { width: '100%', aspectRatio: 4 / 3, borderRadius: 14 },
   actions: { gap: Spacing.sm },
-  row: { gap: 2 },
-  rowLabel: { fontFamily: Fonts.bodyBold, fontSize: 12, letterSpacing: 0.5, textTransform: 'uppercase' },
-  rowValue: { fontFamily: Fonts.body, fontSize: 15.5, lineHeight: 21 },
+  facts: { flexDirection: 'row', gap: Spacing.md },
+  tile: { width: 60, borderWidth: 1, borderRadius: 12, paddingVertical: 6, alignItems: 'center', alignSelf: 'flex-start' },
+  tileMon: { fontFamily: Fonts.bodyBold, fontSize: 11, letterSpacing: 1 },
+  tileDay: { fontFamily: Fonts.headingBold, fontSize: 26, lineHeight: 30 },
+  big: { fontFamily: Fonts.bodyBold, fontSize: 17, lineHeight: 22 },
+  fact: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', marginTop: 4 },
+  factText: { fontFamily: Fonts.body, fontSize: 14.5, lineHeight: 20 },
+  iconRow: { flexDirection: 'row', gap: Spacing.sm },
+  iconBtn: { flex: 1, minHeight: 64, borderWidth: 1, borderRadius: 14, alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 8 },
+  iconLabel: { fontFamily: Fonts.bodyBold, fontSize: 12.5 },
   h: { fontFamily: Fonts.heading, fontSize: 18 },
 });

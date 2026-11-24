@@ -1,13 +1,15 @@
 // Directory: search by name, town or country, filter by category.
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, TextInput, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { Button } from '@/components/button';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Chips } from '@/components/chips';
 import { DirectoryMap } from '@/components/directory-map';
+import { Icon } from '@/components/icon';
+import { CategoryTiles } from '@/components/redesign';
 import { ListingCard } from '@/components/listing-card';
 import { Body, H1, Wordmark } from '@/components/ui';
 import { Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
@@ -18,8 +20,10 @@ import { t } from '@/lib/i18n';
 
 export default function DirectoryScreen() {
   const c = useTheme();
-  const [q, setQ] = useState('');
-  const [cat, setCat] = useState<string>('all');
+  // Home opens the directory on a category, a search word or Near me (redesign, owner 2026-11-24)
+  const params = useLocalSearchParams<{ cat?: string; q?: string; near?: string }>();
+  const [q, setQ] = useState(params.q || '');
+  const [cat, setCat] = useState<string>(params.cat || 'all');
   const [rows, setRows] = useState<(Listing & { km?: number })[] | null>(null);
   const [near, setNear] = useState<{ lat: number; lng: number } | null>(null);
   const [locMsg, setLocMsg] = useState('');
@@ -54,6 +58,24 @@ export default function DirectoryScreen() {
     track('near_me');
   };
 
+  // A new link from Home while this tab is already open: take its category or search word (React's pattern for
+  // adjusting state when an input changes, without an effect)
+  const [seen, setSeen] = useState({ cat: params.cat, q: params.q });
+  if (params.cat !== seen.cat || params.q !== seen.q) {
+    setSeen({ cat: params.cat, q: params.q });
+    if (params.cat) setCat(params.cat);
+    if (params.q) setQ(params.q);
+  }
+  // Near me from Home asks for the location once (after the screen is up, never during a render)
+  const asked = useRef(false);
+  useEffect(() => {
+    if (params.near !== '1' || asked.current) return;
+    asked.current = true;
+    const timer = setTimeout(() => { findNear(); }, 0);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.near]);
+
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: c.background }}>
       <FlatList
@@ -65,13 +87,25 @@ export default function DirectoryScreen() {
           <View style={styles.head}>
             <Wordmark post />
             <H1>{t('app.directory_title', 'Find anthroposophy near you')}</H1>
-            <TextInput value={q} onChangeText={setQ} placeholder={t('app.search_placeholder', 'School, farm, group, town or country')}
-              placeholderTextColor={c.textMuted} returnKeyType="search" clearButtonMode="while-editing" autoCorrect={false}
-              accessibilityLabel={t('app.search_placeholder', 'School, farm, group, town or country')}
-              style={[styles.search, { backgroundColor: c.elevated, borderColor: c.border, color: c.text }]} />
-            <Button kind={near ? 'primary' : 'secondary'} label={near ? t('app.near_me_on', 'Showing places near you (tap to search instead)') : t('app.near_me', 'Near me')} onPress={findNear} />
+            <View style={styles.searchRow}>
+              <View style={[styles.searchBox, { backgroundColor: c.elevated, borderColor: c.border }]}>
+                <Icon name="search" size={18} color={c.goldText} />
+                <TextInput value={q} onChangeText={setQ} placeholder={t('app.search_placeholder', 'School, farm, group, town or country')}
+                  placeholderTextColor={c.textMuted} returnKeyType="search" clearButtonMode="while-editing" autoCorrect={false}
+                  accessibilityLabel={t('app.search_placeholder', 'School, farm, group, town or country')}
+                  style={[styles.search, { color: c.text }]} />
+              </View>
+              <Pressable onPress={findNear} accessibilityRole="button" accessibilityState={{ selected: !!near }}
+                accessibilityLabel={near ? t('app.near_me_on', 'Showing places near you (tap to search instead)') : t('app.near_me', 'Near me')}
+                style={({ pressed }) => [styles.nearBtn, { backgroundColor: near ? c.gold : c.elevated, borderColor: near ? c.gold : c.border, opacity: pressed ? 0.85 : 1 }]}>
+                <Icon name="pin" size={18} color={near ? c.onGold : c.goldText} />
+                <Text style={[styles.nearText, { color: near ? c.onGold : c.text }]}>{t('app.near_me', 'Near me')}</Text>
+              </Pressable>
+            </View>
+            {near ? <Body muted>{t('app.near_me_on', 'Showing places near you (tap to search instead)')}</Body> : null}
             {locMsg ? <Body muted>{locMsg}</Body> : null}
-            <Chips value={cat} onChange={setCat} items={[{ key: 'all', label: t('app.filter_all', 'All') }, ...CATEGORIES.map((x) => ({ key: x.key, label: t('app.cat_' + x.key, x.label) }))]} />
+            <CategoryTiles selected={cat} onPick={(k) => setCat(cat === k ? 'all' : k)} />
+            {cat !== 'all' ? <Chips value={cat} onChange={setCat} items={[{ key: 'all', label: t('app.filter_all', 'All categories') }, ...CATEGORIES.filter((x) => x.key === cat || x.key === 'online').map((x) => ({ key: x.key, label: t('app.cat_' + x.key, x.label) }))]} /> : null}
             <Chips value={view} onChange={(v) => setView(v as 'list' | 'map')} items={[
               { key: 'list', label: t('app.view_list', 'List') }, { key: 'map', label: t('app.view_map', 'Map') }]} />
             {view === 'map' ? <DirectoryMap cat={cat === 'all' ? null : cat} q={q} near={near} /> : null}
@@ -88,6 +122,10 @@ export default function DirectoryScreen() {
 const styles = StyleSheet.create({
   list: { paddingHorizontal: Spacing.lg, paddingBottom: Spacing.xxl, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
   head: { gap: Spacing.md, paddingBottom: Spacing.md },
-  search: { minHeight: 48, borderWidth: 1, borderRadius: Radius.pill, paddingHorizontal: 18, fontFamily: Fonts.body, fontSize: 16 },
+  searchRow: { flexDirection: 'row', gap: 8 },
+  searchBox: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, borderWidth: 1, borderRadius: Radius.pill, paddingHorizontal: 14 },
+  search: { flex: 1, minHeight: 46, fontFamily: Fonts.body, fontSize: 16 },
+  nearBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 48, paddingHorizontal: 14, borderWidth: 1, borderRadius: Radius.pill },
+  nearText: { fontFamily: Fonts.bodyBold, fontSize: 15 },
   item: { paddingBottom: Spacing.sm },
 });

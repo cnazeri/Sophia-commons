@@ -1,10 +1,11 @@
 // Events: upcoming events grouped by day, with filters.
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, SectionList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Chips } from '@/components/chips';
 import { EventCard } from '@/components/event-card';
+import { MonthCalendar, dayKey } from '@/components/month-calendar';
 import { Body, H1, Wordmark } from '@/components/ui';
 import { Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -17,6 +18,8 @@ export default function EventsScreen() {
   const [error, setError] = useState('');
   const [filter, setFilter] = useState<EventFilter>('all');
   const [refreshing, setRefreshing] = useState(false);
+  const [view, setView] = useState<'calendar' | 'list'>('calendar');
+  const listRef = useRef<SectionList<EventRow, { title: string; key: string; data: EventRow[] }>>(null);
 
   const load = () => fetchUpcoming()
     .then((r) => { setRows(r); setError(''); })
@@ -35,19 +38,27 @@ export default function EventsScreen() {
         const key = new Date(e.start_date).toDateString();
         byDay.set(key, [...(byDay.get(key) || []), e]);
       });
-    return [...byDay.values()].map((list) => ({ title: localDate(list[0].start_date, { weekday: 'long', month: 'long', day: 'numeric' }), data: list }));
+    return [...byDay.values()].map((list) => ({ title: localDate(list[0].start_date, { weekday: 'long', month: 'long', day: 'numeric' }), key: dayKey(new Date(list[0].start_date)), data: list }));
   }, [rows, filter]);
 
   const header = (
     <View style={styles.head}>
       <Wordmark post />
-      <H1>{t('app.events_title', 'Upcoming events')}</H1>
+      <H1>{t('app.events_title', 'Events')}</H1>
+      <Chips<'calendar' | 'list'> value={view} onChange={setView} items={[
+        { key: 'calendar', label: t('app.view_calendar', 'Calendar') }, { key: 'list', label: t('app.view_list', 'List') }]} />
       <Chips<EventFilter> value={filter} onChange={setFilter} items={[
         { key: 'all', label: t('app.filter_all', 'All') },
         { key: 'online', label: t('event_detail.online', 'Online') },
         { key: 'in_person', label: t('app.filter_in_person', 'In person') },
         { key: 'festival', label: t('app.filter_festivals', 'Festivals') },
       ]} />
+      {view === 'calendar' && rows ? (
+        <MonthCalendar events={(rows || []).filter((e) => matches(e, filter))} onPick={(k) => {
+          const i = sections.findIndex((sec) => sec.key === k);
+          if (i >= 0) listRef.current?.scrollToLocation({ sectionIndex: i, itemIndex: 0, viewOffset: 40, animated: true });
+        }} />
+      ) : null}
     </View>
   );
 
@@ -55,11 +66,13 @@ export default function EventsScreen() {
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: c.background }}>
       {!rows && !error ? <ActivityIndicator style={{ marginTop: 80 }} color={c.goldText} /> : (
         <SectionList
+          ref={listRef}
           sections={sections}
+          onScrollToIndexFailed={() => {}}
           keyExtractor={(e) => e.id}
           ListHeaderComponent={header}
           renderSectionHeader={({ section }) => <Text style={[styles.day, { color: c.goldText, backgroundColor: c.background }]}>{section.title}</Text>}
-          renderItem={({ item }) => <View style={styles.item}><EventCard e={item} /></View>}
+          renderItem={({ item }) => <View style={styles.item}><EventCard e={item} inDay /></View>}
           ListEmptyComponent={<Body muted style={{ padding: Spacing.lg }}>{error ? t('app.load_error', 'Could not load events. Pull down to try again.') : t('app.no_events', 'No events match this filter.')}</Body>}
           refreshControl={<RefreshControl refreshing={refreshing} tintColor={c.goldText} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }} />}
           contentContainerStyle={styles.list}
