@@ -84,7 +84,12 @@ FESTIVALS = [
      'pics': [('advent-1-annunciation.jpg', 'The Annunciation, Fra Angelico (c. 1434)'), ('advent-2-sistine-madonna.jpg', 'The Sistine Madonna, Raphael (1512)'), ('advent-3-wreath.jpg', 'Advent wreath, Philip Janos, CC0')],
      'words': r'\badvent\b|advent garden|advent spiral', 'line': 'The first Sunday of Advent',
      'text': 'Four Sundays of waiting and preparing, with one more candle lit each week, as the light is carried '
-             'toward Christmas through the darkest weeks of the year. In Waldorf schools, the Advent garden.'},
+             'toward Christmas through the darkest weeks of the year. In Waldorf schools, the Advent garden.',
+     # Owner, 2026-11-23: a Steiner quote in the Advent Reel. Wording checked against rsarchive.org (GA 260, Adams).
+     'quote': ['At the turning-point of time,', 'The Spirit-Light of the World', 'Entered the stream',
+               'of Earthly Evolution.', 'Darkness of Night', 'Had held its sway;', 'Day-radiant Light',
+               'Poured into the souls of men.'],
+     'quote_src': 'Rudolf Steiner, The Foundation Stone Meditation (Christmas 1923), tr. George Adams'},
 ]
 
 
@@ -158,6 +163,21 @@ def festival_card(fest, day, painting):
     return jpeg(out)
 
 
+def quote_card(fest, painting):
+    """A Rudolf Steiner quote over a dimmed copy of a painting, with its source beneath."""
+    out = ImageOps.fit(painting, (W, H), Image.LANCZOS).filter(ImageFilter.GaussianBlur(30))
+    out = Image.blend(out, Image.new('RGB', (W, H), '#120E08'), 0.66)
+    draw = ImageDraw.Draw(out)
+    lines, step = fest['quote'], 84
+    y = (H - len(lines) * step) // 2 - 120
+    for i, line in enumerate(lines):
+        centered(draw, y + i * step, line, anthro(60), '#FFFFFF')
+    src = wrap(draw, fest['quote_src'], anthro(38), W - 220)
+    for i, line in enumerate(src):
+        centered(draw, y + len(lines) * step + 70 + i * 52, line, anthro(38), '#E8C872')
+    return jpeg(out)
+
+
 def festival_events(fest, day):
     """Gatherings on the calendar from 3 days before to 7 days after, that name the festival."""
     url, hd = supabase()
@@ -173,6 +193,8 @@ def festival_events(fest, day):
 
 def festival_caption(fest, day, evs):
     head = f"{fest['name']} is on {nice_date(day)}.\n\n{fest['text']}"
+    if fest.get('quote'):
+        head += '\n\n' + '\n'.join(fest['quote']) + f"\n({fest['quote_src']})"
     blocks = [f"{event_line(e)}\nsophiacommons.org/event/{e['id']}" for e in sorted(evs, key=lambda e: e['start_date'])[:8]]
     gather = ['Gatherings on the calendar:', *blocks] if blocks else []
     tags = ' '.join(dict.fromkeys([BASE_TAG, fest['tag'], '#Festivals', '#RudolfSteiner', '#SophiaCommons']))
@@ -196,6 +218,9 @@ def run_festival(cmd):
         claim_check(post_id)
     paintings = [Image.open(os.path.join(FEST_PICS, f)).convert('RGB') for f, _ in fest['pics']]
     frames = [festival_card(fest, day, paintings[0])] + [picture_frame(im) for im in paintings]
+    if fest.get('quote'):   # after the first painting; shown twice as long so it can be read (about 5.5 s)
+        q = quote_card(fest, paintings[1] if len(paintings) > 1 else paintings[0])
+        frames[2:2] = [q, q]
     evs = festival_events(fest, day)
     seen = set()
     for e in evs:
@@ -207,7 +232,7 @@ def run_festival(cmd):
             frames.append(frame_jpeg(src))
         except Exception as err:
             print(f'skip picture for {e["id"][:8]}: {err}')
-        if len(frames) >= 1 + len(paintings) + FESTIVAL_EVENTS_MAX:
+        if len(frames) >= MAX_SLIDES:
             break
     row = {'id': post_id, 'kind': 'other', 'title': f"{fest['name']} {day.year}", 'event_ids': [e['id'] for e in evs][:20]}
     ship(cmd, row, frames, festival_caption(fest, day, evs), post_id)
