@@ -28,6 +28,7 @@ export type AppEvent =
   | 'post_submitted'
   | 'signed_in'
   | 'signed_up'
+  | 'event_signup'
   | 'review_prompt_shown'
   | 'feedback_sent'
   | 'store_page_opened';

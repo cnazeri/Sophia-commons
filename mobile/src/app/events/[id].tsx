@@ -8,6 +8,7 @@ import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, Sty
 
 import { BookmarkButton } from '@/components/bookmark-button';
 import { Button } from '@/components/button';
+import { EventSignup } from '@/components/event-signup';
 import { Body, Card, H1, Kicker } from '@/components/ui';
 import { Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -65,6 +66,9 @@ export default function EventDetail() {
         {e.organizer_name ? <Row label={t('event_detail.organizer', 'Organizer')} value={e.organizer_name} /> : null}
         {e.price_text || e.ticket_price ? <Row label={t('org.price', 'Price')} value={String(e.price_text || e.ticket_price)} /> : null}
       </Card>
+
+      {/* Sign up in the app when the organizer has sign-ups on (owner, 2026-11-23) */}
+      {e.signup_enabled ? <EventSignup e={e} /> : null}
 
       <View style={styles.actions}>
         {e.online_url ? <Button label={t('event_detail.join_online', 'Join online')} onPress={() => WebBrowser.openBrowserAsync(e.online_url!)} /> : null}

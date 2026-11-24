@@ -1725,5 +1725,14 @@
   "app.feedback_err_empty": "Пожалуйста, напишите несколько слов.",
   "app.feedback_thanks": "Спасибо. Мы читаем каждое сообщение.",
   "app.rate_app": "Оценить Sophia Commons",
-  "app.settings_rate_desc": "Отзыв в магазине помогает другим найти приложение"
+  "app.settings_rate_desc": "Отзыв в магазине помогает другим найти приложение",
+  "signup.add_note": "+ Добавить сообщение организатору",
+  "signup.donate": "Пожертвовать",
+  "signup.done_waitlist": "Мест нет, вы в листе ожидания. Если место освободится, вы автоматически продвинетесь, и мы напишем вам.",
+  "signup.fewer": "На одного меньше",
+  "signup.more": "На одного больше",
+  "signup.no_one_yet": "Пока никого",
+  "signup.people": "Человек",
+  "signup.people_n": "Человек: {n}",
+  "app.signup_full": "Мест нет"
 }

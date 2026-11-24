@@ -36,6 +36,13 @@ export type EventRow = {
   longitude?: number | null;
   lat?: number | null;
   lng?: number | null;
+  // Sign-ups run by Sophia Commons (lib/signup.ts)
+  status?: string | null;
+  signup_enabled?: boolean | null;
+  signup_questions?: unknown;
+  signup_capacity?: number | null;
+  signup_close_hours?: number | null;
+  donation_url?: string | null;
 };
 
 // Upcoming events, same list as the website's calendar (featured and soonest first is left to the screen)

@@ -1725,5 +1725,14 @@
   "app.feedback_err_empty": "Bitte schreiben Sie ein paar Worte.",
   "app.feedback_thanks": "Vielen Dank. Jede Nachricht wird gelesen.",
   "app.rate_app": "Sophia Commons bewerten",
-  "app.settings_rate_desc": "Eine Bewertung im Store hilft anderen, die App zu finden"
+  "app.settings_rate_desc": "Eine Bewertung im Store hilft anderen, die App zu finden",
+  "signup.add_note": "+ Eine Nachricht an die Veranstalter",
+  "signup.donate": "Hier spenden",
+  "signup.done_waitlist": "Die Veranstaltung ist voll, Sie stehen auf der Warteliste. Wird ein Platz frei, rücken Sie automatisch nach und bekommen eine E-Mail.",
+  "signup.fewer": "Eine Person weniger",
+  "signup.more": "Eine Person mehr",
+  "signup.no_one_yet": "Noch niemand",
+  "signup.people": "Personen",
+  "signup.people_n": "{n} Personen",
+  "app.signup_full": "Ausgebucht"
 }

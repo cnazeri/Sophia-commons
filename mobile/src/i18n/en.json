@@ -1664,5 +1664,14 @@
   "app.feedback_err_empty": "Please write a few words.",
   "app.feedback_thanks": "Thank you. Every note is read.",
   "app.rate_app": "Rate Sophia Commons",
-  "app.settings_rate_desc": "A review in the store helps others find the app"
+  "app.settings_rate_desc": "A review in the store helps others find the app",
+  "signup.add_note": "+ Add a note for the organizer",
+  "signup.donate": "Donate here",
+  "signup.done_waitlist": "This event is full, so you are on the waitlist. If a place opens up you move up automatically and we email you.",
+  "signup.fewer": "One fewer person",
+  "signup.more": "One more person",
+  "signup.no_one_yet": "No one yet",
+  "signup.people": "People",
+  "signup.people_n": "{n} people",
+  "app.signup_full": "Full"
 }
