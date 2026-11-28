@@ -492,10 +492,15 @@ def main():
     ap.add_argument('--newsletter', action='store_true', help='the newest sent weekly newsletter instead of the events')
     ap.add_argument('--festival', action='store_true', help='a festival 1 to 3 days ahead (preview: the next one)')
     ap.add_argument('--new', action='store_true', help="the week's new directory listings")
+    ap.add_argument('--daily', action='store_true', help='a Reel only if none went out today (Pacific time)')
+    ap.add_argument('--as', dest='as_kind', choices=['spotlight', 'weekend', 'exercise'], help='daily: which kind (preview)')
     a = ap.parse_args()
     load_env()
     if a.newsletter:
         run_newsletter(a.cmd); return
+    if a.daily:   # owner, 2026-11-25: at least one Reel every day (automation/ig_daily_reels.py)
+        import ig_daily_reels
+        ig_daily_reels.run_daily(a.cmd, a.as_kind); return
     if a.festival or a.new:   # owner, 2026-11-23: festival and new-listings Reels (automation/ig_more_reels.py)
         import ig_more_reels
         (ig_more_reels.run_festival if a.festival else ig_more_reels.run_new)(a.cmd); return
