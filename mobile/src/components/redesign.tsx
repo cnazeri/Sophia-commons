@@ -14,7 +14,8 @@ import { Fonts, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import exercises from '@/data/day-exercises.json';
 import { type EventRow, eventPlace, eventTitle, sizedImage } from '@/lib/events';
-import { localDate, localTime, t } from '@/lib/i18n';
+import { headingFont } from '@/lib/heading-font';
+import { getLang, localDate, localTime, t } from '@/lib/i18n';
 
 export const GOLD_TINT = 'rgba(201,160,53,0.16)';
 
@@ -23,7 +24,7 @@ export function SectionHead({ title, link, onPress }: { title: string; link?: st
   const c = useTheme();
   return (
     <View style={styles.head}>
-      <Text style={[styles.headTitle, { color: c.text }]} accessibilityRole="header">{title}</Text>
+      <Text style={[styles.headTitle, { color: c.text, fontFamily: headingFont(title) }]} accessibilityRole="header">{title}</Text>
       {link && onPress ? (
         <Pressable onPress={onPress} hitSlop={10} accessibilityRole="link" style={styles.headLink}>
           <Text style={[styles.linkText, { color: c.goldText }]}>{link}</Text>
@@ -64,6 +65,26 @@ export function CategoryTiles({ count = 8, selected, onPick }: { count?: number;
   );
 }
 
+// Language names when Intl.DisplayNames is missing (older Android engines)
+const LANG_FALLBACK: Record<string, string> = { en: 'English', de: 'German', es: 'Spanish', ru: 'Russian', fr: 'French', nl: 'Dutch', it: 'Italian', pt: 'Portuguese' };
+
+/** An event's language in the app's language, e.g. "German"; events with none set are English, as on the website */
+function languageName(code?: string | null): string {
+  const lang = code || 'en';
+  try {
+    const names = new Intl.DisplayNames([getLang()], { type: 'language' });
+    return names.of(lang) || LANG_FALLBACK[lang] || lang.toUpperCase();
+  } catch {
+    return LANG_FALLBACK[lang] || lang.toUpperCase();
+  }
+}
+
+/** "Online · English" or "In person · German" (owner, 2026-11-25) */
+export function eventFormat(e: EventRow): string {
+  const how = e.is_online ? t('home2.online', 'Online') : t('home2.in_person', 'In person');
+  return how + ' · ' + languageName(e.lang);
+}
+
 /** An event as a card with its picture on top, for rows that swipe sideways */
 export function EventTile({ e, width = 250 }: { e: EventRow; width?: number }) {
   const c = useTheme();
@@ -80,6 +101,7 @@ export function EventTile({ e, width = 250 }: { e: EventRow; width?: number }) {
       <View style={styles.evBody}>
         <Kicker numberOfLines={1}>{when}</Kicker>
         <Text style={[styles.evTitle, { color: c.text }]} numberOfLines={2}>{eventTitle(e)}</Text>
+        <Text style={[styles.evFmt, { color: c.textMuted }]} numberOfLines={1}>{eventFormat(e)}</Text>
         <View style={styles.evWhere}>
           <Icon name={e.is_online ? 'web' : 'pin'} size={14} color={c.textMuted} />
           <Text style={[styles.small, { color: c.textSecondary }]} numberOfLines={1}>{e.is_online ? t('event_detail.online', 'Online') : eventPlace(e)}</Text>
@@ -169,11 +191,13 @@ const styles = StyleSheet.create({
   tile: { width: '48.5%', flexGrow: 1, flexBasis: '45%', minHeight: 68, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderWidth: 1, borderRadius: Radius.lg },
   tileIcon: { width: 38, height: 38, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   tileLabel: { flex: 1, fontFamily: Fonts.bodyBold, fontSize: 14, lineHeight: 18 },
-  evTile: { borderWidth: 1, borderRadius: Radius.lg, overflow: 'hidden' },
-  evPic: { height: 140, width: '100%' },
-  evSave: { position: 'absolute', top: 8, right: 8, backgroundColor: 'rgba(253,251,247,0.88)', borderRadius: 999, padding: 2 },
+  // As the website's .h2-card: 14px corners, a hairline border, the picture edge to edge at 16/10
+  evTile: { borderWidth: 1, borderRadius: 14, overflow: 'hidden' },
+  evPic: { aspectRatio: 16 / 10, width: '100%' },
+  evSave: { position: 'absolute', top: 8, right: 8, backgroundColor: 'rgba(253,251,247,0.88)', borderRadius: 999 },   // no padding: empty (no dot) when signed out
   evBody: { padding: 12, gap: 4, flex: 1 },
   evTitle: { fontFamily: Fonts.bodyBold, fontSize: 15.5, lineHeight: 20, minHeight: 40 },
+  evFmt: { fontFamily: Fonts.bodySemi, fontSize: 12.5, lineHeight: 17, marginTop: 2 },
   evWhere: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   small: { fontFamily: Fonts.body, fontSize: 13.5, lineHeight: 19 },
   exName: { fontFamily: Fonts.headingBold, fontSize: 21, lineHeight: 27 },

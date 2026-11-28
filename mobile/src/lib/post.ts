@@ -10,7 +10,15 @@ import { type Picked, dataUrl, uploadPostImage } from '@/lib/images';
 import { supabase } from '@/lib/supabase';
 
 const JOBS_CAT_ID = 11;
-export const isAdmin = (s: Session | null) => s?.user?.app_metadata?.role === 'admin';
+// The editor, as the website decides it (isAdmin in sophia_commons_v9.js): the admin role, or one of the admin emails
+// once confirmed. The database's row security admits the same accounts.
+const ADMIN_EMAILS = ['cameron.nazeri@gmail.com', 'cameron@sophiacommons.org', 'admin@sophiacommons.org'];
+export function isAdmin(s: Session | null): boolean {
+  const u = s?.user;
+  if (!u) return false;
+  if (u.app_metadata?.role === 'admin') return true;
+  return !!(u.email && u.email_confirmed_at && ADMIN_EMAILS.includes(u.email.toLowerCase()));
+}
 export const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 // "example.org" -> "https://example.org"; empty stays empty; anything else that is not a web address -> null
 export function webUrl(v: string): string | null {
@@ -91,10 +99,10 @@ export async function postCommunity(p: CommunityIn, author: string, s: Session, 
 
 // Owner only: jobs waiting for review, and approve or decline them
 export type PendingJob = { id: string; title: string; description: string; location: string | null; region: string | null; country: string | null;
-  website_url: string | null; contact_email: string | null; contact_phone: string | null; created_at: string; image_url?: string | null };
+  website_url: string | null; contact_email: string | null; contact_phone: string | null; created_at: string; image_url?: string | null; source?: string | null };
 export async function pendingJobs(): Promise<PendingJob[]> {
   const { data, error } = await supabase.from('listings')
-    .select('id,title,description,location,region,country,website_url,contact_email,contact_phone,created_at,image_url')
+    .select('id,title,description,location,region,country,website_url,contact_email,contact_phone,created_at,image_url,source')
     .eq('status', 'draft').eq('category_id', JOBS_CAT_ID).order('created_at', { ascending: true }).limit(100);
   if (error) throw new Error(error.message);
   return (data || []) as PendingJob[];
@@ -102,8 +110,9 @@ export async function pendingJobs(): Promise<PendingJob[]> {
 export async function reviewJob(id: string, approve: boolean): Promise<void> {
   // Approved jobs stay up 90 days from approval (same as Admin > Pending Jobs on the website)
   const patch = approve ? { status: 'active', expires_at: new Date(Date.now() + 90 * 864e5).toISOString() } : { status: 'expired' };
-  const { error } = await supabase.from('listings').update(patch).eq('id', id);
+  const { data, error } = await supabase.from('listings').update(patch).eq('id', id).select('id');
   if (error) throw new Error(error.message);
+  if (!data?.length) throw new Error('NOTHING_CHANGED');   // row security let nothing through, or it was handled already
 }
 
 // Published community posts (newest first), for the Home screen and the reader

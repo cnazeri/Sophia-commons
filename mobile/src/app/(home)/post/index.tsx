@@ -11,7 +11,7 @@ import { Fonts, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth';
 import { t } from '@/lib/i18n';
-import { isAdmin, pendingJobs } from '@/lib/post';
+import { isAdmin, pendingCounts } from '@/lib/admin';
 
 type Choice = { href: Href; icon: keyof typeof MaterialIcons.glyphMap; title: string; desc: string; account: boolean };
 
@@ -20,7 +20,9 @@ export default function PostScreen() {
   const { session } = useAuth();
   const admin = isAdmin(session);
   const [waiting, setWaiting] = useState<number | null>(null);
-  useEffect(() => { if (admin) pendingJobs().then((j) => setWaiting(j.length)).catch(() => setWaiting(null)); }, [admin]);
+  useEffect(() => {
+    if (admin) pendingCounts().then((n) => setWaiting(Object.values(n).reduce<number>((a, x) => a + (x || 0), 0))).catch(() => setWaiting(null));
+  }, [admin]);
 
   const choices: Choice[] = [
     { href: '/post/event', icon: 'event', title: t('app.post_event', 'Share an event'),
@@ -52,8 +54,8 @@ export default function PostScreen() {
       ))}
       {session ? <Button kind="secondary" onPress={() => router.push('/post/mine')} label={t('app.my_posts', 'My posts')} /> : null}
       {admin ? (
-        <Button kind="secondary" onPress={() => router.push('/post/review')}
-          label={t('app.review_jobs', 'Review jobs') + (waiting != null ? ` (${waiting})` : '')} />
+        <Button kind="secondary" onPress={() => router.push('/admin')}
+          label={t('app.admin_title', 'Admin') + (waiting ? ` (${t('app.admin_n_waiting', '{n} waiting', { n: waiting })})` : '')} />
       ) : null}
     </Screen>
   );

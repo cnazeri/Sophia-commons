@@ -23,6 +23,8 @@ export default function RootLayout() {
   useEffect(() => { noteAppOpened(); }, []);
   const [loaded, error] = useFonts({
     SophiaCommonsDisplay: require('@/assets/fonts/SophiaCommonsDisplay.ttf'),
+    // Baar Zeitgeist for headings, as on the website (owner, 2026-11-25). Loaded here only, not in app.json, so it ships as an update
+    BaarZeitgeist: require('@/assets/fonts/BaarZeitgeist.ttf'),
     Lora_600SemiBold, Lora_700Bold, NunitoSans_400Regular, NunitoSans_600SemiBold, NunitoSans_700Bold,
   });
   useEffect(() => { if (loaded || error) SplashScreen.hideAsync(); }, [loaded, error]);

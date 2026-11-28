@@ -7,7 +7,8 @@ import type { Session } from '@supabase/supabase-js';
 import { t } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
-type Item = { type: 'event' | 'blog_post'; id: string; title: string; url: string };
+export type ReportItem = { type: 'event' | 'blog_post' | 'board_post' | 'board_comment'; id: string; title: string; url: string };
+type Item = ReportItem;
 
 async function send(item: Item, reporterId: string, reason: string) {
   const { error } = await supabase.from('reports').insert({
@@ -16,7 +17,7 @@ async function send(item: Item, reporterId: string, reason: string) {
   if (error) throw new Error(error.message);
 }
 
-export function reportItem(item: Item, session: Session | null) {
+export function reportItem(item: Item, session: Session | null, onDone?: () => void) {
   if (!session) {
     const subject = encodeURIComponent('Report: ' + item.title);
     const body = encodeURIComponent(item.url + '\n\n' + t('app.report_email_body', 'What is wrong with it?') + '\n');
@@ -25,7 +26,7 @@ export function reportItem(item: Item, session: Session | null) {
     return;
   }
   const done = (reason: string) => send(item, session.user.id, reason)
-    .then(() => Alert.alert(t('app.reported', 'Thank you. We will review it within 24 hours.')))
+    .then(() => (onDone ? onDone() : Alert.alert(t('app.reported', 'Thank you. We will review it within 24 hours.'))))
     .catch(() => Alert.alert(t('app.chat_report_error', 'The report could not be sent. Please try again.')));
   Alert.alert(t('app.report_title', 'Report'), t('app.report_why', 'What is wrong with it?'), [
     { text: t('app.reason_wrong', 'Wrong or misleading'), onPress: () => done('misleading') },

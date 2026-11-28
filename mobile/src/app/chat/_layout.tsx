@@ -12,7 +12,10 @@ export default function ChatLayout() {
       headerTitleStyle: { fontFamily: Fonts.bodyBold, color: c.text }, contentStyle: { backgroundColor: c.background },
     }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="[room]" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="new" options={{ title: t('board.new_post', 'New post'), headerBackTitle: '' }} />
+      <Stack.Screen name="post/[id]" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="[room]" options={{ title: t('board.earlier_chat', 'Earlier chat'), headerBackTitle: '' }} />
+      <Stack.Screen name="sign-in" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="account" options={{ title: t('app.account', 'Account'), headerBackTitle: '' }} />
     </Stack>
   );

@@ -37,6 +37,9 @@ export type Palette = { [K in keyof typeof Colors.light]: string };
 // Fonts loaded in app/_layout.tsx. The logo font has letters only (A-Z, a-z): use it for the wordmark alone.
 export const Fonts = {
   logo: 'SophiaCommonsDisplay',
+  // Baar Zeitgeist (owner, 2026-11-25): Latin with accents, no Cyrillic, one weight. Headings use it through
+  // headingFont() in lib/heading-font.ts
+  display: 'BaarZeitgeist',
   heading: 'Lora_600SemiBold',
   headingBold: 'Lora_700Bold',
   body: 'NunitoSans_400Regular',

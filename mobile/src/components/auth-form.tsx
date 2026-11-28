@@ -12,9 +12,10 @@ import { t } from '@/lib/i18n';
 import { SITE } from '@/lib/supabase';
 
 // chatIntro: the line about chat rooms (shown on the Chat tab, not on the Post forms)
-export function AuthForm({ chatIntro = true }: { chatIntro?: boolean } = {}) {
+// initialMode: open on "Create account" instead of "Sign in" (the sign-in screen's ?mode=signup)
+export function AuthForm({ chatIntro = true, initialMode = 'signin' }: { chatIntro?: boolean; initialMode?: 'signin' | 'signup' } = {}) {
   const c = useTheme();
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [mode, setMode] = useState<'signin' | 'signup'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [newsletter, setNewsletter] = useState(true);

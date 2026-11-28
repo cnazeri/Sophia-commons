@@ -81,5 +81,5 @@ const styles = StyleSheet.create({
   h2: { fontFamily: Fonts.heading, fontSize: 19, lineHeight: 25 },
   body: { fontFamily: Fonts.body, fontSize: 15, lineHeight: 22 },
   kicker: { fontFamily: Fonts.bodyBold, fontSize: 11.5, letterSpacing: 1.2, textTransform: 'uppercase' },
-  card: { borderWidth: 1, borderRadius: Radius.lg, padding: Spacing.lg, gap: Spacing.sm },
+  card: { borderWidth: 1, borderRadius: 14, padding: Spacing.lg, gap: Spacing.sm },   // 14px, as the website's .h2-card
 });

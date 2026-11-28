@@ -18,7 +18,10 @@ export default function StackLayout() {
       <Stack.Screen name="home" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="privacy" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="feedback" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="sign-in" options={{ title: '', headerBackTitle: '' }} />
       <Stack.Screen name="article/[id]" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="admin/index" options={{ title: '', headerBackTitle: '' }} />
+      <Stack.Screen name="admin/[kind]" options={{ title: '', headerBackTitle: '' }} />
     </Stack>
   );
 }
