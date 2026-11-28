@@ -5187,3 +5187,43 @@ h1.seclabel, .dash-card .dash-value, .news-ev-mark span, .books-more .bm-title {
 .media-top-h { font-family: 'Nunito Sans', sans-serif; font-weight: 800; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; }
 #sec-memorial .memorial-card h3, #community-memorials h3 { font-family: var(--h2-head); font-weight: 400; letter-spacing: 0; }
 #sec-memorial .memorial-card h3 { font-family: var(--h2-head) !important; font-weight: 400 !important; font-size: 19px !important; }   /* the names carry an inline Lora style */
+
+/* Admin > AI apps (MCP) (admin2.js, owner 2026-11-27) */
+.adm-ai-note { font-size: 14px; color: var(--text-secondary); margin: 0 0 12px; } .adm-ai-note a { color: var(--gold-text); font-weight: 700; }
+.adm-ai-chips { display: flex; gap: 8px; margin-bottom: 14px; }
+.adm-ai-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.adm-ai-stats div { background: var(--elevated); border: 1px solid var(--h2-line); border-radius: 14px; padding: 12px 14px; }
+.adm-ai-stats b { display: block; font-family: var(--h2-head); font-weight: 400; font-size: 26px; }
+.adm-ai-stats span { font-size: 13px; color: var(--text-muted); }
+.adm-ai-card { background: var(--elevated); border: 1px solid var(--h2-line); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+.adm-ai-card h4 { font: 800 14px 'Nunito Sans', sans-serif; margin: 0 0 8px; }
+.adm-ai-bars { display: flex; align-items: flex-end; gap: 3px; height: 90px; }
+.adm-ai-bars span { flex: 1; min-width: 3px; background: var(--gold); border-radius: 3px 3px 0 0; }
+.adm-ai-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.adm-ai-row { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--h2-line); font-size: 14px; }
+.adm-ai-row span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 900px) { .adm-ai-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .adm-ai-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Social media: upcoming online events (social2.js) */
+.soc-events { margin: 18px 0 22px; }
+.soc-sub { color: var(--text-secondary); margin: -6px 0 14px; font-size: 14.5px; }
+.soc-evrow { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; }
+
+/* Sophia Commons in AI assistants: Claude, ChatGPT, MCP (home2.js scAiBlock, owner 2026-11-27) */
+.ai-band { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; margin: 32px 0 8px; padding: 26px 28px;
+  background: var(--elevated); border: 1px solid var(--h2-line); border-radius: 18px; }
+.ai-band h2 { font-family: var(--h2-head); font-weight: 400; font-size: 26px; line-height: 1.25; margin: 6px 0 8px; color: var(--text-primary); letter-spacing: 0; text-transform: none; }
+.ai-band p { margin: 0 0 12px; color: var(--text-secondary); max-width: 44em; }
+.ai-url { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 6px 6px 6px 14px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
+.ai-url code { font-size: 14px; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-url button { min-height: 34px; padding: 0 14px; border-radius: 999px; border: 0; background: var(--gold); color: var(--on-gold); font-weight: 700; cursor: pointer; }
+.ai-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+.ai-band .ai-badges { flex-direction: column; }
+.ai-badge { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 18px 0 12px; border: 1px solid var(--border); border-radius: 999px; background: #fff; font-weight: 800; font-size: 15px; color: #1E1810; }
+.ai-badge img { width: 22px; height: 22px; }
+.ai-badges.sm .ai-badge { min-height: 32px; padding: 0 10px 0 8px; font-size: 12.5px; gap: 6px; }
+.ai-badges.sm .ai-badge img { width: 16px; height: 16px; }
+.ft-ai a { display: inline-flex; flex-direction: column; gap: 8px; margin-top: 12px; text-decoration: none; }
+.ft-ai-t { font-size: 13px; font-weight: 700; color: inherit; opacity: .85; }
+.ai-about { margin-top: 24px; }
+@media (max-width: 760px) { .ai-band { grid-template-columns: minmax(0, 1fr); padding: 20px; } .ai-band .ai-badges { flex-direction: row; } .ai-band h2 { font-size: 22px; } }

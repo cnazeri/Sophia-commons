@@ -145,6 +145,32 @@ function h2AppBand() {
     + '<div class="h2-stores">' + buttons + '</div></div>'
     + '<div class="h2-phone"><img src="/img/app-shot.webp" width="390" height="844" alt="' + esc(t('app.shot_alt', 'The app\'s Events screen')) + '" loading="lazy" decoding="async"></div></section>';
 }
+// ── Sophia Commons in AI assistants (owner, 2026-11-27: "put the logos up right away"): Claude, ChatGPT and any MCP
+// app, with the connector address. On Home, in the footer (every page) and on About. ──
+var SC_MCP_URL = 'https://sophiacommons.org/mcp';
+var SC_AI_APPS = [['claude', 'Claude'], ['chatgpt', 'ChatGPT'], ['mcp', 'MCP']];
+function scAiBadges(cls) {
+  return '<div class="' + cls + '">' + SC_AI_APPS.map(function (a) {
+    return '<span class="ai-badge"><img src="/img/ai/' + a[0] + '.svg" alt="" width="22" height="22"><span>' + esc(a[1]) + '</span></span>'; }).join('') + '</div>';
+}
+function scAiCopy(btn) {
+  try { navigator.clipboard.writeText(SC_MCP_URL); btn.textContent = t('ai.copied', 'Copied'); setTimeout(function () { btn.textContent = t('ai.copy', 'Copy'); }, 2000); }
+  catch (e) { /* the address stays visible to copy by hand */ }
+}
+function scAiBlock(cls) {
+  return '<section class="ai-band ' + (cls || '') + '" id="' + (cls === 'ai-about' ? 'ai-apps' : 'ai-band') + '"><div>'
+    + '<div class="h2-kick">' + esc(t('ai.kicker', 'In your AI assistant')) + '</div>'
+    + '<h2>' + esc(t('ai.title', 'Use Sophia Commons in Claude, ChatGPT and other AI apps')) + '</h2>'
+    + '<p>' + esc(t('ai.text', 'Ask your assistant for Waldorf schools, biodynamic farms, events or Steiner lectures, and it searches Sophia Commons for you. Find Sophia Commons in the app directory of Claude or ChatGPT, or add it as a connector with this address:')) + '</p>'
+    + '<div class="ai-url"><code>' + esc(SC_MCP_URL) + '</code><button type="button" onclick="scAiCopy(this)">' + esc(t('ai.copy', 'Copy')) + '</button></div></div>'
+    + scAiBadges('ai-badges') + '</section>';
+}
+function scAiFooter() {
+  var box = document.getElementById('ft-ai'); if (!box) return;
+  box.innerHTML = '<a href="/about#ai-apps" onclick="showSec(\'about\');setTimeout(function(){var a=document.getElementById(\'ai-apps\');if(a)a.scrollIntoView();},300);return false;">'
+    + '<span class="ft-ai-t">' + esc(t('ai.footer', 'Use us in your AI assistant')) + '</span>' + scAiBadges('ai-badges sm') + '</a>';
+}
+
 // The footer buttons are on every page, not only Home
 function h2FooterStores() {
   var box = document.getElementById('ft-stores');
@@ -168,12 +194,12 @@ function h2Skeleton() {
     + takeRow('events', t('home2.post_event', 'Post an event'), t('home2.post_event_sub', 'Free, and seen by readers worldwide'), 'showEventForm()')
     + takeRow('place', t('home2.add_place', 'Add a place'), t('home2.add_place_sub', 'A school, farm or community'), 'showSubmitForm()')
     + takeRow('pen', t('home2.write', 'Write an article'), t('home2.write_sub', 'A reflection, report or question'), 'showSec(\'blog\')')
-    + takeRow('chat', t('home2.join_chat', 'Join the chat'), t('home2.join_chat_sub', 'Nine rooms, free membership'), 'handleChat()')
+    + takeRow('chat', t('home2.join_board', 'Join the community board'), t('home2.join_board_sub', 'Posts and comments, free membership'), 'handleChat()')
     + '</div></div></section>'
     + '<section class="h2-sec" id="h2-talks-sec" hidden>' + h2Head(t('home2.talks', 'Talks and podcasts'), t('home2.all_channels', 'All channels'), 'showSec(\'podcasts\')', '/podcasts') + '<div class="h2-evrow h2-talks" id="h2-talks"></div></section>'
     + '</div>'
     + '<aside class="h2-aside" aria-label="' + esc(t('home2.aside', 'The season and the day')) + '"><div id="h2-fest"></div><div id="h2-cc-slot"></div><div id="h2-cots-slot"></div><div id="h2-days-slot"></div><div id="h2-remember"></div>' + h2FollowCard() + '</aside>'
-    + h2AppBand();
+    + h2AppBand() + scAiBlock('ai-home');
 }
 
 // The Calendar of the Soul and the day's exercise keep their own widgets (and language handling); they move from the
@@ -383,7 +409,7 @@ function renderHome2() {
   window.addEventListener('resize', fit);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', fit);   // the menu and heading fonts arrive late
-  var start = function () { h2Run('home', renderHome2); h2Run('title', h2FitTitle); h2Run('menu', h2FitMenu); h2Run('search hint', h2FitSearch); h2Run('stores', h2FooterStores); };
+  var start = function () { h2Run('home', renderHome2); h2Run('title', h2FitTitle); h2Run('menu', h2FitMenu); h2Run('search hint', h2FitSearch); h2Run('stores', h2FooterStores); h2Run('ai footer', scAiFooter); };
   // A new language (the switcher calls rerenderForLang; the first load fires i18n-ready): put the moved widgets
   // back, then draw again with the new labels, refit the title and redo the date line
   var relang = function () {
@@ -397,7 +423,7 @@ function renderHome2() {
     if (cc && home) home.appendChild(cc);
     box.remove();
     h2Run('home', renderHome2);
-    h2Run('stores', h2FooterStores);
+    h2Run('stores', h2FooterStores); h2Run('ai footer', scAiFooter);
     fit();
   };
   window.addEventListener('i18n-ready', relang);

@@ -54,8 +54,8 @@ function aboutDraw(counts) {
     + '<div class="ab-card"><span class="ab-ic ab-orange">' + aboutIco(ABOUT_ICON.pen) + '</span><h3>' + esc(t('about3.add_h', 'Add or correct a listing')) + '</h3><p>' + esc(t('about3.add_p', '')) + '</p>'
       + '<button type="button" class="ab-btn" onclick="showSubmitForm()">+ ' + esc(t('about3.add_btn', 'Add a place')) + '</button></div>'
     + '<div class="ab-card"><span class="ab-ic ab-blue">' + aboutIco(ABOUT_ICON.web) + '</span><h3>' + esc(t('about3.dev_h', 'For developers and AI')) + '</h3><p>' + esc(t('about3.dev_p', '')) + '</p>'
-      + '<a class="ab-link" href="/data/directory.json">' + esc(t('about3.dev_link', 'How to use the data')) + ' &rarr;</a></div>'
-    + '</div><p class="ab-contact"><a class="ab-btn ab-gold" href="mailto:hello@sophiacommons.org">' + aboutIco(ABOUT_ICON.mail) + esc(t('about3.contact', 'Contact us')) + '</a></p>';
+      + '<a class="ab-link" href="#ai-apps" onclick="document.getElementById(\'ai-apps\').scrollIntoView();return false;">' + esc(t('about3.dev_ai', 'Use it in Claude or ChatGPT')) + ' &rarr;</a> <a class="ab-link" href="/data/directory.json">' + esc(t('about3.dev_link', 'How to use the data')) + ' &rarr;</a></div>'
+    + '</div>' + (typeof scAiBlock === 'function' ? scAiBlock('ai-about') : '') + '<p class="ab-contact"><a class="ab-btn ab-gold" href="mailto:hello@sophiacommons.org">' + aboutIco(ABOUT_ICON.mail) + esc(t('about3.contact', 'Contact us')) + '</a></p>';
 }
 
 function renderAbout() {
