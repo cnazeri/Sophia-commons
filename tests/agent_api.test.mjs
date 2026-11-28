@@ -361,3 +361,14 @@ test('mcp app: place results carry coordinates for the map, videos carry a thumb
   const v = await handleMessage({ jsonrpc: '2.0', id: 7, method: 'tools/call', params: { name: 'find_videos', arguments: { query: 'karma' } } }, {}, vrest);
   assert.equal(v.result.structuredContent.videos[0].thumb, 'https://i.ytimg.com/vi/dQw4w9WgXcQ/mqdefault.jpg');
 });
+
+test('app answers never carry affiliate tags (Claude directory: no sponsored content)', async () => {
+  const brest = async (db, q) => q.startsWith('steiner_books')
+    ? [{ ga_number: 'GA 4', title: 'The Philosophy of Freedom', archive_url: null, steinerbooks_url: null,
+         amazon_url: 'https://www.amazon.com/dp/0880103855?tag=sophiacom-20&linkCode=ll1' }]
+    : [];
+  const r = await handleMessage({ jsonrpc: '2.0', id: 8, method: 'tools/call', params: { name: 'find_steiner_works', arguments: { ga: '4' } } }, {}, brest);
+  const buy = r.result.structuredContent.books[0].buy;
+  assert.equal(buy, 'https://www.amazon.com/dp/0880103855');
+  assert.ok(!JSON.stringify(r.result).includes('sophiacom-20'));
+});

@@ -388,9 +388,23 @@ const HANDLERS = { search_directory: searchDirectory, find_nearby: findNearby, g
 //    Register the server as /mcp?src=chatgpt in ChatGPT and /mcp?src=claude in Claude. ──
 export const SOURCES = ['chatgpt', 'claude'];
 export const sourceOf = url => { const s = new URL(url).searchParams.get('src'); return SOURCES.includes(s) ? s : 'mcp'; };
+// App answers carry no affiliate tags (owner, 2026-11-27: Claude's directory bans sponsored content; the website
+// keeps its Amazon affiliate links). Amazon links keep their page, minus the tracking parameters.
+const AFFILIATE_PARAMS = ['tag', 'linkCode', 'linkId', 'ascsubtag', 'camp', 'creative', 'creativeASIN', 'ref_'];
+const isAmazon = host => /(^|\.)amazon\.[a-z.]+$/i.test(host) || /(^|\.)amzn\.(to|com)$/i.test(host);
+function untag(value) {
+  if (!/^https?:\/\/[^/]*(amazon|amzn)\./i.test(value)) return value;
+  try {
+    const u = new URL(value);
+    if (!isAmazon(u.hostname)) return value;
+    AFFILIATE_PARAMS.forEach(p => u.searchParams.delete(p));
+    return u.toString();
+  } catch { return value; }
+}
+
 export function tagLinks(value, src) {
   if (typeof value === 'string') {
-    if (value !== SITE && !value.startsWith(SITE + '/')) return value;
+    if (value !== SITE && !value.startsWith(SITE + '/')) return untag(value);
     const u = new URL(value);
     u.searchParams.set('utm_source', src);
     u.searchParams.set('utm_medium', 'ai_app');
