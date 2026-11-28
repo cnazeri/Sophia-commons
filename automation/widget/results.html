@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<title>Sophia Commons</title>
+<!-- In-chat results for the Sophia Commons app (MCP App, owner 2026-11-27). Built into ../widget_html.mjs by
+     build.mjs, which inlines the ext-apps bridge and Leaflet (the chat's iframe blocks scripts from other sites). -->
+<style>/*__LEAFLET_CSS__*/</style>
+<style>
+:root {
+  --ink: var(--color-text-primary, #1E1810);
+  --sub: var(--color-text-secondary, #5A4E42);
+  --line: var(--color-border-primary, #E8E2DA);
+  --card: var(--color-background-secondary, rgba(255,255,255,.65));
+  --accent: #7F6116;            /* Sophia Commons gold, text weight (AA on light) */
+  --accent-fill: #C9A035;
+  --sage: #3F7539;
+  --radius: var(--border-radius-md, 10px);
+  --font: var(--font-sans, system-ui, -apple-system, "Segoe UI", sans-serif);
+  --serif: Georgia, "Times New Roman", serif;
+}
+:root.dark { --ink: var(--color-text-primary, #F1ECE4); --sub: var(--color-text-secondary, #BDB3A6); --accent: #E3C46A; --sage: #8CC383; --card: var(--color-background-secondary, rgba(255,255,255,.05)); --line: var(--color-border-primary, #4a4238); }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: transparent; color: var(--ink); font: 14px/1.45 var(--font); }
+#root { padding: 4px 2px 8px; }
+h2 { font: 600 17px/1.25 var(--serif); margin: 4px 2px 10px; }
+h3 { font: 600 13px/1.2 var(--font); letter-spacing: .04em; text-transform: uppercase; color: var(--sub); margin: 16px 2px 8px; }
+.muted { color: var(--sub); }
+.list { display: grid; gap: 8px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+.card.on { border-color: var(--accent-fill); box-shadow: 0 0 0 1px var(--accent-fill) inset; }
+.title { font-weight: 600; color: var(--ink); text-decoration: none; cursor: pointer; }
+.title:hover, .title:focus-visible { text-decoration: underline; color: var(--accent); }
+.meta { color: var(--sub); font-size: 13px; margin-top: 2px; }
+.desc { margin: 6px 0 0; font-size: 13px; }
+.chips { display: inline-flex; gap: 4px; flex-wrap: wrap; vertical-align: middle; }
+.chip { font-size: 11px; line-height: 18px; padding: 0 7px; border-radius: 9px; border: 1px solid var(--line); color: var(--sub); }
+.chip.ok { color: var(--sage); border-color: currentColor; }
+.chip.warn { color: #A23B2C; border-color: currentColor; }
+.acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.btn { font: 500 12.5px/1 var(--font); color: var(--accent); background: transparent; border: 1px solid var(--line);
+  border-radius: 999px; padding: 7px 11px; cursor: pointer; min-height: 30px; }
+.btn:hover, .btn:focus-visible { border-color: var(--accent); outline: none; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+:root.dark .btn.primary { color: #1E1810; }
+#map { height: 260px; border-radius: var(--radius); border: 1px solid var(--line); margin-bottom: 10px; z-index: 0; }
+.row { display: flex; gap: 10px; align-items: flex-start; }
+.date { flex: 0 0 52px; text-align: center; border: 1px solid var(--line); border-radius: 8px; padding: 4px 0; }
+.date b { display: block; font: 600 20px/1.1 var(--serif); color: var(--accent); }
+.date span { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--sub); }
+.grow { flex: 1; min-width: 0; }
+.videos { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; display: block; background: var(--line); }
+.foot { margin-top: 12px; font-size: 12px; color: var(--sub); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.link { color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; background: none; border: 0; padding: 0; font: inherit; }
+.empty { padding: 18px 4px; color: var(--sub); }
+.leaflet-container { font: 12px var(--font); }
+</style>
+</head>
+<body>
+<div id="root"><p class="empty">Loading Sophia Commons...</p></div>
+<script>/*__LEAFLET_JS__*/</script>
+<script type="module">
+/*__EXT_APPS_BUNDLE__*/
+const { App, applyDocumentTheme, applyHostStyleVariables } = globalThis.ExtApps;
+const root = document.getElementById('root');
+const app = new App({ name: 'Sophia Commons', version: '1.0.0' }, {}, { autoResize: true });
+let map = null;
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const okUrl = u => typeof u === 'string' && /^https?:\/\//.test(u) ? u : '';
+const btn = (label, url, primary) => okUrl(url) ? `<button class="btn${primary ? ' primary' : ''}" data-url="${esc(url)}">${esc(label)}</button>` : '';
+const titleLink = (text, url) => okUrl(url) ? `<a class="title" href="${esc(url)}" data-url="${esc(url)}">${esc(text)}</a>` : `<span class="title">${esc(text)}</span>`;
+const chip = (text, cls = '') => `<span class="chip ${cls}">${esc(text)}</span>`;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const FULL_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const longDate = d => { const m = /^(\d{4})-(\d\d)-(\d\d)/.exec(d || ''); return m ? `${+m[3]} ${FULL_MONTHS[+m[2] - 1]} ${m[1]}` : (d || ''); };
+const footer = (more, label) => `<div class="foot"><span>Sophia Commons</span>${okUrl(more) ? `<button class="link" data-url="${esc(more)}">${esc(label)}</button>` : ''}</div>`;
+
+// Links leave the chat through the host (the sandbox blocks pop-ups and plain links)
+async function openUrl(url) {
+  if (!okUrl(url)) return;
+  try { await app.openLink({ url }); }
+  catch (e) { if (window.openai?.openExternal) window.openai.openExternal({ href: url, redirectUrl: false }); }
+}
+root.addEventListener('click', e => {
+  const el = e.target.closest('[data-url]');
+  if (el) { e.preventDefault(); openUrl(el.dataset.url); return; }
+  const card = e.target.closest('[data-pin]');
+  if (card && map) focusPin(+card.dataset.pin);
+});
+
+// ── Places: map + cards ──
+let pins = [];
+function placeCard(p, i) {
+  const where = [p.city, p.country].filter(Boolean).join(', ');
+  const dist = p.distance_km != null ? ` · ${p.distance_km} km` : '';
+  return `<div class="card" data-pin="${i}" id="card-${i}">
+    ${titleLink(p.name, p.url)} ${p.verified ? chip('Verified', 'ok') : ''}
+    <div class="meta">${esc(p.category_label || '')}${where ? ' · ' + esc(where) : ''}${esc(dist)}</div>
+    ${p.description ? `<p class="desc">${esc(p.description)}</p>` : ''}
+    <div class="acts">${btn('Open on Sophia Commons', p.url, true)}${btn('Website', p.website)}${btn('Save', p.save)}</div>
+  </div>`;
+}
+function drawMap(places) {
+  const pts = places.map((p, i) => ({ p, i })).filter(x => Number.isFinite(x.p.latitude) && Number.isFinite(x.p.longitude));
+  if (!pts.length || !window.L) return;
+  map = L.map('map', { scrollWheelZoom: false, attributionControl: true });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '&copy; OpenStreetMap contributors',
+  }).addTo(map);
+  // Places recorded at the same point (often a town centre) share one pin that names them all
+  pins = [];
+  const groups = new Map();
+  for (const x of pts) {
+    const k = x.p.latitude.toFixed(4) + ',' + x.p.longitude.toFixed(4);
+    groups.set(k, (groups.get(k) || []).concat(x));
+  }
+  for (const g of groups.values()) {
+    const { p, i } = g[0];
+    const label = g.length === 1 ? esc(p.name) : `<b>${g.length} places here</b><br>` + g.map(x => esc(x.p.name)).join('<br>');
+    const m = L.circleMarker([p.latitude, p.longitude], { radius: g.length > 1 ? 9 : 7, weight: 2, color: '#7F6116', fillColor: '#C9A035', fillOpacity: .9 })
+      .addTo(map).bindTooltip(label);
+    m.on('click', () => { focusPin(i); document.getElementById('card-' + i)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); });
+    for (const x of g) pins[x.i] = m;
+  }
+  const bounds = L.latLngBounds(pts.map(x => [x.p.latitude, x.p.longitude]));
+  if (groups.size === 1) map.setView(bounds.getCenter(), 12); else map.fitBounds(bounds.pad(0.15), { maxZoom: 13 });
+  setTimeout(() => map.invalidateSize(), 50);
+}
+function focusPin(i) {
+  document.querySelectorAll('.card.on').forEach(c => c.classList.remove('on'));
+  document.getElementById('card-' + i)?.classList.add('on');
+  const m = pins[i];
+  if (m) { map.panTo(m.getLatLng()); m.openTooltip(); }
+}
+function renderPlaces(d) {
+  const places = d.results || [d];
+  const hasPts = places.some(p => Number.isFinite(p.latitude));
+  const head = d.results ? `${places.length} place${places.length === 1 ? '' : 's'}${d.radius_km ? ` within ${d.radius_km} km` : ''}` : '';
+  root.innerHTML = (head ? `<h2>${esc(head)}</h2>` : '')
+    + (hasPts ? '<div id="map" role="img" aria-label="Map of the results"></div>' : '')
+    + `<div class="list">${places.map(placeCard).join('')}</div>` + footer('https://sophiacommons.org/directory', 'Browse the full directory');
+  if (hasPts) drawMap(places);
+}
+
+// ── Events ──
+function eventCard(ev) {
+  const m = /^(\d{4})-(\d\d)-(\d\d)/.exec(ev.start || '');
+  const flags = [ev.cancelled && chip('Cancelled', 'warn'), ev.online && chip('Online'), ev.free && chip('Free', 'ok')].filter(Boolean).join('');
+  const sub = ev.title_en ? `<div class="meta">${esc(ev.title_en)}</div>` : '';
+  return `<div class="card row">
+    <div class="date">${m ? `<span>${MONTHS[+m[2] - 1]}</span><b>${+m[3]}</b><span>${m[1]}</span>` : ''}</div>
+    <div class="grow">${titleLink(ev.title, ev.url)} <span class="chips">${flags}</span>${sub}
+      <div class="meta">${esc([ev.place, ev.organizer].filter(Boolean).join(' · '))}</div>
+      <div class="acts">${btn('Details', ev.url, true)}${btn('Add to calendar', ev.add_to_calendar)}${btn('Register', ev.registration)}${btn('Save', ev.save)}</div>
+    </div></div>`;
+}
+function renderEvents(d) {
+  root.innerHTML = `<h2>${d.results.length} upcoming event${d.results.length === 1 ? '' : 's'}</h2><div class="list">${d.results.map(eventCard).join('')}</div>`
+    + footer('https://sophiacommons.org/events', 'All events on Sophia Commons');
+}
+
+// ── Steiner's works ──
+function lectureCard(l) {
+  const where = [longDate(l.date), l.place, l.ga ? 'GA ' + l.ga : ''].filter(Boolean).join(' · ');
+  return `<div class="card">${titleLink(l.title, l.read)}
+    ${l.book ? `<div class="meta">${esc(l.book)}</div>` : ''}<div class="meta">${esc(where)}</div>
+    <div class="acts">${btn('Read', l.read, true)}${l.german && l.german !== l.read ? btn('German text', l.german) : ''}</div></div>`;
+}
+function renderWorks(d) {
+  const books = d.books || [], lectures = d.lectures || [], audio = d.audio || [];
+  let h = d.day ? `<h2>Steiner on ${esc(FULL_MONTHS[+d.day.slice(0, 2) - 1] + ' ' + +d.day.slice(3))}</h2><p class="muted" style="margin:0 2px 8px">${esc(d.count)} lecture${d.count === 1 ? '' : 's'} given on this day</p>`
+    : `<h2>Rudolf Steiner's works</h2>`;
+  if (d.topics?.length) h += `<div class="chips" style="margin:0 2px 6px">${d.topics.map(t => chip(t)).join('')}</div>`;
+  if (lectures.length) h += `<h3>Lectures</h3><div class="list">${lectures.map(lectureCard).join('')}</div>`;
+  if (books.length) h += `<h3>Books</h3><div class="list">${books.map(b => `<div class="card">${titleLink(b.title, b.read)}<div class="meta">${esc(b.ga || '')}</div>
+    <div class="acts">${btn('Read', b.read, true)}${btn('Buy', b.buy)}</div></div>`).join('')}</div>`;
+  if (audio.length) h += `<h3>Free audio</h3><div class="list">${audio.map(a => `<div class="card">${titleLink(a.title, a.listen)}
+    <div class="meta">${esc([a.ga && 'GA ' + a.ga, a.read_by && 'read by ' + a.read_by].filter(Boolean).join(' · '))}</div>
+    <div class="acts">${btn('Listen', a.listen, true)}</div></div>`).join('')}</div>`;
+  if (!lectures.length && !books.length && !audio.length) h += '<p class="empty">Nothing found for that search.</p>';
+  const more = typeof d.more === 'string' ? d.more : d.more?.library;
+  root.innerHTML = h + footer(more, 'Search the Steiner library');
+}
+
+// ── Videos ──
+function renderVideos(d) {
+  const vids = d.videos || [], chans = d.channels || [];
+  let h = `<h2>Talks and videos</h2>`;
+  if (vids.length) h += `<div class="videos">${vids.map(v => `<div class="card">
+    ${okUrl(v.thumb) ? `<img class="thumb" src="${esc(v.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" data-url="${esc(v.watch)}" style="cursor:pointer">` : ''}
+    <div style="margin-top:6px">${titleLink(v.title_en || v.title, v.watch)}</div>
+    <div class="meta">${esc([v.channel, v.published].filter(Boolean).join(' · '))}</div>
+    <div class="acts">${btn('Watch', v.watch, true)}${btn('Channel', v.channel_page)}</div></div>`).join('')}</div>`;
+  if (chans.length) h += `<h3>Channels</h3><div class="list">${chans.map(c => `<div class="card">${titleLink(c.name, c.page)}
+    ${c.description ? `<p class="desc">${esc(c.description)}</p>` : ''}<div class="acts">${btn('On Sophia Commons', c.page, true)}${btn('YouTube', c.youtube)}</div></div>`).join('')}</div>`;
+  if (!vids.length && !chans.length) h += '<p class="empty">No videos found for that search.</p>';
+  root.innerHTML = h + footer(d.more, 'All talks and channels');
+}
+
+// Pick the layout from the shape of the result
+function render(d) {
+  if (map) { map.remove(); map = null; }
+  if (!d || typeof d !== 'object') { root.innerHTML = '<p class="empty">No results.</p>'; return; }
+  if (Array.isArray(d.results)) {
+    if (!d.results.length) { root.innerHTML = '<p class="empty">Nothing found. Try a wider search.</p>'; return; }
+    return d.results[0].start !== undefined ? renderEvents(d) : renderPlaces(d);
+  }
+  if (d.name && d.category) return renderPlaces(d);
+  if (d.lectures || d.books || d.audio) return renderWorks(d);
+  if (d.videos || d.channels) return renderVideos(d);
+  root.innerHTML = '<p class="empty">No results.</p>';
+}
+
+function applyContext(ctx) {
+  if (!ctx) return;
+  if (ctx.theme) { applyDocumentTheme(ctx.theme); document.documentElement.classList.toggle('dark', ctx.theme === 'dark'); }
+  if (ctx.styles?.variables) applyHostStyleVariables(ctx.styles.variables);
+}
+
+(async () => {
+  app.ontoolresult = result => {
+    if (result?.isError) { root.innerHTML = `<p class="empty">${esc(result.content?.[0]?.text || 'Something went wrong.')}</p>`; return; }
+    let d = result?.structuredContent;
+    if (!d) { try { d = JSON.parse(result?.content?.[0]?.text || 'null'); } catch (e) { d = null; } }
+    render(d);
+  };
+  app.onhostcontextchanged = applyContext;
+  await app.connect();
+  applyContext(app.getHostContext());
+})();
+</script>
+</body>
+</html>

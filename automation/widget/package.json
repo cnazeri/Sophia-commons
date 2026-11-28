@@ -1,0 +1,10 @@
+{
+  "name": "sophia-commons-widget",
+  "private": true,
+  "description": "Builds the in-chat results widget (MCP App) into ../widget_html.mjs. Run: npm install && node build.mjs",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "*",
+    "leaflet": "1.9.4"
+  }
+}

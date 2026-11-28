@@ -23,5 +23,6 @@
 # Resources moved from /books (owner, 2026-11-27); the hash (#resources-list) is kept by the browser
 /books  /resources  301
 /library  /library.html  200
+/ai  /ai.html  200
 /admin/ai-app  /ai_stats.html  200
 /*    /index.html   200

@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { icsText, icsFold, calendarIcs, newsRss } from '../automation/feeds.mjs';
 import { directoryCsv, directoryJson, llmsFull, categoryLabel } from '../automation/agent_data.mjs';
-import { handleHttp, handleMessage, countryCode, TOOLS } from '../automation/mcp_server.mjs';
+import { handleHttp, handleMessage, countryCode, TOOLS, WIDGET_URI } from '../automation/mcp_server.mjs';
 
 const ev = { id: 'e1', title: 'Talk; with, commas', description: 'Line one\nLine two', start_date: '2026-11-05T19:00:00+00:00', end_date: null,
   is_all_day: false, location_name: 'Hall', city: 'Basel', country: 'Switzerland', is_online: false, status: 'upcoming', updated_at: '2026-10-01T00:00:00Z' };
@@ -318,4 +318,46 @@ test('applySeo sets the page language and hreflang links', () => {
   assert.match(h, /hreflang="en" href="https:\/\/sophiacommons.org\/country\/germany"/);
   assert.match(h, /<link rel="canonical" href="https:\/\/sophiacommons.org\/de\/country\/germany">/);
   assert.ok(!h.includes('$1'));
+});
+
+// ── In-chat results widget (MCP App, owner 2026-11-27) ──
+test('mcp app: every tool points at the results widget, and initialize offers resources', async () => {
+  const init = await handleMessage({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18' } });
+  assert.ok(init.result.capabilities.resources, 'resources capability');
+  for (const t of TOOLS) {
+    assert.equal(t._meta?.ui?.resourceUri, WIDGET_URI, t.name);
+    assert.equal(t.annotations.readOnlyHint, true, t.name);
+    assert.ok(t.title, t.name);
+  }
+});
+
+test('mcp app: resources/list and resources/read serve the widget with its allowed image hosts', async () => {
+  const list = await handleMessage({ jsonrpc: '2.0', id: 2, method: 'resources/list' });
+  const entry = list.result.resources.find(r => r.uri === WIDGET_URI);
+  assert.equal(entry.mimeType, 'text/html;profile=mcp-app');
+  const read = await handleMessage({ jsonrpc: '2.0', id: 3, method: 'resources/read', params: { uri: WIDGET_URI } });
+  const [item] = read.result.contents;
+  assert.equal(item.uri, WIDGET_URI);
+  assert.equal(item.mimeType, 'text/html;profile=mcp-app');
+  assert.match(item.text, /^<!doctype html>/i);
+  assert.ok(item.text.includes('globalThis.ExtApps='), 'bridge is inlined');
+  assert.ok(!/\/\*__[A-Z_]+__\*\//.test(item.text), 'no build placeholders left');
+  const domains = item._meta.ui.csp.resourceDomains;
+  assert.ok(domains.includes('https://tile.openstreetmap.org') && domains.includes('https://i.ytimg.com'));
+  const missing = await handleMessage({ jsonrpc: '2.0', id: 4, method: 'resources/read', params: { uri: 'ui://nope' } });
+  assert.equal(missing.error.code, -32002);
+  const templates = await handleMessage({ jsonrpc: '2.0', id: 5, method: 'resources/templates/list' });
+  assert.deepEqual(templates.result.resourceTemplates, []);
+});
+
+test('mcp app: place results carry coordinates for the map, videos carry a thumbnail', async () => {
+  const r = await handleMessage({ jsonrpc: '2.0', id: 6, method: 'tools/call', params: { name: 'search_directory', arguments: { query: 'school' } } }, {}, fakeRest([]));
+  const p = r.result.structuredContent.results[0];
+  assert.equal(p.latitude, 52.5);
+  assert.equal(p.longitude, 13.4);
+  const vrest = async (db, q) => q.startsWith('youtube_videos')
+    ? [{ video_id: 'dQw4w9WgXcQ', channel_slug: 'c', title: 'Karma', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', published_at: '2026-01-01T00:00:00Z' }]
+    : [];
+  const v = await handleMessage({ jsonrpc: '2.0', id: 7, method: 'tools/call', params: { name: 'find_videos', arguments: { query: 'karma' } } }, {}, vrest);
+  assert.equal(v.result.structuredContent.videos[0].thumb, 'https://i.ytimg.com/vi/dQw4w9WgXcQ/mqdefault.jpg');
 });

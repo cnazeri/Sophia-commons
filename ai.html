@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self';">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sophia Commons in Claude and ChatGPT | Sophia Commons</title>
+<meta name="description" content="Use Sophia Commons inside Claude and ChatGPT: find Waldorf schools, biodynamic farms and anthroposophical events, and search Rudolf Steiner's lectures, books and audio.">
+<link rel="canonical" href="https://sophiacommons.org/ai">
+<meta property="og:title" content="Sophia Commons in Claude and ChatGPT">
+<meta property="og:description" content="Ask Claude or ChatGPT about Waldorf schools, biodynamic farms, anthroposophical events and Rudolf Steiner's work.">
+<meta property="og:url" content="https://sophiacommons.org/ai">
+<meta property="og:image" content="https://sophiacommons.org/og-image.jpg">
+<link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link rel="stylesheet" href="/sophia_commons_v9.css">
+<link rel="stylesheet" href="/library.css?v=1">
+<style>
+  .ai-doc h2 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; margin: 32px 0 8px; }
+  .ai-doc h3 { font-size: 16px; margin: 20px 0 6px; }
+  .ai-doc p, .ai-doc li { max-width: 720px; line-height: 1.6; }
+  .ai-doc code { background: var(--muted-bg); border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; font-size: 14px; white-space: nowrap; }
+  .ai-doc table { border-collapse: collapse; width: 100%; max-width: 760px; margin: 8px 0; font-size: 15px; }
+  .ai-doc th, .ai-doc td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .ai-doc th { color: var(--text-secondary); font-weight: 600; }
+  .ai-doc .ai-url { display: block; margin: 6px 0 12px; white-space: normal; word-break: break-all; }
+</style>
+</head>
+<body class="lib-page">
+<header class="lib-top">
+  <a class="lib-home" href="/"><img src="/logo.svg" alt="" width="34" height="34"> Sophia Commons</a>
+  <nav aria-label="Main"><a href="/directory">Directory</a> <a href="/events">Events</a> <a href="/resources">Resources</a> <a href="/library">Library</a></nav>
+</header>
+
+<main class="lib-main ai-doc">
+  <h1>Sophia Commons in Claude and ChatGPT</h1>
+  <p class="lib-intro">Ask Claude or ChatGPT about anthroposophical life and get real places, dates and links from Sophia Commons:
+    about 4,800 Waldorf schools, biodynamic farms, Camphill communities, clinics and study groups in 79 countries, upcoming
+    events, recorded talks, and an index of 6,800 lectures by Rudolf Steiner with his books and free audio. It's free, read-only
+    and needs no account.</p>
+
+  <h2>Connect it</h2>
+  <h3>Claude</h3>
+  <ol>
+    <li>Open Settings, then Connectors, and choose Add custom connector. (Once Sophia Commons is listed in Claude's directory,
+      you can add it from there instead.)</li>
+    <li>Name it Sophia Commons and use this address:<code class="ai-url">https://sophiacommons.org/mcp?src=claude</code></li>
+    <li>Leave the sign-in settings empty. In a new chat, turn on Sophia Commons from the tools menu and ask a question.</li>
+  </ol>
+  <h3>ChatGPT</h3>
+  <ol>
+    <li>On chatgpt.com, open Settings, then Apps &amp; Connectors. Under Advanced settings, turn on Developer mode.</li>
+    <li>Create a new app named Sophia Commons with this address and no authentication:<code class="ai-url">https://sophiacommons.org/mcp?src=chatgpt</code></li>
+    <li>In a new chat, add Sophia Commons from the + menu and ask a question.</li>
+  </ol>
+  <h3>Other apps</h3>
+  <p>Any app that supports the Model Context Protocol can connect to <code>https://sophiacommons.org/mcp</code> (Streamable HTTP, no sign-in).</p>
+
+  <h2>Things to ask</h2>
+  <ul>
+    <li>Find Waldorf schools near Stuttgart.</li>
+    <li>Are there biodynamic farms within 50 km of Portland, Oregon?</li>
+    <li>What anthroposophical events are coming up in Switzerland this winter?</li>
+    <li>What did Rudolf Steiner say about bees?</li>
+    <li>Which lectures did Steiner give in Dornach in 1924?</li>
+    <li>What did Steiner lecture on today's date?</li>
+    <li>Find recorded talks about the etheric body.</li>
+    <li>Welche Vortr&auml;ge hielt Steiner &uuml;ber Karma? (Ask in German and the Steiner results link the German texts first.)</li>
+  </ul>
+  <p>Where the app supports it, places appear on a map with cards, and events have an Add to calendar button.</p>
+
+  <h2>What it can do</h2>
+  <table>
+    <thead><tr><th>Tool</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>Search the directory</td><td>Places by name, topic, category, country or city</td></tr>
+      <tr><td>Find places nearby</td><td>Places closest to a town or address, sorted by distance</td></tr>
+      <tr><td>Get one listing</td><td>The full public details of one place, with its website</td></tr>
+      <tr><td>Upcoming events</td><td>Conferences, courses, talks, festivals and online study groups, soonest first</td></tr>
+      <tr><td>Find Rudolf Steiner's works</td><td>Lectures, books and free audio by topic, title, GA volume or year, with links to read or listen</td></tr>
+      <tr><td>Steiner on this day</td><td>Lectures Steiner gave on a given calendar day, across all years</td></tr>
+      <tr><td>Find talks and videos</td><td>Recorded talks and films from about 200 anthroposophical channels</td></tr>
+    </tbody>
+  </table>
+  <p>Every tool only reads public information. Nothing is posted, changed or bought. Email addresses and phone numbers are
+    never returned.</p>
+
+  <h2>Where the information comes from</h2>
+  <p>Places and events are the public listings on Sophia Commons, gathered from public sources and from the organizations
+    themselves. The lecture index holds titles, dates, places and links from the Rudolf Steiner Archive (rsarchive.org);
+    the texts stay there, and every answer links to them. Audio recordings are on rudolfsteineraudio.com.
+    You can search the same lecture index yourself in the <a href="/library">Steiner Library</a>.</p>
+
+  <h2>Privacy</h2>
+  <p>For each search we keep a short record: which tool, whether it came from Claude or ChatGPT, the search words, how many
+    results came back and how long it took. No name, email, account or IP address, and we never see the rest of your
+    conversation. Records are deleted after 18 months. Details are in our <a href="/privacy">privacy policy</a>.</p>
+
+  <h2>Help</h2>
+  <p>Questions, a listing that needs correcting, or something that doesn't work: write to
+    <a href="mailto:hello@sophiacommons.org">hello@sophiacommons.org</a>. Organizations can also claim and update their own
+    listing on Sophia Commons.</p>
+</main>
+</body>
+</html>

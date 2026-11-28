@@ -5,8 +5,24 @@
 // Served by netlify/edge-functions/mcp.js; plain JS so Node tests can load it too.
 import { SITE, kmBetween, listingPath } from './seo_html.mjs';
 import { categoryLabel } from './agent_data.mjs';
+import { WIDGET_HTML } from './widget_html.mjs';
 
-export const SERVER_VERSION = '1.2.0';
+export const SERVER_VERSION = '1.3.0';
+
+// ── In-chat results (MCP App, owner 2026-11-27): one widget shows every tool's result as a map and cards in
+//    Claude and ChatGPT. Built from automation/widget/results.html. Change the version in the URI whenever the
+//    widget changes: hosts cache it by URI. Hosts without app support just show the tool's text. ──
+export const WIDGET_URI = 'ui://sophia-commons/results-v1.html';
+const WIDGET_MIME = 'text/html;profile=mcp-app';
+const WIDGET_META = { ui: {
+  prefersBorder: true,
+  // Map tiles (OpenStreetMap, credited on the map) and video thumbnails are the only outside images
+  csp: { resourceDomains: ['https://tile.openstreetmap.org', 'https://i.ytimg.com'], connectDomains: [] },
+} };
+const toolMeta = (invoking, invoked) => ({
+  ui: { resourceUri: WIDGET_URI },
+  'openai/toolInvocation/invoking': invoking, 'openai/toolInvocation/invoked': invoked,
+});
 const PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05'];
 
 const CATEGORY_CODES = ['waldorf', 'biodynamic', 'christian_community', 'camphill', 'community', 'eurythmy', 'medicine', 'societies', 'eldercare', 'online', 'social_media', 'science'];
@@ -42,6 +58,7 @@ export const TOOLS = [
       limit: limitProp(20, 50),
     } },
     annotations: READ_ONLY,
+    _meta: toolMeta('Searching Sophia Commons...', 'Places found'),
   },
   {
     name: 'find_nearby', title: 'Find places nearby',
@@ -54,12 +71,14 @@ export const TOOLS = [
       limit: limitProp(15, 50),
     } },
     annotations: READ_ONLY,
+    _meta: toolMeta('Finding places nearby...', 'Nearby places'),
   },
   {
     name: 'get_listing', title: 'Get one listing',
     description: 'Full public details of one directory listing by its id (from search_directory or find_nearby).',
     inputSchema: { type: 'object', required: ['id'], properties: { id: { type: 'string', description: 'The listing id (a UUID)' } } },
     annotations: READ_ONLY,
+    _meta: toolMeta('Opening the listing...', 'Listing'),
   },
   {
     name: 'find_steiner_works', title: "Find Rudolf Steiner's works",
@@ -73,6 +92,7 @@ export const TOOLS = [
       limit: limitProp(10, 30),
     } },
     annotations: READ_ONLY,
+    _meta: toolMeta("Searching Steiner's works...", "Steiner's works"),
   },
   {
     name: 'steiner_on_this_day', title: 'Steiner on this day',
@@ -84,6 +104,7 @@ export const TOOLS = [
       limit: limitProp(15, 50),
     } },
     annotations: READ_ONLY,
+    _meta: toolMeta('Finding lectures for this day...', 'Steiner on this day'),
   },
   {
     name: 'find_videos', title: 'Find talks and videos',
@@ -95,6 +116,7 @@ export const TOOLS = [
       limit: limitProp(10, 30),
     } },
     annotations: READ_ONLY,
+    _meta: toolMeta('Finding talks and videos...', 'Talks and videos'),
   },
   {
     name: 'upcoming_events', title: 'Upcoming events',
@@ -107,6 +129,7 @@ export const TOOLS = [
       limit: limitProp(20, 50),
     } },
     annotations: READ_ONLY,
+    _meta: toolMeta('Finding upcoming events...', 'Upcoming events'),
   },
 ];
 
@@ -151,7 +174,7 @@ function listingOut(e, full = false) {
     city: e.city || null, ...(full ? { address: e.address || null, region: e.region || null } : {}), country: e.country || null,
     website: httpUrl(e.website_url), url: SITE + listingPath(e), save: saveUrl(SITE + listingPath(e)), verified: !!e.is_verified,
     description: full ? (e.description || null) : (shortText(e.description, 220) || null),
-    ...(full && e.latitude != null ? { latitude: Number(e.latitude), longitude: Number(e.longitude) } : {}),
+    ...(e.latitude != null && e.longitude != null ? { latitude: Number(e.latitude), longitude: Number(e.longitude) } : {}),
   };
 }
 function eventOut(ev) {
@@ -348,6 +371,7 @@ async function findVideos(db, rest, a) {
   return {
     videos: videos.map(v => ({
       title: v.title, title_en: v.title_en && v.title_en !== v.title ? v.title_en : null, watch: httpUrl(v.url),
+      thumb: /^[\w-]{11}$/.test(v.video_id || '') ? `https://i.ytimg.com/vi/${v.video_id}/mqdefault.jpg` : null,
       published: v.published_at ? v.published_at.slice(0, 10) : null, language: v.lang || null,
       channel: names[v.channel_slug] || v.channel_slug, channel_page: `${SITE}/channel/${enc(v.channel_slug)}`,
     })),
@@ -425,7 +449,7 @@ export async function handleMessage(msg, db, rest, ctx = NO_FILES) {
       const asked = params.protocolVersion;
       return { jsonrpc: '2.0', id, result: {
         protocolVersion: PROTOCOLS.includes(asked) ? asked : PROTOCOLS[0],
-        capabilities: { tools: { listChanged: false } },
+        capabilities: { tools: { listChanged: false }, resources: { listChanged: false } },
         serverInfo: { name: 'sophia-commons', title: 'Sophia Commons', version: SERVER_VERSION, websiteUrl: SITE },
         instructions: INSTRUCTIONS,
       } };
@@ -447,7 +471,15 @@ export async function handleMessage(msg, db, rest, ctx = NO_FILES) {
         return { jsonrpc: '2.0', id, result: { content: [{ type: 'text', text }], isError: true } };
       }
     }
-    case 'resources/list': return { jsonrpc: '2.0', id, result: { resources: [] } };
+    case 'resources/list': return { jsonrpc: '2.0', id, result: { resources: [{
+      uri: WIDGET_URI, name: 'Sophia Commons results', mimeType: WIDGET_MIME,
+      description: 'Map and cards for places, events, Steiner lectures and videos', _meta: WIDGET_META,
+    }] } };
+    case 'resources/templates/list': return { jsonrpc: '2.0', id, result: { resourceTemplates: [] } };
+    case 'resources/read': {
+      if (params.uri !== WIDGET_URI) return rpcError(id, -32002, `Resource not found: ${params.uri}`);
+      return { jsonrpc: '2.0', id, result: { contents: [{ uri: WIDGET_URI, mimeType: WIDGET_MIME, text: WIDGET_HTML, _meta: WIDGET_META }] } };
+    }
     case 'prompts/list': return { jsonrpc: '2.0', id, result: { prompts: [] } };
     default: return rpcError(id, -32601, `Method not found: ${method}`);
   }
