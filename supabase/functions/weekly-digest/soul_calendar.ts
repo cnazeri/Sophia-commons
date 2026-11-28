@@ -48,10 +48,10 @@ export function soulVerseHtml(now: Date): string {
   const v = VERSES[week];
   if (!v) return "";
   const url = `https://rsarchive.org/COTS/index.php?northern_week=${week}&hemisphere=northern#hemisphere`;
-  return `<div style="margin:28px 0 0;padding:20px 22px;background:#FBF8F2;border:1px solid #E8E2DA;border-radius:10px">`
+  return `<div style="margin:28px 0 0;padding:20px 22px;background:#F7F3EC;border:1px solid #ECE5D9;border-radius:14px">`
     + `<div style="font-size:12px;letter-spacing:.06em;color:#7F6116;font-weight:bold">CALENDAR OF THE SOUL &middot; WEEK ${week} &middot; ${short(from)} - ${short(to)}</div>`
-    + `<p style="font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#1E1810;margin:12px 0 10px">${v.en.map(esc).join("<br>")}</p>`
-    + `<p style="font-family:Georgia,serif;font-style:italic;font-size:14px;line-height:1.55;color:#6F665B;margin:0 0 10px">${v.de.map(esc).join("<br>")}</p>`
+    + `<p style="font-family:Lora,Georgia,serif;font-size:16px;line-height:1.6;color:#1E1810;margin:12px 0 10px">${v.en.map(esc).join("<br>")}</p>`
+    + `<p style="font-family:Lora,Georgia,serif;font-style:italic;font-size:14px;line-height:1.55;color:#6F665B;margin:0 0 10px">${v.de.map(esc).join("<br>")}</p>`
     + `<div style="font-size:12px;color:#6F665B">Rudolf Steiner, from the Calendar of the Soul (1912). English rendering: Sophia Commons. `
     + `<a href="${url}" style="color:#7F6116;font-weight:bold;text-decoration:none">Other translations at the Rudolf Steiner Archive</a></div>`
     + `</div>`;

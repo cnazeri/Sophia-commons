@@ -24,6 +24,14 @@
       "page": "https://sophiafoundation.org/upcoming-events-sponsored-events/",
       "directory_entry_id": "8bcf3968-80a5-4353-a687-5478f65ede65",
       "timezone": "America/Los_Angeles"
+    },
+    {
+      "name": "Schloss Hohenfels",
+      "page": "https://www.schloss-hohenfels.de/veranstaltungen/",
+      "timezone": "Europe/Berlin",
+      "directory_entry_id": "1f0e05cd-af2e-4df1-93c8-dd3dc072d08e",
+      "country": "Germany",
+      "lang": "de"
     }
   ]
 }

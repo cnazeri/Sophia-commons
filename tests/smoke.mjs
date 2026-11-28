@@ -53,14 +53,14 @@ try {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: 'block' });
     const page = await ctx.newPage();
     await page.goto(BASE + '/', { waitUntil: 'load' });
-    await page.locator('#hamburger-btn').tap();
+    await page.locator('#dock a[data-sec="more"]').tap();   // phones open the menu from the bottom bar since v1.130
     let err = '';
     try { await page.locator('#leftbar a[data-i18n="sidebar.category_biodynamic"]').tap({ timeout: 4000 }); } catch (e) { err = e.message.split('\n')[0]; }
     await page.waitForTimeout(800);
     const st = await page.evaluate(() => ({ sec: document.querySelector('.pagesec.active')?.id, open: document.getElementById('leftbar').classList.contains('mobile-open') }));
     check(!err && st.sec === 'sec-category' && !st.open, `[mobile] menu link opens its page and closes the menu (${err || JSON.stringify(st)})`);
     // Events & News: calendar first, then events, then news; long lists show 5 rows and expand
-    await page.locator('#nav-events').tap();
+    await page.locator('#dock a[data-sec="events"]').tap();
     await page.waitForTimeout(3000);
     const ev = await page.evaluate(() => {
       const top = q => document.querySelector(q).getBoundingClientRect().top;

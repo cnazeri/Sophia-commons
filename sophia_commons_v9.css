@@ -4582,7 +4582,7 @@ a.adm-btn, a.adm-btn:visited { color: var(--text-primary); }
 .ch-vid:hover .ch-vid-t { text-decoration: underline; }
 @media (max-width: 520px) { .ch-page .ch-head img { width: 64px; height: 64px; flex-basis: 64px; } }
 .feat-ev-body .sc-heart, .news-ev .sc-heart { margin-left: 8px; vertical-align: middle; }
-body:not(.sc-member) .sc-heart { display: none !important; }
+/* Hearts show for everyone (owner, 2026-11-27); a signed-out tap asks to sign in, then saves (saved.js scToggleSave) */
 
 /* Follow Sophia Commons: Instagram and X, logo + handle + button only (owner, 2026-11-23) */
 #side-social { display: grid; gap: 8px; margin: 18px 0; }
@@ -4604,3 +4604,586 @@ body:not(.sc-member) .sc-heart { display: none !important; }
 #side-social .soc-btn { font-size: 12.5px; min-height: 30px; padding: 0 16px; }
 #side-social .soc-card { padding: 10px 10px 11px; }
 #side-social .soc-handle { font-size: 12px; letter-spacing: -0.1px; }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════════════════
+   REDESIGN, phase 1 (owner, 2026-11-24; mockup _mockups/site2): a one-line header, the side columns only where
+   they help (Home keeps the right one; the categories live on Directory and in the phone menu), the new top of
+   Home, and on phones a frosted bottom bar of custom buttons like the app's transparent tab bar.
+   ══════════════════════════════════════════════════════════════════════════════════════════════════════ */
+.ico { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ── the header: one line ── */
+header { max-width: 1240px; margin: 0 auto; padding: 0 28px; min-height: 70px; gap: 18px; flex-wrap: nowrap; }
+#logo .logo-mark { width: 26px; height: auto; }
+#logo .logo-name { font-size: 24px !important; }
+#logo .logo-name sup, #logo .logo-words > span:last-child { display: none; }
+#mainnav-wrap { flex: 1; min-width: 0; }
+#mainnav { border-top: 0; padding: 0; justify-content: flex-start; flex-wrap: nowrap; }
+#mainnav button { padding: 24px 9px 22px; font-size: 12.5px; letter-spacing: .04em; }
+#statsbar { display: none; }
+#hdr-search { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: var(--elevated); color: var(--text-primary);
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
+#hdr-search:hover { border-color: var(--gold); color: var(--gold-text); }
+#topbar { padding: 0; border: 0; gap: 8px; flex: none; }
+#topbar .nav-links { display: flex; align-items: center; gap: 2px; }
+#topbar .nav-links a { margin-left: 8px; font-size: 12.5px; }
+#topbar .nav-links a[data-i18n="topbar.about"], #topbar .nav-links a[data-i18n="topbar.post_listing_link"] { display: none; }
+#topbar .nav-links a.signinbtn { font-size: 12px; padding: 8px 16px; min-height: 40px; display: inline-flex; align-items: center; }
+/* languages: the current one shows; the others drop down under it on hover or keyboard focus */
+#lang-switcher { position: relative; margin-left: 6px; display: block; }
+#lang-switcher .lang-btn { min-width: 42px; min-height: 40px; border-radius: 99px; font-size: 12px; padding: 0 10px; }
+#lang-switcher .lang-btn:not(.active) { display: none; }
+#lang-switcher:hover, #lang-switcher:focus-within { z-index: 5; }
+#lang-switcher:hover .lang-btn:not(.active), #lang-switcher:focus-within .lang-btn:not(.active) { display: block; position: relative; margin-top: 4px; background: var(--elevated); box-shadow: 0 4px 12px rgba(30,24,16,.12); }
+#lang-switcher:hover, #lang-switcher:focus-within { height: 40px; }
+#postlink { padding: 10px 18px; font-size: 12px; min-height: 40px; display: inline-flex; align-items: center; }
+@media (max-width: 1180px) and (min-width: 769px) {
+  #mainnav button { padding-left: 6px; padding-right: 6px; font-size: 11.5px; letter-spacing: .02em; }
+  #topbar .nav-links a:not(.signinbtn):not(#user-chip) { display: none; }
+  header { gap: 12px; padding: 0 18px; }
+}
+
+/* ── the page: no left column on desktop; the right column only on Home ── */
+@media (min-width: 769px) {
+  #page { grid-template-columns: minmax(0, 1fr); max-width: 1240px; margin: 0 auto; }
+  #leftbar { display: none; }
+  #page:has(#sec-home.active) { grid-template-columns: minmax(0, 1fr) 300px; }
+  #page:not(:has(#sec-home.active)) #rightbar { display: none; }
+  #rightbar { border-left: 0; }
+  #center { padding: 28px; }
+  /* Home's portrait is at the top now: the right column does not repeat it */
+  #page:has(#sec-home.active) #rightbar .rb-steiner .rs-fig { display: none; }
+}
+
+/* ── the top of Home ── */
+#home-hero { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 40px; align-items: center; padding: 18px 0 8px; }
+.hh-date { display: flex; align-items: center; gap: 8px; color: var(--gold-text); font-weight: 700; font-size: 13.5px; margin-bottom: 12px; }
+.hh-title { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 40px; line-height: 1.15; letter-spacing: -.01em; color: var(--text-primary); margin: 0 0 22px; }
+.hh-search { display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 20px; border-radius: 99px; border: 1.5px solid var(--border);
+  background: var(--elevated); max-width: 620px; }
+.hh-search:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-light); }
+.hh-search .ico { color: var(--gold-text); }
+.hh-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16.5px; color: var(--text-primary); }
+.hh-near { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; min-height: 50px; padding: 0 26px; border: 0; border-radius: 99px;
+  background: var(--gold); color: var(--on-gold); font: inherit; font-weight: 700; font-size: 16px; cursor: pointer; }
+.hh-near:hover { background: var(--gold-hover); }
+.hh-status { font-size: 13.5px; color: var(--text-secondary); margin-top: 8px; min-height: 0; }
+.hh-pic { margin: 0; text-align: center; justify-self: end; }
+.hh-pic img { width: 230px; height: 260px; object-fit: cover; object-position: center 22%; border-radius: 6px; border: 10px solid var(--elevated);
+  box-shadow: 0 0 0 1px var(--border), inset 0 0 0 1px rgba(127,97,22,.35), 0 12px 30px rgba(30,24,16,.13); filter: sepia(.1); }
+.hh-pic figcaption { font-size: 13px; color: var(--text-muted); font-weight: 600; margin-top: 8px; }
+#home-explore { margin: 26px 0 26px; }
+.hx-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.hx-head h2 { font-family: 'Lora', Georgia, serif; font-size: 22px; margin: 0; }
+.hx-link { font-weight: 700; font-size: 14px; color: var(--gold-text); white-space: nowrap; }
+.hx-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.hx-tile { display: flex; align-items: center; gap: 10px; min-height: 72px; padding: 12px 14px; border: 1px solid var(--border-subtle); border-radius: 14px;
+  background: var(--elevated); color: var(--text-primary); text-decoration: none; transition: border-color .15s; }
+.hx-tile:hover { border-color: var(--gold); text-decoration: none; color: var(--text-primary); }
+.hx-ic { flex: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--gold-light); color: var(--gold-text); }
+.hx-tile b { display: block; font-size: 14px; line-height: 1.25; }
+.hx-n { display: block; font-size: 12.5px; color: var(--text-muted); margin-top: 1px; }
+@media (max-width: 1100px) and (min-width: 769px) { .hx-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } #home-hero { grid-template-columns: minmax(0, 1fr) 200px; } .hh-pic img { width: 190px; height: 215px; } }
+
+/* ── phones ── */
+#dock { display: none; }
+@media (max-width: 768px) {
+  header { padding: 0 12px; min-height: 58px; gap: 6px; }
+  #logo .logo-name { font-size: 20px !important; }
+  #mainnav-wrap, #postlink, #ev-focus-more { display: none; }
+  #topbar .nav-links a:not(.signinbtn) { display: none; }
+  #topbar .nav-links #user-chip { max-width: 104px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: 0; padding: 8px 10px; font-size: 11.5px; }
+  #topbar .nav-links a.signinbtn { padding: 6px 12px; min-height: 38px; }
+  #hdr-search { width: 40px; height: 40px; margin-left: auto; }
+  #lang-switcher .lang-btn { min-width: 38px; min-height: 38px; }
+  #lang-switcher { height: 38px; }
+  #home-hero { display: block; padding: 6px 0 0; }
+  .hh-pic { display: none; }
+  .hh-date { font-size: 12.5px; }
+  .hh-title { font-size: 29px; margin-bottom: 16px; }
+  .hh-search { height: 52px; max-width: none; }
+  .hh-near { display: flex; width: 100%; }
+  #home-explore { margin: 24px 0 20px; }
+  .hx-head h2 { font-size: 20px; }
+  .hx-tiles { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hx-tile { min-height: 64px; padding: 10px 12px; }
+  .hx-tile:nth-child(5) { display: none; }
+  /* the bottom bar: frosted, see-through custom buttons */
+  #dock { display: flex; position: fixed; z-index: 1000; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); height: 66px; padding: 6px;
+    border-radius: 26px; background: rgba(253,251,247,.6); backdrop-filter: blur(22px) saturate(1.6); -webkit-backdrop-filter: blur(22px) saturate(1.6);
+    border: 1px solid rgba(255,255,255,.75); box-shadow: 0 8px 28px rgba(30,24,16,.16), inset 0 1px 0 rgba(255,255,255,.8); }
+  #dock a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-radius: 20px; text-decoration: none;
+    font-size: 11.5px; font-weight: 700; color: var(--text-secondary); text-transform: capitalize; }
+  #dock a .ico { stroke-width: 1.6; }
+  body:has(#sec-home.active) #dock a[data-sec="home"], body:has(#sec-events.active) #dock a[data-sec="events"],
+  body:has(#sec-directory.active) #dock a[data-sec="directory"], body:has(#sec-category.active) #dock a[data-sec="directory"],
+  body:has(#sec-books.active) #dock a[data-sec="books"], body:has(#leftbar.mobile-open) #dock a[data-sec="more"] {
+    color: var(--gold-text); background: rgba(201,160,53,.16); box-shadow: inset 0 0 0 1px rgba(201,160,53,.28); }
+  body { padding-bottom: 92px; }
+}
+.hx-short { display: none; }
+.hx-tile > span:last-child { min-width: 0; hyphens: auto; -webkit-hyphens: auto; }
+@media (max-width: 768px) {
+  #hamburger-btn { display: none; }          /* the bottom bar's More opens the menu */
+  #logo { gap: 8px; min-width: 0; }
+  #logo .logo-mark { width: 22px; }
+  .hx-head h2 { font-size: 19px; }
+  .hx-link { font-size: 13px; }
+  .hx-link .hx-long { display: none; }
+  .hx-link .hx-short { display: inline; }
+}
+@media (max-width: 768px) {
+  body:has(#leftbar.mobile-open) #dock a:not([data-sec="more"]) { background: none; box-shadow: none; color: var(--text-secondary); }
+  #leftbar { padding-bottom: 110px; }
+}
+/* the title on two lines (owner, 2026-11-24): sized to its column (cqi = 1% of the column's width), so it never
+   runs to a third line; German, Spanish and Russian are longer and get a slightly smaller scale */
+#home-hero .hh-l { container-type: inline-size; min-width: 0; }
+.hh-title { font-size: min(33px, 6.4cqi); text-wrap: balance; }
+html:not([lang="en"]) .hh-title { font-size: min(33px, 5.5cqi); }
+/* tablets: the right column goes under the page so Home's title keeps its width; the header drops Sign Up (Sign in stays) */
+@media (max-width: 1100px) and (min-width: 769px) {
+  #page:has(#sec-home.active) { grid-template-columns: minmax(0, 1fr); }
+  #page:has(#sec-home.active) #rightbar { padding: 0 28px 28px; }
+  #postlink { display: none; }
+}
+/* tablets keep the site name, a little smaller (owner, 2026-11-25); h2FitMenu drops menu items if space runs out */
+@media (max-width: 1100px) and (min-width: 769px) {
+  #logo .logo-name { font-size: 23px !important; }
+  #logo { gap: 8px; }
+}
+/* owner, 2026-11-25: Steiner's portrait without a border or frame */
+.hh-pic img { border: 0; box-shadow: none; }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════════════════
+   REDESIGN, phase 2 (owner, 2026-11-25: "I like the wireframes", _mockups/site2 #home): the rest of Home (home2.js),
+   the header and headings in the owner's Anthro font (English only: it has no accents or Cyrillic), one flat ground.
+   ══════════════════════════════════════════════════════════════════════════════════════════════════════ */
+@font-face { font-family: 'Anthro'; src: url('/fonts/Anthro-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+:root { --h2-card: var(--elevated, #fff); --h2-line: var(--border-subtle, #ECE5D9); --h2-head: Lora, Georgia, serif; }
+/* Headings and menu: Baar Zeitgeist (Lutz Baar, 2002; the AnthroWiki heading face), the owner's choice going forward
+   (2026-11-25). It has Latin accents but no Cyrillic, so Russian keeps Lora. */
+@font-face { font-family: 'Baar Zeitgeist'; src: url('/fonts/BaarZeitgeist.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+html:not([lang="ru"]) { --h2-head: 'Baar Zeitgeist', Lora, Georgia, serif; }
+
+/* one flat ground: no lighter panel behind the middle of the page */
+body, #page, #center { background: var(--bg); }
+body.home2-on #page:has(#sec-home.active) { grid-template-columns: minmax(0, 1fr); }
+body.home2-on #page:has(#sec-home.active) #rightbar { display: none; }
+body.home2-on #sec-home > .listblock, body.home2-on #sec-home > #home-social, body.home2-on #sec-home > .nl-card-home { display: none !important; }
+
+/* header like the mockup: the menu in plain words, the gold Sign in, a quiet language button, + Post */
+#mainnav button { text-transform: none; letter-spacing: .01em; font-size: 15px; font-weight: 600; color: var(--text-secondary); padding-left: 10px; padding-right: 10px; }
+#mainnav button.active { color: var(--text-primary); font-weight: 700; }
+#mainnav button.chatnav { color: var(--text-secondary); }
+#topbar .nav-links a.signinbtn { background: var(--gold); color: var(--on-gold); border-color: var(--gold); text-transform: none; letter-spacing: 0; font-size: 14px; }
+#topbar .nav-links a.signinbtn:hover { background: var(--gold-hover); color: var(--on-gold); }
+#lang-switcher .lang-btn.active { background: var(--bg); color: var(--text-primary); border: 1px solid var(--border); }
+#postlink { background: var(--bg); color: var(--text-primary); border: 1px solid var(--border); text-transform: none; letter-spacing: 0; font-size: 14px; }
+#postlink:hover { background: var(--surface); color: var(--text-primary); }
+.hh-title, .hx-head h2 { font-family: var(--h2-head); font-weight: 700; }
+html[lang="en"] .hh-title, html[lang="en"] .hx-head h2 { font-weight: 700; letter-spacing: 0; }
+
+/* the two columns under the tiles */
+#home2 { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 32px; align-items: start; margin-top: 8px; }
+.h2-main { min-width: 0; }
+.h2-sec { margin-top: 34px; }
+.h2-sec:first-child { margin-top: 0; }
+.h2-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 40px; margin-bottom: 14px; }
+.h2-head h2 { font-family: var(--h2-head); font-size: 26px; line-height: 1.2; margin: 0; color: var(--text-primary); }
+.h2-link { display: inline-flex; align-items: center; gap: 5px; color: var(--gold-text); font-weight: 700; font-size: 14.5px; white-space: nowrap; text-decoration: none; }
+.h2-link:hover { text-decoration: underline; }
+.h2-card { background: var(--h2-card); border: 1px solid var(--h2-line); border-radius: 14px; position: relative; }
+.h2-kick { font-size: 12.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--gold-text); }
+.h2-small { display: block; font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+.h2-s { font-size: 14px; color: var(--text-secondary); margin: 2px 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* cards with the picture edge to edge across the top (events, new places, the festival, talks) */
+.h2-evrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.h2-talks { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }   /* new places: 3 across, the same grid as This week (owner, 2026-11-25) */
+.h2-ev { overflow: hidden; display: flex; flex-direction: column; }
+.h2-pic { display: block; position: relative; aspect-ratio: 16 / 10; background: var(--surface); }
+.h2-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.h2-vid .h2-pic { aspect-ratio: 16 / 9; background: #222; }
+.h2-body { padding: 12px 14px 14px; display: flex; flex-direction: column; flex: 1; }
+.h2-body h3 { font-family: 'Nunito Sans', sans-serif; font-weight: 800; font-size: 16px; line-height: 1.3; margin: 4px 0;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.h2-body h3 a { color: var(--text-primary); text-decoration: none; }
+.h2-body h3 a:hover { color: var(--gold-text); }
+.h2-meta { margin-top: auto; padding-top: 6px; font-size: 14px; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
+.h2-meta .ico { color: var(--text-muted); }
+.h2-ev > .sc-heart { position: absolute; top: 10px; right: 10px; z-index: 2; width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(253,251,247,.88); display: grid; place-items: center; }
+.h2-badge { position: absolute; top: 10px; right: 10px; font-size: 12.5px; font-weight: 800; padding: 4px 10px; border-radius: 99px; background: rgba(253,251,247,.9); color: var(--gold-text); }
+.h2-play { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; transform: translate(-50%, -50%); border-radius: 50%; display: grid; place-items: center;
+  background: rgba(253,251,247,.9); color: var(--text-primary); }
+
+/* news, newsletter, jobs, take part */
+.h2-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.h2-two > div { display: flex; flex-direction: column; min-width: 0; }
+.h2-two > div > .h2-card { flex: 1; }
+.h2-list .h2-row { position: relative; padding: 15px 56px 15px 20px; border-top: 1px solid var(--h2-line); }
+.h2-list .h2-row:first-child { border-top: 0; }
+.h2-row > .sc-heart { position: absolute; right: 14px; top: 14px; }
+.h2-t { display: block; font-weight: 800; line-height: 1.3; color: var(--text-primary); text-decoration: none; }
+.h2-t:hover { color: var(--gold-text); }
+.h2-job { display: flex; gap: 12px; align-items: center; }
+.h2-jic { flex: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--gold-light); color: var(--gold-text); }
+.h2-nl { padding: 22px; }
+.h2-nl h3 { font-family: var(--h2-head); font-size: 21px; margin: 4px 0 6px; }
+.h2-nl h3 a { color: var(--text-primary); text-decoration: none; }
+.h2-nl .nl-card-home { margin: 14px 0 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.h2-nl .nl-card-home h3 { display: none; }
+.h2-take a { display: flex; gap: 14px; align-items: center; padding: 15px 20px; border-top: 1px solid var(--h2-line); color: var(--text-primary); text-decoration: none; }
+.h2-take a:first-child { border-top: 0; }
+.h2-take a:hover { background: var(--surface); }
+.h2-take a > .ico:first-child { color: var(--gold-text); }
+.h2-take a > span { flex: 1; min-width: 0; }
+.h2-take a > .ico:last-child { color: var(--text-muted); }
+.h2-take b { display: block; }
+
+/* the column of cards */
+.h2-aside { display: flex; flex-direction: column; gap: 14px; padding-top: 54px; min-width: 0; }
+.h2-aside .h2-side { padding: 20px; }
+.h2-aside .rb-sec { margin: 0; border: 1px solid var(--h2-line); }
+.h2-aside .rb-sec h5 { border: 0; padding: 0; margin: 0 0 8px; font-family: 'Nunito Sans', sans-serif; font-size: 12.5px; font-weight: 800; letter-spacing: .06em; color: var(--gold-text); }
+.h2-aside .h2-fest .h2-pic { aspect-ratio: 16 / 10; }
+.h2-rm { display: flex; gap: 14px; align-items: flex-start; margin: 10px 0 12px; }
+.h2-ini { flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: var(--gold-light); color: var(--gold-text); font: 600 19px Lora, serif; }
+.h2-rm b { font-family: Lora, serif; font-size: 16.5px; }
+.h2-follow { display: flex; align-items: center; gap: 12px; padding: 12px; margin-top: 10px; border: 1px solid var(--h2-line); border-radius: 12px; color: var(--gold-text); text-decoration: none; }
+.h2-follow b { display: block; color: var(--text-primary); }
+.h2-follow:hover { border-color: var(--gold); }
+[id^="h2-"][hidden], .h2-sec[hidden] { display: none !important; }
+
+@media (max-width: 1100px) {
+  #home2 { grid-template-columns: minmax(0, 1fr); }
+  .h2-aside { padding-top: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .h2-talks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+  .h2-head h2 { font-size: 22px; }
+  .h2-evrow, .h2-newrow, .h2-talks { display: flex; overflow-x: auto; gap: 12px; margin: 0 -16px; padding: 0 16px 6px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .h2-evrow > * { flex: 0 0 76%; scroll-snap-align: start; }
+  .h2-two { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+  .h2-aside { display: flex; }
+  #mainnav button { font-size: 14px; }
+}
+/* phase 2 fixes: capitalized menu words, the title larger on two lines, aside headings */
+#mainnav button::first-letter, #topbar .nav-links a.signinbtn::first-letter { text-transform: uppercase; }
+#postlink { gap: 6px; }
+/* .hh-title size and width are set by h2FitTitle() in home2.js (always two lines) */
+.h2-aside .rb-sec h5 { text-transform: uppercase; }
+.h2-nl h3 { font-size: 19px; line-height: 1.3; }
+.h2-rm .h2-s { margin-top: 4px; }
+/* one flat ground like the mockup: no gold glow at the top (it showed only beside the middle column) */
+body::before { display: none; }
+/* "Sign in" with a capital: ::first-letter needs a block box, not a flex one */
+#topbar .nav-links a.signinbtn { display: inline-block; line-height: 24px; }
+/* computers: Near me beside the search box, as in the mockup */
+@media (min-width: 769px) {
+  .hh-l { display: flex; flex-wrap: wrap; align-items: center; column-gap: 12px; }
+  .hh-l > .hh-date, .hh-l > .hh-title, .hh-l > .hh-status { flex: 0 0 100%; }
+  .hh-l > .hh-search { flex: 1 1 320px; max-width: 560px; }
+  .hh-l > .hh-near { margin-top: 0; min-height: 56px; }
+}
+.h2-aside #home-cc-block { margin: 0 !important; border-radius: 14px; border: 1px solid var(--h2-line); overflow: hidden; background: var(--h2-card); }
+.h2-aside #home-cc-block[hidden] { display: none; }
+
+/* ── The app, on standby (home2.js SC_APP_LINKS): a band at the bottom of Home and buttons in the footer ── */
+.h2-appband { grid-column: 1 / -1; display: grid; grid-template-columns: 1.3fr 1fr; gap: 30px; align-items: center; margin-top: 30px;
+  padding: 34px 40px 0; border-radius: 22px; background: linear-gradient(135deg, #F3EBDC, #FBF3DE); border: 1px solid var(--h2-line); overflow: hidden; }
+.h2-appband-text { padding-bottom: 34px; }
+.h2-appband h2 { font-family: var(--h2-head); font-size: 28px; line-height: 1.25; margin: 6px 0 10px; color: var(--text-primary); }
+.h2-appband p { margin: 0; color: var(--text-secondary); font-size: 15px; line-height: 1.55; }
+.h2-stores, .ft-stores { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.ft-stores[hidden] { display: none; }
+.h2-store, .ft-store { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border-radius: 10px;
+  font-weight: 700; font-size: 14px; line-height: 1.15; text-decoration: none; }
+.h2-store { background: var(--text-primary); color: #fff; }
+.h2-store:hover { opacity: .9; }
+.ft-store { border: 1px solid rgba(250,247,242,0.3); color: var(--text-inverse) !important; }
+.ft-store:hover { border-color: rgba(250,247,242,0.6); }
+.h2-store small, .ft-store small { display: block; font-weight: 500; font-size: 11px; opacity: .75; }
+.h2-phone { align-self: end; display: flex; justify-content: center; }
+.h2-phone img { width: 230px; height: auto; border-radius: 30px 30px 0 0; border: 8px solid var(--text-primary); border-bottom: 0;
+  box-shadow: 0 -6px 30px rgba(30,24,16,.18); display: block; }
+@media (max-width: 768px) {
+  .h2-appband { grid-template-columns: 1fr; gap: 0; padding: 26px 22px 0; }
+  .h2-appband h2 { font-size: 23px; }
+  .h2-phone img { width: 190px; }
+}
+
+/* ── Admin, redesign (owner, 2026-11-25): grouped side menu, "Waiting for you" overview, cards in the new look ── */
+#sec-admin.active { display: grid; grid-template-columns: 220px minmax(0, 1fr); column-gap: 32px; align-items: start; }
+#sec-admin > * { grid-column: 2; min-width: 0; }
+#sec-admin > .adm2-top { grid-column: 1 / -1; margin-bottom: 18px; }
+#sec-admin > .admin-tabs { grid-column: 1; grid-row: 2 / span 40; }
+.adm2-title { font-family: var(--h2-head); font-size: 34px; line-height: 1.15; margin: 4px 0 0; color: var(--text-primary); }
+#sec-admin .admin-tabs { display: flex; flex-direction: column; gap: 18px; margin: 0; padding: 0; border: 0; position: sticky; top: 84px; }
+.adm2-group { display: flex; flex-direction: column; gap: 2px; }
+.adm2-glabel { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--gold-text); margin: 0 0 6px 12px; }
+#sec-admin .admin-tab { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px;
+  padding: 8px 12px; border: 0; border-radius: 10px; font-size: 14.5px; font-weight: 600; letter-spacing: 0; text-align: left; color: var(--text-secondary); }
+#sec-admin .admin-tab:hover { background: var(--h2-card); color: var(--text-primary); }
+#sec-admin .admin-tab.active { background: var(--h2-card); color: var(--text-primary); box-shadow: inset 3px 0 0 var(--gold), 0 0 0 1px var(--h2-line); }
+#sec-admin .admin-tab .admin-pending-badge { position: static; box-shadow: none; flex: none; }
+.adm2-overview { margin-bottom: 22px; }
+.adm2-ohead { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.adm2-ohead h2 { font-family: var(--h2-head); font-size: 22px; margin: 0; }
+.adm2-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.adm2-card { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 44px; padding: 14px 16px; border-radius: 14px;
+  border: 1px solid var(--h2-line); background: var(--h2-card); color: var(--text-primary); font: inherit; text-align: left; cursor: pointer; }
+.adm2-card:hover { border-color: var(--gold); }
+.adm2-card b { font-size: 26px; line-height: 1.1; font-variant-numeric: tabular-nums; color: #B3261E; }
+.adm2-card span { font-size: 13.5px; color: var(--text-secondary); font-weight: 600; }
+.adm2-done { padding: 16px 18px; border-radius: 14px; border: 1px solid var(--h2-line); background: var(--h2-card); color: var(--text-secondary); font-size: 14px; }
+#sec-admin .admin-card { border-radius: 14px; border-color: var(--h2-line); background: var(--h2-card); padding: 18px 20px; }
+#sec-admin .admin-card h4 { font-family: 'Lora', Georgia, serif; font-size: 16.5px; }   /* listing names read best in the text serif */
+#sec-admin .admin-actions { flex-wrap: wrap; }
+#sec-admin .admin-actions button, #sec-admin .admin-btn { min-height: 40px; padding: 0 18px; border-radius: 99px; font-size: 13px;
+  letter-spacing: 0; text-transform: none; }
+#sec-admin .adm-btn, #sec-admin .admin-filter-btn { border-radius: 99px; }
+#sec-admin .adm-head h3, #sec-admin h3 { font-family: var(--h2-head); }
+#sec-admin .admin-empty { border: 1px dashed var(--h2-line); border-radius: 14px; }
+@media (max-width: 900px) {
+  #sec-admin.active { display: block; }
+  #sec-admin .admin-tabs { position: static; flex-direction: column; gap: 8px; margin: 0 -16px 14px; align-items: stretch; }
+  .adm2-group { flex-direction: row; gap: 6px; width: 100%; min-width: 0; box-sizing: border-box; overflow-x: auto; padding: 2px 16px 4px; scrollbar-width: none; }
+  .adm2-glabel { display: none; }
+  #sec-admin .admin-tab { flex: none; white-space: nowrap; min-height: 44px; border: 1px solid var(--h2-line); background: var(--h2-card); }
+  #sec-admin .admin-tab.active { box-shadow: inset 0 -3px 0 var(--gold); }
+  .adm2-title { font-size: 28px; }
+}
+
+/* Baar Zeitgeist has one weight: draw it as designed instead of a faked bold (as in the mockup) */
+html:not([lang="ru"]) :is(.hh-title, .hx-head h2, .h2-head h2, .h2-nl h3, .h2-appband h2, .adm2-title, .adm2-ohead h2, #sec-admin .adm-head h3, #sec-admin h3) { font-weight: 400; letter-spacing: .01em; }
+
+/* Rudolf Steiner's portrait floats gently in a soft gold glow (owner, 2026-11-25: "appear to hover or glow slightly") */
+.hh-pic img { box-shadow: 0 0 0 1px rgba(201,160,51,.12), 0 14px 34px -8px rgba(30,24,16,.28), 0 0 46px 6px rgba(214,174,72,.30) !important;
+  animation: hh-float 7s ease-in-out infinite; will-change: transform; }
+@keyframes hh-float {
+  0%, 100% { transform: translateY(0); box-shadow: 0 0 0 1px rgba(201,160,51,.12), 0 14px 34px -8px rgba(30,24,16,.28), 0 0 40px 4px rgba(214,174,72,.24); }
+  50% { transform: translateY(-6px); box-shadow: 0 0 0 1px rgba(201,160,51,.14), 0 22px 40px -10px rgba(30,24,16,.22), 0 0 56px 10px rgba(214,174,72,.36); }
+}
+@media (prefers-reduced-motion: reduce) { .hh-pic img { animation: none; } }
+#mainnav button.h2-menu-off { display: none; }   /* set by h2FitMenu (home2.js) when the menu would run into the search button */
+
+/* The top menu in the logo's font, as on the live site since v1.38 (owner, 2026-11-25). It has plain A-Z and a-z only, so
+   accented and Russian letters fall back to the body font. h2FitMenu (home2.js) hides end items when space runs out. */
+#mainnav button, #mainnav button.active { font-family: 'Sophia Commons Display', 'Nunito Sans', sans-serif; font-weight: 400; font-size: 15px; letter-spacing: .05em; padding-left: 9px; padding-right: 9px; }
+@media (max-width: 1240px) { #mainnav button, #mainnav button.active { font-size: 14px; padding-left: 6px; padding-right: 6px; } }
+.h2-fmt { font-size: 12.5px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }   /* "Online · English" on This week cards */
+
+/* ── About, redesign (owner, 2026-11-25; _mockups/site2 #about): wider page, numbers, three cards, then the text ── */
+#sec-about.legal-page { max-width: 1000px; }
+#sec-about .legal-title { font-family: var(--h2-head); font-size: 40px; line-height: 1.15; margin: 6px 0 10px; }
+html:not([lang="ru"]) #sec-about .legal-title, html:not([lang="ru"]) #sec-about > h2 { font-weight: 400; }
+#sec-about .legal-lead { max-width: 720px; }
+#sec-about > h2 { font-family: var(--h2-head); font-size: 26px; margin: 40px 0 8px; }
+#sec-about > h3, #sec-about > p, #sec-about > ul { max-width: 720px; }
+.ab-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 26px 0 16px; }
+.ab-stat { padding: 18px 20px; border-radius: 14px; border: 1px solid var(--h2-line); background: var(--h2-card); }
+.ab-stat b { display: block; font-size: 30px; line-height: 1.1; color: var(--text-primary); font-variant-numeric: tabular-nums; min-height: 33px; }
+.ab-stat span { font-size: 14px; color: var(--text-secondary); font-weight: 600; }
+.ab-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.ab-card { display: flex; flex-direction: column; align-items: flex-start; padding: 20px; border-radius: 14px; border: 1px solid var(--h2-line); background: var(--h2-card); }
+.ab-card h3 { font-family: 'Nunito Sans', sans-serif; font-size: 17px; font-weight: 800; margin: 12px 0 6px; color: var(--text-primary); }
+.ab-card p { font-size: 14.5px; line-height: 1.6; color: var(--text-secondary); margin: 0 0 14px; }
+.ab-ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; }
+.ab-ic .ico { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ab-green { background: #E2F1E4; color: #2F6B3A; }
+.ab-orange { background: #FBE9DD; color: #B4541A; }
+.ab-blue { background: #E3EDF8; color: #1F5E9E; }
+.ab-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: auto; padding: 0 18px; border-radius: 99px; border: 1px solid var(--h2-line);
+  background: var(--surface); color: var(--text-primary); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; }
+.ab-btn:hover { border-color: var(--gold); text-decoration: none; }
+.ab-gold { background: var(--gold); border-color: var(--gold); color: var(--on-gold) !important; }
+.ab-gold .ico { fill: none; stroke: currentColor; stroke-width: 1.8; width: 18px; height: 18px; }
+.ab-link { margin-top: auto; font-weight: 700; font-size: 14px; color: var(--gold-text); }
+.ab-contact { margin: 18px 0 0; }
+@media (max-width: 860px) {
+  .ab-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ab-cards { grid-template-columns: minmax(0, 1fr); }
+  #sec-about .legal-title { font-size: 32px; }
+}
+#sec-about > h3 { font-family: 'Nunito Sans', sans-serif; font-size: 17px; font-weight: 800; letter-spacing: 0; margin: 22px 0 4px; }
+/* EN before Sign in, as in the wireframe (owner, 2026-11-25) */
+#topbar { display: flex; align-items: center; }
+#topbar #lang-switcher { order: -1; margin-left: 0; margin-right: 8px; }
+
+/* Advent in the redesign (owner, 2026-11-27): same layout, the new look. Baar Zeitgeist headings (Lora in Russian),
+   14px corners, soft gold date tiles, the "In person · English" line on gatherings, no glow halos on cards. */
+#sec-advent h2.adv-h1, #sec-advent .adv-sec h2, #sec-advent .adv-signup h3, .adv-count b, .adv-nightsky .num, .advent-banner b {
+  font-family: var(--h2-head); font-weight: 400; letter-spacing: 0; }
+#sec-advent h2.adv-h1 { font-size: clamp(34px, 4.6vw, 50px); line-height: 1.1; }
+#sec-advent .adv-sec h2 { font-size: 28px; line-height: 1.2; margin-bottom: 8px; }
+#sec-advent .adv-signup h3 { font-size: 24px; }
+.advent-banner b { font-size: 20px; }
+.adv-hero, .adv-holy, .adv-signup { border-radius: 18px; }
+.adv-sec { padding-top: 44px; }
+.adv-week, .adv-fest, .adv-ev, .adv-lectures li, .adv-book, .adv-subcal, .adv-doorbox, .adv-verse { border-radius: 14px; border-color: var(--h2-line); }
+.adv-week h3, .adv-fest .t b { font-family: 'Nunito Sans', sans-serif; font-weight: 800; font-size: 17px; }
+.adv-week.now { box-shadow: none; border: 1.5px solid var(--gold); }
+.adv-fest img, .adv-nightsky { height: 112px; }
+.adv-door { border-radius: 12px; border-color: var(--h2-line); font-family: var(--h2-head); font-weight: 400; font-size: 22px; }
+.adv-door:hover:not(:disabled) { transform: translateY(-1px); }
+.adv-door { transition: transform .15s ease, border-color .15s ease; }
+.adv-ev { padding: 14px; gap: 14px; }
+.adv-ev .d { flex-basis: 52px; border: 0; border-radius: 12px; background: var(--gold-light); padding: 7px 0; }
+.adv-ev .d b { font-family: var(--h2-head); font-weight: 400; font-size: 22px; }
+.adv-ev a { color: var(--text-primary); line-height: 1.3; display: block; }
+.adv-ev a:hover { color: var(--gold-text); }
+.adv-ev .fmt { font-size: 12.5px; font-weight: 700; color: var(--gold-text); margin-top: 3px; }
+.adv-lectures a, .adv-book .btitle { font-family: 'Nunito Sans', sans-serif; font-weight: 800; }
+.adv-book .buy, .adv-cal summary { min-height: 34px; display: inline-flex; align-items: center; }
+.adv-seal img { box-shadow: 0 0 0 6px rgba(243,210,122,.16), 0 8px 40px rgba(0,0,0,.35); }
+.advent-banner img { box-shadow: none; border: 2px solid rgba(243,210,122,.55); }
+@media (prefers-reduced-motion: reduce) { .adv-door { transition: none; } .adv-door:hover:not(:disabled) { transform: none; } }
+
+/* The Advent menu button glows softly, set apart from the rest while the season is on (owner, 2026-11-27) */
+#mainnav #nav-advent { position: relative; color: #6A4C93; border-radius: 999px; min-height: 0; height: 36px; align-self: center; line-height: 36px; padding-top: 0; padding-bottom: 0;
+  background: radial-gradient(ellipse at center, rgba(243,197,75,.30) 0%, rgba(243,197,75,.12) 55%, rgba(243,197,75,0) 75%);
+  text-shadow: 0 0 10px rgba(243,197,75,.85); animation: nav-advent-glow 3.2s ease-in-out infinite; }
+#mainnav #nav-advent.active { color: #4B3B6B; }
+@keyframes nav-advent-glow {
+  0%, 100% { box-shadow: 0 0 8px 0 rgba(243,197,75,.30), inset 0 0 0 1px rgba(201,160,53,.35); }
+  50% { box-shadow: 0 0 16px 2px rgba(243,197,75,.50), inset 0 0 0 1px rgba(201,160,53,.55); }
+}
+@media (prefers-reduced-motion: reduce) { #mainnav #nav-advent { animation: none; box-shadow: 0 0 12px 2px rgba(243,197,75,.45); } }
+/* Hearts on the Advent gatherings */
+.adv-ev { position: relative; }
+.adv-ev > .sc-heart { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; }
+.adv-ev > div:last-child { padding-right: 26px; }
+
+/* Community board (board.js, owner 2026-11-27): the chat as a board of posts and comments, in the redesign's look */
+#sec-chat { max-width: 860px; margin-left: auto; margin-right: auto; }
+.bd-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin: 4px 0 18px; }
+.bd-title, .bd-h2, .bd-post h2, .bd-form h2 { font-family: var(--h2-head); font-weight: 400; color: var(--text-primary); margin: 0; letter-spacing: 0; text-transform: none; }
+.bd-title { font-size: 38px; line-height: 1.12; }
+.bd-h2 { font-size: 28px; margin: 6px 0 4px; }
+.bd-sub { color: var(--text-secondary); margin: 6px 0 0; max-width: 40em; }
+.bd-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--elevated); font: 700 15px 'Nunito Sans', sans-serif; color: var(--text-primary); cursor: pointer; white-space: nowrap; }
+.bd-btn.gold { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+.bd-btn.gold:hover { background: var(--gold-hover, #AB8628); }
+.bd-btn:disabled { opacity: .6; cursor: wait; }
+.bd-chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 18px; }
+.bd-chip { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--elevated);
+  font: 700 14px 'Nunito Sans', sans-serif; color: var(--text-secondary); cursor: pointer; }
+.bd-chip:hover { border-color: var(--gold); }
+.bd-chip.on { background: var(--text-primary); border-color: var(--text-primary); color: var(--bg, #fff); }
+span.bd-chip { cursor: default; }
+.bd-list { display: grid; gap: 12px; }
+.bd-card, .bd-post, .bd-form, .bd-gate { background: var(--elevated); border: 1px solid var(--h2-line, var(--border)); border-radius: 14px; padding: 18px 20px; }
+.bd-card { cursor: pointer; transition: border-color .15s ease; }
+.bd-card:hover, .bd-card:focus-visible { border-color: var(--gold); outline: none; }
+.bd-card h3 { font: 800 18px/1.35 'Nunito Sans', sans-serif; margin: 6px 0 4px; color: var(--text-primary); }
+.bd-meta { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.bd-topic { display: inline-block; font-size: 12px; font-weight: 700; color: var(--gold-text); background: var(--gold-light); border-radius: 999px; padding: 2px 10px; margin-right: 2px; }
+.bd-excerpt { margin: 0; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+.bd-count { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 13.5px; font-weight: 700; color: var(--gold-text); }
+.bd-empty { color: var(--text-muted); text-align: center; padding: 24px 12px; }
+.bd-empty p { margin: 0 0 14px; }
+.bd-back { margin: 0 0 14px; } .bd-back a, .bd-archive-link a { color: var(--gold-text); font-weight: 700; text-decoration: none; }
+.bd-archive-link { margin: 16px 0 0; }
+.bd-post h2 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+.bd-body { white-space: pre-line; overflow-wrap: anywhere; color: var(--text-primary); line-height: 1.65; }
+.bd-acts { display: flex; gap: 14px; margin-top: 12px; }
+.bd-acts button { background: none; border: 0; padding: 4px 0; min-height: 32px; font: 600 13px 'Nunito Sans', sans-serif; color: var(--text-muted); cursor: pointer; }
+.bd-acts button:hover { color: var(--gold-text); text-decoration: underline; }
+.bd-ch { font: 800 17px 'Nunito Sans', sans-serif; margin: 26px 0 10px; } .bd-ch span { color: var(--text-muted); font-weight: 700; }
+.bd-comments, .bd-arch { display: grid; gap: 10px; }
+.bd-comment { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; padding: 14px 16px; background: var(--elevated); border: 1px solid var(--h2-line, var(--border)); border-radius: 14px; }
+.bd-av { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--gold-light); color: var(--gold-text); font-weight: 800; }
+.bd-comment .bd-body { margin-top: 2px; }
+.bd-comment .bd-acts { margin-top: 6px; }
+.bd-reply, .bd-form { margin-top: 18px; display: grid; gap: 8px; }
+.bd-reply { background: var(--surface); border: 1px solid var(--h2-line, var(--border)); border-radius: 14px; padding: 16px; }
+.bd-reply label, .bd-form label { font-weight: 700; font-size: 14px; }
+.bd-reply textarea, .bd-form textarea, .bd-form input, .bd-form select { width: 100%; box-sizing: border-box; border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 14px;
+  font: 15px/1.5 'Nunito Sans', sans-serif; background: var(--elevated); color: var(--text-primary); }
+.bd-reply textarea:focus, .bd-form textarea:focus, .bd-form input:focus, .bd-form select:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.bd-reply .bd-btn, .bd-form .bd-btn { justify-self: start; }
+.bd-form h2 { font-size: 28px; margin-bottom: 6px; }
+.bd-note { font-size: 13px; color: var(--text-muted); margin: 0; }
+.bd-msg { margin: 0; font-size: 14px; font-weight: 700; color: var(--rose, #A23B3B); min-height: 0; }
+.bd-msg:empty { display: none; }
+.bd-gate { text-align: center; } .bd-gate .bd-chips { justify-content: center; }
+@media (max-width: 760px) {
+  .bd-head { flex-direction: column; align-items: stretch; } .bd-head .bd-btn { width: 100%; }
+  .bd-title { font-size: 32px; }
+  .bd-chips[role=tablist] { flex-wrap: nowrap; overflow-x: auto; margin-left: -4px; padding: 0 4px 4px; }
+  .bd-chip { flex: none; }
+  .bd-card, .bd-post, .bd-form { padding: 16px; }
+}
+
+/* Resources, built out (resources2.js, owner 2026-11-27): heading with numbers, Start here cards, jump links,
+   search and kind filters, online resources as cards */
+#sec-books.rs-on > .seclabel:first-of-type { display: none; }
+.rs-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; margin: 6px 0 22px; }
+.rs-title { font-family: var(--h2-head); font-weight: 400; font-size: 42px; line-height: 1.1; margin: 0; color: var(--text-primary); letter-spacing: 0; text-transform: none; }
+.rs-sub { margin: 8px 0 0; color: var(--text-secondary); max-width: 38em; font-size: 16px; }
+.rs-stats { display: grid; grid-template-columns: repeat(4, auto); gap: 10px; }
+.rs-stat { background: var(--elevated); border: 1px solid var(--h2-line); border-radius: 14px; padding: 10px 16px; text-align: center; min-width: 104px; }
+.rs-stat b { display: block; font-family: var(--h2-head); font-weight: 400; font-size: 24px; line-height: 1.15; color: var(--text-primary); }
+.rs-stat span { font-size: 12.5px; color: var(--text-muted); }
+.rs-h2 { font-family: var(--h2-head); font-weight: 400; font-size: 24px; margin: 0 0 12px; color: var(--text-primary); letter-spacing: 0; text-transform: none; }
+.rs-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.rs-card { display: flex; gap: 12px; align-items: flex-start; padding: 16px; background: var(--elevated); border: 1px solid var(--h2-line); border-radius: 14px; text-decoration: none; color: inherit; transition: border-color .15s ease; }
+.rs-card:hover, .rs-card:focus-visible { border-color: var(--gold); }
+.rs-card b { display: block; font-size: 16px; font-weight: 800; color: var(--text-primary); margin-bottom: 2px; }
+.rs-card > span:last-child > span { font-size: 13.5px; color: var(--text-secondary); line-height: 1.45; }
+.rs-ic { flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--gold-light); color: var(--gold-text); }
+.rs-jump { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; }
+.rs-jump a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--elevated); font-size: 14px; font-weight: 700; color: var(--text-secondary); text-decoration: none; }
+.rs-jump a:hover, .rs-jump a:focus-visible { border-color: var(--gold); color: var(--gold-text); }
+#sec-books .listblock, #sec-books .trendblock, #sec-books .books-more { border-radius: 14px; border-color: var(--h2-line); scroll-margin-top: 90px; }
+#sec-books .seclabel { scroll-margin-top: 90px; }
+.rs-tools { display: grid; gap: 10px; margin: 4px 0 14px; }
+.rs-search { display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 16px; border: 1.5px solid var(--border); border-radius: 999px; background: var(--elevated); color: var(--text-muted); }
+.rs-search:focus-within { border-color: var(--gold); }
+.rs-search input { flex: 1; min-width: 0; border: 0; background: none; font: 15px 'Nunito Sans', sans-serif; color: var(--text-primary); outline: none; }
+.rs-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.rs-chip { min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--elevated); font: 700 14px 'Nunito Sans', sans-serif; color: var(--text-secondary); cursor: pointer; }
+.rs-chip span { color: var(--text-muted); font-weight: 600; margin-left: 2px; }
+.rs-chip.on { background: var(--text-primary); border-color: var(--text-primary); color: var(--bg, #fff); }
+.rs-chip.on span { color: inherit; opacity: .75; }
+.rs-found { margin: 0; font-size: 14px; font-weight: 700; color: var(--gold-text); } .rs-found:empty { display: none; }
+#resources-list #res-more[hidden] { display: none; }
+#resources-list .listblock-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+#resources-list #res2-tools-box, #resources-list #res-more, #resources-list .more-toggle { grid-column: 1 / -1; }
+#resources-list #res-more:not([hidden]) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+#resources-list .res-row { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border: 1px solid var(--h2-line); border-radius: 14px; background: var(--elevated); }
+#resources-list .res-row .ltitle { font-weight: 800; font-size: 15.5px; color: var(--text-primary); }
+#resources-list .res-row .ltitle:hover { color: var(--gold-text); }
+#resources-list .res-row .res-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+.rs-tag { align-self: flex-start; margin-top: 4px; font-size: 12px; font-weight: 700; color: var(--gold-text); background: var(--gold-light); border-radius: 999px; padding: 2px 10px; }
+#resources-list .res-row.rs-hide { display: none; }
+@media (max-width: 1000px) { .rs-top { grid-template-columns: 1fr; } .rs-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .rs-title { font-size: 34px; }
+  .rs-stats { grid-template-columns: repeat(2, 1fr); }
+  .rs-cards, #resources-list .listblock-body, #resources-list #res-more:not([hidden]) { grid-template-columns: minmax(0, 1fr); }
+  .rs-jump { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; } .rs-jump a { flex: none; }
+  .rs-chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; } .rs-chip { flex: none; }
+}
+@media (prefers-reduced-motion: reduce) { .rs-card { transition: none; } }
+
+/* The decided heading font (Baar Zeitgeist; Lora in Russian, which it cannot write) on every page's headings,
+   replacing Tektur, Cormorant and Anthro (owner, 2026-11-27). The logo and the top menu keep the logo font. */
+#modal-box h2, #submit-box h2, #leftbar h5, #rightbar h5, .pagesec h2, .inner-header h2, .catblock-head h3, .popular-tags-bar h4,
+.listblock-head h3, .trendblock-head h3, .mapwrap-head h3, .detail-hero h1, .detail-hero.ev-hero h1, .detail-sidebar h4, .cal-header h3,
+.admin-card h4, .adm-head h3, .report-modal-content h3, .listing-form-content h3, .comments-section h3, .dir-group-head,
+.legal-page h1, .legal-page .legal-title, .legal-page h2, .legal-page h3, .yt-cat h4, .ev-month, .blog-title, .claim-card h3, .nl-card h3,
+h1.seclabel, .dash-card .dash-value, .news-ev-mark span, .books-more .bm-title {
+  font-family: var(--h2-head); font-stretch: normal; font-weight: 400; font-style: normal; letter-spacing: 0; }
+.listblock-head h3, .catblock-head h3, .trendblock-head h3, .mapwrap-head h3, .adm-head h3 { font-size: 20px; }
+.pagesec h2 { letter-spacing: 0; }
+/* Small all-caps labels read better in the body font, bold, as on the new Home page */
+#leftbar h5, #rightbar h5, div.seclabel, .popular-tags-bar h4, .ftcol-h, .yt-cat h4 {
+  font-family: 'Nunito Sans', sans-serif; font-stretch: normal; font-weight: 800; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; }
+.ev-signup h3, .ev-share h3, .memorial-card h3, .blog-card-text h3, #sec-detail h2 { font-family: var(--h2-head); font-weight: 400; letter-spacing: 0; }
+.media-top-h { font-family: 'Nunito Sans', sans-serif; font-weight: 800; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; }
+#sec-memorial .memorial-card h3, #community-memorials h3 { font-family: var(--h2-head); font-weight: 400; letter-spacing: 0; }
+#sec-memorial .memorial-card h3 { font-family: var(--h2-head) !important; font-weight: 400 !important; font-size: 19px !important; }   /* the names carry an inline Lora style */

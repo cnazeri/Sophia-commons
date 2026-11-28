@@ -6,15 +6,21 @@
 
 const SITE = "https://sophiacommons.org";
 const LOGO = `${SITE}/img/email-logo.png`;   // mark + wordmark in the site's logo font, 2x for sharp screens
+// The site's redesign (owner, 2026-11-27): its colors, Baar Zeitgeist headings and Nunito Sans text.
+// Apple Mail and iOS Mail load the web fonts; Gmail and Outlook fall back to Georgia and Arial.
 const C = {
-  page: "#F3EDE2",      // warm ivory, matches the site background family
+  page: "#F7F3EC",      // the site's --surface
   card: "#FFFFFF",
   ink: "#1E1810",
   muted: "#6F665B",
   gold: "#7F6116",      // gold text color from the site (passes AA on white)
-  rule: "#E8E2DA",
+  goldFill: "#C9A035",
+  rule: "#ECE5D9",
 };
-const SANS = "Arial,Helvetica,sans-serif";
+const SANS = "'Nunito Sans',Arial,Helvetica,sans-serif";
+const FONTS = `@font-face { font-family: 'Baar Zeitgeist'; src: url('${SITE}/fonts/BaarZeitgeist.woff2') format('woff2'); font-weight: 400; }
+  @font-face { font-family: 'Nunito Sans'; src: url('${SITE}/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2') format('woff2'); font-weight: 200 1000; }
+  @font-face { font-family: 'Lora'; src: url('${SITE}/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2') format('woff2'); font-weight: 400 700; }`;
 
 function esc(s: string): string {
   return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -36,6 +42,7 @@ export function emailShell({ subject, preheader = "", kicker = "", body, unsubsc
 <meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light">
 <title>${esc(subject)}</title>
 <style>
+  ${FONTS}
   @media only screen and (max-width: 520px) {
     .card { padding: 22px 18px 20px !important; }
     .vthumb { float: none !important; width: 100% !important; height: auto !important; margin: 0 0 10px !important; }
@@ -48,9 +55,9 @@ export function emailShell({ subject, preheader = "", kicker = "", body, unsubsc
   <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px">
     <tr><td align="center" style="padding:0 0 20px">
       <a href="${SITE}" style="text-decoration:none"><img src="${LOGO}" width="300" height="73" alt="Sophia Commons" style="display:block;width:300px;max-width:100%;height:auto;border:0;margin:0 auto"></a>
-      ${kicker ? `<div style="font-family:${SANS};font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${C.gold};margin-top:6px">${esc(kicker)}</div>` : ""}
+      ${kicker ? `<div style="font-family:${SANS};font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:bold;color:${C.gold};margin-top:8px">${esc(kicker)}</div>` : ""}
     </td></tr>
-    <tr><td class="card" style="background:${C.card};border:1px solid ${C.rule};border-radius:12px;padding:32px 32px 28px;font-family:${SANS};font-size:15px;line-height:1.6;color:${C.ink}">
+    <tr><td class="card" style="background:${C.card};border:1px solid ${C.rule};border-radius:14px;padding:34px 32px 30px;font-family:${SANS};font-size:15px;line-height:1.6;color:${C.ink}">
 ${body}
     </td></tr>
     <tr><td align="center" style="padding:22px 16px 4px;font-family:${SANS};font-size:14px;line-height:1.6;color:${C.ink}">
@@ -62,7 +69,7 @@ ${body}
       Follow us on X: ${footLink("https://x.com/SophiaCommons7", "@SophiaCommons7")}
     </td></tr>
     <tr><td align="center" style="padding:14px 16px 8px;font-family:${SANS};font-size:13px;line-height:1.6;color:${C.muted}">
-      ${footLink(`${SITE}/directory`, "Directory")} &nbsp;&middot;&nbsp; ${footLink(`${SITE}/events`, "Events")} &nbsp;&middot;&nbsp; ${footLink(`${SITE}/podcasts`, "Podcasts &amp; Media")}
+      ${footLink(`${SITE}/directory`, "Directory")} &nbsp;&middot;&nbsp; ${footLink(`${SITE}/events`, "Events")} &nbsp;&middot;&nbsp; ${footLink(`${SITE}/podcasts`, "Social media")}
     </td></tr>
     <tr><td align="center" style="padding:8px 16px 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.muted}">
       Sophia Commons is a free directory of the anthroposophical movement worldwide.<br>

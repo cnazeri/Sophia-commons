@@ -81,7 +81,7 @@ const P = `style="margin:0 0 14px;color:#1E1810"`;
 
 export function noteHtml(paragraphs: string[]): string {
   if (!paragraphs.length) return "";
-  return `<!--note--><div style="margin:0 0 28px;padding:0 0 22px;border-bottom:1px solid #E8E2DA">`
+  return `<!--note--><div style="margin:0 0 28px;padding:0 0 22px;border-bottom:1px solid #ECE5D9">`
     + `<p ${P}>Dear Friends,</p>`
     + paragraphs.map((p) => `<p ${P}>${esc(p)}</p>`).join("")
     + `<p style="margin:0;color:#1E1810">Warmly,<br>Cameron</p></div><!--/note-->`;

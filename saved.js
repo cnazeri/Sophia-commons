@@ -149,11 +149,12 @@ function _saveBtnHtml(type, id, on) {
     + SAVED_ICON + esc(on ? t('saved.saved', 'Saved') : t('saved.save', 'Save')) + '</button>';
 }
 
-// Adds the Save button to the detail page that was just drawn (signed-in members only)
+// Adds the Save button to the detail page that was just drawn. Everyone sees it (owner, 2026-11-27); signed out,
+// a tap asks to sign in and saves after.
 async function scSaveMount(type, id) {
   if (SAVED_TYPES.indexOf(type) >= 0 && id && _scTakeSaveParam()) await _scSaveFromLink(type, id);
-  if (SAVED_TYPES.indexOf(type) < 0 || !id || !signedIn) return;
-  var keys = await _savedLoad();
+  if (SAVED_TYPES.indexOf(type) < 0 || !id) return;
+  var keys = signedIn ? await _savedLoad() : new Set();
   var root = document.getElementById('detail-content');
   if (!root || root.querySelector('.btn-save')) return;
   var html = _saveBtnHtml(type, id, keys.has(type + ':' + id));
@@ -165,7 +166,11 @@ async function scSaveMount(type, id) {
 }
 
 async function scToggleSave(btn) {
-  if (!signedIn || !_savedUser()) { openModal(); return; }
+  // Signed out: remember this heart for the tab, ask to sign in, and _scSavePendingAfterSignIn saves it after (owner, 2026-11-27)
+  if (!signedIn || !_savedUser()) {
+    try { sessionStorage.setItem(SC_PENDING_SAVE, btn.getAttribute('data-type') + ':' + btn.getAttribute('data-id')); } catch (e) { /* private mode: just sign in */ }
+    openModal(); return;
+  }
   var type = btn.getAttribute('data-type'), id = btn.getAttribute('data-id'), key = type + ':' + id;
   var keys = await _savedLoad();
   var on = keys.has(key);

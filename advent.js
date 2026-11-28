@@ -352,6 +352,18 @@ async function _advLoadEvents() {
   } catch (err) { _advEvents = []; }
   _advDrawEvents();
 }
+// "In person · English" / "Online · German", as on the Home page's This week cards (owner, 2026-11-27)
+function _advEvFormat(e) {
+  var tr = typeof t === 'function' ? t : function (k, f) { return f; };
+  var how = e.is_online ? tr('home2.online', 'Online') : tr('home2.in_person', 'In person');
+  // the calendar RPC has no language column; the site's event list (calEvents) does
+  var lang = e.lang;
+  if (!lang && typeof calEvents !== 'undefined') {
+    for (var i = 0; i < calEvents.length; i++) if (calEvents[i].id === e.id) { lang = calEvents[i].lang; break; }
+  }
+  return how + ' \u00b7 ' + (typeof _langName === 'function' ? _langName(lang || 'en') : 'English');
+}
+
 function _advDrawEvents() {
   var box = document.getElementById('adv-events'); if (!box) return;
   var list = (_advEvents || []).slice(), near = _advNear;
@@ -370,9 +382,10 @@ function _advDrawEvents() {
   box.innerHTML = list.map(function (e) {
     var d = new Date(e.start_date);
     var where = e.is_online ? 'Online' : (e.location_name && !e.city ? e.location_name : [e.city, e.country].filter(Boolean).join(', '));
-    return '<div class="adv-ev"><div class="d"><span>' + esc(_advFmt(d, { month: 'short' }).toUpperCase()) + '</span><b>' + d.getDate() + '</b></div><div>'
+    return '<div class="adv-ev">' + (typeof scHeart === 'function' ? scHeart('event', e.id) : '') + '<div class="d"><span>' + esc(_advFmt(d, { month: 'short' }).toUpperCase()) + '</span><b>' + d.getDate() + '</b></div><div>'
       + '<a href="/event/' + esc(e.id) + '" onclick="showDetail(\'event\',\'' + escJs(e.id) + '\');return false;">' + esc(e.title) + '</a>'
-      + '<div class="w">' + esc(where) + (near && !e.is_online && e._km != null ? ' &middot; ' + esc(_fmtDist(e._km)) : '') + '</div>'
+      + '<div class="fmt">' + esc(_advEvFormat(e)) + '</div>'
+      + (e.is_online ? '' : '<div class="w">' + esc(where) + (near && e._km != null ? ' &middot; ' + esc(_fmtDist(e._km)) : '') + '</div>')
       + _advCalMenu('ev:' + e.id) + '</div></div>';
   }).join('');
 }

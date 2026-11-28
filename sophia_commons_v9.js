@@ -5991,7 +5991,7 @@ async function _applyLiveCounts() {
     // Badges not tied to showCategory() declare their source with data-live-count ("" = no live source)
     document.querySelectorAll('[data-live-count]').forEach(function(b) {
       var n = counts[b.getAttribute('data-live-count')];
-      if (n) { b.textContent = n; b.hidden = false; } else { b.textContent = ''; b.hidden = true; }
+      if (n) { b.textContent = Number(n).toLocaleString(_storyLocale()); b.hidden = false; } else { b.textContent = ''; b.hidden = true; }   // 2,883 (owner, 2026-11-25)
     });
     var bl = document.getElementById('browse-seclabel');
     if (bl && total) bl.innerHTML = esc(t('browse.section_label', 'Browse Listings')) + ' &nbsp;&middot;&nbsp; ' + total + ' ' + esc(t('browse.listings_word', 'listings'));
@@ -10478,3 +10478,57 @@ document.addEventListener('DOMContentLoaded', function () {
   pr.remove();
 })();
 function _clearPlaceFaq() { var box = document.getElementById('place-faq'); if (box) box.innerHTML = ''; }
+
+// ── REDESIGN (owner, 2026-11-24): the top of Home, Near me, and the header's search button ──
+// The date line under the header: "Tuesday, November 24 · Calendar of the Soul, week 35" in the visitor's language
+function renderHeroDate() {
+  var el = document.getElementById('hh-date');
+  if (!el) return;
+  var w = cotsWeek();
+  // Phones get the short date so the line stays on one line ("Wed, Nov 25"), owner 2026-11-25
+  var narrow = window.matchMedia && matchMedia('(max-width: 600px)').matches;
+  el.textContent = new Date().toLocaleDateString(_storyLocale(), narrow ? { weekday: 'short', month: 'short', day: 'numeric' } : { weekday: 'long', month: 'long', day: 'numeric' })
+    + ' · ' + t('home.hero_cots', 'Calendar of the Soul, week {n}').replace('{n}', w.week);
+}
+window.addEventListener('resize', function () { clearTimeout(renderHeroDate._t); renderHeroDate._t = setTimeout(renderHeroDate, 150); });
+document.addEventListener('DOMContentLoaded', renderHeroDate);
+window.addEventListener('i18n-ready', renderHeroDate);   // i18n.js fires this after each language loads
+
+// Home's search box uses the site search (the same one as the menu's search field)
+function heroSearch() {
+  var v = (document.getElementById('hero-search') || {}).value || '';
+  var inp = document.getElementById('searchinput');
+  if (!inp || !v.trim()) return;
+  inp.value = v.trim();
+  doSearch();
+}
+
+// Near me: open the Directory and center its map on the visitor (the browser asks first; nothing is stored)
+function heroNear() {
+  var st = document.getElementById('hh-near-status');
+  if (!navigator.geolocation) { if (st) st.textContent = t('dir.geo_unsupported', 'Your browser cannot share its location. Type a town instead.'); return; }
+  if (st) st.textContent = t('dir.geo_asking', 'Asking your browser for your location...');
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    if (st) st.textContent = '';
+    showSec('directory');
+    var tries = 0;
+    (function center() {
+      if (typeof map !== 'undefined' && map && map.setCenter) {
+        map.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        map.setZoom(8);
+        var el = document.getElementById('dir-map'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (tries++ < 40) setTimeout(center, 250);
+    })();
+  }, function () {
+    if (st) st.textContent = t('dir.geo_denied', 'Location was not shared. Type a town or postcode instead.');
+  }, { timeout: 10000, maximumAge: 600000 });
+}
+
+// The header's search button: Home's search box (on phones the menu's search when Home is not open)
+function openHeaderSearch() {
+  if (!_secVisible('home')) showSec('home');
+  setTimeout(function () {
+    var h = document.getElementById('hero-search');
+    if (h) { window.scrollTo({ top: 0, behavior: 'smooth' }); h.focus(); }
+  }, 60);
+}

@@ -225,7 +225,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.129.9">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.130.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -320,28 +320,9 @@
   </div>
 </div>
 
-<!-- SITE HEADER WRAPPER -->
+<!-- SITE HEADER WRAPPER: one line since the redesign (owner, 2026-11-24): logo, menu, search, the member links and languages, the gold button -->
 <div id="site-header">
 
-<!-- TOP BAR -->
-<div id="topbar">
-  <span class="nav-links">
-    <a href="/about" data-i18n="topbar.about" onclick="showSec('about');return false;">about</a>
-    <a href="#" data-i18n="topbar.post_listing_link" onclick="showSubmitForm();return false;">post a listing</a>
-    <a href="#" id="adminlink" onclick="showSec('admin');return false;" style="display:none;color:#c0392b;font-weight:600;">admin</a>
-    <a href="/my-events" id="myevents-link" style="display:none" data-i18n="org.my_events_link" onclick="showSec('my-events');return false;">my events</a>
-    <a href="/saved" id="saved-link" style="display:none" data-i18n="saved.topbar_link" onclick="showSec('saved');return false;">saved</a>
-    <a href="/account" id="account-link" style="display:none" data-i18n="acc.topbar_link" onclick="showSec('account');return false;">settings</a>
-    <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
-    <a href="#" class="signinbtn" id="signin-link" data-i18n="topbar.sign_in" onclick="openModal();return false;">sign in</a>
-  </span>
-  <div id="lang-switcher">
-    <button class="lang-btn active" data-lang="en" onclick="SC_I18N.setLang('en')">EN</button>
-    <button class="lang-btn" data-lang="de" onclick="SC_I18N.setLang('de')">DE</button>
-    <button class="lang-btn" data-lang="ru" onclick="SC_I18N.setLang('ru')">RU</button>
-    <button class="lang-btn" data-lang="es" onclick="SC_I18N.setLang('es')">ES</button>
-  </div>
-</div>
 
 <!-- HEADER -->
 <header>
@@ -357,24 +338,44 @@
       <span>Anthroposophical Community</span>
     </span>
   </a>
+  <!-- MAIN NAV -->
+  <nav aria-label="Main navigation" id="mainnav-wrap">
+  <div id="mainnav">
+    <button class="active" id="nav-home"      onclick="showSec('home')" data-i18n="nav.home">home</button>
+    <button id="nav-advent"    onclick="showSec('advent')" data-i18n="nav.advent" hidden>advent</button>
+    <button id="nav-events"    onclick="showSec('events')" data-i18n="nav.news_events">events</button>
+    <button id="nav-directory" onclick="showSec('directory')" data-i18n="nav.directory">directory</button>
+    <button id="nav-books"     onclick="showSec('books')" data-i18n="nav.books">resources</button>
+    <button id="nav-podcasts"  onclick="showSec('podcasts')" data-i18n="nav.podcasts">social media</button>
+    <button id="nav-memorial" onclick="showSec('memorial')" data-i18n="nav.memorial">in memoriam</button>
+    <button class="chatnav locked" id="nav-chat" onclick="handleChat()" data-i18n="nav.chat">community chat</button>
+  </div>
+  </nav>
   <div id="statsbar" class="cal-widget"><span class="cw-date" id="cw-day"></span><span id="cw-date-str"></span><span class="cw-dot"></span><span id="cw-upcoming"></span></div>
-  <a href="#" id="postlink" data-i18n="topbar.create_account" onclick="headerCta();return false;">Sign Up</a>
+  <button type="button" id="hdr-search" onclick="openHeaderSearch()" aria-label="Search" data-i18n-aria="search.button"><svg class="ico" viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></button>
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <span class="nav-links">
+      <a href="/about" data-i18n="topbar.about" onclick="showSec('about');return false;">about</a>
+      <a href="#" data-i18n="topbar.post_listing_link" onclick="showSubmitForm();return false;">post a listing</a>
+      <a href="#" id="adminlink" onclick="showSec('admin');return false;" style="display:none;color:#c0392b;font-weight:600;">admin</a>
+      <a href="/my-events" id="myevents-link" style="display:none" data-i18n="org.my_events_link" onclick="showSec('my-events');return false;">my events</a>
+      <a href="/saved" id="saved-link" style="display:none" data-i18n="saved.topbar_link" onclick="showSec('saved');return false;">saved</a>
+      <a href="/account" id="account-link" style="display:none" data-i18n="acc.topbar_link" onclick="showSec('account');return false;">settings</a>
+      <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
+      <a href="#" class="signinbtn" id="signin-link" data-i18n="topbar.sign_in" onclick="openModal();return false;">sign in</a>
+    </span>
+    <div id="lang-switcher">
+      <button class="lang-btn active" data-lang="en" onclick="SC_I18N.setLang('en')">EN</button>
+      <button class="lang-btn" data-lang="de" onclick="SC_I18N.setLang('de')">DE</button>
+      <button class="lang-btn" data-lang="ru" onclick="SC_I18N.setLang('ru')">RU</button>
+      <button class="lang-btn" data-lang="es" onclick="SC_I18N.setLang('es')">ES</button>
+    </div>
+  </div>
+  <a href="#" id="postlink" onclick="showSubmitForm();return false;"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="home2.post">Post</span></a>
   <a href="/events" id="ev-focus-more" onclick="showSec('events');return false;"><span data-i18n="event_detail.more_events">More events</span> &rarr;</a>
 </header>
 
-<!-- MAIN NAV -->
-<nav aria-label="Main navigation" id="mainnav-wrap">
-<div id="mainnav">
-  <button class="active" id="nav-home"      onclick="showSec('home')" data-i18n="nav.home">home</button>
-  <button id="nav-advent"    onclick="showSec('advent')" data-i18n="nav.advent" hidden>advent</button>
-  <button id="nav-events"    onclick="showSec('events')" data-i18n="nav.news_events">events</button>
-  <button id="nav-podcasts"  onclick="showSec('podcasts')" data-i18n="nav.podcasts">social media</button>
-  <button id="nav-directory" onclick="showSec('directory')" data-i18n="nav.directory">directory</button>
-  <button id="nav-books"     onclick="showSec('books')" data-i18n="nav.books">resources</button>
-  <button id="nav-memorial" onclick="showSec('memorial')" data-i18n="nav.memorial">in memoriam</button>
-  <button class="chatnav locked" id="nav-chat" onclick="handleChat()" data-i18n="nav.chat">community chat</button>
-</div>
-</nav>
 
 </div><!-- end #site-header -->
 
@@ -447,6 +448,9 @@
   </a>
   </div>
   <ul class="lb-site">
+    <li><a href="/podcasts" onclick="closeMobileMenu();showSec('podcasts');return false;" data-i18n="nav.podcasts">social media</a></li>
+    <li><a href="/memorial" onclick="closeMobileMenu();showSec('memorial');return false;" data-i18n="nav.memorial">in memoriam</a></li>
+    <li><a href="/chat" onclick="closeMobileMenu();handleChat();return false;" data-i18n="nav.chat">community chat</a></li>
     <li><a href="/about" onclick="showSec('about');return false;" data-i18n="topbar.about">about</a></li>
     <li><a href="#" onclick="closeMobileMenu();showSubmitForm();return false;" data-i18n="topbar.post_listing_link">post a listing</a></li>
   </ul>
@@ -457,7 +461,31 @@
 
 <!-- ═══ HOME ═══ -->
 <div class="pagesec active" id="sec-home">
-  <h1 class="sr-only" data-i18n="home.h1">Sophia Commons: the free global directory for the anthroposophical community</h1>
+  <!-- Redesign (owner, 2026-11-24): the title, search and Near me first, Steiner's portrait, then the directory's categories -->
+  <section id="home-hero">
+    <div class="hh-l">
+      <div class="hh-date"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="m12 12.3.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z"/></svg><span id="hh-date"></span></div>
+      <h1 class="hh-title" data-i18n="home.hero_title">Anthroposophical and Christian Community Directory</h1>
+      <form class="hh-search" role="search" onsubmit="heroSearch();return false;">
+        <label for="hero-search" class="sr-only" data-i18n="home.hero_search">Search schools, farms, events, articles</label>
+        <svg class="ico" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+        <input type="search" id="hero-search" autocomplete="off" placeholder="Search schools, farms, events, articles" data-i18n-placeholder="home.hero_search">
+      </form>
+      <button type="button" class="hh-near" onclick="heroNear()"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg><span data-i18n="home.near_me">Near me</span></button>
+      <div id="hh-near-status" class="hh-status" role="status"></div>
+    </div>
+    <figure class="hh-pic"><img src="/img/rudolf-steiner-1905.jpg" alt="Rudolf Steiner, photograph by Otto Rietmann, about 1905" width="330" height="545" fetchpriority="high"><figcaption>Rudolf Steiner, 1861 to 1925</figcaption></figure>
+  </section>
+  <section id="home-explore" aria-labelledby="hx-h">
+    <div class="hx-head"><h2 id="hx-h" data-i18n="home.explore">Explore the directory</h2><a class="hx-link" href="/directory" onclick="showSec('directory');return false;"><span class="hx-long" data-i18n="home.all_categories">All categories and the map</span><span class="hx-short" data-i18n="home.map_short">The map</span> &rarr;</a></div>
+    <div class="hx-tiles">
+      <a class="hx-tile" href="/category/waldorf-education" onclick="showCategory('Waldorf & Education');return false;"><span class="hx-ic"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3.5 12c0-2.3 1.6-3.7 3.6-3.7 3.6 0 6.2 7.4 9.8 7.4 2 0 3.6-1.4 3.6-3.7s-1.6-3.7-3.6-3.7c-3.6 0-6.2 7.4-9.8 7.4-2 0-3.6-1.4-3.6-3.7z"/></svg></span><span><b data-i18n="home.tile_waldorf">Waldorf schools</b><small class="hx-n" data-live-count="waldorf"></small></span></a>
+      <a class="hx-tile" href="/category/biodynamic-agriculture" onclick="showCategory('Biodynamic Agriculture');return false;"><span class="hx-ic"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 20.5v-7.5"/><path d="M12 13c-3.4 0-5.2-1.9-5.2-5.2 3.4 0 5.2 1.9 5.2 5.2zM12 15.4c2.9 0 4.4-1.5 4.4-4.4-2.9 0-4.4 1.5-4.4 4.4z"/><path d="M7.5 20.5h9"/><path d="M18.6 2.8a2.9 2.9 0 1 0 2.3 4.7 2.3 2.3 0 0 1-2.3-4.7z"/></svg></span><span><b data-i18n="home.tile_biodynamic">Biodynamic farms</b><small class="hx-n" data-live-count="biodynamic"></small></span></a>
+      <a class="hx-tile" href="/category/the-christian-community" onclick="showCategory('The Christian Community');return false;"><span class="hx-ic"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="3.6" r="1.6"/><path d="M6.8 7h10.4c0 3.9-2.3 6.6-5.2 6.6S6.8 10.9 6.8 7z"/><path d="M12 13.6v3.6"/><path d="M8.4 20.6c.3-1.9 1.7-3.4 3.6-3.4s3.3 1.5 3.6 3.4z"/></svg></span><span><b data-i18n="home.tile_cc">The Christian Community</b><small class="hx-n" data-live-count="christian_community"></small></span></a>
+      <a class="hx-tile" href="/category/community-camphill" onclick="showCategory('Community & Camphill');return false;"><span class="hx-ic"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7"/><path d="M6 9.2V20h12V9.2"/><path d="M12 17.6s-3-1.7-3-3.7a1.6 1.6 0 0 1 3-.8 1.6 1.6 0 0 1 3 .8c0 2-3 3.7-3 3.7z"/></svg></span><span><b data-i18n="home.tile_camphill">Camphill</b><small class="hx-n" data-live-count="camphill"></small></span></a>
+      <a class="hx-tile" href="/category/anthroposophic-medicine" onclick="showCategory('Anthroposophic Medicine');return false;"><span class="hx-ic"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 21v-6.5M12 14.5l-4-4M12 14.5l4-4"/><path d="M8 10.5c-2.6-.4-4-1.9-4.3-4.3 2.4.3 3.9 1.8 4.3 4.3zM8 10.5c-.7-2.3-.2-4.3 1.4-5.9.9 2.1.5 4.1-1.4 5.9zM16 10.5c2.6-.4 4-1.9 4.3-4.3-2.4.3-3.9 1.8-4.3 4.3zM16 10.5c.7-2.3.2-4.3-1.4-5.9-.9 2.1-.5 4.1 1.4 5.9z"/><circle cx="12" cy="11.2" r="1.2"/></svg></span><span><b data-i18n="home.tile_medicine">Anthroposophic medicine</b><small class="hx-n" data-live-count="medicine"></small></span></a>
+    </div>
+  </section>
   <a id="advent-banner" class="advent-banner" href="/advent" onclick="showSec('advent');return false;" hidden><img src="https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/holynights.jpg" alt=""><div><b data-i18n="advent.banner_title">Advent and the Holy Nights</b><span id="advent-banner-line"></span></div></a>
 
   <!-- ROW 1: Events (featured, happening now, coming up) -->
@@ -935,6 +963,7 @@
       <div class="lrow res-row"><a class="ltitle" href="https://rudolfsteinerlibrary.org/" target="_blank" rel="noopener">Rudolf Steiner Library</a><span class="res-desc">US anthroposophical library of 50,000+ items, with an online catalog and lending by mail.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://rudolfsteinerpress.com/" target="_blank" rel="noopener">Rudolf Steiner Press</a><span class="res-desc">UK publisher of Rudolf Steiner&#x27;s works in English.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/resource_redirect/landing_pages/1689520" target="_blank" rel="noopener">Sacred Sites as Consciousness Tools</a><span class="res-desc">Seven-part recorded webinar series led by Lila and David Tresemer. From The StarHouse.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://www.schloss-hohenfels.de/veranstaltungen/" target="_blank" rel="noopener">Schloss Hohenfels</a><span class="res-desc">Castle conference hotel near Lake Constance with a year-round program of seminars on anthroposophy, Christology, eurythmy and the festivals, in German.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.seasonsofseven.com/" target="_blank" rel="noopener">Seasons of Seven</a><span class="res-desc">Waldorf-inspired virtual school with recorded lessons for homeschooling families, live classes and parent office hours.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.sektion-landwirtschaft.org/en/" target="_blank" rel="noopener">Section for Agriculture</a><span class="res-desc">Goetheanum section with biodynamic articles, a podcast, conference documentation and circular letters.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://inclusivesocial.goetheanum.ch/en" target="_blank" rel="noopener">Section for Inclusive Social Development</a><span class="res-desc">Goetheanum section for curative education and social therapy, the work behind Camphill.</span></div>
@@ -1483,6 +1512,9 @@
 
 <!-- ═══ CHAT ═══ -->
 <div class="pagesec" id="sec-chat">
+  <!-- Community board (board.js, owner 2026-11-27); the old chat markup below stays hidden so sign-in code that touches it keeps working -->
+  <div id="board-root"></div>
+  <div id="chat-legacy" hidden>
   <div id="chat-signedin">
     Signed in as <strong id="chat-uname">member</strong>
     <button onclick="doSignOut()">sign out</button>
@@ -1530,6 +1562,7 @@
       </div>
     </div>
   </div>
+  </div>
 </div>
 
 <!-- ═══ CATEGORY PAGE (dynamic) ═══ -->
@@ -1551,10 +1584,11 @@
   <div class="seclabel" data-i18n="about.label">About</div>
   <h2 class="legal-title" data-i18n="about.title">About Sophia Commons</h2>
   <p class="legal-lead" data-i18n="about.lead">Sophia Commons is a free, community-maintained directory for the anthroposophical world: Waldorf schools, biodynamic farms, Camphill communities, anthroposophic medicine, eurythmy, study groups and more, in one place.</p>
+  <div id="about-top"></div><!-- the numbers and three cards from the mockup, drawn by about2.js (owner, 2026-11-25) -->
   <h2 data-i18n="about2.site_h">What's on the site</h2>
 
   <h3 data-i18n="about2.dir_h">The directory</h3>
-  <p data-i18n-html="about2.dir_p">More than 4,500 organizations in 77 countries: Waldorf and Steiner schools, kindergartens and teacher trainings, biodynamic and Demeter farms, Camphill communities and curative education, anthroposophic doctors, clinics and therapists, eurythmy schools and ensembles, Christian Community congregations, anthroposophical societies and branches, eldercare, and a new science and technology section. Each listing has its contact details and, where we could find one, a picture. You can browse by category or region, see everything on the world map, or use "Find near me" to sort listings by distance. Open the <a href="/directory" onclick="showSec('directory');return false;">Directory</a> to start, or try the links to related directories on that page.</p>
+  <p data-i18n-html="about2.dir_p">More than 4,800 organizations in 79 countries: Waldorf and Steiner schools, kindergartens and teacher trainings, biodynamic and Demeter farms, Camphill communities and curative education, anthroposophic doctors, clinics and therapists, eurythmy schools and ensembles, Christian Community congregations, anthroposophical societies and branches, eldercare, and a new science and technology section. Each listing has its contact details and, where we could find one, a picture. You can browse by category or region, see everything on the world map, or use "Find near me" to sort listings by distance. Open the <a href="/directory" onclick="showSec('directory');return false;">Directory</a> to start, or try the links to related directories on that page.</p>
 
   <h3 data-i18n="about2.news_h">Events and news</h3>
   <p data-i18n-html="about2.news_p">The <a href="/events" onclick="showSec('events');return false;">Events</a> page brings together news from the movement and a shared calendar of conferences, courses, study groups, webinars and the festivals of the year. Every event can be added to your own Google, Outlook, Microsoft 365 or Apple calendar with one click. Members of the School of Spiritual Science will find First Class gatherings under Blue Card Holders on the Groups &amp; Circles page.</p>
@@ -1567,13 +1601,13 @@
   <p data-i18n-html="about2.books_p"><a href="/resources" onclick="showSec('books');return false;">Resources</a> lists all of Rudolf Steiner's written works (GA 1 to 28) with links to read them free online, a Top 50 reading list with covers, a section on The Philosophy of Freedom with its translations and study guides, and close to 400 titles by Steiner and the authors who built on his work, from Sergei Prokofieff to Paul Emberson. Amazon links help keep the site free.</p>
 
   <h3 data-i18n="about2.practice_h">Daily practice</h3>
-  <p data-i18n="about2.practice_p">The right-hand column carries the week's verse from the Calendar of the Soul, the day's exercise from "For the Days of the Week", the Foundation Stone Meditation and the phases of the moon. They change on their own as the days and weeks go by.</p>
+  <p data-i18n="about2.practice_p">The Home page carries the week's verse from the Calendar of the Soul and the day's exercise from "For the Days of the Week". They change on their own as the days and weeks go by.</p>
 
   <h3 data-i18n="about2.blog_h">Blog, In Memoriam and community chat</h3>
   <p data-i18n-html="about2.blog_p">The <a href="/blog" onclick="showSec('blog');return false;">blog</a> publishes articles and reflections from members. <a href="/memorial" onclick="showSec('memorial');return false;">In Memoriam</a> remembers the people who carried anthroposophy forward, and you can add a tribute for someone you knew. Community Chat is a place for members to talk with each other.</p>
 
   <h3 data-i18n="about2.nl_h">Weekly newsletter</h3>
-  <p data-i18n="about2.nl_p">Sign up with your email in the right-hand column to get a short weekly digest of new listings, events and news.</p>
+  <p data-i18n="about2.nl_p">Sign up with your email on the Home page to get a short weekly digest of new listings, events and news.</p>
 
   <h2 data-i18n="about2.acct_h">Why create a free account?</h2>
   <ul>
@@ -1696,28 +1730,38 @@
 
 <!-- ═══ ADMIN PANEL ═══ -->
 <div class="pagesec" id="sec-admin">
-  <div class="seclabel" style="margin-bottom:10px;" data-i18n="admin.section_label">Admin Panel</div>
-  <div class="admin-tabs">
-    <button class="admin-tab active" onclick="adminSwitchTab('listings')" data-i18n="admin.tab_listings">Pending Listings</button>
-    <button class="admin-tab" onclick="adminSwitchTab('events')" data-i18n="admin.tab_events">Pending Events</button>
-    <button class="admin-tab" onclick="adminSwitchTab('jobs')">Pending Jobs</button>
-    <button class="admin-tab" onclick="adminSwitchTab('memorials')" data-i18n="admin.tab_memorials">Pending Memorials</button>
-    <button class="admin-tab" onclick="adminSwitchTab('newsletter')" data-i18n="admin.tab_newsletter">Send Newsletter</button>
-    <button class="admin-tab" onclick="adminSwitchTab('reports')">Reports</button>
-    <button class="admin-tab" onclick="adminSwitchTab('traffic')">Traffic Dashboard</button>
-    <button class="admin-tab" onclick="adminSwitchTab('digest')">Weekly Digest</button>
-    <button class="admin-tab" onclick="adminSwitchTab('newsq')">News queue</button>
-    <button class="admin-tab" onclick="adminSwitchTab('members')">Members</button>
-    <button class="admin-tab" onclick="adminSwitchTab('activity')">Activity</button>
-    <button class="admin-tab" onclick="adminSwitchTab('blog')">Blog</button>
-    <button class="admin-tab" onclick="adminSwitchTab('claims')">Claims</button>
-    <button class="admin-tab" onclick="adminSwitchTab('outreach')">Outreach</button>
-    <button class="admin-tab" onclick="adminSwitchTab('featpost')">Featured post</button>
-    <button class="admin-tab" onclick="adminSwitchTab('bookweek')">Book of the week</button>
-    <button class="admin-tab" onclick="adminSwitchTab('ytsugg')">YouTube suggestions</button>
-    <button class="admin-tab" onclick="adminSwitchTab('xposts')">X posts</button>
-    <button class="admin-tab" onclick="adminSwitchTab('redditpicks')">Reddit posts</button>
-  </div>
+  <!-- Admin, redesign (owner, 2026-11-25): grouped side menu, "Waiting for you" overview (admin2.js), cards in the new look -->
+  <div class="adm2-top"><div class="h2-kick" id="adm2-date"></div><h1 class="adm2-title">Admin</h1></div>
+  <nav class="admin-tabs" aria-label="Admin sections">
+    <div class="adm2-group"><div class="adm2-glabel">To review</div>
+      <button class="admin-tab active" onclick="adminSwitchTab('listings')">Listings</button>
+      <button class="admin-tab" onclick="adminSwitchTab('events')">Events</button>
+      <button class="admin-tab" onclick="adminSwitchTab('jobs')">Jobs</button>
+      <button class="admin-tab" onclick="adminSwitchTab('memorials')">Memorials</button>
+      <button class="admin-tab" onclick="adminSwitchTab('claims')">Claims</button>
+      <button class="admin-tab" onclick="adminSwitchTab('reports')">Reports</button>
+      <button class="admin-tab" onclick="adminSwitchTab('ytsugg')">YouTube suggestions</button>
+    </div>
+    <div class="adm2-group"><div class="adm2-glabel">Publish</div>
+      <button class="admin-tab" onclick="adminSwitchTab('digest')">Weekly digest</button>
+      <button class="admin-tab" onclick="adminSwitchTab('newsletter')">Send a newsletter</button>
+      <button class="admin-tab" onclick="adminSwitchTab('newsq')">News queue</button>
+      <button class="admin-tab" onclick="adminSwitchTab('blog')">Blog</button>
+      <button class="admin-tab" onclick="adminSwitchTab('featpost')">Featured post</button>
+      <button class="admin-tab" onclick="adminSwitchTab('bookweek')">Book of the week</button>
+    </div>
+    <div class="adm2-group"><div class="adm2-glabel">Social</div>
+      <button class="admin-tab" onclick="adminSwitchTab('xposts')">X posts</button>
+      <button class="admin-tab" onclick="adminSwitchTab('redditpicks')">Reddit posts</button>
+      <button class="admin-tab" onclick="adminSwitchTab('outreach')">Outreach</button>
+    </div>
+    <div class="adm2-group"><div class="adm2-glabel">People and traffic</div>
+      <button class="admin-tab" onclick="adminSwitchTab('traffic')">Traffic</button>
+      <button class="admin-tab" onclick="adminSwitchTab('members')">Members</button>
+      <button class="admin-tab" onclick="adminSwitchTab('activity')">Activity</button>
+    </div>
+  </nav>
+  <section class="adm2-overview" id="adm2-overview" aria-label="Waiting for you"></section>
   <div id="admin-listings" class="admin-tab-content active">
     <div id="admin-listings-list" style="margin-top:16px;">
       <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">Loading pending listings...</div>
@@ -2162,6 +2206,16 @@
 </div><!-- end #page -->
 
 <!-- FOOTER -->
+<!-- Phones: a frosted bar of custom buttons along the bottom, like the app's transparent tab bar (owner, 2026-11-24).
+     The current page is lit by CSS (:has on the open section), so no script has to keep it in step. -->
+<nav id="dock" aria-label="Main navigation, phone">
+  <a href="/" data-sec="home" onclick="showSec('home');return false;"><svg class="ico" viewBox="0 0 24 24" width="23" height="23" aria-hidden="true"><path d="M4 11.5C6.2 7.6 9 5.2 12 4c3 1.2 5.8 3.6 8 7.5"/><path d="M6.2 9.8V20h11.6V9.8"/><path d="M10.4 20v-3.2a1.6 1.6 0 0 1 3.2 0V20"/></svg><span data-i18n="nav.home">home</span></a>
+  <a href="/events" data-sec="events" onclick="showSec('events');return false;"><svg class="ico" viewBox="0 0 24 24" width="23" height="23" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="m12 12.3.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z"/></svg><span data-i18n="dock.events">Events</span></a>
+  <a href="/directory" data-sec="directory" onclick="showSec('directory');return false;"><svg class="ico" viewBox="0 0 24 24" width="23" height="23" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2"/><path d="m15 9-1.9 4.1L9 15l1.9-4.1z"/></svg><span data-i18n="nav.directory">directory</span></a>
+  <a href="/resources" data-sec="books" onclick="showSec('books');return false;"><svg class="ico" viewBox="0 0 24 24" width="23" height="23" aria-hidden="true"><path d="M3.5 8.5c2.8-1 5.8-.8 8.5 1 2.7-1.8 5.7-2 8.5-1V19c-2.8-1-5.8-.8-8.5 1-2.7-1.8-5.7-2-8.5-1z"/><path d="M12 9.5V20"/><path d="m12 2.6.6 1.3 1.4.2-1 1 .2 1.4-1.2-.7-1.2.7.2-1.4-1-1 1.4-.2z"/></svg><span data-i18n="nav.books">resources</span></a>
+  <a href="#" data-sec="more" onclick="toggleMobileMenu();return false;" aria-controls="leftbar"><svg class="ico" viewBox="0 0 24 24" width="23" height="23" aria-hidden="true"><circle cx="5.5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18.5" cy="12" r="1.5"/></svg><span data-i18n="dock.more">More</span></a>
+</nav>
+
 <footer>
   <div class="ftcols">
     <div class="ftcol reveal">
@@ -2170,6 +2224,7 @@
       </div>
       <div class="ftsub" data-i18n="footer.tagline">Anthroposophical Community</div>
       <p style="font-size:11.5px;line-height:1.6;" data-i18n="footer.about_text">The largest anthroposophical and Christian Community directory. A free, community-maintained resource for anthroposophical initiatives worldwide.</p>
+      <div class="ft-stores" id="ft-stores" hidden></div><!-- app store buttons, filled by home2.js once SC_APP_LINKS has a link -->
     </div>
     <div class="ftcol reveal">
       <div class="ftcol-h" data-i18n="footer.col_directory">Directory</div>
@@ -2191,22 +2246,27 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.129.9</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.130.0</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.129.6"></script>
-<script defer src="/i18n.js?v=1.129.6"></script>
-<script defer src="/sophia_commons_v9.js?v=1.129.9"></script>
-<script defer src="/blog.js?v=1.129.6"></script>
-<script defer src="/claims.js?v=1.129.6"></script>
-<script defer src="/events_organizer.js?v=1.129.6"></script>
-<script defer src="/advent.js?v=1.129.6"></script>
-<script defer src="/account.js?v=1.129.6"></script>
-<script defer src="/saved.js?v=1.129.9"></script>
+<script defer src="/sb-init.js?v=1.130.0"></script>
+<script defer src="/i18n.js?v=1.130.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.130.0"></script>
+<script defer src="/blog.js?v=1.130.0"></script>
+<script defer src="/claims.js?v=1.130.0"></script>
+<script defer src="/events_organizer.js?v=1.130.0"></script>
+<script defer src="/advent.js?v=1.130.0"></script>
+<script defer src="/account.js?v=1.130.0"></script>
+<script defer src="/saved.js?v=1.130.0"></script>
+<script defer src="/home2.js?v=1.130.0"></script>
+<script defer src="/admin2.js?v=1.130.0"></script>
+<script defer src="/about2.js?v=1.130.0"></script>
+<script defer src="/board.js?v=1.130.0"></script>
+<script defer src="/resources2.js?v=1.130.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

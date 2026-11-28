@@ -25,6 +25,7 @@ from events_from_feeds import load_env
 from events_from_inbox import MAX_TEXT, already_listed, ask_claude, show, supabase, to_row
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+PAGE_TEXT = 40000   # characters of an events page sent to Claude; long program pages (Schloss Hohenfels) run past the email limit
 UA = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36'}
 PROMPT = """This is the text of the events page of {name} ({page}), read on {today}. Links are shown as [text](url).
 
@@ -49,7 +50,7 @@ def page_text(url):
     t = html.unescape(re.sub(r'<[^>]+>', ' ', t))
     t = re.sub(r'\s+', ' ', t).strip()
     cut = t.find('Manage Consent')            # cookie banner text at the end of many WordPress pages
-    return (t[:cut] if cut > 0 else t)[:MAX_TEXT]
+    return (t[:cut] if cut > 0 else t)[:PAGE_TEXT]
 
 
 def events_on(src, key, owner):
@@ -67,6 +68,11 @@ def events_on(src, key, owner):
         r['organizer_name'] = src['name']
         r['directory_entry_id'] = src.get('directory_entry_id')
         r['timezone'] = ev.get('timezone') or src.get('timezone')
+        # a source can give the country and language its page leaves out (Schloss Hohenfels, 2026-11-27)
+        if not r.get('country') and src.get('country'):
+            r['country'] = src['country']
+        if src.get('lang'):
+            r['lang'] = src['lang']
         rows.append(r)
     return rows
 

@@ -67,9 +67,9 @@ EMAIL TEXT:
 
 def ask_claude(key, prompt):
     for attempt in range(5):
-        r = requests.post('https://api.anthropic.com/v1/messages', timeout=90,
+        r = requests.post('https://api.anthropic.com/v1/messages', timeout=240,
                           headers={'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json'},
-                          json={'model': MODEL, 'max_tokens': 4000, 'thinking': {'type': 'disabled'},
+                          json={'model': MODEL, 'max_tokens': 16000,   # long event pages list dozens of events (2026-11-27: Schloss Hohenfels cut off at 4,000) 'thinking': {'type': 'disabled'},
                                 'output_config': {'format': {'type': 'json_schema', 'schema': SCHEMA}},
                                 'messages': [{'role': 'user', 'content': prompt}]})
         if r.status_code in (429, 500, 502, 503, 529):

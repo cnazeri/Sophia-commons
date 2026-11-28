@@ -157,12 +157,17 @@ type Digest = Awaited<ReturnType<typeof gather>>;
 // Email-safe HTML: inline styles and absolute links, built only from tags the site's News view
 // keeps (h3, p, div, span, a, strong, br; images just drop out there), so the same body reads well
 // on the site and in the inbox. send-newsletter wraps it in the email frame (logo, footer).
-const INK = "#1E1810", MUTED_C = "#6F665B", GOLD = "#7F6116", GOLD_FILL = "#C9A035", RULE = "#E8E2DA";
-const H3 = `style="font-family:Georgia,serif;font-size:20px;font-weight:normal;color:${INK};margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid ${RULE}"`;
+// Same layout as before, touched up to the site's redesign (owner, 2026-11-27): its colors, Baar Zeitgeist
+// headings (the email frame loads it; mail apps without web fonts fall back to Georgia), Nunito Sans text,
+// softer date tiles and rounder corners.
+const INK = "#1E1810", INK2 = "#5A4E42", MUTED_C = "#6F665B", GOLD = "#7F6116", GOLD_FILL = "#C9A035", RULE = "#ECE5D9";
+const GOLD_LIGHT = "#FBF3DE", SURFACE = "#F7F3EC";
+const HEAD = "'Baar Zeitgeist',Georgia,serif", TEXT = "'Nunito Sans',Arial,Helvetica,sans-serif";
+const H3 = `style="font-family:${HEAD};font-size:22px;font-weight:normal;line-height:1.25;color:${INK};margin:34px 0 16px;padding-bottom:10px;border-bottom:1px solid ${RULE}"`;
 const ITEM = `style="margin:0 0 18px"`;
 const LINK = `style="color:${GOLD};font-weight:bold;text-decoration:none"`;
 const MUTED = `style="color:${MUTED_C};font-size:13px"`;
-const BODY = `style="font-size:14px;color:#3A332A;margin-top:2px"`;
+const BODY = `style="font-size:14px;color:${INK2};margin-top:2px"`;
 const EMAIL_EVENTS = 4;
 const EMAIL_NEW_EVENTS = 5;   // events added this week that are not already in "Coming up"   // the next four; "See the full calendar" links to the rest (owner, 2026-10-24)
 const CATEGORY_LABEL: Record<string, string> = {
@@ -177,11 +182,12 @@ function videoHtml(v: Digest["videos"][number]): string {
   // mqdefault is YouTube's 16:9 thumbnail; hqdefault is 4:3 with black bars top and bottom
   const src = (v.thumbnail_url || "").replace(/\/(hq|sd|)default\.jpg$/, "/mqdefault.jpg");
   const thumb = src
-    ? `<a href="${esc(v.url)}"><img class="vthumb" src="${esc(src)}" width="160" height="90" align="left" alt="" style="display:block;float:left;width:160px;height:90px;object-fit:cover;border:0;border-radius:6px;margin:2px 16px 6px 0"></a>`
+    ? `<a href="${esc(v.url)}"><img class="vthumb" src="${esc(src)}" width="160" height="90" align="left" alt="" style="display:block;float:left;width:160px;height:90px;object-fit:cover;border:0;border-radius:10px;margin:0 16px 0 0"></a>`
     : "";
-  return `<div ${ITEM}>${thumb}<a href="${esc(v.url)}" ${LINK}>${esc(v.title)}</a>`
+  // the text keeps its own column beside the picture instead of wrapping under it
+  return `<div ${ITEM}>${thumb}<div style="overflow:hidden"><a href="${esc(v.url)}" ${LINK}>${esc(v.title)}</a>`
     + `<div ${MUTED}>${esc(v.channel)} &middot; ${esc(shortDate(v.published_at))}</div>`
-    + (v.summary ? `<div ${BODY}>${esc(v.summary)}</div>` : "")
+    + (v.summary ? `<div ${BODY}>${esc(v.summary)}</div>` : "") + `</div>`
     + `<div style="clear:both;font-size:0;line-height:0">&nbsp;</div></div>`;
 }
 
@@ -189,19 +195,19 @@ function eventHtml(e: Digest["events"][number]): string {
   const { month, day } = localDay(e.start_date, e.timezone);
   const where = e.is_online ? "Online" : (e.location_name || [e.city, e.country].filter(Boolean).join(", "));
   return `<div ${ITEM}>`
-    + `<span style="display:inline-block;vertical-align:top;width:50px;margin-right:14px;padding:5px 0;text-align:center;border:1px solid ${RULE};border-radius:8px;background:#FBF8F2">`
+    + `<span style="display:block;float:left;width:52px;margin-right:14px;padding:7px 0;text-align:center;border-radius:10px;background:${GOLD_LIGHT}">`
     + `<span style="display:block;font-size:11px;letter-spacing:.06em;color:${GOLD};font-weight:bold">${month}</span>`
-    + `<span style="display:block;font-family:Georgia,serif;font-size:20px;line-height:1.1;color:${INK}">${day}</span></span>`
-    + `<span style="display:inline-block;vertical-align:top;max-width:420px">`
+    + `<span style="display:block;font-family:${HEAD};font-size:21px;line-height:1.1;color:${INK}">${day}</span></span>`
+    + `<span style="display:block;overflow:hidden">`
     + `<a href="${SITE}/event/${esc(e.id)}" ${LINK}>${esc(e.title)}</a>`
     + (where ? `<br><span ${MUTED}>${esc(where)}</span>` : "")
-    + `</span></div>`;
+    + `</span><span style="display:block;clear:both;font-size:0;line-height:0"></span></div>`;
 }
 
 function listingHtml(l: Digest["listings"][number]): string {
   const where = [l.city, l.country].filter(Boolean).join(", ");
   const meta = [CATEGORY_LABEL[l.category] ?? "", where].filter(Boolean).join(" \u00b7 ");
-  return `<div style="margin:0 0 12px"><a href="${SITE}/listing/${esc(l.id)}" ${LINK}>${esc(l.organization_name)}</a>`
+  return `<div style="margin:0 0 14px"><a href="${SITE}/listing/${esc(l.id)}" ${LINK}>${esc(l.organization_name)}</a>`
     + (meta ? `<br><span ${MUTED}>${esc(meta)}</span>` : "") + `</div>`;
 }
 
@@ -211,9 +217,9 @@ function shareHtml(d: Digest): string {
   const mail = `mailto:?subject=${encodeURIComponent("Sophia Commons: anthroposophy around the world")}`
     + `&body=${encodeURIComponent(`I thought you'd like this: a free directory of Waldorf schools, biodynamic farms, Camphill communities and other anthroposophical work around the world. ${SITE}`)}`;
   const fb = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE)}`;
-  return `<div style="margin:32px 0 0;padding:18px 20px;background:#FAF6EE;border:1px solid ${RULE};border-radius:10px">`
-    + `<p style="font-family:Georgia,serif;font-size:18px;margin:0 0 8px;color:${INK}">Please help us spread the word</p>`
-    + `<p style="margin:0 0 10px;color:#3A332A">Sophia Commons is a free directory of anthroposophical life around the world: ${places} Waldorf schools, biodynamic farms, Camphill communities, clinics, study groups and more in ${d.countryCount} countries, along with events, videos and books. It's the largest online directory of anthroposophical resources, and we need your help to get the word out. If this email was useful, please forward it to a friend or share Sophia Commons with your school, farm or study group.</p>`
+  return `<div style="margin:36px 0 0;padding:20px 22px;background:${SURFACE};border:1px solid ${RULE};border-radius:14px">`
+    + `<p style="font-family:${HEAD};font-size:21px;margin:0 0 8px;color:${INK}">Please help us spread the word</p>`
+    + `<p style="margin:0 0 10px;color:${INK2}">Sophia Commons is a free directory of anthroposophical life around the world: ${places} Waldorf schools, biodynamic farms, Camphill communities, clinics, study groups and more in ${d.countryCount} countries, along with events, videos and books. It's the largest online directory of anthroposophical resources, and we need your help to get the word out. If this email was useful, please forward it to a friend or share Sophia Commons with your school, farm or study group.</p>`
     + `<p style="margin:0;font-size:14px"><a href="${mail}" ${LINK}>Share by email</a> &nbsp;&middot;&nbsp; <a href="${fb}" ${LINK}>Share on Facebook</a></p>`
     + `</div>`;
 }
@@ -277,10 +283,10 @@ function themeHtml(theme: Theme | null, d: Digest, t: ReturnType<typeof themedIt
   for (const l of t.listings) html[`listing:${l.id}`] = listingHtml(l);
   for (const n of t.news) html[`news:${n.id}`] = newsHtml(n);
   const items = [theme.pickId, ...theme.relatedIds].map((id) => html[id] ?? "").join("");
-  return `<div style="margin:24px 0 0;padding:16px 20px;background:#FAF6EE;border-left:4px solid ${GOLD_FILL};border-radius:6px">`
+  return `<div style="margin:26px 0 0;padding:18px 22px 6px;background:${GOLD_LIGHT};border-left:4px solid ${GOLD_FILL};border-radius:12px">`
     + `<p style="margin:0 0 2px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${GOLD};font-weight:bold">This week's theme</p>`
-    + `<p style="font-family:Georgia,serif;font-size:20px;margin:0 0 4px;color:${INK}">${esc(theme.label)}</p>`
-    + (theme.why ? `<p style="margin:0 0 14px;color:#3A332A;font-size:14px">${esc(theme.why)}</p>` : `<div style="height:10px"></div>`)
+    + `<p style="font-family:${HEAD};font-size:22px;line-height:1.25;margin:2px 0 6px;color:${INK}">${esc(theme.label)}</p>`
+    + (theme.why ? `<p style="margin:0 0 14px;color:${INK2};font-size:14px">${esc(theme.why)}</p>` : `<div style="height:10px"></div>`)
     + items + `</div>`;
 }
 
@@ -297,9 +303,9 @@ export function buildHtml(d: Digest, note = "", theme: Theme | null = fallbackTh
     d.events.length ? plural(d.events.length, "event coming up", "events coming up") : "",
     d.listings.length ? plural(d.listings.length, "new place in the directory", "new places in the directory") : "",
   ].filter(Boolean);
-  let h = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${INK}">` + note;
-  h += `<p style="font-family:Georgia,serif;font-size:19px;line-height:1.45;margin:0 0 6px;color:${INK}">This week across the anthroposophical world</p>`;
-  h += `<p style="margin:0;color:#3A332A">${parts.length ? `Here's what's new: ${parts.join(", ").replace(/, ([^,]*)$/, " and $1")}. Videos in other languages are marked; their titles and summaries are translated.` : "A quiet week."}</p>`;
+  let h = `<div style="font-family:${TEXT};font-size:15px;line-height:1.6;color:${INK}">` + note;
+  h += `<p style="font-family:${HEAD};font-size:24px;line-height:1.25;margin:0 0 8px;color:${INK}">This week across the anthroposophical world</p>`;
+  h += `<p style="margin:0;color:${INK2}">${parts.length ? `Here's what's new: ${parts.join(", ").replace(/, ([^,]*)$/, " and $1")}. Videos in other languages are marked; their titles and summaries are translated.` : "A quiet week."}</p>`;
 
   h += themeHtml(theme, d, t);
   h += soulVerseHtml(new Date());
@@ -320,7 +326,7 @@ export function buildHtml(d: Digest, note = "", theme: Theme | null = fallbackTh
     h += `<p>Browse the <a href="${SITE}/directory" ${LINK}>directory</a> or the <a href="${SITE}/events" ${LINK}>calendar</a>.</p>`;
   }
   h += shareHtml(d);
-  h += `<div style="margin:32px 0 4px;text-align:center"><a href="${SITE}" style="display:inline-block;background:${GOLD_FILL};color:${INK};font-weight:bold;text-decoration:none;padding:12px 26px;border-radius:999px">Explore Sophia Commons</a></div>`;
+  h += `<div style="margin:32px 0 4px;text-align:center"><a href="${SITE}" style="display:inline-block;background:${GOLD_FILL};color:${INK};font-weight:bold;font-size:15px;text-decoration:none;padding:13px 28px;border-radius:999px">Explore Sophia Commons</a></div>`;
   h += `</div>`;
   return h;
 }
