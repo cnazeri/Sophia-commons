@@ -4902,6 +4902,9 @@ body::before { display: none; }
   font-weight: 700; font-size: 14px; line-height: 1.15; text-decoration: none; }
 .h2-store { background: var(--text-primary); color: #fff; }
 .h2-store:hover { opacity: .9; }
+.h2-soon { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border-radius: 10px;
+  border: 1px dashed var(--border-strong); color: var(--text-secondary); font-size: 14px; font-weight: 700; }
+.h2-soon .ico { fill: none; stroke: currentColor; stroke-width: 2; }
 .ft-store { border: 1px solid rgba(250,247,242,0.3); color: var(--text-inverse) !important; }
 .ft-store:hover { border-color: rgba(250,247,242,0.6); }
 .h2-store small, .ft-store small { display: block; font-weight: 500; font-size: 11px; opacity: .75; }
@@ -5227,3 +5230,53 @@ h1.seclabel, .dash-card .dash-value, .news-ev-mark span, .books-more .bm-title {
 .ft-ai-t { font-size: 13px; font-weight: 700; color: inherit; opacity: .85; }
 .ai-about { margin-top: 24px; }
 @media (max-width: 760px) { .ai-band { grid-template-columns: minmax(0, 1fr); padding: 20px; } .ai-band .ai-badges { flex-direction: row; } .ai-band h2 { font-size: 22px; } }
+
+/* Menu "More": items that do not fit (home2.js h2FitMenu, owner 2026-11-28) */
+.h2-more { position: relative; display: inline-flex; }
+.h2-more[hidden] { display: none; }
+#mainnav .h2-more > button { font-family: 'Sophia Commons Display', 'Nunito Sans', sans-serif; }
+.h2-more-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 60; min-width: 210px; padding: 6px; background: var(--elevated, #fff);
+  border: 1px solid var(--h2-line, #ECE5D9); border-radius: 14px; box-shadow: 0 10px 30px rgba(30, 24, 16, .14); display: grid; }
+.h2-more-menu[hidden] { display: none; }
+#mainnav .h2-more-menu button { display: block; width: 100%; text-align: left; padding: 10px 12px; min-height: 40px; border-radius: 9px; white-space: nowrap; }
+#mainnav .h2-more-menu button:hover, #mainnav .h2-more-menu button:focus-visible { background: var(--surface); }
+/* With Advent and "Community board" the full menu needs a little less air to fit on usual screens (owner, 2026-11-28) */
+@media (min-width: 1241px) { #mainnav button, #mainnav button.active { font-size: 14.5px; padding-left: 7px; padding-right: 7px; letter-spacing: .04em; } }
+
+/* Signed-in bar under the header: admin, my events, saved, settings, name (owner, 2026-11-28: "move this bar below so there is room") */
+#acctbar { display: none; background: var(--surface, #F7F3EC); border-bottom: 1px solid var(--h2-line, #ECE5D9); }
+body.sc-member #acctbar { display: block; }
+.acctbar-in { max-width: 1180px; margin: 0 auto; padding: 4px 28px; display: flex; justify-content: flex-end; align-items: center; gap: 18px; flex-wrap: wrap; min-height: 40px; font-size: 14px; }
+.acctbar-in a { color: var(--text-secondary); text-decoration: none; font-weight: 600; }
+.acctbar-in a:hover { color: var(--gold-text); }
+#acctbar #user-chip { font-size: 13.5px; padding: 4px 12px; }
+@media (max-width: 760px) { .acctbar-in { justify-content: center; gap: 14px; padding: 4px 12px; font-size: 13px; } }
+/* Advent glows on the word itself, no circle or pill around it (owner, 2026-11-28) */
+#mainnav #nav-advent { background: none !important; box-shadow: none !important; border-radius: 0; height: auto; line-height: inherit; padding-top: revert; padding-bottom: revert;
+  animation: nav-advent-text 3.2s ease-in-out infinite; }
+@keyframes nav-advent-text {
+  0%, 100% { text-shadow: 0 0 6px rgba(243,197,75,.55), 0 0 12px rgba(243,197,75,.25); }
+  50% { text-shadow: 0 0 9px rgba(243,197,75,.95), 0 0 20px rgba(243,197,75,.5); }
+}
+@media (prefers-reduced-motion: reduce) { #mainnav #nav-advent { animation: none; text-shadow: 0 0 8px rgba(243,197,75,.8); } }
+@media (max-width: 760px) { .acctbar-in { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; } .acctbar-in > * { flex: none; } }
+
+/* The day's exercise, the Calendar of the Soul and Remembering this week in the decided heading font (owner, 2026-11-28) */
+.dx-name, .cots-num, .h2-ini, #h2-remember b, .cots-card b, #rightbar .cots-card b { font-family: var(--h2-head) !important; font-weight: 400 !important; letter-spacing: 0; }
+.dx-name { font-size: 19px !important; }
+#h2-remember b { font-size: 18px !important; }
+.cots-num { font-size: 15px !important; }
+.cots-week b { font-family: var(--h2-head); font-weight: 400; font-size: 17px; letter-spacing: 0; }
+
+/* Advent leaves the top menu; its banner sits under the header on every page in season (owner, 2026-11-28) */
+#mainnav #nav-advent { display: none !important; }
+.advent-banner-wrap { max-width: 1180px; margin: 0 auto; padding: 14px 28px 0; }
+.advent-banner-wrap:has(> .advent-banner[hidden]) { display: none; }
+.advent-banner-wrap .advent-banner { margin: 0; padding: 12px 18px; border-radius: 16px; }
+.advent-banner-wrap .advent-banner img { width: 52px; height: 52px; flex-basis: 52px; }
+.advent-banner-wrap .advent-banner b { font-size: 21px; }
+@media (max-width: 760px) { .advent-banner-wrap { padding: 10px 12px 0; } .advent-banner-wrap .advent-banner b { font-size: 18px; } .advent-banner-wrap .advent-banner span { font-size: 13px; } }
+.advent-banner-wrap { max-width: 1240px; padding: 14px 28px 0; box-sizing: border-box; }
+/* Advent banner: Home only, at the top, and it scrolls away with the page (owner, 2026-11-28) */
+.advent-banner-wrap { position: static !important; }
+body:not(:has(#sec-home.active)) .advent-banner-wrap { display: none; }

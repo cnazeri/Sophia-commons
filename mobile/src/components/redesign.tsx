@@ -123,7 +123,7 @@ export function DayExercise() {
   return (
     <Card>
       <Kicker>{t('days.title', 'For the days of the week')} · {dayName(today.day)}</Kicker>
-      <Text style={[styles.exName, { color: c.text }]}>{today.name}</Text>
+      <Text style={[styles.exName, { color: c.text, fontFamily: headingFont(today.name) }]}>{today.name}</Text>
       <Text style={[styles.exTheme, { color: c.textSecondary }]}>{today.theme}</Text>
       <Text style={[styles.exText, { color: c.textSecondary }]} selectable>{today.text[0]}</Text>
       <View style={[styles.exDaily, { backgroundColor: GOLD_TINT }]}>
@@ -137,13 +137,13 @@ export function DayExercise() {
           {[...days.slice(6), ...days.slice(0, 6)].map((x) => (
             <View key={x.day} style={{ gap: 4 }}>
               <Kicker>{dayName(x.day)}{x.day === today.day ? ' · ' + t('days.today', 'today') : ''}</Kicker>
-              <Text style={[styles.exAllName, { color: c.text }]}>{x.name} <Text style={{ color: c.textMuted, fontFamily: Fonts.body }}>{x.theme}</Text></Text>
+              <Text style={[styles.exAllName, { color: c.text, fontFamily: headingFont(x.name) }]}>{x.name} <Text style={{ color: c.textMuted, fontFamily: Fonts.body }}>{x.theme}</Text></Text>
               {x.text.map((p, i) => <Text key={i} style={[styles.exText, { color: c.textSecondary }]} selectable>{p}</Text>)}
             </View>
           ))}
           <View style={{ gap: 4 }}>
             <Kicker>{t('days.every_day', 'Every day')}</Kicker>
-            <Text style={[styles.exAllName, { color: c.text }]}>{exercises.daily.name} <Text style={{ color: c.textMuted, fontFamily: Fonts.body }}>{exercises.daily.theme}</Text></Text>
+            <Text style={[styles.exAllName, { color: c.text, fontFamily: headingFont(exercises.daily.name) }]}>{exercises.daily.name} <Text style={{ color: c.textMuted, fontFamily: Fonts.body }}>{exercises.daily.theme}</Text></Text>
             {exercises.daily.text.map((p, i) => <Text key={i} style={[styles.exText, { color: c.textSecondary }]} selectable>{p}</Text>)}
           </View>
           <Text style={[styles.small, { color: c.textMuted }]}>{exercises.source}</Text>

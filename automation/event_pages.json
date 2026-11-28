@@ -32,6 +32,14 @@
       "directory_entry_id": "1f0e05cd-af2e-4df1-93c8-dd3dc072d08e",
       "country": "Germany",
       "lang": "de"
+    },
+    {
+      "name": "Foundation for Health Creation",
+      "page": "https://foundationforhealthcreation.org/upcoming-events/",
+      "timezone": "America/Los_Angeles",
+      "directory_entry_id": "25dbdaec-25cc-4d1d-8cd9-c944a04d16fc",
+      "country": "USA",
+      "lang": "en"
     }
   ]
 }

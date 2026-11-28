@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { CotsCard } from '@/components/cots-card';
-import { CardRow, FestivalCard, NewPlacesSection, RememberCard, TakePartSection, TalksSection, TILE_WIDTH } from '@/components/home-cards';
+import { AdventBanner, CardRow, FestivalCard, NewPlacesSection, RememberCard, TakePartSection, TalksSection, TILE_WIDTH } from '@/components/home-cards';
 import { NewsletterSection } from '@/components/home-newsletter';
 import { Icon } from '@/components/icon';
 import { JobCard } from '@/components/job-card';
@@ -73,6 +73,7 @@ export default function Home() {
 
   return (
     <Screen post>
+      <AdventBanner />
       {/* The top: date, title, search and Near me */}
       <View style={styles.dateLine}>
         <Icon name="events" size={15} color={c.goldText} />

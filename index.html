@@ -225,7 +225,7 @@
 <link rel="preload" href="/fonts/nunitosans-pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfGWVpNn64CL7U8upHZIbMV51Q42ptCp7t1R-tQKr51.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lora-0QIvMX1D_JOuMwr7I_FMl_E.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/cormorantgaramond-co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.131.0">
+<link rel="stylesheet" href="/sophia_commons_v9.css?v=1.132.0">
 </head>
 <body>
 <a href="#center" class="skip-link">Skip to main content</a>
@@ -358,11 +358,6 @@
     <span class="nav-links">
       <a href="/about" data-i18n="topbar.about" onclick="showSec('about');return false;">about</a>
       <a href="#" data-i18n="topbar.post_listing_link" onclick="showSubmitForm();return false;">post a listing</a>
-      <a href="#" id="adminlink" onclick="showSec('admin');return false;" style="display:none;color:#c0392b;font-weight:600;">admin</a>
-      <a href="/my-events" id="myevents-link" style="display:none" data-i18n="org.my_events_link" onclick="showSec('my-events');return false;">my events</a>
-      <a href="/saved" id="saved-link" style="display:none" data-i18n="saved.topbar_link" onclick="showSec('saved');return false;">saved</a>
-      <a href="/account" id="account-link" style="display:none" data-i18n="acc.topbar_link" onclick="showSec('account');return false;">settings</a>
-      <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
       <a href="#" class="signinbtn" id="signin-link" data-i18n="topbar.sign_in" onclick="openModal();return false;">sign in</a>
     </span>
     <div id="lang-switcher">
@@ -375,9 +370,19 @@
   <a href="#" id="postlink" onclick="showSubmitForm();return false;"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="home2.post">Post</span></a>
   <a href="/events" id="ev-focus-more" onclick="showSec('events');return false;"><span data-i18n="event_detail.more_events">More events</span> &rarr;</a>
 </header>
+<!-- Signed-in links in their own slim bar under the header, so the menu has room (owner, 2026-11-28) -->
+<div id="acctbar"><div class="acctbar-in">
+    <a href="#" id="adminlink" onclick="showSec('admin');return false;" style="display:none;color:#c0392b;font-weight:600;">admin</a>
+    <a href="/my-events" id="myevents-link" style="display:none" data-i18n="org.my_events_link" onclick="showSec('my-events');return false;">my events</a>
+    <a href="/saved" id="saved-link" style="display:none" data-i18n="saved.topbar_link" onclick="showSec('saved');return false;">saved</a>
+    <a href="/account" id="account-link" style="display:none" data-i18n="acc.topbar_link" onclick="showSec('account');return false;">settings</a>
+    <span id="user-chip" onclick="doSignOut()">● <span id="uname">member</span> (sign out)</span>
+</div></div>
 
 
 </div><!-- end #site-header -->
+<!-- Advent banner at the top of Home in season, outside the sticky header so it scrolls away; Advent left the top menu for room (owner, 2026-11-28) -->
+<div class="advent-banner-wrap"><a id="advent-banner" class="advent-banner" href="/advent" onclick="showSec('advent');return false;" hidden><img src="https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/holynights.jpg" alt=""><div><b data-i18n="advent.banner_title">Advent and the Holy Nights</b><span id="advent-banner-line"></span></div></a></div>
 
 <!-- 3-COL PAGE -->
 <div id="page">
@@ -486,7 +491,6 @@
       <a class="hx-tile" href="/category/anthroposophic-medicine" onclick="showCategory('Anthroposophic Medicine');return false;"><span class="hx-ic"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 21v-6.5M12 14.5l-4-4M12 14.5l4-4"/><path d="M8 10.5c-2.6-.4-4-1.9-4.3-4.3 2.4.3 3.9 1.8 4.3 4.3zM8 10.5c-.7-2.3-.2-4.3 1.4-5.9.9 2.1.5 4.1-1.4 5.9zM16 10.5c2.6-.4 4-1.9 4.3-4.3-2.4.3-3.9 1.8-4.3 4.3zM16 10.5c.7-2.3.2-4.3-1.4-5.9-.9 2.1-.5 4.1 1.4 5.9z"/><circle cx="12" cy="11.2" r="1.2"/></svg></span><span><b data-i18n="home.tile_medicine">Anthroposophic medicine</b><small class="hx-n" data-live-count="medicine"></small></span></a>
     </div>
   </section>
-  <a id="advent-banner" class="advent-banner" href="/advent" onclick="showSec('advent');return false;" hidden><img src="https://bnrvgitzbpocratvszgk.supabase.co/storage/v1/object/public/event-images/festivals/holynights.jpg" alt=""><div><b data-i18n="advent.banner_title">Advent and the Holy Nights</b><span id="advent-banner-line"></span></div></a>
 
   <!-- ROW 1: Events (featured, happening now, coming up) -->
   <div class="listblock reveal home-events" style="margin-bottom:12px;">
@@ -922,6 +926,7 @@
       <div class="lrow res-row"><a class="ltitle" href="https://www.anthroposophie.net/steiner/bib_steiner_fuer_die_tage_der_woche.htm" target="_blank" rel="noopener">For the Days of the Week</a><span class="res-desc">One must devote attention and care to certain processes of the soul that one usually carries out carelessly and inattentively. There are eight such processes. (Rudolf Steiner, in German)</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.forschungsring.de/de/" target="_blank" rel="noopener">Forschungsring</a><span class="res-desc">German biodynamic research institute, founded 1946, with current projects and publications.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://dokumentationen.kulturimpuls.org/" target="_blank" rel="noopener">Forschungsstelle Kulturimpuls</a><span class="res-desc">About 1,500 biographies of 20th-century anthroposophists, plus entries on 55,000 other people. In German.</span></div>
+      <div class="lrow res-row"><a class="ltitle" href="https://foundationforhealthcreation.org/" target="_blank" rel="noopener">Foundation for Health Creation</a><span class="res-desc">Founded by anthroposophic and osteopathic physicians: free webinars, a quarterly newsletter and articles on health, resilience and anthroposophic medicine.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://frontrangeanthrocafe.org/" target="_blank" rel="noopener">Front Range Anthroposophical Cafe</a><span class="res-desc">Free weekly online cafe for conversation in the light of anthroposophy, with a guest speaker and small breakout groups.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.thestarhouse.org/goddesses-of-america" target="_blank" rel="noopener">Goddesses of America</a><span class="res-desc">Seven-part online course with Lila Tresemer. From The StarHouse.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://goetheanum.ch/en" target="_blank" rel="noopener">Goetheanum</a><span class="res-desc">Home of the School of Spiritual Science and the General Anthroposophical Society in Dornach, with news and events.</span></div>
@@ -2249,28 +2254,28 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.131.0</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.132.0</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
 
 <!-- Scripts are deferred: they download while the page paints and run in this order before DOMContentLoaded -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="/sb-init.js?v=1.131.0"></script>
-<script defer src="/i18n.js?v=1.131.0"></script>
-<script defer src="/sophia_commons_v9.js?v=1.131.0"></script>
-<script defer src="/blog.js?v=1.131.0"></script>
-<script defer src="/claims.js?v=1.131.0"></script>
-<script defer src="/events_organizer.js?v=1.131.0"></script>
-<script defer src="/advent.js?v=1.131.0"></script>
-<script defer src="/account.js?v=1.131.0"></script>
-<script defer src="/saved.js?v=1.131.0"></script>
-<script defer src="/home2.js?v=1.131.0"></script>
-<script defer src="/admin2.js?v=1.131.0"></script>
-<script defer src="/about2.js?v=1.131.0"></script>
-<script defer src="/board.js?v=1.131.0"></script>
-<script defer src="/resources2.js?v=1.131.0"></script>
-<script defer src="/social2.js?v=1.131.0"></script>
+<script defer src="/sb-init.js?v=1.132.0"></script>
+<script defer src="/i18n.js?v=1.132.0"></script>
+<script defer src="/sophia_commons_v9.js?v=1.132.0"></script>
+<script defer src="/blog.js?v=1.132.0"></script>
+<script defer src="/claims.js?v=1.132.0"></script>
+<script defer src="/events_organizer.js?v=1.132.0"></script>
+<script defer src="/advent.js?v=1.132.0"></script>
+<script defer src="/account.js?v=1.132.0"></script>
+<script defer src="/saved.js?v=1.132.0"></script>
+<script defer src="/home2.js?v=1.132.0"></script>
+<script defer src="/admin2.js?v=1.132.0"></script>
+<script defer src="/about2.js?v=1.132.0"></script>
+<script defer src="/board.js?v=1.132.0"></script>
+<script defer src="/resources2.js?v=1.132.0"></script>
+<script defer src="/social2.js?v=1.132.0"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

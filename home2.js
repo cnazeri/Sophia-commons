@@ -136,8 +136,10 @@ function h2StoreButtons(cls) {
     + btn(links.android, t('app.get_for', 'Get the app for'), 'Android', t('app.android_label', 'Get the Sophia Commons app for Android'));
 }
 function h2AppBand() {
-  var buttons = h2StoreButtons('h2-store');
-  if (!buttons) return '';
+  // Until a store link is filled in (SC_APP_LINKS), say it is coming instead of hiding the band (owner, 2026-11-27)
+  var buttons = h2StoreButtons('h2-store') || ('<span class="h2-soon">'
+    + '<svg class="ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M10.5 18h3"/></svg>'
+    + esc(t('app.coming_soon', 'Coming soon to iPhone and Android')) + '</span>');
   return '<section class="h2-appband" aria-label="' + esc(t('app.band_kicker', 'The Sophia Commons app')) + '"><div class="h2-appband-text">'
     + '<div class="h2-kick">' + esc(t('app.band_kicker', 'The Sophia Commons app')) + '</div>'
     + '<h2>' + esc(t('app.band_title', 'Events, places and the Calendar of the Soul, in your pocket.')) + '</h2>'
@@ -162,12 +164,13 @@ function scAiBlock(cls) {
     + '<div class="h2-kick">' + esc(t('ai.kicker', 'In your AI assistant')) + '</div>'
     + '<h2>' + esc(t('ai.title', 'Use Sophia Commons in Claude, ChatGPT and other AI apps')) + '</h2>'
     + '<p>' + esc(t('ai.text', 'Ask your assistant for Waldorf schools, biodynamic farms, events or Steiner lectures, and it searches Sophia Commons for you. Find Sophia Commons in the app directory of Claude or ChatGPT, or add it as a connector with this address:')) + '</p>'
-    + '<div class="ai-url"><code>' + esc(SC_MCP_URL) + '</code><button type="button" onclick="scAiCopy(this)">' + esc(t('ai.copy', 'Copy')) + '</button></div></div>'
+    + '<div class="ai-url"><code>' + esc(SC_MCP_URL) + '</code><button type="button" onclick="scAiCopy(this)">' + esc(t('ai.copy', 'Copy')) + '</button></div>'
+    + '<p class="ai-howto"><a href="/ai">' + esc(t('ai.howto', 'How to connect, step by step')) + ' &rarr;</a></p></div>'
     + scAiBadges('ai-badges') + '</section>';
 }
 function scAiFooter() {
   var box = document.getElementById('ft-ai'); if (!box) return;
-  box.innerHTML = '<a href="/about#ai-apps" onclick="showSec(\'about\');setTimeout(function(){var a=document.getElementById(\'ai-apps\');if(a)a.scrollIntoView();},300);return false;">'
+  box.innerHTML = '<a href="/ai">'   // the step-by-step page (owner, 2026-11-27)
     + '<span class="ft-ai-t">' + esc(t('ai.footer', 'Use us in your AI assistant')) + '</span>' + scAiBadges('ai-badges sm') + '</a>';
 }
 
@@ -199,7 +202,7 @@ function h2Skeleton() {
     + '<section class="h2-sec" id="h2-talks-sec" hidden>' + h2Head(t('home2.talks', 'Talks and podcasts'), t('home2.all_channels', 'All channels'), 'showSec(\'podcasts\')', '/podcasts') + '<div class="h2-evrow h2-talks" id="h2-talks"></div></section>'
     + '</div>'
     + '<aside class="h2-aside" aria-label="' + esc(t('home2.aside', 'The season and the day')) + '"><div id="h2-fest"></div><div id="h2-cc-slot"></div><div id="h2-cots-slot"></div><div id="h2-days-slot"></div><div id="h2-remember"></div>' + h2FollowCard() + '</aside>'
-    + h2AppBand() + scAiBlock('ai-home');
+    + h2AppBand();   // the AI message lives in the footer and on About (owner, 2026-11-27: not on Home)
 }
 
 // The Calendar of the Soul and the day's exercise keep their own widgets (and language handling); they move from the
@@ -355,15 +358,46 @@ function h2FitSearch() {
   var narrow = window.matchMedia && matchMedia(H2_NARROW).matches;
   el.placeholder = narrow ? t('home.hero_search_short', 'Search places and events') : t('home.hero_search', 'Search schools, farms, events, articles');
 }
+// Items that do not fit go into a "More" menu at the end, never out of reach (owner, 2026-11-28: Resources, Social
+// media, In memoriam and Community board were missing once Advent joined the menu)
+function h2MoreBtn(nav) {
+  var more = document.getElementById('nav-more');
+  if (more) return more;
+  var wrap = document.createElement('div');
+  wrap.className = 'h2-more'; wrap.id = 'nav-more-wrap';
+  wrap.innerHTML = '<button type="button" id="nav-more" aria-haspopup="true" aria-expanded="false" onclick="h2MoreToggle()">' + esc(t('nav.more', 'More')) + ' <span aria-hidden="true">&#9662;</span></button>'
+    + '<div class="h2-more-menu" id="nav-more-menu" role="menu" hidden></div>';
+  nav.appendChild(wrap);
+  document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) h2MoreToggle(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') h2MoreToggle(false); });
+  return document.getElementById('nav-more');
+}
+function h2MoreToggle(open) {
+  var btn = document.getElementById('nav-more'), menu = document.getElementById('nav-more-menu');
+  if (!btn || !menu) return;
+  if (open === undefined) open = menu.hidden;
+  if (open) {
+    menu.innerHTML = H2_MENU_DROP.slice().reverse().map(function (id) {
+      var b = document.getElementById(id);
+      return b && b.classList.contains('h2-menu-off') && !b.hidden ? '<button type="button" role="menuitem" onclick="h2MoreToggle(false);document.getElementById(\'' + id + '\').click()">' + esc(b.textContent.trim()) + '</button>' : '';
+    }).join('');
+  }
+  menu.hidden = !open;
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
 function h2FitMenu() {
   var nav = document.getElementById('mainnav'), search = document.getElementById('hdr-search');
   if (!nav || !search || !nav.offsetParent || !search.offsetParent) return;
+  var more = h2MoreBtn(nav), wrap = more.parentNode;
   H2_MENU_DROP.forEach(function (id) { var b = document.getElementById(id); if (b) b.classList.remove('h2-menu-off'); });
+  wrap.hidden = true; h2MoreToggle(false);
   var room = function () {
-    var shown = Array.prototype.filter.call(nav.querySelectorAll('button'), function (b) { return b.offsetParent; });
+    var shown = Array.prototype.filter.call(nav.children, function (b) { return b.offsetParent; });
     var last = shown[shown.length - 1];
     return !last || last.getBoundingClientRect().right + H2_MENU_GAP <= search.getBoundingClientRect().left;
   };
+  if (room()) return;
+  wrap.hidden = false;
   for (var i = 0; i < H2_MENU_DROP.length && !room(); i++) {
     var b = document.getElementById(H2_MENU_DROP[i]);
     if (b) b.classList.add('h2-menu-off');
