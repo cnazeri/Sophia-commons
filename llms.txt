@@ -32,7 +32,7 @@ The site is free to use. Listings can be suggested by anyone and are reviewed be
 ## Learning and media
 
 - [News](https://sophiacommons.org/news): news from the anthroposophical movement
-- [Books](https://sophiacommons.org/books): Rudolf Steiner's works by GA (Gesamtausgabe) number, with links to free online texts and editions
+- [Resources](https://sophiacommons.org/resources): Rudolf Steiner's works by GA (Gesamtausgabe) number, with links to free online texts and editions
 - [Podcasts and YouTube](https://sophiacommons.org/podcasts): curated anthroposophical YouTube channels (refreshed weekly) and podcasts
 - [Memorials](https://sophiacommons.org/memorial): remembering members of the community
 

@@ -1871,12 +1871,13 @@ const roomHistory = {};
 // Section-to-path mapping for SEO-friendly URLs
 const SEC_PATHS = {
   home: '/', news: '/news', events: '/events', browse: '/browse',
-  directory: '/directory', books: '/books', podcasts: '/podcasts',
+  directory: '/directory', books: '/resources', podcasts: '/podcasts',
   memorial: '/memorial', eldercare: '/eldercare', blog: '/blog', chat: '/chat', privacy: '/privacy', terms: '/terms', about: '/about', digest: '/digest',
   'event-new': '/events/new', 'my-events': '/my-events', account: '/account', advent: '/advent', saved: '/saved'
 };
 const PATH_TO_SEC = {};
 Object.keys(SEC_PATHS).forEach(function(k) { PATH_TO_SEC[SEC_PATHS[k]] = k; });
+PATH_TO_SEC['/books'] = 'books';   // old address of Resources, still opens it (owner, 2026-11-27)
 
 function _getSecMeta() {
   return {
@@ -3788,7 +3789,7 @@ function _bookVideoResultsHtml(books, vids) {
       html += '<div class="sr-media-row">' + (link ? '<a class="ltitle" href="' + escUrl(link) + '" target="_blank" rel="noopener">' + name + '</a>' : name)
         + (b.archive_url ? ' <span class="lmeta">' + esc(t('search_results.read_free', 'read free in the archive')) + '</span>' : '') + '</div>';
     });
-    html += '<div class="sr-media-row"><a href="/books" onclick="showSec(\'books\');return false;">' + esc(t('search_results.all_books', 'All books')) + ' &rarr;</a></div></div>';
+    html += '<div class="sr-media-row"><a href="/resources" onclick="showSec(\'books\');return false;">' + esc(t('search_results.all_books', 'All books')) + ' &rarr;</a></div></div>';
   }
   if (vids.length) {
     html += '<div class="sr-media">' + head(t('search_results.videos', 'Videos'), vids.length);

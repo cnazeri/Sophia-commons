@@ -277,7 +277,7 @@ async function findSteinerWorks(db, rest, a, ctx) {
   return {
     books, lectures, audio,
     topics: [...ids].map(id => lectureFile.topics[id].label),
-    more: { library: library.toString(), books_page: `${SITE}/books`, archive: 'https://rsarchive.org/', audio_library: AUDIO_BASE },
+    more: { library: library.toString(), books_page: `${SITE}/resources`, archive: 'https://rsarchive.org/', audio_library: AUDIO_BASE },
     note: 'Texts and recordings stay on their own sites; follow the links to read or listen.',
   };
 }
@@ -403,6 +403,8 @@ async function logCall(ctx, params, info) {
 export const RATE_PER_MINUTE = 240;
 const callsByKey = new Map();
 export function overLimit(key, n = 1, now = Date.now()) {
+  // Forget callers idle for a minute (privacy page: the IP address is kept about a minute, then dropped)
+  for (const [k, times] of callsByKey) if (now - times[times.length - 1] >= 60000) callsByKey.delete(k);
   if (callsByKey.size > 5000) callsByKey.clear();
   const recent = (callsByKey.get(key) || []).filter(t => now - t < 60000);
   if (recent.length + n > RATE_PER_MINUTE) { callsByKey.set(key, recent); return true; }
@@ -410,6 +412,7 @@ export function overLimit(key, n = 1, now = Date.now()) {
   callsByKey.set(key, recent);
   return false;
 }
+export const isTracked = key => callsByKey.has(key);
 const callerKey = request => request.headers.get('x-nf-client-connection-ip') || (request.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
 
 export async function handleMessage(msg, db, rest, ctx = NO_FILES) {

@@ -20,6 +20,8 @@
 /terms-of-use  /terms  301
 /privacy-policy  /privacy  301
 # Rudolf Steiner Library and AI app stats, standalone pages (owner, 2026-11-25)
+# Resources moved from /books (owner, 2026-11-27); the hash (#resources-list) is kept by the browser
+/books  /resources  301
 /library  /library.html  200
 /admin/ai-app  /ai_stats.html  200
 /*    /index.html   200

@@ -110,7 +110,7 @@ test('find_steiner_works: word-start match finds Bees, not Maccabees, with read 
   assert.equal(d.lectures[0].translations, 2);
   assert.equal(d.audio[0].listen, 'https://rudolfsteineraudio.com/bees/bees.html');
   assert.ok(calls[0].startsWith('steiner_books?') && calls[0].includes('title=ilike.*bee*'));
-  assert.equal(d.more.books_page, 'https://sophiacommons.org/books?utm_source=claude&utm_medium=ai_app');
+  assert.equal(d.more.books_page, 'https://sophiacommons.org/resources?utm_source=claude&utm_medium=ai_app');
   assert.equal(d.more.archive, 'https://rsarchive.org/', 'outside links are left alone');
 });
 
@@ -172,7 +172,7 @@ test('existing tools also get tagged links through HTTP', async () => {
 });
 
 // ── Topic search, on this day, German, calendar, rate limit, usage log (2026-11-25) ──
-import { topicMatch, calendarLink, overLimit, RATE_PER_MINUTE, resultCount, logRow } from '../automation/mcp_server.mjs';
+import { topicMatch, calendarLink, overLimit, isTracked, RATE_PER_MINUTE, resultCount, logRow } from '../automation/mcp_server.mjs';
 const TOPICS = { karma: { label: 'Karma and reincarnation', words: ['karma', 'reincarnation'] }, death: { label: 'Death', words: ['life after death', 'death'] } };
 const TAGGED = { topics: TOPICS, items: [
   { d: '1924-02-16', t: 'Karmic Relationships I', b: 'Karmic Relationships', c: 'Dornach', ga: '235', de: 'https://rsarchive.org/de1', en: [{ u: 'https://rsarchive.org/en1' }], k: ['karma'] },
@@ -235,6 +235,17 @@ test('rate limit: allows the budget, then refuses, then recovers after a minute'
   assert.equal(overLimit(key, RATE_PER_MINUTE, 1000), false);
   assert.equal(overLimit(key, 1, 1001), true);
   assert.equal(overLimit(key, 1, 1000 + 60001), false);
+});
+
+test('rate limit forgets a caller address after a minute idle (privacy page promise)', () => {
+  const a = 'ip-a-' + Math.random(), b = 'ip-b-' + Math.random();
+  overLimit(a, 1, 5000);
+  assert.equal(isTracked(a), true);
+  overLimit(b, 1, 5000 + 59999);
+  assert.equal(isTracked(a), true, 'still inside the minute');
+  overLimit(b, 1, 5000 + 60000);
+  assert.equal(isTracked(a), false, 'dropped after a minute');
+  assert.equal(isTracked(b), true);
 });
 
 test('rate limit over HTTP returns 429 with a JSON-RPC error', async () => {
