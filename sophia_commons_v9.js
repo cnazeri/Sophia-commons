@@ -6531,8 +6531,9 @@ function _categorySlug(label) {
     'waldorf & education': 'waldorf', 'biodynamic agriculture': 'biodynamic', 'esoteric studies': 'societies',
     'arts & eurythmy': 'eurythmy', 'anthroposophic medicine': 'medicine', 'community & camphill': 'camphill',
     'eldercare': 'eldercare', 'online resources': 'online', 'social media': 'social_media',
-    'groups & circles': 'community', 'christian community': 'community', 'podcasts & media': 'online'
-  };
+    'groups & circles': 'community', 'christian community': 'christian_community', 'the christian community': 'christian_community',
+    'groups & societies': 'societies', 'societies & branches': 'societies', 'podcasts & media': 'online', 'books & library': 'online'
+  };   // fixed 2026-11-28: Christian Community went to 'community' and "Groups & societies" was stored as typed
   var k = String(label || '').toLowerCase().trim();
   return map[k] || k || 'community';
 }
@@ -6694,6 +6695,9 @@ async function adminApproveEvent(id) {
     // A 'pending' event is private by the organizer's choice now, so looking at it never makes it public
     var ap = await _sb.from('events').update({ needs_review: false }).eq('id', id);
     if (ap.error) { scNotify('Error: ' + ap.error.message); return; }
+    // Events read from newsletters and event pages wait as 'pending' until approved: approving publishes them (2026-11-28)
+    await _sb.from('events').update({ status: 'upcoming' }).eq('id', id).eq('status', 'pending')
+      .or('source_event_id.like.page:*,source_event_id.like.mail:*');
     var card = document.getElementById('admin-event-' + id);
     if (card) card.remove();
     if (!document.querySelector('#admin-events-list .admin-card')) {

@@ -102,3 +102,114 @@ async function loadAdminAiApp(days) {
   var _sw = window.adminSwitchTab;
   if (typeof _sw === 'function') window.adminSwitchTab = function (tab) { var r = _sw.apply(this, arguments); if (tab === 'aiapp') loadAdminAiApp(); return r; };
 })();
+
+// ── New listings: review cards after the admin mockup (owner, 2026-11-28) ──
+// Each card shows the picture, place, when it came in, a category picker (fixes listings landing in the wrong or
+// raw category) and Approve, Edit and Decline. Approve uses the picked category and any edits.
+var ADM_CATS = [['waldorf', 'Waldorf schools and education'], ['biodynamic', 'Biodynamic farms'], ['christian_community', 'The Christian Community'],
+  ['camphill', 'Camphill and curative education'], ['societies', 'Societies and branches'], ['eurythmy', 'Eurythmy and arts'],
+  ['medicine', 'Anthroposophic medicine'], ['eldercare', 'Eldercare'], ['science', 'Science and research'], ['online', 'Online resources'],
+  ['social_media', 'Social media'], ['community', 'Other community initiatives']];
+function admCatOptions(sel) {
+  var known = ADM_CATS.some(function (c) { return c[0] === sel; });
+  return (known ? '' : '<option value="" selected disabled>Pick a category</option>') + ADM_CATS.map(function (c) {
+    return '<option value="' + c[0] + '"' + (c[0] === sel ? ' selected' : '') + '>' + esc(c[1]) + '</option>'; }).join('');
+}
+function admAgo(iso) {
+  if (!iso) return '';
+  var h = Math.round((Date.now() - new Date(iso).getTime()) / 36e5);
+  return h < 1 ? 'just now' : h < 24 ? h + (h === 1 ? ' hour' : ' hours') + ' ago' : Math.round(h / 24) === 1 ? 'yesterday' : Math.round(h / 24) + ' days ago';
+}
+window.loadAdminListings = async function () {
+  var el = document.getElementById('admin-listings-list');
+  if (!el || !sbReady()) return;
+  try {
+    var r = await _sb.from('listings_pending').select('*').or('status.is.null,status.eq.pending').order('submitted_at', { ascending: false });
+    if (r.error) throw r.error;
+    if (!r.data || !r.data.length) { el.innerHTML = '<div class="admin-empty">' + esc(t('admin.no_pending_listings', 'No new listings waiting.')) + '</div>'; return; }
+    el.innerHTML = r.data.map(function (d) {
+      var slug = _categorySlug(d.category), id = escJs(d.id);
+      var pic = d.photo_url ? '<div class="adm-lpic" style="background-image:url(\'' + escUrl(String(d.photo_url).replace(/#.*$/, '')) + '\')"></div>' : '<div class="adm-lpic adm-lpic-none" aria-hidden="true"></div>';
+      return '<div class="admin-card adm-litem" id="admin-listing-' + esc(d.id) + '">' + pic + '<div class="adm-lbody">'
+        + '<div class="adm-lwhen">Sent ' + esc(admAgo(d.submitted_at || d.created_at)) + (d.source ? ' &middot; ' + esc(d.source) : '') + (d.contact_email ? ' &middot; ' + esc(d.contact_email) : '') + '</div>'
+        + '<h4 class="adm-lname" data-f="name">' + esc(d.name || '') + '</h4>'
+        + '<div class="adm-lplace" data-f="location">' + esc(d.location || '') + '</div>'
+        + (d.url ? '<div class="adm-lurl" data-f="url"><a href="' + escUrl(d.url) + '" target="_blank" rel="noopener">' + esc(d.url) + '</a></div>' : '<div class="adm-lurl" data-f="url"></div>')
+        + '<p class="adm-ldesc" data-f="description">' + esc(d.description || '') + '</p>'
+        + '<label class="adm-lcat">Category <select id="adm-cat-' + esc(d.id) + '">' + admCatOptions(slug) + '</select>'
+        + (d.category ? ' <span class="adm-lsent">sent as "' + esc(d.category) + '"</span>' : '') + '</label></div>'
+        + '<div class="adm-lact"><button class="admin-btn-approve" onclick="adminApproveListing(\'' + id + '\')">Approve</button>'
+        + '<button class="adm-btn" onclick="admEditListing(\'' + id + '\', this)">Edit</button>'
+        + '<button class="admin-btn-reject" onclick="adminRejectListing(\'' + id + '\')">Decline</button></div></div>';
+    }).join('');
+  } catch (e) { el.innerHTML = '<div class="admin-empty">Error: ' + esc(e.message || String(e)) + '</div>'; }
+};
+// Edit turns the name, place, website and description into fields; Approve then uses what is in them
+function admEditListing(id, btn) {
+  var card = document.getElementById('admin-listing-' + id); if (!card) return;
+  card.querySelectorAll('[data-f]').forEach(function (f) {
+    if (f.querySelector('input, textarea')) return;
+    var v = f.getAttribute('data-f') === 'url' ? (f.textContent || '').trim() : f.textContent;
+    var tag = f.getAttribute('data-f') === 'description' ? 'textarea' : 'input';
+    f.innerHTML = '<' + tag + ' class="adm-lfield" aria-label="' + esc(f.getAttribute('data-f')) + '"' + (tag === 'input' ? ' value="' + esc(v) + '">' : ' rows="4">' + esc(v) + '</textarea>');
+  });
+  btn.disabled = true;
+}
+function admFieldValue(card, name) {
+  var f = card.querySelector('[data-f="' + name + '"]'); if (!f) return null;
+  var input = f.querySelector('input, textarea');
+  return input ? input.value.trim() : null;
+}
+window.adminApproveListing = async function (id) {
+  if (!sbReady()) return;
+  var card = document.getElementById('admin-listing-' + id);
+  var sel = document.getElementById('adm-cat-' + id);
+  if (sel && !sel.value) { scNotify('Pick a category first.'); sel.focus(); return; }
+  try {
+    var r = await _sb.from('listings_pending').select('*').eq('id', id).single();
+    if (r.error || !r.data) { scNotify(t('error.could_not_find_listing', 'Could not find this listing.')); return; }
+    var d = r.data, edit = function (k, orig) { var v = card ? admFieldValue(card, k) : null; return v === null ? orig : (v || null); };
+    var entry = {
+      organization_name: edit('name', d.name), category: sel ? sel.value : _categorySlug(d.category),
+      location: edit('location', d.location || null), website_url: edit('url', d.url || null), description: edit('description', d.description || null),
+      email: d.contact_email || null, status: 'approved', user_id: window._supabaseUser ? window._supabaseUser.id : null
+    };
+    if (d.photo_url) entry.photo_url = d.photo_url;
+    var pin = await _geocodePlace(entry.location, entry.category);
+    if (pin) { entry.latitude = pin.lat; entry.longitude = pin.lng; }
+    var ins = await _sb.from('directory_entries').insert(entry).select('id').single();
+    if (ins.error) { scNotify('Error adding to directory: ' + ins.error.message); return; }
+    var upd = await _sb.from('listings_pending').update({ status: 'approved', directory_entry_id: ins.data ? ins.data.id : null }).eq('id', id);
+    if (upd.error) scNotify('Added to the directory, but the queue was not updated: ' + upd.error.message);
+    else scNotify('Approved: "' + entry.organization_name + '" is in the directory.');
+    if (card) card.remove();
+    if (!document.querySelector('#admin-listings-list .admin-card')) loadAdminListings();
+    checkAdminPendingCounts();
+  } catch (e) { scNotify('Error: ' + (e.message || e)); }
+};
+
+// ── "This week" numbers under Waiting for you (owner, 2026-11-28, from the admin mockup) ──
+async function admCount(table, build) {
+  try { var r = await build(_sb.from(table).select('*', { count: 'exact', head: true })); return r.error ? null : r.count; } catch (e) { return null; }
+}
+async function adm2DrawWeek() {
+  var box = document.getElementById('adm2-overview'); if (!box || !sbReady()) return;
+  var week = new Date(Date.now() - 7 * 864e5).toISOString();
+  var vals = await Promise.all([
+    admCount('directory_entries', function (q) { return q.eq('status', 'approved').gte('created_at', week); }),
+    admCount('events', function (q) { return q.gte('created_at', week).neq('status', 'cancelled'); }),
+    admCount('newsletter_subscribers', function (q) { return q; }),
+    admCount('newsletter_subscribers', function (q) { return q.gte('created_at', week); }),
+    admCount('board_posts', function (q) { return q.gte('created_at', week); }),
+    admCount('ai_app_calls', function (q) { return q.gte('created_at', week); })]);
+  var stats = [[vals[0], 'places added'], [vals[1], 'events added'], [vals[2], 'newsletter readers', vals[3]], [vals[4], 'board posts'], [vals[5], 'AI app uses']]
+    .filter(function (s) { return s[0] !== null; });
+  var old = document.getElementById('adm2-week'); if (old) old.remove();
+  if (!stats.length) return;
+  box.insertAdjacentHTML('beforeend', '<div id="adm2-week"><div class="adm2-ohead"><h2>This week</h2></div><div class="adm2-week">' + stats.map(function (s) {
+    return '<div><b>' + Number(s[0]).toLocaleString() + '</b><span>' + s[1] + '</span>' + (s[2] ? '<em>+' + Number(s[2]).toLocaleString() + ' this week</em>' : '') + '</div>'; }).join('') + '</div></div>');
+}
+(function () {
+  var orig = window.adm2DrawOverview;
+  window.adm2DrawOverview = function () { orig.apply(this, arguments); adm2DrawWeek(); };
+})();

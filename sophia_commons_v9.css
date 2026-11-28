@@ -5280,3 +5280,35 @@ body.sc-member #acctbar { display: block; }
 /* Advent banner: Home only, at the top, and it scrolls away with the page (owner, 2026-11-28) */
 .advent-banner-wrap { position: static !important; }
 body:not(:has(#sec-home.active)) .advent-banner-wrap { display: none; }
+
+/* Admin: listing review cards and This week (admin2.js, owner 2026-11-28) */
+.adm-litem { display: grid; grid-template-columns: 140px minmax(0, 1fr) auto; gap: 16px; align-items: start; }
+.adm-lpic { width: 140px; height: 100px; border-radius: 10px; background: var(--surface) center/cover no-repeat; }
+.adm-lpic-none { background: var(--gold-light); }
+.adm-lwhen { font-size: 12px; font-weight: 700; color: var(--gold-text); text-transform: uppercase; letter-spacing: .04em; }
+.adm-lname { font-family: var(--h2-head) !important; font-weight: 400 !important; font-size: 20px !important; margin: 4px 0 2px; }
+.adm-lplace, .adm-lurl { font-size: 13.5px; color: var(--text-secondary); }
+.adm-lurl a { color: var(--gold-text); word-break: break-all; }
+.adm-ldesc { font-size: 13.5px; color: var(--text-secondary); margin: 6px 0; line-height: 1.5; }
+.adm-lcat { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+.adm-lcat select { font: 700 13.5px 'Nunito Sans', sans-serif; padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--gold); background: var(--elevated); color: var(--text-primary); }
+.adm-lsent { font-style: italic; }
+.adm-lfield { width: 100%; box-sizing: border-box; font: 14px 'Nunito Sans', sans-serif; padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 8px; margin: 2px 0; }
+.adm-lact { display: flex; flex-direction: column; gap: 8px; }
+.adm-lact button { min-height: 38px; }
+.adm2-week { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 6px; }
+.adm2-week > div { background: var(--elevated); border: 1px solid var(--h2-line); border-radius: 14px; padding: 12px 14px; }
+.adm2-week b { display: block; font-family: var(--h2-head); font-weight: 400; font-size: 26px; }
+.adm2-week span { font-size: 13px; color: var(--text-muted); }
+.adm2-week em { display: inline-block; margin-top: 4px; font-style: normal; font-weight: 700; font-size: 12px; color: var(--sage); background: var(--sage-light, #E4F2E2); border-radius: 99px; padding: 1px 8px; }
+#adm2-week { margin-top: 16px; }
+@media (max-width: 900px) {
+  .adm-litem { grid-template-columns: 84px minmax(0, 1fr); } .adm-lpic { width: 84px; height: 84px; }
+  .adm-lact { grid-column: 1 / -1; flex-direction: row; } .adm-lact button { flex: 1; }
+  .adm2-week { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.adm-lact button { border-radius: 999px !important; padding: 0 18px !important; font: 700 14px 'Nunito Sans', sans-serif !important; min-width: 104px; }
+.adm-lact .admin-btn-approve { background: var(--gold) !important; color: var(--on-gold) !important; border: 1px solid var(--gold) !important; }
+.adm-lact .adm-btn { background: var(--elevated) !important; border: 1px solid var(--border) !important; color: var(--text-primary) !important; }
+.adm-lact .admin-btn-reject { background: transparent !important; border: 1px solid var(--border) !important; color: var(--rose, #A23B3B) !important; }
+.adm-lcat select { max-width: 100%; min-width: 0; } .adm-lbody { min-width: 0; }

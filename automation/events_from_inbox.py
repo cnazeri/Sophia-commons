@@ -133,7 +133,7 @@ def to_row(ev, owner, mail_id, i):
         'region': plain(ev.get('region')) or None, 'country': plain(ev.get('country')) or None,
         'online_url': link if ev.get('online') else None, 'ticket_url': link,
         'organizer_name': plain(ev.get('organizer')) or None, 'is_free': bool(re.search(r'\bfree\b', ev.get('price') or '', re.I)),
-        'status': 'pending', 'source_event_id': f'mail:{mail_id}:{i}',
+        'status': 'pending', 'needs_review': True, 'source_event_id': f'mail:{mail_id}:{i}',   # shows in Admin > Events (2026-11-28)
     }
 
 
