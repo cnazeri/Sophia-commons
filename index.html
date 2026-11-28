@@ -408,6 +408,7 @@
     <li><a href="#" onclick="showSec('eldercare');return false;" data-i18n="sidebar.category_eldercare">eldercare</a><span class="cbadge" data-live-count="eldercare">42</span></li>
     <li><a href="/category/science-technology" onclick="showCategory('Science & Technology');return false;" data-i18n="sidebar.category_science">science &amp; technology</a><span class="cbadge">1</span></li>
     <li><a href="/books#resources-list" onclick="showSec('books');return false;" data-i18n="sidebar.category_online">online resources</a><span class="cbadge" id="online-res-count">141</span></li>
+    <li><a href="/library">Steiner lecture library</a><span class="cbadge">6,800</span></li>
   </ul>
   <h5 aria-level="2" data-i18n="sidebar.region">region</h5>
   <ul>
@@ -834,6 +835,8 @@
   <div class="listblock res-block" id="resources-list">
     <div class="listblock-head"><h3 aria-level="2" data-i18n="resources.heading">Online Resources</h3></div>
     <div class="listblock-body">
+      <!-- Our own Steiner lecture library, pinned first (owner, 2026-11-27) -->
+      <div class="lrow res-row"><a class="ltitle" href="/library">Sophia Commons Steiner Library</a><span class="res-desc">Search 6,800 of Rudolf Steiner&#39;s lectures by word, topic, year, GA volume or day, with links to read them on the Rudolf Steiner Archive, plus his books and free audio recordings.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://aelzina.com/" target="_blank" rel="noopener">Index to the Complete Works of Rudolf Steiner</a><span class="res-desc">Aelzina Books.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://www.rudolfsteinerweb.com/" target="_blank" rel="noopener">Rudolf Steiner Web</a><span class="res-desc">Daniel Hindes&#39;s site on the many sides of Steiner&#39;s life and work, with a full list of the Complete Works and the known English translations.</span></div>
       <div class="lrow res-row"><a class="ltitle" href="https://steinerbooks.org/" target="_blank" rel="noopener">SteinerBooks</a><span class="res-desc">Anthroposophic Press Inc. (USA).</span></div>
@@ -2173,6 +2176,7 @@
       <a href="#" onclick="showSec('browse');return false;" data-i18n="footer.link_browse">Browse Listings</a>
       <a href="#" onclick="showSec('podcasts');return false;" data-i18n="footer.link_podcasts">Social Media</a>
       <a href="#" onclick="showSec('events');return false;" data-i18n="footer.link_events">Events Calendar</a>
+      <a href="/library">Steiner Lecture Library</a>
       <a href="#" onclick="showSec('news');return false;" data-i18n="footer.link_news">News &amp; Announcements</a>
       <a href="/blog" onclick="showSec('blog');return false;" data-i18n="footer.link_blog">Blog</a>
     </div>
@@ -2186,7 +2190,7 @@
     </div>
   </div>
   <div class="ftbot">
-    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.129.6</span>
+    <span>© 2026 Sophia Commons &nbsp;·&nbsp; v1.129.8</span>
     <span><a href="/privacy" onclick="showSec('privacy');return false;" data-i18n="footer.privacy">privacy</a><a href="/terms" onclick="showSec('terms');return false;" data-i18n="footer.terms">terms</a><a href="mailto:hello@sophiacommons.org" data-i18n="footer.contact">contact</a></span>
   </div>
 </footer>
@@ -2201,7 +2205,7 @@
 <script defer src="/events_organizer.js?v=1.129.6"></script>
 <script defer src="/advent.js?v=1.129.6"></script>
 <script defer src="/account.js?v=1.129.6"></script>
-<script defer src="/saved.js?v=1.129.6"></script>
+<script defer src="/saved.js?v=1.129.8"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
