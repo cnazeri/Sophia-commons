@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AI app usage | Sophia Commons Admin</title>
+<link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
+<link rel="stylesheet" href="/sophia_commons_v9.css">
+<link rel="stylesheet" href="/library.css?v=1">
+<style>
+  .ai-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 16px 0 24px; }
+  .ai-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .ai-card b { display: block; font-size: 28px; font-family: 'Cormorant Garamond', serif; }
+  .ai-card span { font-size: 13px; color: var(--text-muted); }
+  .ai-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 24px; }
+  .ai-table th, .ai-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+  .ai-table th { color: var(--text-muted); font-weight: 600; }
+  .ai-table td.n { text-align: right; white-space: nowrap; }
+  .ai-args { font-family: ui-monospace, monospace; font-size: 12px; word-break: break-word; }
+  #ai-main h2 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script defer src="/ai_stats.js?v=1"></script>
+</head>
+<body class="lib-page">
+<header class="lib-top">
+  <a class="lib-home" href="/"><img src="/logo.svg" alt="" width="34" height="34"> Sophia Commons</a>
+  <nav aria-label="Admin"><a href="/admin">Admin</a> <a href="/library">Library</a></nav>
+</header>
+<main class="lib-main" id="ai-main">
+  <h1>AI app usage</h1>
+  <p class="lib-intro">Questions from ChatGPT, Claude and other AI assistants answered by the Sophia Commons app
+    (sophiacommons.org/mcp). Only the tool, the assistant and the search words are logged; nothing about the person.
+    Visits the app sends to the site are in Google Analytics under source "chatgpt" or "claude", medium "ai_app".</p>
+  <label class="lib-status">Period
+    <select id="ai-days"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select>
+  </label>
+  <div id="ai-status" class="lib-status" role="status" aria-live="polite">Checking your sign-in...</div>
+  <div id="ai-out"></div>
+</main>
+</body>
+</html>

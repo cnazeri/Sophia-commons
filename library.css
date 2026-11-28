@@ -1,0 +1,45 @@
+/* Rudolf Steiner Library page (owner, 2026-11-25). Colours and fonts come from sophia_commons_v9.css. */
+.lib-page { margin: 0; }
+.lib-skip { position: absolute; left: -9999px; }
+.lib-skip:focus { left: 12px; top: 12px; background: var(--elevated); padding: 8px 12px; z-index: 10; }
+.lib-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--surface); }
+.lib-home { display: flex; align-items: center; gap: 10px; font-family: 'Cormorant Garamond', serif; font-size: 22px;
+  font-weight: 600; color: var(--text-primary); text-decoration: none; }
+.lib-top nav a { color: var(--gold-text); margin-left: 14px; text-decoration: none; font-size: 14px; }
+.lib-top nav a:hover { text-decoration: underline; }
+.lib-main { max-width: 920px; margin: 0 auto; padding: 24px 20px 48px; }
+.lib-main h1 { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 600; margin: 8px 0 8px; line-height: 1.15; }
+.lib-intro { color: var(--text-secondary); max-width: 720px; }
+.lib-main a { color: var(--gold-text); }
+.lib-search { display: grid; grid-template-columns: 1fr 180px 120px 100px auto; gap: 10px; align-items: end;
+  margin: 20px 0; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.lib-search label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-muted); min-width: 0; }
+.lib-search input, .lib-search select { font: inherit; font-size: 15px; padding: 8px 10px; border: 1px solid var(--border-strong);
+  border-radius: 8px; background: var(--elevated); color: var(--text-primary); min-width: 0; width: 100%; box-sizing: border-box; }
+.lib-search input:focus, .lib-search select:focus, .lib-clear:focus { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+.lib-clear { font: inherit; padding: 8px 14px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--elevated);
+  color: var(--text-secondary); cursor: pointer; }
+.lib-status { color: var(--text-muted); font-size: 14px; margin: 8px 0 12px; }
+.lib-today { margin: 8px 0 24px; padding: 12px 16px; background: var(--gold-light); border-radius: 10px; }
+.lib-today h2, #lib-results h2 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; margin: 4px 0 8px; }
+.lib-group { margin: 22px 0; }
+.lib-row { padding: 10px 0; border-bottom: 1px solid var(--border-subtle); }
+.lib-row:last-child { border-bottom: 0; }
+.lib-title { font-weight: 600; color: var(--text-primary); }
+.lib-meta { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.lib-links { font-size: 14px; margin-top: 4px; display: flex; gap: 14px; flex-wrap: wrap; }
+.lib-tag { display: inline-block; font-size: 12px; padding: 1px 8px; margin: 4px 6px 0 0; border-radius: 10px;
+  background: var(--muted-bg); color: var(--text-secondary); border: 0; cursor: pointer; font-family: inherit; }
+.lib-tag:hover { background: var(--gold-light); }
+.lib-more { font: inherit; margin-top: 10px; padding: 8px 14px; border: 1px solid var(--border-strong); border-radius: 8px;
+  background: var(--elevated); cursor: pointer; color: var(--gold-text); }
+.lib-foot { max-width: 920px; margin: 0 auto; padding: 16px 20px 40px; font-size: 13px; color: var(--text-muted);
+  border-top: 1px solid var(--border); }
+.lib-foot a { color: var(--gold-text); }
+@media (max-width: 720px) {
+  .lib-search { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .lib-q { grid-column: 1 / -1; }
+  .lib-main h1 { font-size: 32px; }
+  .lib-top nav a { margin: 0 12px 0 0; }
+}

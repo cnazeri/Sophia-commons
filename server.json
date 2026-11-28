@@ -1,14 +1,14 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "org.sophiacommons/directory",
-  "title": "Sophia Commons",
-  "description": "Search 4,500+ Waldorf schools, biodynamic farms, Camphill communities and anthroposophical events.",
+  "title": "Sophia Commons: Rudolf Steiner, Anthroposophy, Waldorf & Biodynamic Finder",
+  "description": "4,800 Waldorf, biodynamic and anthroposophical places, events, talks, and Steiner's 6,800 lectures",
   "websiteUrl": "https://sophiacommons.org",
   "repository": {
     "url": "https://github.com/cnazeri/Sophia-commons",
     "source": "github"
   },
-  "version": "1.0.0",
+  "version": "1.2.0",
   "remotes": [
     {
       "type": "streamable-http",

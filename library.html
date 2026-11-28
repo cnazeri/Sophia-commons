@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rudolf Steiner Library: lectures, books and audio | Sophia Commons</title>
+<meta name="description" content="Search more than 6,800 lectures by Rudolf Steiner by topic, year, place or GA volume, with links to read them free on rsarchive.org, his books, and free audio recordings.">
+<link rel="canonical" href="https://sophiacommons.org/library">
+<meta property="og:title" content="Rudolf Steiner Library | Sophia Commons">
+<meta property="og:description" content="Find Rudolf Steiner's lectures, books and audio by topic, year or place.">
+<meta property="og:url" content="https://sophiacommons.org/library">
+<meta property="og:image" content="https://sophiacommons.org/og-image.jpg">
+<link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link rel="stylesheet" href="/sophia_commons_v9.css">
+<link rel="stylesheet" href="/library.css?v=1">
+<script defer src="/library.js?v=1"></script>
+</head>
+<body class="lib-page">
+<a class="lib-skip" href="#lib-results">Skip to results</a>
+<header class="lib-top">
+  <a class="lib-home" href="/"><img src="/logo.svg" alt="" width="34" height="34"> Sophia Commons</a>
+  <nav aria-label="Main"><a href="/directory">Directory</a> <a href="/events">Events</a> <a href="/books">Books</a> <a href="/podcasts">Talks</a></nav>
+</header>
+
+<main class="lib-main">
+  <h1>Rudolf Steiner Library</h1>
+  <p class="lib-intro">Search more than 6,800 lectures Rudolf Steiner gave between the 1880s and 1925, his books, and free audio
+    recordings. Find them by topic, year, place or GA volume (the numbering of his Collected Works). The texts themselves are on
+    <a href="https://rsarchive.org/" target="_blank" rel="noopener">rsarchive.org</a> and the recordings on
+    <a href="https://rudolfsteineraudio.com/" target="_blank" rel="noopener">rudolfsteineraudio.com</a>; this page links to them.</p>
+
+  <form class="lib-search" id="lib-form" role="search">
+    <label class="lib-q"><span>Search</span>
+      <input type="search" id="lib-q" name="q" placeholder="karma, bees, Christmas, Philosophy of Freedom, Dornach..." autocomplete="off"></label>
+    <label><span>Topic</span><select id="lib-topic" name="topic"><option value="">Any topic</option></select></label>
+    <label><span>Year</span><select id="lib-year" name="year"><option value="">Any year</option></select></label>
+    <label class="lib-ga"><span>GA volume</span><input type="text" id="lib-ga" name="ga" inputmode="text" placeholder="e.g. 4" maxlength="5"></label>
+    <button type="button" class="lib-clear" id="lib-clear">Clear</button>
+  </form>
+
+  <section class="lib-today" id="lib-today" aria-labelledby="lib-today-h" hidden>
+    <h2 id="lib-today-h">Given on this day</h2>
+    <div id="lib-today-list"></div>
+  </section>
+
+  <div id="lib-status" class="lib-status" role="status" aria-live="polite">Loading the lecture index...</div>
+  <div id="lib-results"></div>
+</main>
+
+<footer class="lib-foot">
+  <p>Lecture index built from <a href="https://rsarchive.org/" target="_blank" rel="noopener">The Rudolf Steiner Archive</a>
+    (titles, dates, places and links only). Audio read by Dale Brunsvold at
+    <a href="https://rudolfsteineraudio.com/" target="_blank" rel="noopener">Rudolf Steiner Audio</a>.
+    <a href="/">Sophia Commons</a> is a free directory of anthroposophical life worldwide.</p>
+</footer>
+</body>
+</html>

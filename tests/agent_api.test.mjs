@@ -90,6 +90,179 @@ test('mcp: invalid tool input comes back as a tool error, not a crash', async ()
   assert.equal(c.result.isError, true);
 });
 
+// ── AI app tools (2026-11-25): Steiner's works, videos, link tagging ──
+import { tagLinks, sourceOf } from '../automation/mcp_server.mjs';
+const LECTURES = { items: [
+  { d: '1923-11-26', t: 'On Bees', b: 'Bees', bu: null, c: 'Dornach', ga: '351', de: 'https://rsarchive.org/de', en: [{ u: 'https://rsarchive.org/Lectures/GA351/a.html', t: 'On Bees', by: '' }, { u: 'https://rsarchive.org/b', t: 'x', by: '' }] },
+  { d: '1902-01-01', t: 'The Maccabees by Otto Ludwig', b: 'Misc', bu: null, c: 'Berlin', ga: '51', de: null, en: [{ u: 'https://rsarchive.org/c', t: 'x', by: '' }] },
+  { d: '1924-06-07', t: 'Agriculture Course: Lecture I', b: 'Agriculture Course', bu: null, c: 'Koberwitz', ga: '327', de: null, en: [{ u: 'https://rsarchive.org/d', t: 'x', by: '' }] },
+] };
+const AUDIO = { items: [{ u: 'bees/bees.html', t: 'Bees', cw: '351', g: 'l', img: '' }, { u: 'pof/pof.html', t: 'The Philosophy of Freedom', cw: '4', g: 'w', img: '' }] };
+const steinerCtx = src => ({ src, loadJson: async n => (n === 'steiner_lectures.json' ? LECTURES : n === 'steiner_audio.json' ? AUDIO : null) });
+const call = (name, args, rest, ctx) => handleMessage({ jsonrpc: '2.0', id: 9, method: 'tools/call', params: { name, arguments: args } }, {}, rest, ctx);
+
+test('find_steiner_works: word-start match finds Bees, not Maccabees, with read and listen links', async () => {
+  const calls = [];
+  const r = await call('find_steiner_works', { query: 'bee' }, async (db, q) => { calls.push(q); return []; }, steinerCtx('claude'));
+  const d = r.result.structuredContent;
+  assert.deepEqual(d.lectures.map(l => l.title), ['On Bees']);
+  assert.equal(d.lectures[0].read, 'https://rsarchive.org/Lectures/GA351/a.html');
+  assert.equal(d.lectures[0].translations, 2);
+  assert.equal(d.audio[0].listen, 'https://rudolfsteineraudio.com/bees/bees.html');
+  assert.ok(calls[0].startsWith('steiner_books?') && calls[0].includes('title=ilike.*bee*'));
+  assert.equal(d.more.books_page, 'https://sophiacommons.org/books?utm_source=claude&utm_medium=ai_app');
+  assert.equal(d.more.archive, 'https://rsarchive.org/', 'outside links are left alone');
+});
+
+test('find_steiner_works: GA and year filters, bad input is a tool error', async () => {
+  const r = await call('find_steiner_works', { ga: 'GA 004' }, async () => [], steinerCtx('mcp'));
+  assert.deepEqual(r.result.structuredContent.audio.map(a => a.title), ['The Philosophy of Freedom']);
+  const y = await call('find_steiner_works', { year: 1924 }, async () => { throw new Error('books are not queried for a year'); }, steinerCtx('mcp'));
+  assert.deepEqual(y.result.structuredContent.lectures.map(l => l.place), ['Koberwitz']);
+  assert.equal(y.result.structuredContent.audio.length, 0);
+  const bad = await call('find_steiner_works', { ga: 'drop table' }, async () => [], steinerCtx('mcp'));
+  assert.equal(bad.result.isError, true);
+  const none = await call('find_steiner_works', {}, async () => [], steinerCtx('mcp'));
+  assert.equal(none.result.isError, true);
+});
+
+test('find_steiner_works still answers when the index files are missing', async () => {
+  const r = await call('find_steiner_works', { query: 'karma' }, async () => [{ ga_number: 'GA 235', title: 'Karmic Relationships', archive_url: 'https://rsarchive.org/k', steinerbooks_url: null, amazon_url: null }]);
+  assert.ok(!r.result.isError);
+  assert.equal(r.result.structuredContent.books[0].read, 'https://rsarchive.org/k');
+  assert.deepEqual(r.result.structuredContent.lectures, []);
+});
+
+test('find_videos: every word filters, channel pages link back to Sophia Commons', async () => {
+  const calls = [];
+  const rest = async (db, q) => {
+    calls.push(q);
+    if (q.startsWith('youtube_videos')) return [{ video_id: 'v', channel_slug: 'goetheanum', title: 'Karma heute', title_en: 'Karma today', url: 'https://www.youtube.com/watch?v=v', published_at: '2026-10-21T11:00:00Z', lang: 'de' }];
+    if (q.includes('slug=in.')) return [{ slug: 'goetheanum', name: 'Goetheanum' }];
+    return [];
+  };
+  const r = await call('find_videos', { query: 'karma heute', language: 'de' }, rest, steinerCtx('chatgpt'));
+  const v = r.result.structuredContent.videos[0];
+  assert.equal(v.channel, 'Goetheanum');
+  assert.equal(v.channel_page, 'https://sophiacommons.org/channel/goetheanum?utm_source=chatgpt&utm_medium=ai_app');
+  assert.equal(v.watch, 'https://www.youtube.com/watch?v=v');
+  assert.equal((calls[0].match(/&or=\(/g) || []).length, 2);
+  assert.ok(calls[0].includes('lang=eq.de'));
+  const bad = await call('find_videos', { query: '  ' }, rest, steinerCtx('mcp'));
+  assert.equal(bad.result.isError, true);
+});
+
+test('link tagging: only sophiacommons.org links, source from the server URL', () => {
+  assert.equal(sourceOf('https://sophiacommons.org/mcp?src=chatgpt'), 'chatgpt');
+  assert.equal(sourceOf('https://sophiacommons.org/mcp?src=evil'), 'mcp');
+  assert.equal(sourceOf('https://sophiacommons.org/mcp'), 'mcp');
+  const out = tagLinks({ a: ['https://sophiacommons.org/listing/x'], b: 'https://sophiacommons.org.evil.com/', c: 3, d: null }, 'claude');
+  assert.equal(out.a[0], 'https://sophiacommons.org/listing/x?utm_source=claude&utm_medium=ai_app');
+  assert.equal(out.b, 'https://sophiacommons.org.evil.com/');
+  assert.equal(out.c, 3);
+});
+
+test('existing tools also get tagged links through HTTP', async () => {
+  const r = await handleHttp(new Request('https://sophiacommons.org/mcp?src=claude', { method: 'POST',
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'search_directory', arguments: { query: 'school' } } }) }),
+  async () => ({}), fakeRest([]));
+  const body = await r.json();
+  assert.match(body.result.structuredContent.results[0].url, /\?utm_source=claude&utm_medium=ai_app$/);
+  assert.match(body.result.structuredContent.results[0].save, /\?save=1&utm_source=claude&utm_medium=ai_app$/);
+});
+
+// ── Topic search, on this day, German, calendar, rate limit, usage log (2026-11-25) ──
+import { topicMatch, calendarLink, overLimit, RATE_PER_MINUTE, resultCount, logRow } from '../automation/mcp_server.mjs';
+const TOPICS = { karma: { label: 'Karma and reincarnation', words: ['karma', 'reincarnation'] }, death: { label: 'Death', words: ['life after death', 'death'] } };
+const TAGGED = { topics: TOPICS, items: [
+  { d: '1924-02-16', t: 'Karmic Relationships I', b: 'Karmic Relationships', c: 'Dornach', ga: '235', de: 'https://rsarchive.org/de1', en: [{ u: 'https://rsarchive.org/en1' }], k: ['karma'] },
+  { d: '1912-11-25', t: 'Lecture Two', b: 'Life Between Death and Rebirth', c: 'Berlin', ga: '140', de: null, en: [{ u: 'https://rsarchive.org/en2' }], k: ['karma', 'death'] },
+  { d: '1923-11-25', t: 'On Comets', b: 'Nature', c: 'Dornach', ga: '351', de: null, en: [{ u: 'https://rsarchive.org/en3' }], k: [] },
+] };
+const taggedCtx = { src: 'mcp', loadJson: async n => (n === 'steiner_lectures.json' ? TAGGED : { items: [] }) };
+
+test('topicMatch: phrases and word forms, and which words they use up', () => {
+  const m = topicMatch(TOPICS, ['reincarnation', 'berlin']);
+  assert.deepEqual([...m.ids], ['karma']);
+  assert.deepEqual([...m.covered], ['reincarnation']);
+  assert.deepEqual([...topicMatch(TOPICS, ['life', 'after', 'death']).ids], ['death']);
+  assert.equal(topicMatch(TOPICS, ['bees']).ids.size, 0);
+  assert.equal(topicMatch(null, ['karma']).ids.size, 0);
+});
+
+test('find_steiner_works: title matches first, then topic-tagged lectures; other words still filter', async () => {
+  const r = await call('find_steiner_works', { query: 'reincarnation' }, async () => [], taggedCtx);
+  const d = r.result.structuredContent;
+  assert.deepEqual(d.lectures.map(l => l.ga), ['235', '140']);
+  assert.deepEqual(d.topics, ['Karma and reincarnation']);
+  const k = await call('find_steiner_works', { query: 'karma berlin' }, async () => [], taggedCtx);
+  assert.deepEqual(k.result.structuredContent.lectures.map(l => l.ga), ['140']);
+  assert.match(k.result.structuredContent.more.library, /\/library\?q=karma\+berlin/);
+});
+
+test('German: language de puts the German text first and keeps the English link', async () => {
+  const r = await call('find_steiner_works', { query: 'karmic', language: 'de' }, async () => [], taggedCtx);
+  const l = r.result.structuredContent.lectures[0];
+  assert.equal(l.read, 'https://rsarchive.org/de1');
+  assert.equal(l.english, 'https://rsarchive.org/en1');
+});
+
+test('steiner_on_this_day: month-day across years, bad dates rejected', async () => {
+  const r = await call('steiner_on_this_day', { date: '11-25' }, async () => [], taggedCtx);
+  assert.deepEqual(r.result.structuredContent.lectures.map(l => l.date), ['1912-11-25', '1923-11-25']);
+  const full = await call('steiner_on_this_day', { date: '2026-11-25' }, async () => [], taggedCtx);
+  assert.equal(full.result.structuredContent.count, 2);
+  for (const bad of ['13-01', 'christmas', '11/25']) {
+    const b = await call('steiner_on_this_day', { date: bad }, async () => [], taggedCtx);
+    assert.equal(b.result.isError, true, bad);
+  }
+  const missing = await call('steiner_on_this_day', {}, async () => [], { src: 'mcp', loadJson: async () => null });
+  assert.equal(missing.result.isError, true);
+});
+
+test('calendar links: timed events default to one hour, all-day events end the next day', () => {
+  const timed = calendarLink({ title: 'Talk & tea', start_date: '2026-12-01T18:00:00Z', city: 'Basel', country: 'Switzerland' }, 'https://sophiacommons.org/event/1');
+  assert.match(timed, /dates=20261201T180000Z\/20261201T190000Z/);
+  assert.match(timed, /text=Talk%20%26%20tea/);
+  assert.match(timed, /location=Basel%2C%20Switzerland/);
+  const allDay = calendarLink({ title: 'Fair', start_date: '2026-12-05T00:00:00Z', end_date: '2026-12-06T00:00:00Z', is_all_day: true }, 'u');
+  assert.match(allDay, /dates=20261205\/20261207/);
+  assert.equal(calendarLink({ title: 'x', start_date: 'not a date' }, 'u'), null);
+});
+
+test('rate limit: allows the budget, then refuses, then recovers after a minute', () => {
+  const key = 'test-' + Math.random();
+  assert.equal(overLimit(key, RATE_PER_MINUTE, 1000), false);
+  assert.equal(overLimit(key, 1, 1001), true);
+  assert.equal(overLimit(key, 1, 1000 + 60001), false);
+});
+
+test('rate limit over HTTP returns 429 with a JSON-RPC error', async () => {
+  const req = () => new Request('https://x/mcp', { method: 'POST', headers: { 'x-nf-client-connection-ip': '203.0.113.9' },
+    body: JSON.stringify(Array.from({ length: 20 }, (_, i) => ({ jsonrpc: '2.0', id: i, method: 'tools/call', params: { name: 'search_directory', arguments: { query: 'x' } } }))) });
+  let last;
+  for (let i = 0; i < 13; i++) last = await handleHttp(req(), async () => ({}), fakeRest([]));
+  assert.equal(last.status, 429);
+  assert.equal((await last.json()).error.code, -32000);
+});
+
+test('usage log: one row per call with tool, source, short args and result count; never fails the call', async () => {
+  const rows = [];
+  const ctx = { ...taggedCtx, src: 'claude', log: async row => rows.push(row) };
+  await call('find_steiner_works', { query: 'karma' }, async () => [], ctx);
+  await call('steiner_on_this_day', { date: 'bad' }, async () => [], ctx);
+  assert.equal(rows.length, 2);
+  assert.equal(rows[0].tool, 'find_steiner_works');
+  assert.equal(rows[0].source, 'claude');
+  assert.equal(rows[0].result_count, 2);
+  assert.equal(rows[1].error, 'input');
+  assert.ok(logRow({ name: 'x', arguments: { query: 'y'.repeat(999) } }, 'mcp', { count: 0, ms: 1 }).args.length <= 300);
+  assert.equal(resultCount({ count: 7 }), 7);
+  const broken = { ...taggedCtx, log: async () => { throw new Error('db down'); } };
+  const r = await call('find_steiner_works', { query: 'karma' }, async () => [], broken);
+  assert.ok(!r.result.isError);
+});
+
 // ── Lean crawler pages (v1.100) ──
 import { crawlerView, isCrawler } from '../automation/crawler_view.mjs';
 const shell = '<html><body><div id="page"><nav>menu</nav><main id="center" tabindex="-1">'

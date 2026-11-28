@@ -1,0 +1,58 @@
+name: Weekly Rudolf Steiner lecture index
+
+# Rebuilds steiner_lectures.json from rsarchive.org (titles, dates, places and links only; one page every
+# 2 seconds, about 35 pages) and tags new lectures with topics. Already-tagged lectures come from the cache,
+# so only new ones cost an API call. Owner, 2026-11-25. Goes live with the next ./deploy.sh.
+
+on:
+  schedule:
+    - cron: "41 6 * * 1"         # Mondays 06:41 UTC
+  workflow_dispatch:             # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write                # commit steiner_lectures.json and the topic cache
+
+concurrency:
+  group: steiner-index
+  cancel-in-progress: false
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Rebuild the lecture index from rsarchive.org
+        run: python3 -I automation/build_steiner_lectures.py
+
+      - name: Tag new lectures with topics
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 -I automation/steiner_topics.py
+
+      - name: Check the index is still sound before committing
+        run: |
+          python3 -I - <<'EOF'
+          import json, sys
+          d = json.load(open("steiner_lectures.json", encoding="utf-8"))
+          items = d["items"]
+          tagged = sum(1 for x in items if x.get("k"))
+          print(f"{len(items)} lectures, {tagged} tagged, {len(d.get('topics', {}))} topics")
+          if len(items) < 6000 or tagged < 0.9 * len(items):
+              sys.exit("index looks wrong; not committing")
+          EOF
+
+      - name: Commit if anything changed
+        run: |
+          git config user.name  "sophia-commons-bot"
+          git config user.email "bot@sophiacommons.org"
+          git add steiner_lectures.json automation/steiner_topics_cache.json
+          git diff --cached --quiet && { echo "no changes"; exit 0; }
+          git commit -m "weekly: Steiner lecture index $(date -u +%F)"
+          git pull --rebase --autostash origin main
+          git push

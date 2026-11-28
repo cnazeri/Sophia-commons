@@ -99,7 +99,48 @@ function savedAuthChanged() {
   if (typeof loadNewsFromSupabase === 'function' && document.getElementById('sb-news-list')) loadNewsFromSupabase();
   try { if (typeof renderHomeUpcoming === 'function') renderHomeUpcoming(); } catch (e) { /* drawn on the next visit */ }
   try { if (typeof renderHomeNews === 'function') renderHomeNews(); } catch (e) { /* drawn on the next visit */ }
-  if (signedIn) _savedLoad();
+  if (signedIn) { _savedLoad(); _scSavePendingAfterSignIn(); }
+}
+
+// ── Save links from the AI app (owner, 2026-11-25): ChatGPT or Claude give people /listing/<slug>?save=1 or
+// /event/<id>?save=1. Opening one saves that place or event. Members save at once; others are asked to sign in
+// and the item is saved right after (the wish is kept for this browser tab only). ──
+var SC_PENDING_SAVE = 'sc-pending-save';
+function _scTakeSaveParam() {
+  try {
+    var u = new URL(location.href);
+    if (u.searchParams.get('save') !== '1') return false;
+    u.searchParams.delete('save');
+    history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+    return true;
+  } catch (e) { return false; }
+}
+async function _scSaveNow(type, id) {
+  var keys = await _savedLoad();
+  if (!keys.has(type + ':' + id)) {
+    var r = await _sb.from('saved_items').insert({ user_id: _savedUser().id, item_type: type, item_id: id });
+    if (r.error && !/duplicate/i.test(r.error.message)) { scNotify(t('saved.error', 'Could not save. Please try again.')); return false; }
+    keys.add(type + ':' + id);
+    scHeartsRefresh();
+  }
+  scNotify(t('saved.saved_from_link', 'Saved to your list'));
+  return true;
+}
+async function _scSaveFromLink(type, id) {
+  if (signedIn && _savedUser()) { await _scSaveNow(type, id); return; }
+  try { sessionStorage.setItem(SC_PENDING_SAVE, type + ':' + id); } catch (e) { return; }
+  // The sign-in may still be restoring on page load: ask only if it has not arrived after a moment
+  setTimeout(function () { if (!signedIn) openModal(); }, 1500);
+}
+async function _scSavePendingAfterSignIn() {
+  var want = null;
+  try { want = sessionStorage.getItem(SC_PENDING_SAVE); sessionStorage.removeItem(SC_PENDING_SAVE); } catch (e) { return; }
+  var m = want && want.match(/^([a-z]+):([0-9a-f-]{36})$/);
+  if (!m || SAVED_TYPES.indexOf(m[1]) < 0 || !_savedUser()) return;
+  if (await _scSaveNow(m[1], m[2])) {
+    var btn = document.querySelector('#detail-content .btn-save[data-id="' + m[2] + '"]');
+    if (btn) { btn.classList.add('is-saved'); btn.setAttribute('aria-pressed', 'true'); }
+  }
 }
 
 function _saveBtnHtml(type, id, on) {
@@ -110,6 +151,7 @@ function _saveBtnHtml(type, id, on) {
 
 // Adds the Save button to the detail page that was just drawn (signed-in members only)
 async function scSaveMount(type, id) {
+  if (SAVED_TYPES.indexOf(type) >= 0 && id && _scTakeSaveParam()) await _scSaveFromLink(type, id);
   if (SAVED_TYPES.indexOf(type) < 0 || !id || !signedIn) return;
   var keys = await _savedLoad();
   var root = document.getElementById('detail-content');
